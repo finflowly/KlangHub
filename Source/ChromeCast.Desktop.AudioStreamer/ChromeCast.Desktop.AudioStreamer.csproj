@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ChromeCast.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Label="MultilingualAppToolkit">
+    <MultilingualAppToolkitVersion>4.0</MultilingualAppToolkitVersion>
+    <MultilingualFallbackLanguage>en</MultilingualFallbackLanguage>
+    <TranslationReport Condition="'$(Configuration)' == 'Release'">true</TranslationReport>
+    <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Google.ProtocolBuffers">
+      <HintPath>ProtocolBuffer\Google.ProtocolBuffers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ChromeCast.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UserControls\Pause.png" />
+    <EmbeddedResource Include="UserControls\Play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UserControls\Unmute.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UserControls\Mute.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UserControls\Stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <XliffResource Include="MultilingualResources\ChromeCast.Desktop.AudioStreamer.fr.xlf" />
+  </ItemGroup>
+  <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets')" Label="MultilingualAppToolkit">
+    <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
+    <PackageReference Include="Microsoft.Windows.Compatibility">
+      <Version>9.0.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NAudio.Lame" Version="2.1.0" />
+    <PackageReference Include="System.Memory" Version="4.6.2" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.1" />
+    <PackageReference Include="System.Text.Json" Version="9.0.3" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.2" />
+    <PackageReference Include="Tmds.MDns" Version="0.8.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json" />
+  </ItemGroup>
+</Project>

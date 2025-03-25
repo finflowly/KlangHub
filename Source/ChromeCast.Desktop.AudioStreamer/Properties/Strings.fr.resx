@@ -1,0 +1,357 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Buffering" xml:space="preserve">
+    <value>Mise en mémoire tampon</value>
+  </data>
+  <data name="Button_ClipboardCopy_Text" xml:space="preserve">
+    <value>Copier dans le presse-papier</value>
+  </data>
+  <data name="Button_Down_Text" xml:space="preserve">
+    <value>Baisser</value>
+  </data>
+  <data name="Button_Mute_Text" xml:space="preserve">
+    <value>Sourdine</value>
+  </data>
+  <data name="Button_ResetSetting_Text" xml:space="preserve">
+    <value>Réinitialiser les paramètres</value>
+  </data>
+  <data name="Button_ScanAgain_Text" xml:space="preserve">
+    <value>Rechercher à nouveau des périphériques</value>
+  </data>
+  <data name="Button_SyncDevices_Text" xml:space="preserve">
+    <value>Synchroniser les périphériques</value>
+  </data>
+  <data name="Button_Up_Text" xml:space="preserve">
+    <value>Augmenter</value>
+  </data>
+  <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
+    <value>Redémarrage automatique lorsque le flux est fermé</value>
+  </data>
+  <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
+    <value>Démarrage automatique des périphériques au démarrage</value>
+  </data>
+  <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
+    <value>Utiliser les raccourcis clavier : Augmenter = Ctrl+Alt+U; Baisser = Ctrl+Alt+D; Sourdine = Ctrl+Alt+M</value>
+  </data>
+  <data name="Check_ShowLagControl_Text" xml:space="preserve">
+    <value>Afficher le contrôle du décalage (expérimental)</value>
+  </data>
+  <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
+    <value>Montrer la fenêtre au démarrage</value>
+  </data>
+  <data name="ChromeCast_StreamTitle" xml:space="preserve">
+    <value>Desktop Audio Streamer</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Fermé</value>
+  </data>
+  <data name="ConnectError" xml:space="preserve">
+    <value>Erreur de connexion</value>
+  </data>
+  <data name="Disposed" xml:space="preserve">
+    <value>Retiré</value>
+  </data>
+  <data name="Group_Devices_Text" xml:space="preserve">
+    <value>Périphériques (cliquez sur le nom pour commencer le streaming)</value>
+  </data>
+  <data name="Group_Lag_Text" xml:space="preserve">
+    <value>Contrôle du décalage</value>
+  </data>
+  <data name="Group_Options_Text" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
+    <value>Volume de tous les périphériques :</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="InvalidRequest" xml:space="preserve">
+    <value>Requête invalide</value>
+  </data>
+  <data name="Label_IPAddressUsed_Text" xml:space="preserve">
+    <value>Adresse IP4 utilisée :</value>
+  </data>
+  <data name="Label_KeepAlive_Text" xml:space="preserve">
+    <value>Dernier message en direct :</value>
+  </data>
+  <data name="Label_LagExperimental_Text" xml:space="preserve">
+    <value>Fonctionnalité expérimentale : Essayer de maintenir le tampon le plus petit possible sur l'périphérique, sans temps-mort.</value>
+  </data>
+  <data name="Label_Language_Text" xml:space="preserve">
+    <value>Langue</value>
+  </data>
+  <data name="Label_MaximumLag_Text" xml:space="preserve">
+    <value>décalage maximum / meilleure quality</value>
+  </data>
+  <data name="Label_MinimumLag_Text" xml:space="preserve">
+    <value>décalage minimum / faible qualité</value>
+  </data>
+  <data name="Label_RecordingDevice_Text" xml:space="preserve">
+    <value>Périphérique d'enregistrement :</value>
+  </data>
+  <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
+    <value>Les formats mp3 ont un décalage et un temps de mise en mémoire tampon important.</value>
+  </data>
+  <data name="Label_StreamFormat_Text" xml:space="preserve">
+    <value>Format du flux</value>
+  </data>
+  <data name="Language_English" xml:space="preserve">
+    <value>Anglais</value>
+  </data>
+  <data name="Language_French" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="LaunchedApplication" xml:space="preserve">
+    <value>Application lancée</value>
+  </data>
+  <data name="LaunchingApplication" xml:space="preserve">
+    <value>Lancement de l'application</value>
+  </data>
+  <data name="LoadCancelled" xml:space="preserve">
+    <value>Chargement annulé</value>
+  </data>
+  <data name="LoadFailed" xml:space="preserve">
+    <value>Échec du chargement</value>
+  </data>
+  <data name="LoadingMedia" xml:space="preserve">
+    <value>Chargement du média</value>
+  </data>
+  <data name="Log_In" xml:space="preserve">
+    <value>entrée</value>
+  </data>
+  <data name="Log_Out" xml:space="preserve">
+    <value>sortie</value>
+  </data>
+  <data name="MainForm_Text" xml:space="preserve">
+    <value>Desktop Audio Streamer</value>
+  </data>
+  <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
+    <value>Aucun périphérique d'enregistrement trouvé.</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>Non connecté</value>
+  </data>
+  <data name="Paused" xml:space="preserve">
+    <value>Suspendu</value>
+  </data>
+  <data name="Playing" xml:space="preserve">
+    <value>Jouer</value>
+  </data>
+  <data name="Tab_Log_Text" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="Tab_Options_Text" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="TrayIcon_Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Button_ClearLog_Text" xml:space="preserve">
+    <value>Nettoyer le journal</value>
+  </data>
+  <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
+    <value>Journaliser la communication du périphérique</value>
+  </data>
+  <data name="Mp3_128" xml:space="preserve">
+    <value>Mp3 (128 kbps)</value>
+  </data>
+  <data name="Mp3_320" xml:space="preserve">
+    <value>Mp3 (320 kbps)</value>
+  </data>
+  <data name="Wav" xml:space="preserve">
+    <value>Wav (44100 Hz/16bit)</value>
+  </data>
+  <data name="MessageBox_NoIPAddress" xml:space="preserve">
+    <value>Aucune adresse IP trouvée sur votre périphérique.</value>
+  </data>
+  <data name="Label_NewVersionAvailable" xml:space="preserve">
+    <value>Une nouvelle version est disponible sur Github</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Connecté</value>
+  </data>
+  <data name="Tab_Main_Text" xml:space="preserve">
+    <value>Périphériques</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
+    <value>Démarrer l'application au démarrage de Windows</value>
+  </data>
+  <data name="DevicesOnly" xml:space="preserve">
+    <value>Périphériques seulement</value>
+  </data>
+  <data name="GroupsOnly" xml:space="preserve">
+    <value>Groupes seulement</value>
+  </data>
+  <data name="ShowAll" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
+    <value>Démarrage automatique des derniers périphériques et groupes utilisés au démarrage</value>
+  </data>
+  <data name="Label_LinkHelp_Text" xml:space="preserve">
+    <value>Informations sur les options de Github</value>
+  </data>
+  <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
+    <value>Volume d'enregistrement</value>
+  </data>
+  <data name="Label_FilterDevices_Text" xml:space="preserve">
+    <value>Filtrer périphériques</value>
+  </data>
+  <data name="Tooltip_Group_Text" xml:space="preserve">
+    <value>Groupe</value>
+  </data>
+  <data name="Label_BufferInSeconds_Text" xml:space="preserve">
+    <value>Mémoire tampon du périphérique (en secondes)</value>
+  </data>
+  <data name="Check_AutoMute_Text" xml:space="preserve">
+    <value>Sourdine auto/Désactiver la sourdine des sons du bureau.</value>
+  </data>
+  <data name="LoadingMediaCheckFirewall" xml:space="preserve">
+    <value>Vérifiez le pare-feu</value>
+  </data>
+  <data name="Check_MinimizeToTray_Text" xml:space="preserve">
+    <value>Réduire dans la barre d'état à la fermeture</value>
+  </data>
+  <data name="Wav_24bit" xml:space="preserve">
+    <value>Wav ((taux d'échantillonnage de la carte son/24bit)</value>
+  </data>
+  <data name="Wav_32bit" xml:space="preserve">
+    <value>Wav ((taux d'échantillonnage de la carte son/32bit)</value>
+  </data>
+  <data name="Wav_16bit" xml:space="preserve">
+    <value>Wav ((taux d'échantillonnage de la carte son/16bit)</value>
+  </data>
+  <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
+    <value>Conversion de l'audio multicanal en sortie stéréo</value>
+  </data>
+  <data name="Check_DarkMode_Text" xml:space="preserve">
+    <value>Mode sombre</value>
+  </data>
+  <data name="Label_StreamTitle_Text" xml:space="preserve">
+    <value>Titre du flux</value>
+  </data>
+</root>
