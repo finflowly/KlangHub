@@ -255,10 +255,10 @@ namespace KlangHub.Application
         /// </summary>
         public void ScanForDevices()
         {
-            if (devices == null || discoverDevices == null)
+            if (devices == null || castProvider == null)
                 return;
 
-            discoverDevices.Discover(devices.OnDeviceAvailable);
+            castProvider.Discovery.Start();
         }
 
         /// <summary>
