@@ -16,7 +16,6 @@ namespace KlangHub.Platform.Casting.Chromecast
         private readonly IDiscoverDevices inner;
         private readonly Dictionary<string, DiscoveredDevice> byId = new();
         private readonly object sync = new();
-        private bool started;
 
         public event EventHandler<CastDeviceDescriptor> DeviceDiscovered;
 
@@ -27,10 +26,8 @@ namespace KlangHub.Platform.Casting.Chromecast
 
         public void Start()
         {
-            if (started)
-                return;
-
-            started = true;
+            // DiscoverDevices.Discover() restarts the mDNS search on each call, and ScanForDevices calls
+            // this per scan (incl. on IP change) — so intentionally NOT guarded, matching the pre-provider behaviour.
             inner.Discover(OnDiscovered);
         }
 
