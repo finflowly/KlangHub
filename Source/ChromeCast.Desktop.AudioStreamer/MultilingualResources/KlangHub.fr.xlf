@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="">
-  <file datatype="xml" source-language="en" target-language="fr" original="CHROMECAST.DESKTOP.AUDIOSTREAMER/USERCONTROLS/DEVICECONTROL.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+  <file datatype="xml" source-language="en" target-language="fr" original="KLANGHUB/USERCONTROLS/DEVICECONTROL.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
     <header>
       <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.6900.0" tool-company="Microsoft" />
     </header>
     <body>
-      <group id="CHROMECAST.DESKTOP.AUDIOSTREAMER/USERCONTROLS/DEVICECONTROL.RESX" datatype="resx">
+      <group id="KLANGHUB/USERCONTROLS/DEVICECONTROL.RESX" datatype="resx">
         <trans-unit id="toolTipGroup.TrayLocation" translate="yes" xml:space="preserve" extype="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" extradata="metadata">
           <source>17, 17</source>
           <target state="translated">17, 17</target>
@@ -13,12 +13,12 @@
       </group>
     </body>
   </file>
-  <file datatype="xml" source-language="en" target-language="fr" original="CHROMECAST.DESKTOP.AUDIOSTREAMER/MAINFORM.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+  <file datatype="xml" source-language="en" target-language="fr" original="KLANGHUB/MAINFORM.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
     <header>
       <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.6900.0" tool-company="Microsoft" />
     </header>
     <body>
-      <group id="CHROMECAST.DESKTOP.AUDIOSTREAMER/MAINFORM.RESX" datatype="resx">
+      <group id="KLANGHUB/MAINFORM.RESX" datatype="resx">
         <trans-unit id="$this.Icon" translate="yes" extype="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64" xml:space="preserve">
           <source>
         AAABAAEAgIAQAAAAAABoKAAAFgAAACgAAACAAAAAAAEAAAEABAAAAAAAACgAAAAAAAAAAAAAAAAAAAAA
@@ -382,12 +382,12 @@
       </group>
     </body>
   </file>
-  <file datatype="xml" source-language="en" target-language="fr" original="CHROMECAST.DESKTOP.AUDIOSTREAMER/PROPERTIES/RESOURCES.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+  <file datatype="xml" source-language="en" target-language="fr" original="KLANGHUB/PROPERTIES/RESOURCES.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
     <header>
       <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.6900.0" tool-company="Microsoft" />
     </header>
     <body>
-      <group id="CHROMECAST.DESKTOP.AUDIOSTREAMER/PROPERTIES/RESOURCES.RESX" datatype="resx">
+      <group id="KLANGHUB/PROPERTIES/RESOURCES.RESX" datatype="resx">
         <trans-unit id="Mute" translate="yes" extype="System.Resources.ResXFileRef, System.Windows.Forms" xml:space="preserve">
           <source>..\UserControls\Mute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</source>
           <target state="final">..\UserControls\Mute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</target>
@@ -415,12 +415,12 @@
       </group>
     </body>
   </file>
-  <file datatype="xml" source-language="en" target-language="fr" original="CHROMECAST.DESKTOP.AUDIOSTREAMER/PROPERTIES/STRINGS.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+  <file datatype="xml" source-language="en" target-language="fr" original="KLANGHUB/PROPERTIES/STRINGS.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
     <header>
       <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.6900.0" tool-company="Microsoft" />
     </header>
     <body>
-      <group id="CHROMECAST.DESKTOP.AUDIOSTREAMER/PROPERTIES/STRINGS.RESX" datatype="resx">
+      <group id="KLANGHUB/PROPERTIES/STRINGS.RESX" datatype="resx">
         <trans-unit id="Buffering" translate="yes" xml:space="preserve">
           <source>Buffering</source>
           <target state="translated">Mise en mémoire tampon</target>

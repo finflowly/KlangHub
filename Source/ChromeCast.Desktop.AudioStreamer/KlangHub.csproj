@@ -44,7 +44,7 @@
     <EmbeddedResource Include="UserControls\Stop.png" />
   </ItemGroup>
   <ItemGroup>
-    <XliffResource Include="MultilingualResources\ChromeCast.Desktop.AudioStreamer.fr.xlf" />
+    <XliffResource Include="MultilingualResources\KlangHub.fr.xlf" />
   </ItemGroup>
   <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets')" Label="MultilingualAppToolkit">
     <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
