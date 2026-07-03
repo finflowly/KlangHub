@@ -15,13 +15,15 @@ using KlangHub.Application.Interfaces;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Text.Json;
+using KlangHub.Platform.Casting.Chromecast;
+using PlaybackState = KlangHub.Core.Casting.PlaybackState;   // disambiguate from NAudio.Wave.PlaybackState
 
 namespace KlangHub.Application
 {
     /// <summary>
     /// Device represents a Chromecast device, or a Chromecast group.
     /// </summary>
-    public class Device : IDevice
+    public class Device : IDevice, IPlaybackSession
     {
         private readonly IDeviceCommunication deviceCommunication;
         private IStreamingConnection streamingConnection;
@@ -259,6 +261,7 @@ namespace KlangHub.Application
 
                 discoveredDevice.DeviceState = state;
                 deviceControl?.SetStatus(discoveredDevice.DeviceState, statusText);
+                StateChanged?.Invoke(this, ChromecastStateMapper.ToPlaybackState(state));
             }
         }
 
@@ -557,6 +560,7 @@ namespace KlangHub.Application
             }
 
             deviceControl.OnVolumeUpdate(volume);
+            VolumeChanged?.Invoke(this, new VolumeStatus(volumeSetting.level, volumeSetting.muted));
         }
 
         private bool LevelIsOk(float level)
@@ -730,5 +734,31 @@ namespace KlangHub.Application
         {
             deviceConnection.ReConnect();
         }
+
+        // --- IPlaybackSession: neutral facade over this Chromecast device (Phase 2.2b) ----------
+        // Purely additive. The events fire IN ADDITION to the existing DeviceControl callbacks, and
+        // no neutral consumer is wired yet (ChromecastProvider.CreateSession is step 2.2b-3), so until
+        // then these members are inert and change no existing behaviour.
+
+        public event EventHandler<PlaybackState> StateChanged;
+        public event EventHandler<VolumeStatus> VolumeChanged;
+
+        CastDeviceDescriptor IPlaybackSession.Device =>
+            new(ChromecastDeviceId.From(discoveredDevice), GetFriendlyName(), ProviderId.Chromecast, IsGroup());
+
+        PlaybackState IPlaybackSession.State => ChromecastStateMapper.ToPlaybackState(GetDeviceState());
+
+        string IPlaybackSession.StatusText => GetStatusText() ?? string.Empty;
+
+        VolumeStatus IPlaybackSession.Volume => new(volumeSetting?.level ?? 0f, volumeSetting?.muted ?? false);
+
+        void IPlaybackSession.Connect() => deviceCommunication.Connect();
+        void IPlaybackSession.Play() => ResumePlaying();
+        void IPlaybackSession.Pause() => deviceCommunication.PauseMedia();
+        void IPlaybackSession.Stop() => Stop(true);
+        void IPlaybackSession.SetVolume(float level) => VolumeSet(level);
+        void IPlaybackSession.SetMuted(bool muted) => deviceCommunication.VolumeMute(muted);
+        void IPlaybackSession.RequestStatus() => OnGetStatus();
+        void IPlaybackSession.Disconnect() => deviceCommunication.Disconnect();
     }
 }

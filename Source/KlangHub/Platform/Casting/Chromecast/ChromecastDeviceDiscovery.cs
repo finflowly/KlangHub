@@ -59,7 +59,7 @@ namespace KlangHub.Platform.Casting.Chromecast
             if (device == null)
                 return;
 
-            var id = StableId(device);
+            var id = ChromecastDeviceId.From(device);
             if (string.IsNullOrEmpty(id))
                 return;
 
@@ -69,15 +69,6 @@ namespace KlangHub.Platform.Casting.Chromecast
             }
 
             DeviceDiscovered?.Invoke(this, new CastDeviceDescriptor(id, device.Name, ProviderId.Chromecast, device.IsGroup));
-        }
-
-        /// <summary>A stable, non-empty id: prefer the mDNS USN, then MAC, then host:port.</summary>
-        private static string StableId(DiscoveredDevice device)
-        {
-            if (!string.IsNullOrEmpty(device.Usn)) return device.Usn;
-            if (!string.IsNullOrEmpty(device.MACAddress)) return device.MACAddress;
-            if (!string.IsNullOrEmpty(device.IPAddress)) return $"{device.IPAddress}:{device.Port}";
-            return device.Id;
         }
     }
 }
