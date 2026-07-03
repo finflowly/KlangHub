@@ -3,6 +3,7 @@ using Microsoft.VisualBasic.ApplicationServices;
 using System.Windows.Forms;
 using KlangHub.Application;
 using KlangHub.Streaming;
+using KlangHub.Platform.Audio;
 using KlangHub.Discover;
 
 namespace KlangHub
@@ -36,7 +37,7 @@ namespace KlangHub
                             , new DeviceStatusTimer()
                             , logger)
                         , devices
-                        , new LoopbackRecorder(logger)
+                        , new LoopbackCaptureEngine(logger)
                         , logger);
                 System.Windows.Forms.Application.Run(mainForm);
             }
@@ -93,7 +94,7 @@ namespace KlangHub
                             , new DeviceStatusTimer()
                             , logger)
                         , devices
-                        , new LoopbackRecorder(logger)
+                        , new LoopbackCaptureEngine(logger)
                         , logger);
                 System.Windows.Forms.Application.Run(MainForm);
             }

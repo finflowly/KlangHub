@@ -14,7 +14,7 @@ namespace KlangHub.Application.Interfaces
         void Initialize();
         void SetLagThreshold(int lagThreshold);
         void OnAddDevice(IDevice device);
-        void OnRecordingDataAvailable(byte[] dataToSend, WaveFormat waveFormat);
+        void OnRecordingDataAvailable(AudioFrame frame);
         void OnStreamingRequestConnect(Socket handlerSocket, string httpRequest);
         void SetDependencies(MainForm mainForm);
         void CloseApplication();
@@ -31,7 +31,7 @@ namespace KlangHub.Application.Interfaces
         void ClearMp3Buffer();
         void StartTask(Action action, CancellationTokenSource cancellationTokenSource = null);
         void SaveSettings();
-        void SetRecordingDevice(RecordingDevice recordingDevice);
+        void SetRecordingDevice(AudioCaptureDevice recordingDevice);
         string   GetStreamTitle();
     }
 }

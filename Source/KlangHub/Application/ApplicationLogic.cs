@@ -103,10 +103,13 @@ namespace KlangHub.Application
         /// </summary>
         /// <param name="dataToSendIn">the audio data in wav format</param>
         /// <param name="formatIn">the wav format that's used</param>
-        public void OnRecordingDataAvailable(byte[] dataToSendIn, WaveFormat formatIn)
+        public void OnRecordingDataAvailable(AudioFrame frame)
         {
-            if (devices == null)
+            if (devices == null || frame == null)
                 return;
+
+            var formatIn = new WaveFormat(frame.SampleRate, frame.BitsPerSample, frame.Channels);
+            var dataToSendIn = frame.Data;
 
             if (!StreamFormatSelected.Equals(SupportedStreamFormat.Wav) &&
                 !StreamFormatSelected.Equals(SupportedStreamFormat.Wav_16bit) &&
@@ -650,7 +653,7 @@ namespace KlangHub.Application
         /// <summary>
         /// 
         /// </summary>
-        public void SetRecordingDevice(RecordingDevice recordingDevice)
+        public void SetRecordingDevice(AudioCaptureDevice recordingDevice)
         {
             if(recordingDevice == null)
             {

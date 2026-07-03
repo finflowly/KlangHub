@@ -18,8 +18,6 @@ namespace KlangHub
         void SetWindowVisibility(bool visible);
         void AddDevice(IDevice device);
         void Dispose();
-        void AddRecordingDevices(List<RecordingDevice> devices, RecordingDevice defaultdevice);
-        void GetRecordingDevice();
         void SetAutoRestart(bool autoRestart);
         bool GetUseKeyboardShortCuts();
         bool GetAutoStartDevices();
@@ -46,7 +44,6 @@ namespace KlangHub
         void SetPosition(int? left, int? top);
         int GetLeft();
         int GetTop();
-        void ShowWavMeterValue(byte[] data);
         void SetExtraBufferInSeconds(int extraBufferInSeconds);
         int? GetExtraBufferInSeconds();
         void SetRecordingDeviceID(string recordingDeviceID);
