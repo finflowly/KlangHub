@@ -30,7 +30,7 @@ namespace KlangHub
         private readonly IDevices devices;
         private readonly ILogger logger;
         private IPAddress previousIpAddress;
-        private readonly ILoopbackRecorder loopbackRecorder;
+        private readonly IAudioCaptureEngine captureEngine;
         private Size windowSize;
         private readonly StringBuilder log = new StringBuilder();
         private string previousRecordingDeviceID = null;
@@ -38,15 +38,15 @@ namespace KlangHub
         private bool previousRecordingDeviceExists;
         private bool eventHandlerAdded;
         private bool isRecordingDeviceSelected;
-        private RecordingDevice previousDefaultDevice;
+        private AudioCaptureDevice previousDefaultDevice;
         private readonly WavGenerator wavGenerator;
 
-        public MainForm(IApplicationLogic applicationLogicIn, IDevices devicesIn, ILoopbackRecorder loopbackRecorderIn, ILogger loggerIn)
+        public MainForm(IApplicationLogic applicationLogicIn, IDevices devicesIn, IAudioCaptureEngine captureEngineIn, ILogger loggerIn)
         {
             InitializeComponent();
 
             ApplyLocalization();
-            loopbackRecorder = loopbackRecorderIn;
+            captureEngine = captureEngineIn;
             applicationLogic = applicationLogicIn;
             devices = devicesIn;
             logger = loggerIn;
@@ -82,7 +82,10 @@ namespace KlangHub
             {
                 CheckForNewVersion(fvi.FileVersion);
             });
-            loopbackRecorder.Start(this, applicationLogic.OnRecordingDataAvailable, applicationLogic.ClearMp3Buffer);
+            captureEngine.DataAvailable += (s, frame) => applicationLogic.OnRecordingDataAvailable(frame);
+            captureEngine.LevelSampled += (s, bytes) => ShowWavMeterValue(bytes);
+            captureEngine.DevicesChanged += (s, args) => AddRecordingDevices(new List<AudioCaptureDevice>(args.Devices), args.DefaultDevice);
+            captureEngine.Start(BuildCaptureSettings());
         }
 
         public IntPtr GetHandle()
@@ -413,14 +416,14 @@ namespace KlangHub
             Hide();
         }
 
-        public void AddRecordingDevices(List<RecordingDevice> devices, RecordingDevice defaultdevice)
+        public void AddRecordingDevices(List<AudioCaptureDevice> devices, AudioCaptureDevice defaultdevice)
         {
             if (devices == null || cmbRecordingDevice == null)
                 return;
 
             if (InvokeRequired)
             {
-                Invoke(new Action<List<RecordingDevice>, RecordingDevice>(AddRecordingDevices), new object[] { devices, defaultdevice });
+                Invoke(new Action<List<AudioCaptureDevice>, AudioCaptureDevice>(AddRecordingDevices), new object[] { devices, defaultdevice });
                 return;
             }
             if (IsDisposed) return;
@@ -431,7 +434,7 @@ namespace KlangHub
                 var remove = true;
                 foreach (var device in devices)
                 {
-                    if (((RecordingDevice)cmbRecordingDevice.Items[i]).ID == device.ID)
+                    if (((AudioCaptureDevice)cmbRecordingDevice.Items[i]).Id == device.Id)
                     {
                         remove = false;
                     }
@@ -448,7 +451,7 @@ namespace KlangHub
                 var exists = false;
                 for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                 {
-                    if (((RecordingDevice)cmbRecordingDevice.Items[i]).ID == device.ID)
+                    if (((AudioCaptureDevice)cmbRecordingDevice.Items[i]).Id == device.Id)
                     {
                         exists = true;
                     }
@@ -462,20 +465,20 @@ namespace KlangHub
             // Select the new default device when the default device has changed.
             if (previousDefaultDevice != null)
             {
-                var selectedDevice = (RecordingDevice)cmbRecordingDevice.SelectedItem;
+                var selectedDevice = (AudioCaptureDevice)cmbRecordingDevice.SelectedItem;
                 var nrSameDataflowItems = 0;
                 for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                 {
-                    var device = (RecordingDevice)cmbRecordingDevice.Items[i];
+                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i];
                     if (device.Flow == selectedDevice?.Flow) nrSameDataflowItems++;
                 }
-                if (defaultdevice.ID != previousDefaultDevice.ID 
+                if (defaultdevice.Id != previousDefaultDevice.Id 
                     && (selectedDevice?.Flow == defaultdevice.Flow || nrSameDataflowItems <= 1))
                 {
                     for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                     {
-                        var device = (RecordingDevice)cmbRecordingDevice.Items[i];
-                        if (device.ID == defaultdevice.ID)
+                        var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i];
+                        if (device.Id == defaultdevice.Id)
                         {
                             if (cmbRecordingDevice.SelectedIndex != i)
                             {
@@ -491,8 +494,8 @@ namespace KlangHub
             {
                 for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                 {
-                    var device = (RecordingDevice)cmbRecordingDevice.Items[i];
-                    if (!isSetRecordingDeviceID && device.ID == defaultdevice.ID)
+                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i];
+                    if (!isSetRecordingDeviceID && device.Id == defaultdevice.Id)
                     {
                         // Nothing previously selected, select the default device.
                         if (cmbRecordingDevice.SelectedIndex != i)
@@ -506,8 +509,8 @@ namespace KlangHub
                 }
                 for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                 {
-                    var device = (RecordingDevice)cmbRecordingDevice.Items[i];
-                    if (!isSetRecordingDeviceID && device.ID == previousRecordingDeviceID)
+                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i];
+                    if (!isSetRecordingDeviceID && device.Id == previousRecordingDeviceID)
                     {
                         // Select the previously selected device (only once).
                         cmbRecordingDevice.SelectedIndex = i;
@@ -522,8 +525,8 @@ namespace KlangHub
             isSetRecordingDeviceID = true;
 
             // Show recording device in the UI
-            var selected = (RecordingDevice)cmbRecordingDevice.SelectedItem;
-            if (selected?.ID != defaultdevice.ID)
+            var selected = (AudioCaptureDevice)cmbRecordingDevice.SelectedItem;
+            if (selected?.Id != defaultdevice.Id)
             {
                 Text = $"{Properties.Strings.MainForm_Text} - {selected.Name}";
                 applicationLogic.SetRecordingDevice(selected);
@@ -541,54 +544,19 @@ namespace KlangHub
             }
         }
 
-        public void GetRecordingDevice()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new Action(GetRecordingDevice));
-                return;
-            }
-            if (IsDisposed) return;
 
-            if (cmbRecordingDevice == null)
-                return;
-
-            if (!StartRecordingDevice())
-                loopbackRecorder.StartRecordingSetDevice(null);
-        }
-
-        private bool StartRecordingDevice()
-        {
-            if (cmbRecordingDevice == null || cmbRecordingDevice.Items.Count == 0)
-                return false;
-
-            if (!loopbackRecorder.StartRecordingSetDevice((RecordingDevice)cmbRecordingDevice.SelectedItem))
-            {
-                // Start the first device that has no error.
-                for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
-                {
-                    if (loopbackRecorder.StartRecordingSetDevice((RecordingDevice)cmbRecordingDevice.Items[i]))
-                    {
-                        cmbRecordingDevice.SelectedIndex = i;
-                        PlaySilence();
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         private void CmbRecordingDevice_SelectedIndexChanged(object sender, EventArgs e)
         {
             isRecordingDeviceSelected = true;
-            loopbackRecorder?.StopRecording();
-            StartRecordingDevice();
+            captureEngine.Apply(BuildCaptureSettings());
             PlaySilence();
+        }
+
+        private AudioCaptureSettings BuildCaptureSettings()
+        {
+            var selected = cmbRecordingDevice?.SelectedItem as AudioCaptureDevice;
+            return new AudioCaptureSettings(selected?.Id, GetSelectedStreamFormat(), GetConvertMultiChannelToStereo());
         }
 
         private void PlaySilence()
@@ -596,7 +564,7 @@ namespace KlangHub
             if (cmbRecordingDevice.SelectedItem != null)
             {
                 wavGenerator.Stop();
-                var device = (RecordingDevice)cmbRecordingDevice.SelectedItem;
+                var device = (AudioCaptureDevice)cmbRecordingDevice.SelectedItem;
                 wavGenerator.PlaySilenceLoop(device.Name, device.SampleRate, device.Channels);
             }
         }
@@ -893,7 +861,7 @@ namespace KlangHub
             if (cmbStreamFormat.SelectedItem != null)
             {
                 applicationLogic.SetStreamFormat((SupportedStreamFormat)((ComboboxItem)cmbStreamFormat.SelectedItem).Value);
-                loopbackRecorder.Restart();
+                captureEngine.Apply(BuildCaptureSettings());
             }
         }
 
@@ -1258,7 +1226,7 @@ namespace KlangHub
                 if (cmbRecordingDevice.Items.Count == 0 || cmbRecordingDevice.SelectedItem == null)
                     return null;
 
-                return ((RecordingDevice)cmbRecordingDevice.SelectedItem).ID;
+                return ((AudioCaptureDevice)cmbRecordingDevice.SelectedItem).Id;
             }
             catch (Exception)
             {
@@ -1281,7 +1249,7 @@ namespace KlangHub
                 }
             }
             base.Dispose(disposing);
-            loopbackRecorder?.Dispose();
+            captureEngine?.Dispose();
             wavGenerator?.Dispose();
         }
 
@@ -1308,7 +1276,7 @@ namespace KlangHub
 
         public void RestartRecording()
         {
-            loopbackRecorder.Restart();
+            captureEngine.Apply(BuildCaptureSettings());
         }
 
         public void SetMinimizeToTray(bool minimizeToTray)
