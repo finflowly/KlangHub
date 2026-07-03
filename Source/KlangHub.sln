@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromeCast.Desktop.AudioStreamer", "ChromeCast.Desktop.AudioStreamer\ChromeCast.Desktop.AudioStreamer.csproj", "{4133DCC6-8CBF-4E67-B798-2EE414A5726C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlangHub", "ChromeCast.Desktop.AudioStreamer\KlangHub.csproj", "{4133DCC6-8CBF-4E67-B798-2EE414A5726C}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup Project\Setup.vdproj", "{0C67E244-6F3C-42C6-858E-F244541039A1}"
 EndProject

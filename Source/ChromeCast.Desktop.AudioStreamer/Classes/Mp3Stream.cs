@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
+using KlangHub.Application.Interfaces;
 using NAudio.Lame;
 using NAudio.Wave;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     /// <summary>
     /// MP3 encode a WAV stream.

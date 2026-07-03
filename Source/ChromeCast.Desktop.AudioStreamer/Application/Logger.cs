@@ -1,7 +1,7 @@
 ﻿using System;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
+using KlangHub.Application.Interfaces;
 
-namespace ChromeCast.Desktop.AudioStreamer.Application
+namespace KlangHub.Application
 {
     public class Logger : ILogger
     {

@@ -2,12 +2,12 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Discover;
-using ChromeCast.Desktop.AudioStreamer.Streaming;
+using KlangHub.Classes;
+using KlangHub.Discover;
+using KlangHub.Streaming;
 using NAudio.Wave;
 
-namespace ChromeCast.Desktop.AudioStreamer.Application.Interfaces
+namespace KlangHub.Application.Interfaces
 {
     public interface IApplicationLogic
     {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net.Sockets;
 using NAudio.Wave;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
+using KlangHub.Application.Interfaces;
 using System.Collections.Generic;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Discover;
+using KlangHub.Classes;
+using KlangHub.Discover;
 
-namespace ChromeCast.Desktop.AudioStreamer.Application
+namespace KlangHub.Application
 {
     public interface IDevices
     {

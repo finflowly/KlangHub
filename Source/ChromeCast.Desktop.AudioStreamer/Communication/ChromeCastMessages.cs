@@ -2,12 +2,12 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using ChromeCast.Desktop.AudioStreamer.ProtocolBuffer;
-using ChromeCast.Desktop.AudioStreamer.Communication.Classes;
-using ChromeCast.Desktop.AudioStreamer.Communication.Interfaces;
+using KlangHub.ProtocolBuffer;
+using KlangHub.Communication.Classes;
+using KlangHub.Communication.Interfaces;
 using System.Text.Json;
 
-namespace ChromeCast.Desktop.AudioStreamer.Communication
+namespace KlangHub.Communication
 {
     /// <summary>
     /// Classes used to send messages to a Chromecast device.

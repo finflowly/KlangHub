@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     /// <summary>
     /// Represents a PC's network adapter.

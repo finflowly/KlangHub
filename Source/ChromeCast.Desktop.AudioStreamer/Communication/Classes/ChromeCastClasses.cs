@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ChromeCast.Desktop.AudioStreamer.Communication.Classes
+namespace KlangHub.Communication.Classes
 {
     /// <summary>
     /// Classes used for messages received from a Chromecast device.

@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualBasic.ApplicationServices;
 using System.Windows.Forms;
-using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.Streaming;
-using ChromeCast.Desktop.AudioStreamer.Discover;
+using KlangHub.Application;
+using KlangHub.Streaming;
+using KlangHub.Discover;
 
-namespace ChromeCast.Desktop.AudioStreamer
+namespace KlangHub
 {
     static class Program
     {

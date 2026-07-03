@@ -5,11 +5,11 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Communication.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.ProtocolBuffer;
+using KlangHub.Application.Interfaces;
+using KlangHub.Communication.Interfaces;
+using KlangHub.ProtocolBuffer;
 
-namespace ChromeCast.Desktop.AudioStreamer.Communication
+namespace KlangHub.Communication
 {
     public class DeviceConnection : IDeviceConnection, IDisposable
     {

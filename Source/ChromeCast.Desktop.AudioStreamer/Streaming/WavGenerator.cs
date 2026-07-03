@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace ChromeCast.Desktop.AudioStreamer.Streaming
+namespace KlangHub.Streaming
 {
     /// <summary>
     /// A class that plays generated wav content.

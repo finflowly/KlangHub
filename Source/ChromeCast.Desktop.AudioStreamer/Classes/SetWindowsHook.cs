@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using ChromeCast.Desktop.AudioStreamer.Application;
+using KlangHub.Application;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     public class NativeMethods
     {

@@ -1,4 +1,4 @@
-﻿namespace ChromeCast.Desktop.AudioStreamer
+﻿namespace KlangHub
 {
     partial class MainForm
     {

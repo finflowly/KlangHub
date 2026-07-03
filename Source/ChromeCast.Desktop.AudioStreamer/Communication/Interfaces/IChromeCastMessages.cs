@@ -1,7 +1,7 @@
-﻿using ChromeCast.Desktop.AudioStreamer.Communication.Classes;
-using ChromeCast.Desktop.AudioStreamer.ProtocolBuffer;
+﻿using KlangHub.Communication.Classes;
+using KlangHub.ProtocolBuffer;
 
-namespace ChromeCast.Desktop.AudioStreamer.Communication.Interfaces
+namespace KlangHub.Communication.Interfaces
 {
     public interface IChromeCastMessages
     {

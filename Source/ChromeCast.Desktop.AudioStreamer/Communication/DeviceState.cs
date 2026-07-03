@@ -1,4 +1,4 @@
-﻿namespace ChromeCast.Desktop.AudioStreamer.Communication
+﻿namespace KlangHub.Communication
 {
     public enum DeviceState
     {

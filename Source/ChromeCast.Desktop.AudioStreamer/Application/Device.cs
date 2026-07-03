@@ -2,21 +2,21 @@
 using System.Net.Sockets;
 using System.Windows.Forms;
 using NAudio.Wave;
-using ChromeCast.Desktop.AudioStreamer.Communication;
-using ChromeCast.Desktop.AudioStreamer.Communication.Classes;
-using ChromeCast.Desktop.AudioStreamer.UserControls;
-using ChromeCast.Desktop.AudioStreamer.Streaming.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Communication.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Streaming;
-using ChromeCast.Desktop.AudioStreamer.ProtocolBuffer;
-using ChromeCast.Desktop.AudioStreamer.Discover;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
+using KlangHub.Communication;
+using KlangHub.Communication.Classes;
+using KlangHub.UserControls;
+using KlangHub.Streaming.Interfaces;
+using KlangHub.Communication.Interfaces;
+using KlangHub.Classes;
+using KlangHub.Streaming;
+using KlangHub.ProtocolBuffer;
+using KlangHub.Discover;
+using KlangHub.Application.Interfaces;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Text.Json;
 
-namespace ChromeCast.Desktop.AudioStreamer.Application
+namespace KlangHub.Application
 {
     /// <summary>
     /// Device represents a Chromecast device, or a Chromecast group.

@@ -6,7 +6,7 @@ using protB = global::Google.ProtocolBuffers;
 using protBC = global::Google.ProtocolBuffers.Collections;
 using protBD = global::Google.ProtocolBuffers.Descriptors;
 using collG = global::System.Collections.Generic;
-namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
+namespace KlangHub.ProtocolBuffer {
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -71,11 +71,11 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
     
     public const int ProtocolVersionFieldNumber = 1;
     private bool hasProtocolVersion;
-    private global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.ProtocolVersion protocolVersion_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.ProtocolVersion.CASTV2_1_0;
+    private global::KlangHub.ProtocolBuffer.CastMessage.Types.ProtocolVersion protocolVersion_ = global::KlangHub.ProtocolBuffer.CastMessage.Types.ProtocolVersion.CASTV2_1_0;
     public bool HasProtocolVersion {
       get { return hasProtocolVersion; }
     }
-    public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.ProtocolVersion ProtocolVersion {
+    public global::KlangHub.ProtocolBuffer.CastMessage.Types.ProtocolVersion ProtocolVersion {
       get { return protocolVersion_; }
     }
     
@@ -111,11 +111,11 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
     
     public const int PayloadTypeFieldNumber = 5;
     private bool hasPayloadType;
-    private global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.PayloadType payloadType_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.PayloadType.STRING;
+    private global::KlangHub.ProtocolBuffer.CastMessage.Types.PayloadType payloadType_ = global::KlangHub.ProtocolBuffer.CastMessage.Types.PayloadType.STRING;
     public bool HasPayloadType {
       get { return hasPayloadType; }
     }
-    public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.PayloadType PayloadType {
+    public global::KlangHub.ProtocolBuffer.CastMessage.Types.PayloadType PayloadType {
       get { return payloadType_; }
     }
     
@@ -344,7 +344,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override CastMessage DefaultInstanceForType {
-        get { return global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.DefaultInstance; }
+        get { return global::KlangHub.ProtocolBuffer.CastMessage.DefaultInstance; }
       }
       
       public override CastMessage BuildPartial() {
@@ -365,7 +365,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override Builder MergeFrom(CastMessage other) {
-        if (other == global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.DefaultInstance) return this;
+        if (other == global::KlangHub.ProtocolBuffer.CastMessage.DefaultInstance) return this;
         PrepareBuilder();
         if (other.HasProtocolVersion) {
           ProtocolVersion = other.ProtocolVersion;
@@ -466,11 +466,11 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public bool HasProtocolVersion {
        get { return result.hasProtocolVersion; }
       }
-      public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.ProtocolVersion ProtocolVersion {
+      public global::KlangHub.ProtocolBuffer.CastMessage.Types.ProtocolVersion ProtocolVersion {
         get { return result.ProtocolVersion; }
         set { SetProtocolVersion(value); }
       }
-      public Builder SetProtocolVersion(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.ProtocolVersion value) {
+      public Builder SetProtocolVersion(global::KlangHub.ProtocolBuffer.CastMessage.Types.ProtocolVersion value) {
         PrepareBuilder();
         result.hasProtocolVersion = true;
         result.protocolVersion_ = value;
@@ -479,7 +479,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public Builder ClearProtocolVersion() {
         PrepareBuilder();
         result.hasProtocolVersion = false;
-        result.protocolVersion_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.ProtocolVersion.CASTV2_1_0;
+        result.protocolVersion_ = global::KlangHub.ProtocolBuffer.CastMessage.Types.ProtocolVersion.CASTV2_1_0;
         return this;
       }
       
@@ -549,11 +549,11 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public bool HasPayloadType {
        get { return result.hasPayloadType; }
       }
-      public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.PayloadType PayloadType {
+      public global::KlangHub.ProtocolBuffer.CastMessage.Types.PayloadType PayloadType {
         get { return result.PayloadType; }
         set { SetPayloadType(value); }
       }
-      public Builder SetPayloadType(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.PayloadType value) {
+      public Builder SetPayloadType(global::KlangHub.ProtocolBuffer.CastMessage.Types.PayloadType value) {
         PrepareBuilder();
         result.hasPayloadType = true;
         result.payloadType_ = value;
@@ -562,7 +562,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public Builder ClearPayloadType() {
         PrepareBuilder();
         result.hasPayloadType = false;
-        result.payloadType_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.CastMessage.Types.PayloadType.STRING;
+        result.payloadType_ = global::KlangHub.ProtocolBuffer.CastMessage.Types.PayloadType.STRING;
         return this;
       }
       
@@ -609,7 +609,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
     }
     static CastMessage() {
-      object.ReferenceEquals(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
+      object.ReferenceEquals(global::KlangHub.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
     }
   }
   
@@ -770,7 +770,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override AuthChallenge DefaultInstanceForType {
-        get { return global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge.DefaultInstance; }
+        get { return global::KlangHub.ProtocolBuffer.AuthChallenge.DefaultInstance; }
       }
       
       public override AuthChallenge BuildPartial() {
@@ -791,7 +791,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override Builder MergeFrom(AuthChallenge other) {
-        if (other == global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge.DefaultInstance) return this;
+        if (other == global::KlangHub.ProtocolBuffer.AuthChallenge.DefaultInstance) return this;
         PrepareBuilder();
         return this;
       }
@@ -833,7 +833,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       
     }
     static AuthChallenge() {
-      object.ReferenceEquals(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
+      object.ReferenceEquals(global::KlangHub.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
     }
   }
   
@@ -1064,7 +1064,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override AuthResponse DefaultInstanceForType {
-        get { return global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse.DefaultInstance; }
+        get { return global::KlangHub.ProtocolBuffer.AuthResponse.DefaultInstance; }
       }
       
       public override AuthResponse BuildPartial() {
@@ -1085,7 +1085,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override Builder MergeFrom(AuthResponse other) {
-        if (other == global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse.DefaultInstance) return this;
+        if (other == global::KlangHub.ProtocolBuffer.AuthResponse.DefaultInstance) return this;
         PrepareBuilder();
         if (other.HasSignature) {
           Signature = other.Signature;
@@ -1222,7 +1222,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
     }
     static AuthResponse() {
-      object.ReferenceEquals(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
+      object.ReferenceEquals(global::KlangHub.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
     }
   }
   
@@ -1263,11 +1263,11 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
     
     public const int ErrorTypeFieldNumber = 1;
     private bool hasErrorType;
-    private global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.Types.ErrorType errorType_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.Types.ErrorType.INTERNAL_ERROR;
+    private global::KlangHub.ProtocolBuffer.AuthError.Types.ErrorType errorType_ = global::KlangHub.ProtocolBuffer.AuthError.Types.ErrorType.INTERNAL_ERROR;
     public bool HasErrorType {
       get { return hasErrorType; }
     }
-    public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.Types.ErrorType ErrorType {
+    public global::KlangHub.ProtocolBuffer.AuthError.Types.ErrorType ErrorType {
       get { return errorType_; }
     }
     
@@ -1418,7 +1418,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override AuthError DefaultInstanceForType {
-        get { return global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.DefaultInstance; }
+        get { return global::KlangHub.ProtocolBuffer.AuthError.DefaultInstance; }
       }
       
       public override AuthError BuildPartial() {
@@ -1439,7 +1439,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override Builder MergeFrom(AuthError other) {
-        if (other == global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.DefaultInstance) return this;
+        if (other == global::KlangHub.ProtocolBuffer.AuthError.DefaultInstance) return this;
         PrepareBuilder();
         if (other.HasErrorType) {
           ErrorType = other.ErrorType;
@@ -1494,11 +1494,11 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public bool HasErrorType {
        get { return result.hasErrorType; }
       }
-      public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.Types.ErrorType ErrorType {
+      public global::KlangHub.ProtocolBuffer.AuthError.Types.ErrorType ErrorType {
         get { return result.ErrorType; }
         set { SetErrorType(value); }
       }
-      public Builder SetErrorType(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.Types.ErrorType value) {
+      public Builder SetErrorType(global::KlangHub.ProtocolBuffer.AuthError.Types.ErrorType value) {
         PrepareBuilder();
         result.hasErrorType = true;
         result.errorType_ = value;
@@ -1507,12 +1507,12 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public Builder ClearErrorType() {
         PrepareBuilder();
         result.hasErrorType = false;
-        result.errorType_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.Types.ErrorType.INTERNAL_ERROR;
+        result.errorType_ = global::KlangHub.ProtocolBuffer.AuthError.Types.ErrorType.INTERNAL_ERROR;
         return this;
       }
     }
     static AuthError() {
-      object.ReferenceEquals(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
+      object.ReferenceEquals(global::KlangHub.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
     }
   }
   
@@ -1538,32 +1538,32 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
     
     public const int ChallengeFieldNumber = 1;
     private bool hasChallenge;
-    private global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge challenge_;
+    private global::KlangHub.ProtocolBuffer.AuthChallenge challenge_;
     public bool HasChallenge {
       get { return hasChallenge; }
     }
-    public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge Challenge {
-      get { return challenge_ ?? global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge.DefaultInstance; }
+    public global::KlangHub.ProtocolBuffer.AuthChallenge Challenge {
+      get { return challenge_ ?? global::KlangHub.ProtocolBuffer.AuthChallenge.DefaultInstance; }
     }
     
     public const int ResponseFieldNumber = 2;
     private bool hasResponse;
-    private global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse response_;
+    private global::KlangHub.ProtocolBuffer.AuthResponse response_;
     public bool HasResponse {
       get { return hasResponse; }
     }
-    public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse Response {
-      get { return response_ ?? global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse.DefaultInstance; }
+    public global::KlangHub.ProtocolBuffer.AuthResponse Response {
+      get { return response_ ?? global::KlangHub.ProtocolBuffer.AuthResponse.DefaultInstance; }
     }
     
     public const int ErrorFieldNumber = 3;
     private bool hasError;
-    private global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError error_;
+    private global::KlangHub.ProtocolBuffer.AuthError error_;
     public bool HasError {
       get { return hasError; }
     }
-    public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError Error {
-      get { return error_ ?? global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.DefaultInstance; }
+    public global::KlangHub.ProtocolBuffer.AuthError Error {
+      get { return error_ ?? global::KlangHub.ProtocolBuffer.AuthError.DefaultInstance; }
     }
     
     public override bool IsInitialized {
@@ -1736,7 +1736,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override DeviceAuthMessage DefaultInstanceForType {
-        get { return global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.DeviceAuthMessage.DefaultInstance; }
+        get { return global::KlangHub.ProtocolBuffer.DeviceAuthMessage.DefaultInstance; }
       }
       
       public override DeviceAuthMessage BuildPartial() {
@@ -1757,7 +1757,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
       
       public override Builder MergeFrom(DeviceAuthMessage other) {
-        if (other == global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.DeviceAuthMessage.DefaultInstance) return this;
+        if (other == global::KlangHub.ProtocolBuffer.DeviceAuthMessage.DefaultInstance) return this;
         PrepareBuilder();
         if (other.HasChallenge) {
           MergeChallenge(other.Challenge);
@@ -1801,7 +1801,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
               break;
             }
             case 10: {
-              global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge.Builder subBuilder = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge.CreateBuilder();
+              global::KlangHub.ProtocolBuffer.AuthChallenge.Builder subBuilder = global::KlangHub.ProtocolBuffer.AuthChallenge.CreateBuilder();
               if (result.hasChallenge) {
                 subBuilder.MergeFrom(Challenge);
               }
@@ -1810,7 +1810,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
               break;
             }
             case 18: {
-              global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse.Builder subBuilder = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse.CreateBuilder();
+              global::KlangHub.ProtocolBuffer.AuthResponse.Builder subBuilder = global::KlangHub.ProtocolBuffer.AuthResponse.CreateBuilder();
               if (result.hasResponse) {
                 subBuilder.MergeFrom(Response);
               }
@@ -1819,7 +1819,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
               break;
             }
             case 26: {
-              global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.Builder subBuilder = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.CreateBuilder();
+              global::KlangHub.ProtocolBuffer.AuthError.Builder subBuilder = global::KlangHub.ProtocolBuffer.AuthError.CreateBuilder();
               if (result.hasError) {
                 subBuilder.MergeFrom(Error);
               }
@@ -1837,30 +1837,30 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public bool HasChallenge {
        get { return result.hasChallenge; }
       }
-      public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge Challenge {
+      public global::KlangHub.ProtocolBuffer.AuthChallenge Challenge {
         get { return result.Challenge; }
         set { SetChallenge(value); }
       }
-      public Builder SetChallenge(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge value) {
+      public Builder SetChallenge(global::KlangHub.ProtocolBuffer.AuthChallenge value) {
         protB::ThrowHelper.ThrowIfNull(value, "value");
         PrepareBuilder();
         result.hasChallenge = true;
         result.challenge_ = value;
         return this;
       }
-      public Builder SetChallenge(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge.Builder builderForValue) {
+      public Builder SetChallenge(global::KlangHub.ProtocolBuffer.AuthChallenge.Builder builderForValue) {
         protB::ThrowHelper.ThrowIfNull(builderForValue, "builderForValue");
         PrepareBuilder();
         result.hasChallenge = true;
         result.challenge_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeChallenge(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge value) {
+      public Builder MergeChallenge(global::KlangHub.ProtocolBuffer.AuthChallenge value) {
         protB::ThrowHelper.ThrowIfNull(value, "value");
         PrepareBuilder();
         if (result.hasChallenge &&
-            result.challenge_ != global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge.DefaultInstance) {
-            result.challenge_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthChallenge.CreateBuilder(result.challenge_).MergeFrom(value).BuildPartial();
+            result.challenge_ != global::KlangHub.ProtocolBuffer.AuthChallenge.DefaultInstance) {
+            result.challenge_ = global::KlangHub.ProtocolBuffer.AuthChallenge.CreateBuilder(result.challenge_).MergeFrom(value).BuildPartial();
         } else {
           result.challenge_ = value;
         }
@@ -1877,30 +1877,30 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public bool HasResponse {
        get { return result.hasResponse; }
       }
-      public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse Response {
+      public global::KlangHub.ProtocolBuffer.AuthResponse Response {
         get { return result.Response; }
         set { SetResponse(value); }
       }
-      public Builder SetResponse(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse value) {
+      public Builder SetResponse(global::KlangHub.ProtocolBuffer.AuthResponse value) {
         protB::ThrowHelper.ThrowIfNull(value, "value");
         PrepareBuilder();
         result.hasResponse = true;
         result.response_ = value;
         return this;
       }
-      public Builder SetResponse(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse.Builder builderForValue) {
+      public Builder SetResponse(global::KlangHub.ProtocolBuffer.AuthResponse.Builder builderForValue) {
         protB::ThrowHelper.ThrowIfNull(builderForValue, "builderForValue");
         PrepareBuilder();
         result.hasResponse = true;
         result.response_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeResponse(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse value) {
+      public Builder MergeResponse(global::KlangHub.ProtocolBuffer.AuthResponse value) {
         protB::ThrowHelper.ThrowIfNull(value, "value");
         PrepareBuilder();
         if (result.hasResponse &&
-            result.response_ != global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse.DefaultInstance) {
-            result.response_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthResponse.CreateBuilder(result.response_).MergeFrom(value).BuildPartial();
+            result.response_ != global::KlangHub.ProtocolBuffer.AuthResponse.DefaultInstance) {
+            result.response_ = global::KlangHub.ProtocolBuffer.AuthResponse.CreateBuilder(result.response_).MergeFrom(value).BuildPartial();
         } else {
           result.response_ = value;
         }
@@ -1917,30 +1917,30 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       public bool HasError {
        get { return result.hasError; }
       }
-      public global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError Error {
+      public global::KlangHub.ProtocolBuffer.AuthError Error {
         get { return result.Error; }
         set { SetError(value); }
       }
-      public Builder SetError(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError value) {
+      public Builder SetError(global::KlangHub.ProtocolBuffer.AuthError value) {
         protB::ThrowHelper.ThrowIfNull(value, "value");
         PrepareBuilder();
         result.hasError = true;
         result.error_ = value;
         return this;
       }
-      public Builder SetError(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.Builder builderForValue) {
+      public Builder SetError(global::KlangHub.ProtocolBuffer.AuthError.Builder builderForValue) {
         protB::ThrowHelper.ThrowIfNull(builderForValue, "builderForValue");
         PrepareBuilder();
         result.hasError = true;
         result.error_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeError(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError value) {
+      public Builder MergeError(global::KlangHub.ProtocolBuffer.AuthError value) {
         protB::ThrowHelper.ThrowIfNull(value, "value");
         PrepareBuilder();
         if (result.hasError &&
-            result.error_ != global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.DefaultInstance) {
-            result.error_ = global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.AuthError.CreateBuilder(result.error_).MergeFrom(value).BuildPartial();
+            result.error_ != global::KlangHub.ProtocolBuffer.AuthError.DefaultInstance) {
+            result.error_ = global::KlangHub.ProtocolBuffer.AuthError.CreateBuilder(result.error_).MergeFrom(value).BuildPartial();
         } else {
           result.error_ = value;
         }
@@ -1955,7 +1955,7 @@ namespace ChromeCast.Desktop.AudioStreamer.ProtocolBuffer {
       }
     }
     static DeviceAuthMessage() {
-      object.ReferenceEquals(global::ChromeCast.Desktop.AudioStreamer.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
+      object.ReferenceEquals(global::KlangHub.ProtocolBuffer.ChromeCastAudioStream.Descriptor, null);
     }
   }
   
