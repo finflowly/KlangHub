@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio.Wave;
 using KlangHub.Classes;
+using KlangHub.Platform.Audio;
 using KlangHub.Application.Interfaces;
 using KlangHub.Streaming.Interfaces;
 using KlangHub.Discover.Interfaces;
@@ -34,7 +35,7 @@ namespace KlangHub.Application
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
         private UserSettings settings = new UserSettings();
-        private Mp3Stream Mp3Stream = null;
+        private IAudioEncoder mp3Encoder = null;
         private SupportedStreamFormat StreamFormatSelected = SupportedStreamFormat.Mp3_320;
         private string Culture;
         private readonly ILogger logger;
@@ -112,12 +113,12 @@ namespace KlangHub.Application
                 !StreamFormatSelected.Equals(SupportedStreamFormat.Wav_24bit) &&
                 !StreamFormatSelected.Equals(SupportedStreamFormat.Wav_32bit))
             {
-                if (Mp3Stream == null)
+                if (mp3Encoder == null)
                 {
-                    Mp3Stream = new Mp3Stream(formatIn, StreamFormatSelected, logger);
+                    mp3Encoder = new Mp3Encoder(formatIn, StreamFormatSelected, logger);
                 }
-                Mp3Stream.Encode(dataToSendIn.ToArray());
-                dataToSendIn = Mp3Stream.Read();
+                mp3Encoder.Encode(dataToSendIn.ToArray());
+                dataToSendIn = mp3Encoder.Read();
             }
             if (dataToSendIn.Length > 0)
             {
@@ -130,7 +131,7 @@ namespace KlangHub.Application
         /// </summary>
         public void ClearMp3Buffer()
         {
-            Mp3Stream = null;
+            mp3Encoder = null;
         }
 
         /// <summary>
@@ -228,7 +229,7 @@ namespace KlangHub.Application
             {
                 logger.Log($"Set stream format to {formatIn}");
                 StreamFormatSelected = formatIn;
-                Mp3Stream = null;
+                mp3Encoder = null;
 
                 devices.Stop();
                 devices.Start();
@@ -515,7 +516,7 @@ namespace KlangHub.Application
             devices?.Dispose();
             streamingRequestListener?.StopListening();
             streamingRequestListener?.Dispose();
-            Mp3Stream?.Dispose();
+            mp3Encoder?.Dispose();
             NativeMethods.StopSetWindowsHooks();
             if (notifyIcon != null) notifyIcon.Visible = false;
             notifyIcon?.Dispose();
