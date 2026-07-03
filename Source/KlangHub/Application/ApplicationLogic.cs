@@ -31,6 +31,7 @@ namespace KlangHub.Application
         private readonly IStreamingRequestsListener streamingRequestListener;
         private readonly IDiscoverDevices discoverDevices;
         private readonly IDeviceStatusTimer deviceStatusTimer;
+        private readonly ICastProvider castProvider;
         private NotifyIcon notifyIcon;
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
@@ -47,7 +48,7 @@ namespace KlangHub.Application
         public ApplicationLogic(IDevices devicesIn, IDiscoverDevices discoverDevicesIn
             , IConfiguration configurationIn
             , IStreamingRequestsListener streamingRequestListenerIn, IDeviceStatusTimer deviceStatusTimerIn
-            , ILogger loggerIn)
+            , ILogger loggerIn, ICastProvider castProviderIn)
         {
             devices = devicesIn;
             devices.SetCallback(OnAddDevice);
@@ -56,6 +57,7 @@ namespace KlangHub.Application
             streamingRequestListener = streamingRequestListenerIn;
             deviceStatusTimer = deviceStatusTimerIn;
             logger = loggerIn;
+            castProvider = castProviderIn;
         }
 
         /// <summary>
