@@ -927,7 +927,7 @@
             Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             Name = "MainForm";
             Padding = new System.Windows.Forms.Padding(16, 20, 16, 20);
-            Text = "Chromecast Desktop Audio Streamer";
+            Text = "KlangHub";
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             Resize += MainForm_Resize;
