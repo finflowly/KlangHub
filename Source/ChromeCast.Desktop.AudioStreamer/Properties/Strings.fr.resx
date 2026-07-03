@@ -157,7 +157,7 @@
     <value>Montrer la fenêtre au démarrage</value>
   </data>
   <data name="ChromeCast_StreamTitle" xml:space="preserve">
-    <value>Desktop Audio Streamer</value>
+    <value>KlangHub</value>
   </data>
   <data name="Closed" xml:space="preserve">
     <value>Fermé</value>
@@ -241,7 +241,7 @@
     <value>sortie</value>
   </data>
   <data name="MainForm_Text" xml:space="preserve">
-    <value>Desktop Audio Streamer</value>
+    <value>KlangHub</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
     <value>Aucun périphérique d'enregistrement trouvé.</value>
