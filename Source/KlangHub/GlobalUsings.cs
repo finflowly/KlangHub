@@ -4,3 +4,4 @@
 // Extend this list as new Core.* layers are introduced (Abstractions, Configuration, ...).
 global using KlangHub.Core.Models;
 global using KlangHub.Core.Audio;
+global using KlangHub.Core.Casting;
