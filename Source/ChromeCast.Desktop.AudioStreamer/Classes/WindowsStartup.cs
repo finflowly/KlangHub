@@ -13,10 +13,12 @@ namespace KlangHub.Classes
                 RegistryKey rk = Registry.CurrentUser.OpenSubKey 
                     ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
+                rk.DeleteValue("Desktop Audio Streamer", false);
+
                 if (value)
-                    rk.SetValue("Desktop Audio Streamer", System.Windows.Forms.Application.ExecutablePath);
+                    rk.SetValue("KlangHub", System.Windows.Forms.Application.ExecutablePath);
                 else
-                    rk.DeleteValue("Desktop Audio Streamer", false);
+                    rk.DeleteValue("KlangHub", false);
             }
             catch (Exception ex)
             {
