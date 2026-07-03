@@ -74,13 +74,14 @@ namespace KlangHub
             cmbBufferInSeconds.SelectedIndexChanged += CmbBufferInSeconds_SelectedIndexChanged;
 
             Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            // Assembly.Location is empty in single-file/published builds; read the version from metadata instead.
+            var appVersion = assembly.GetName().Version?.ToString() ?? string.Empty;
             FillStreamFormats();
             FillFilterDevices();
-            lblVersion.Text = $"{Properties.Strings.Version} {fvi.FileVersion}";
+            lblVersion.Text = $"{Properties.Strings.Version} {appVersion}";
             applicationLogic.StartTask(() =>
             {
-                CheckForNewVersion(fvi.FileVersion);
+                CheckForNewVersion(appVersion);
             });
             captureEngine.DataAvailable += (s, frame) => applicationLogic.OnRecordingDataAvailable(frame);
             captureEngine.LevelSampled += (s, bytes) => ShowWavMeterValue(bytes);
