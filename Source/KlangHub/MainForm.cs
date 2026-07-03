@@ -541,6 +541,10 @@ namespace KlangHub
             {
                 cmbRecordingDevice.SelectedIndexChanged += CmbRecordingDevice_SelectedIndexChanged;
                 eventHandlerAdded = true;
+                // The combo was just populated and the saved/default device restored. Point the
+                // engine at that device now: at Start() the combo was still empty, so the engine
+                // is on its first-working fallback rather than the device the user actually wants.
+                captureEngine.Apply(BuildCaptureSettings());
             }
         }
 
