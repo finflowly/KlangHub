@@ -206,20 +206,20 @@ namespace KlangHub.Streaming
                 var nrChannels = convertMultiChannelToStereo ? soundIn.WaveFormat.Channels : 2;
                 switch (selectedFormat)
                 {
-                    case Classes.SupportedStreamFormat.Wav:
+                    case SupportedStreamFormat.Wav:
                         soundIn.WaveFormat = new WaveFormat(44100, 16, nrChannels);
                         break;
-                    case Classes.SupportedStreamFormat.Mp3_320:
-                    case Classes.SupportedStreamFormat.Mp3_128:
+                    case SupportedStreamFormat.Mp3_320:
+                    case SupportedStreamFormat.Mp3_128:
                         soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 16, 2);
                         break;
-                    case Classes.SupportedStreamFormat.Wav_16bit:
+                    case SupportedStreamFormat.Wav_16bit:
                         soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 16, nrChannels);
                         break;
-                    case Classes.SupportedStreamFormat.Wav_24bit:
+                    case SupportedStreamFormat.Wav_24bit:
                         soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 24, nrChannels);
                         break;
-                    case Classes.SupportedStreamFormat.Wav_32bit:
+                    case SupportedStreamFormat.Wav_32bit:
                         soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 32, nrChannels);
                         break;
                     default:

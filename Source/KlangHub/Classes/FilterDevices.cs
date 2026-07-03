@@ -26,10 +26,4 @@ namespace KlangHub.Classes
         }
     }
 
-    public enum FilterDevicesEnum
-    {
-        ShowAll,
-        DevicesOnly,
-        GroupsOnly
-    }
 }

@@ -1,4 +1,4 @@
-﻿namespace KlangHub.Classes
+﻿namespace KlangHub.Core.Models
 {
     /// <summary>
     /// Enumeration of supported stream formats.
