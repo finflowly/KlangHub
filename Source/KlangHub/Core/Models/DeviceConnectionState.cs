@@ -1,4 +1,4 @@
-﻿namespace KlangHub.Communication
+﻿namespace KlangHub.Core.Models
 {
     /// <summary>
     /// States for the socket connection used for control messages.

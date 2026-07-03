@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace KlangHub.Classes
+namespace KlangHub.Core.Models
 {
     /// <summary>
     /// Represents a PC's network adapter.
