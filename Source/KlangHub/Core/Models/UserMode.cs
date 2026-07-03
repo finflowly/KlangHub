@@ -1,4 +1,4 @@
-﻿namespace KlangHub.Application
+﻿namespace KlangHub.Core.Models
 {
     public enum UserMode
     {
