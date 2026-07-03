@@ -85,6 +85,7 @@ namespace KlangHub.Platform.Audio
 
             settings = settingsIn;
             StopRecording();
+            StartSilenceCheckTimer();
             return StartConfiguredDevice();
         }
 
