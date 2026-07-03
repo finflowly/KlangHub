@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Communication;
-using ChromeCast.Desktop.AudioStreamer.Communication.Classes;
+using KlangHub.Application;
+using KlangHub.Classes;
+using KlangHub.Communication;
+using KlangHub.Communication.Classes;
 
-namespace ChromeCast.Desktop.AudioStreamer.UserControls
+namespace KlangHub.UserControls
 {
     public partial class DeviceControl : UserControl
     {

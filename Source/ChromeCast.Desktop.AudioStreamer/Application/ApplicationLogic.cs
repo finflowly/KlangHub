@@ -4,23 +4,23 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio.Wave;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Streaming.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Discover.Interfaces;
+using KlangHub.Classes;
+using KlangHub.Application.Interfaces;
+using KlangHub.Streaming.Interfaces;
+using KlangHub.Discover.Interfaces;
 using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
-using ChromeCast.Desktop.AudioStreamer.Discover;
+using KlangHub.Discover;
 using System.Threading;
-using ChromeCast.Desktop.AudioStreamer.Rest;
+using KlangHub.Rest;
 using System.Configuration;
 using System.IO;
 using System.Diagnostics;
-using ChromeCast.Desktop.AudioStreamer.Streaming;
+using KlangHub.Streaming;
 
-namespace ChromeCast.Desktop.AudioStreamer.Application
+namespace KlangHub.Application
 {
     public class ApplicationLogic : IApplicationLogic, IDisposable
     {

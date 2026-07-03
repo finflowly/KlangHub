@@ -1,9 +1,9 @@
-﻿using ChromeCast.Desktop.AudioStreamer.Discover;
+﻿using KlangHub.Discover;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     /// <summary>
     /// Class to keep, save and load the user settings.

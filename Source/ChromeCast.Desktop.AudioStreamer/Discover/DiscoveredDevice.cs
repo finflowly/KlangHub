@@ -1,8 +1,8 @@
-﻿using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.Communication;
+﻿using KlangHub.Application;
+using KlangHub.Communication;
 using System.Xml.Serialization;
 
-namespace ChromeCast.Desktop.AudioStreamer.Discover
+namespace KlangHub.Discover
 {
     public class DiscoveredDevice
     {

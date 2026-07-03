@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChromeCast.Desktop.AudioStreamer.Communication.Classes
+namespace KlangHub.Communication.Classes
 {
     public class VolumeSetItem
     {

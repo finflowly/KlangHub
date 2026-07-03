@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChromeCast.Desktop.AudioStreamer.Application.Interfaces
+namespace KlangHub.Application.Interfaces
 {
     public interface IDeviceStatusTimer
     {

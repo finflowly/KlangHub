@@ -1,10 +1,10 @@
 ﻿using System.Net.Sockets;
-using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Classes;
+using KlangHub.Application;
+using KlangHub.Application.Interfaces;
+using KlangHub.Classes;
 using NAudio.Wave;
 
-namespace ChromeCast.Desktop.AudioStreamer.Streaming.Interfaces
+namespace KlangHub.Streaming.Interfaces
 {
     public interface IStreamingConnection
     {

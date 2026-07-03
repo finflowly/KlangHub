@@ -1,4 +1,4 @@
-﻿namespace ChromeCast.Desktop.AudioStreamer.Application
+﻿namespace KlangHub.Application
 {
     public enum UserMode
     {

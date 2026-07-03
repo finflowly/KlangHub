@@ -1,7 +1,7 @@
 ﻿using System;
-using ChromeCast.Desktop.AudioStreamer.ProtocolBuffer;
+using KlangHub.ProtocolBuffer;
 
-namespace ChromeCast.Desktop.AudioStreamer.Communication.Interfaces
+namespace KlangHub.Communication.Interfaces
 {
     public interface IDeviceConnection
     {

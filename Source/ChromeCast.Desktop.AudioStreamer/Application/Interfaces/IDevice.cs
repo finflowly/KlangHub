@@ -2,15 +2,15 @@
 using System.Net.Sockets;
 using System.Windows.Forms;
 using NAudio.Wave;
-using ChromeCast.Desktop.AudioStreamer.UserControls;
-using ChromeCast.Desktop.AudioStreamer.Communication;
-using ChromeCast.Desktop.AudioStreamer.Communication.Classes;
-using ChromeCast.Desktop.AudioStreamer.ProtocolBuffer;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Discover;
+using KlangHub.UserControls;
+using KlangHub.Communication;
+using KlangHub.Communication.Classes;
+using KlangHub.ProtocolBuffer;
+using KlangHub.Classes;
+using KlangHub.Discover;
 using System.Threading;
 
-namespace ChromeCast.Desktop.AudioStreamer.Application
+namespace KlangHub.Application
 {
     public interface IDevice
     {

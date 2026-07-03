@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Streaming;
+using KlangHub.Application;
+using KlangHub.Classes;
+using KlangHub.Streaming;
 
-namespace ChromeCast.Desktop.AudioStreamer
+namespace KlangHub
 {
     public interface IMainForm
     {

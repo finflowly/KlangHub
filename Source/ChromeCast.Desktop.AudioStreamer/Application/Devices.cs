@@ -4,12 +4,12 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using NAudio.Wave;
-using ChromeCast.Desktop.AudioStreamer.Communication;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Discover;
+using KlangHub.Communication;
+using KlangHub.Classes;
+using KlangHub.Application.Interfaces;
+using KlangHub.Discover;
 
-namespace ChromeCast.Desktop.AudioStreamer.Application
+namespace KlangHub.Application
 {
     public class Devices : IDevices
     {

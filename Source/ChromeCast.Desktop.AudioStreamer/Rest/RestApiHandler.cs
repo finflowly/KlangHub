@@ -1,12 +1,12 @@
-﻿using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
+﻿using KlangHub.Application;
+using KlangHub.Application.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace ChromeCast.Desktop.AudioStreamer.Rest
+namespace KlangHub.Rest
 {
     public static class RestApiHandler
     {

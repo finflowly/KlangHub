@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChromeCast.Desktop.AudioStreamer.Discover.Interfaces
+namespace KlangHub.Discover.Interfaces
 {
     public interface IDiscoverDevices
     {

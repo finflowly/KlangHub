@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
-using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.UserControls;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
+using KlangHub.Application;
+using KlangHub.UserControls;
+using KlangHub.Application.Interfaces;
 using System.Threading.Tasks;
-using ChromeCast.Desktop.AudioStreamer.Classes;
+using KlangHub.Classes;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Linq;
@@ -13,16 +13,16 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Drawing;
-using ChromeCast.Desktop.AudioStreamer.Streaming.Interfaces;
+using KlangHub.Streaming.Interfaces;
 using System.Text;
-using ChromeCast.Desktop.AudioStreamer.Streaming;
+using KlangHub.Streaming;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 
-namespace ChromeCast.Desktop.AudioStreamer
+namespace KlangHub
 {
     public partial class MainForm : Form, IMainForm
     {

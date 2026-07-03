@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using ChromeCast.Desktop.AudioStreamer.Streaming.Interfaces;
+using KlangHub.Streaming.Interfaces;
 using NAudio.Wave;
 using System.Timers;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
+using KlangHub.Application.Interfaces;
 using System.Threading;
 using System.Diagnostics;
 using NAudio.CoreAudioApi;
 
-namespace ChromeCast.Desktop.AudioStreamer.Streaming
+namespace KlangHub.Streaming
 {
     public class LoopbackRecorder : ILoopbackRecorder
     {

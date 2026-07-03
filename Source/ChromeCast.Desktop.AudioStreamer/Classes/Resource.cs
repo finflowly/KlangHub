@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     public static class Resource
     {

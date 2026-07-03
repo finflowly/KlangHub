@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     public static class SystemVolume
     {

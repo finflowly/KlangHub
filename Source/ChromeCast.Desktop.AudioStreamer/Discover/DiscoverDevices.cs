@@ -1,5 +1,5 @@
 ﻿using System;
-using ChromeCast.Desktop.AudioStreamer.Discover.Interfaces;
+using KlangHub.Discover.Interfaces;
 using Tmds.MDns;
 using System.Linq;
 using System.Timers;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 
-namespace ChromeCast.Desktop.AudioStreamer.Discover
+namespace KlangHub.Discover
 {
     public class DiscoverDevices : IDiscoverDevices
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using NAudio.Wave;
 
-namespace ChromeCast.Desktop.AudioStreamer.Streaming.Interfaces
+namespace KlangHub.Streaming.Interfaces
 {
     public interface ILoopbackRecorder
     {

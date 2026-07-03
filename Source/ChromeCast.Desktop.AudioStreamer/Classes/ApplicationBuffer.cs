@@ -1,11 +1,11 @@
-﻿using ChromeCast.Desktop.AudioStreamer.Application;
+﻿using KlangHub.Application;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     public class ApplicationBuffer
     {

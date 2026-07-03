@@ -1,6 +1,6 @@
-﻿using ChromeCast.Desktop.AudioStreamer.Application;
+﻿using KlangHub.Application;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     public static class FilterDevices
     {

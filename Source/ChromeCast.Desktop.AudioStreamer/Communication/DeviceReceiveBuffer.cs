@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using ChromeCast.Desktop.AudioStreamer.ProtocolBuffer;
-using ChromeCast.Desktop.AudioStreamer.Communication.Interfaces;
+using KlangHub.ProtocolBuffer;
+using KlangHub.Communication.Interfaces;
 
-namespace ChromeCast.Desktop.AudioStreamer.Communication
+namespace KlangHub.Communication
 {
     /// <summary>
     /// Receive buffer used by the socket connection used for control messages.

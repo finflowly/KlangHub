@@ -1,4 +1,4 @@
-﻿namespace ChromeCast.Desktop.AudioStreamer.Communication
+﻿namespace KlangHub.Communication
 {
     /// <summary>
     /// States for the socket connection used for control messages.

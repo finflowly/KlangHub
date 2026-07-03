@@ -2,17 +2,17 @@
 using System.Text;
 using System.Net.Sockets;
 using NAudio.Wave;
-using ChromeCast.Desktop.AudioStreamer.Streaming.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Classes;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.Communication;
+using KlangHub.Streaming.Interfaces;
+using KlangHub.Classes;
+using KlangHub.Application.Interfaces;
+using KlangHub.Application;
+using KlangHub.Communication;
 using System.Diagnostics;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ChromeCast.Desktop.AudioStreamer.Streaming
+namespace KlangHub.Streaming
 {
     public class StreamingConnection : IStreamingConnection
     {

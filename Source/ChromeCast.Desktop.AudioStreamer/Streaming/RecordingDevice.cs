@@ -1,6 +1,6 @@
 ﻿using NAudio.CoreAudioApi;
 
-namespace ChromeCast.Desktop.AudioStreamer.Streaming
+namespace KlangHub.Streaming
 {
     public class RecordingDevice
     {

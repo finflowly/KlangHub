@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     /// <summary>
     /// The capabilities of a device.

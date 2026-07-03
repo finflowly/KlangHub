@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace ChromeCast.Desktop.AudioStreamer.Classes
+namespace KlangHub.Classes
 {
     public static class WindowsStartup
     {

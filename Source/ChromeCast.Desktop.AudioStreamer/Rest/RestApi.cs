@@ -3,11 +3,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using ChromeCast.Desktop.AudioStreamer.Application;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Streaming;
+using KlangHub.Application;
+using KlangHub.Application.Interfaces;
+using KlangHub.Streaming;
 
-namespace ChromeCast.Desktop.AudioStreamer.Rest
+namespace KlangHub.Rest
 {
     public class RestApi : IDisposable
     {

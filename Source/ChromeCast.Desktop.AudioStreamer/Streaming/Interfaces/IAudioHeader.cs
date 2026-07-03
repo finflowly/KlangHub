@@ -1,7 +1,7 @@
-﻿using ChromeCast.Desktop.AudioStreamer.Classes;
+﻿using KlangHub.Classes;
 using NAudio.Wave;
 
-namespace ChromeCast.Desktop.AudioStreamer.Streaming.Interfaces
+namespace KlangHub.Streaming.Interfaces
 {
     public interface IAudioHeader
     {

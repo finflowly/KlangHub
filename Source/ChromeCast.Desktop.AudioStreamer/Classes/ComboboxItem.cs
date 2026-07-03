@@ -1,4 +1,4 @@
-﻿namespace ChromeCast.Desktop.AudioStreamer.Classes
+﻿namespace KlangHub.Classes
 {
     /// <summary>
     /// Used for items in a combo box.

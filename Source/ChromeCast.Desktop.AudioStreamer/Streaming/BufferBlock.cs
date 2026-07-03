@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChromeCast.Desktop.AudioStreamer.Streaming
+namespace KlangHub.Streaming
 {
     public class BufferBlock
     {

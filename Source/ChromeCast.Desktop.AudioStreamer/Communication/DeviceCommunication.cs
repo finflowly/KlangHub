@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Linq;
-using ChromeCast.Desktop.AudioStreamer.Communication.Classes;
-using ChromeCast.Desktop.AudioStreamer.ProtocolBuffer;
-using ChromeCast.Desktop.AudioStreamer.Application.Interfaces;
-using ChromeCast.Desktop.AudioStreamer.Communication.Interfaces;
+using KlangHub.Communication.Classes;
+using KlangHub.ProtocolBuffer;
+using KlangHub.Application.Interfaces;
+using KlangHub.Communication.Interfaces;
 using System.Threading.Tasks;
-using ChromeCast.Desktop.AudioStreamer.Application;
+using KlangHub.Application;
 using System.Threading;
 using System.Text.Json;
 
-namespace ChromeCast.Desktop.AudioStreamer.Communication
+namespace KlangHub.Communication
 {
     public class DeviceCommunication : IDeviceCommunication
     {

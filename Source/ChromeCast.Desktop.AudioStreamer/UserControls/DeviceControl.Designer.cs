@@ -1,4 +1,4 @@
-﻿namespace ChromeCast.Desktop.AudioStreamer.UserControls
+﻿namespace KlangHub.UserControls
 {
     partial class DeviceControl
     {
@@ -107,7 +107,7 @@
             this.picturePlayPause.BackColor = System.Drawing.Color.White;
             this.picturePlayPause.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.picturePlayPause.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picturePlayPause.Image = global::ChromeCast.Desktop.AudioStreamer.Properties.Resources.Play;
+            this.picturePlayPause.Image = global::KlangHub.Properties.Resources.Play;
             this.picturePlayPause.Location = new System.Drawing.Point(5, 6);
             this.picturePlayPause.Margin = new System.Windows.Forms.Padding(0);
             this.picturePlayPause.Name = "picturePlayPause";
@@ -121,7 +121,7 @@
             // 
             // pictureGroup
             // 
-            this.pictureGroup.Image = global::ChromeCast.Desktop.AudioStreamer.Properties.Resources.Group;
+            this.pictureGroup.Image = global::KlangHub.Properties.Resources.Group;
             this.pictureGroup.Location = new System.Drawing.Point(283, 112);
             this.pictureGroup.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureGroup.Name = "pictureGroup";
@@ -132,7 +132,7 @@
             // pictureVolumeMute
             // 
             this.pictureVolumeMute.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureVolumeMute.Image = global::ChromeCast.Desktop.AudioStreamer.Properties.Resources.Unmute;
+            this.pictureVolumeMute.Image = global::KlangHub.Properties.Resources.Unmute;
             this.pictureVolumeMute.Location = new System.Drawing.Point(8, 52);
             this.pictureVolumeMute.Margin = new System.Windows.Forms.Padding(0);
             this.pictureVolumeMute.Name = "pictureVolumeMute";
