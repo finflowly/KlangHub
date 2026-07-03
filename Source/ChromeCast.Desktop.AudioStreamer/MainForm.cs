@@ -981,7 +981,7 @@ namespace KlangHub
                 applicationLogic.StartTask(async () => {
                     try
                     {
-                        var url = "https://api.github.com/repos/SamDel/ChromeCast-Desktop-Audio-Streamer/releases/latest";
+                        var url = "https://api.github.com/repos/finflowly/KlangHub/releases/latest";
                         using (var handler = new HttpClientHandler())
                         {
                             handler.UseDefaultCredentials = true;
@@ -990,7 +990,7 @@ namespace KlangHub
                             using (var client = new HttpClient(handler))
                             {
                                 client.DefaultRequestHeaders.Add("KeepAlive", "false");
-                                client.DefaultRequestHeaders.Add("User-Agent", "SamDel/ChromeCast-Desktop-Audio-Streamer");
+                                client.DefaultRequestHeaders.Add("User-Agent", "finflowly/KlangHub");
 
                                 var response = await client.GetAsync(new Uri(url));
                                 response.EnsureSuccessStatusCode();
@@ -1159,7 +1159,7 @@ namespace KlangHub
             if (e == null)
                 return;
 
-            OpenUrl("https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer/wiki#options");
+            OpenUrl("https://github.com/finflowly/KlangHub/wiki#options");
         }
 
         private void OpenUrl(string url)
