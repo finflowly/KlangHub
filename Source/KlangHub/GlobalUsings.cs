@@ -3,3 +3,4 @@
 // into one of these namespaces needs no per-consumer 'using' edits.
 // Extend this list as new Core.* layers are introduced (Abstractions, Configuration, ...).
 global using KlangHub.Core.Models;
+global using KlangHub.Core.Audio;
