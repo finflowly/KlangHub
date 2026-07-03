@@ -5,6 +5,7 @@ using KlangHub.Application;
 using KlangHub.Streaming;
 using KlangHub.Platform.Audio;
 using KlangHub.Discover;
+using KlangHub.Platform.Casting.Chromecast;
 
 namespace KlangHub
 {
@@ -29,13 +30,15 @@ namespace KlangHub
 
                 var logger = new Logger();
                 var devices = new Devices(logger);
+                var discoverDevices = new DiscoverDevices();
+                var chromecastProvider = new ChromecastProvider(new ChromecastDeviceDiscovery(discoverDevices));
                 var mainForm = new MainForm(
                         new ApplicationLogic(devices
-                            , new DiscoverDevices()
+                            , discoverDevices
                             , new Configuration()
                             , new StreamingRequestsListener()
                             , new DeviceStatusTimer()
-                            , logger)
+                            , logger, chromecastProvider)
                         , devices
                         , new LoopbackCaptureEngine(logger)
                         , logger);
@@ -86,13 +89,15 @@ namespace KlangHub
 
                 var logger = new Logger();
                 var devices = new Devices(logger);
+                var discoverDevices = new DiscoverDevices();
+                var chromecastProvider = new ChromecastProvider(new ChromecastDeviceDiscovery(discoverDevices));
                 MainForm = new MainForm(
                         new ApplicationLogic(devices
-                            , new DiscoverDevices()
+                            , discoverDevices
                             , new Configuration()
                             , new StreamingRequestsListener()
                             , new DeviceStatusTimer()
-                            , logger)
+                            , logger, chromecastProvider)
                         , devices
                         , new LoopbackCaptureEngine(logger)
                         , logger);
