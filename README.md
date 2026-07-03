@@ -1,44 +1,62 @@
-# Desktop Audio Streamer
+# KlangHub
 
-This tool captures the audio from your desktop (or microphone) and streams it to a ChromeCast Audio device.
+**Die All-in-One Multiroom-Audio-Lösung für Windows.**
+Chromecast, Spotify Connect und mehr – zentral auf deinem PC.
 
-You can download an installer from the [releases](https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer/releases).
-After running setup.exe you can run the installed program from `C:\Program Files (x86)\Desktop Audio Streamer\Desktop Audio Streamer\ChromeCast.Desktop.AudioStreamer.exe`.
-- On the first run Windows will ask you to configure the firewall and this must be enabled for your home-network type (public or private) for audio to play.
-- If the application doesn't find your devices please read [troubleshooting](https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer/wiki#troubleshooting).
-- This tool can't be used to synchronize video on your desktop with audio on your devices. There's always a lag because of audio buffers on the devices and in the application.
+KlangHub nimmt den Ton deines Windows-Desktops (oder eines Mikrofon-/Line-In-Eingangs)
+auf und streamt ihn ins lokale Netzwerk an deine Wiedergabegeräte – für synchronen
+Multiroom-Sound aus einer einzigen Anwendung.
+
+## Status
+
+KlangHub **6.0.0** befindet sich in aktiver Weiterentwicklung. Das Projekt ging aus einem
+Fork von [SamDel/ChromeCast-Desktop-Audio-Streamer](https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer)
+(v5.5.0.0) hervor und wird schrittweise zu einer eigenständigen, modularen Premium-Anwendung
+ausgebaut: saubere Schichtentrennung, Erweiterbarkeit für weitere Streaming-Protokolle
+(u. a. Spotify Connect) und ein Weg zu einer modernen UI.
+
+## Funktionen
+
+- Desktop- oder Mikrofon-Audio erfassen und ins lokale Netzwerk streamen
+- Chromecast- / Google-Cast-fähige Geräte automatisch finden (mDNS)
+- Mehrere Geräte gleichzeitig sowie Gerätegruppen
+- Wählbare Streaming-Formate (WAV 16/24/32 Bit, MP3 128/320)
+- Lautstärke- und Wiedergabesteuerung, Systray-Betrieb, Autostart, optionale Tastenkürzel
+
+## Systemvoraussetzungen
+
+- Windows 10/11
+- .NET 8 Desktop Runtime
+- Beim ersten Start muss die Windows-Firewall für dein Heimnetzwerk (privat/öffentlich)
+  freigegeben werden, damit die Wiedergabe funktioniert.
+
+> Hinweis: Zwischen Desktop-Bild und Audio-Wiedergabe besteht systembedingt immer eine
+> Latenz (Puffer). KlangHub ist nicht für lippensynchrone Video-Vertonung gedacht.
+
+## Build (Entwickler)
+
+Voraussetzung: **.NET 8 SDK**.
 
 ```
-Not all home setup are stable on the default device buffer settings. 
-Please set it to a setting where your speakers produce the appropriate delay:
-
-- When streaming in wav 32 bit format: < 2 seconds
-- When streaming in wav format: < 5 seconds
-- When streaming in mp3 320 format: < 10 seconds
-- When streaming in mp3 128 format: > 20 seconds
-
-Post a message in discussions if you still have a problem.
+dotnet build Source/ChromeCast.Desktop.AudioStreamer/KlangHub.csproj -c Release
 ```
 
-Please read the [wiki](https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer/wiki) page for further information, and the [developers](https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer/wiki/Developers) page to get it to work in Visual Studio.
+> Baue das **Projekt**, nicht die Solution – die `.sln` enthält noch ein veraltetes
+> Visual-Studio-Installer-Projekt (`Setup.vdproj`), das die .NET-CLI nicht bauen kann.
+> Es wird später durch MSIX oder WiX ersetzt.
 
+### Abhängigkeiten
 
+- [NAudio](https://github.com/naudio/NAudio) & [NAudio.Lame](https://github.com/Corey-M/NAudio.Lame) – Audio-Aufnahme & MP3-Encoding
+- [Tmds.MDns](https://github.com/tmds/Tmds.MDns) – Geräteerkennung (mDNS)
+- [Protocol Buffers](https://github.com/google/protobuf) – Cast-Channel-Protokoll
 
-# Dependencies
+## Danksagung
 
-- [NAudio](https://github.com/naudio/NAudio)
-- [NAudio.Lame](https://github.com/Corey-M/NAudio.Lame)
-- [Protocol Buffers](https://github.com/google/protobuf)
-- [Tmds.MDns](https://github.com/tmds/Tmds.MDns)
-- [protobuf-csharp-port](https://github.com/jskeet/protobuf-csharp-port)
-- [Microsoft Visual Studio Installer Projects (Visual Studio 2022)](https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2022InstallerProjects)
-- [Multilingual App Toolkit v4.0 (VS 2022)](https://marketplace.visualstudio.com/items?itemName=dts-publisher.mat2022)
+KlangHub basiert auf der hervorragenden Arbeit von [SamDel](https://github.com/SamDel) und dem
+Projekt [ChromeCast-Desktop-Audio-Streamer](https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer)
+sowie dessen Mitwirkenden.
 
-# Learned from
+## Lizenz
 
-- [Google Home Local Api](https://github.com/rithvikvibhu/GHLocalApi)
-- [node-castv2](https://github.com/thibauts/node-castv2)
-- [node-castv2-client](https://github.com/thibauts/node-castv2-client)
-- [chromecast-audio-stream](https://github.com/acidhax/chromecast-audio-stream)
-
-It's inspired by [acidhax/chromecast-audio-stream](https://github.com/acidhax/chromecast-audio-stream), and has basically the same functionality.
+Siehe [LICENSE](LICENSE).
