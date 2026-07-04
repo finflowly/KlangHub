@@ -94,13 +94,13 @@ namespace KlangHub.Rest
 
         private static string ToggleMute(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
         {
+            // 2.2b-4.4f: SetMuted(!Volume.Muted) mirrors device.VolumeMute()'s toggle. Accepted edge (as in
+            // DeviceControl 4.4b): before the first volume update Volume.Muted defaults to false, so this
+            // sends unmute->mute where the old VolumeMute() no-op'd on a null volumeSetting.
             if (string.IsNullOrEmpty(action.Replace("/", "")))
             {
-                var deviceList = devices.GetDeviceList();
-                foreach (var device in deviceList)
-                {
-                    device.VolumeMute();
-                }
+                foreach (var device in devices.GetDeviceList())
+                    Control(device, resolveSession, s => s.SetMuted(!s.Volume.Muted), d => d.VolumeMute());
             }
             else
             {
@@ -108,7 +108,7 @@ namespace KlangHub.Rest
                 if (device == null)
                     return errorDeviceNotFound;
 
-                device.VolumeMute();
+                Control(device, resolveSession, s => s.SetMuted(!s.Volume.Muted), d => d.VolumeMute());
             }
 
             var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/togglemute" + action + "\" } } }";
@@ -131,7 +131,7 @@ namespace KlangHub.Rest
             if (level < 0 || level > 100)
                 return errorWrongVolume;
 
-            device.VolumeSet(level / 100.0f);
+            Control(device, resolveSession, s => s.SetVolume(level / 100.0f), d => d.VolumeSet(level / 100.0f));
 
             var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/volume" + action + "\" } } }";
             return response;
@@ -141,11 +141,8 @@ namespace KlangHub.Rest
         {
             if (string.IsNullOrEmpty(action.Replace("/", "")))
             {
-                var deviceList = devices.GetDeviceList();
-                foreach (var device in deviceList)
-                {
-                    device.Stop(true);
-                }
+                foreach (var device in devices.GetDeviceList())
+                    Control(device, resolveSession, s => s.Stop(), d => d.Stop(true));
             }
             else
             {
@@ -153,7 +150,7 @@ namespace KlangHub.Rest
                 if (device == null)
                     return errorDeviceNotFound;
 
-                device.Stop(true);
+                Control(device, resolveSession, s => s.Stop(), d => d.Stop(true));
             }
 
             var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/stop" + action + "\" } } }";
@@ -164,11 +161,8 @@ namespace KlangHub.Rest
         {
             if (string.IsNullOrEmpty(action.Replace("/", "")))
             {
-                var deviceList = devices.GetDeviceList();
-                foreach (var device in deviceList)
-                {
-                    device.OnClickPlayStop();
-                }
+                foreach (var device in devices.GetDeviceList())
+                    Control(device, resolveSession, s => s.TogglePlayStop(), d => d.OnClickPlayStop());
             }
             else
             {
@@ -176,11 +170,23 @@ namespace KlangHub.Rest
                 if (device == null)
                     return errorDeviceNotFound;
 
-                device.OnClickPlayStop();
+                Control(device, resolveSession, s => s.TogglePlayStop(), d => d.OnClickPlayStop());
             }
 
             var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/start" + action + "\" } } }";
             return response;
+        }
+
+        // 2.2b-4.4f: route one device's control action through the neutral session, with fallbacks.
+        //   resolveSession == null -> no provider composed: use the legacy direct device path.
+        //   session == null        -> device left the registry: skip (no-op), matching the old
+        //                             disposed-device guard; keeps broadcast fan-out best-effort.
+        private static void Control(IDevice device, Func<IDevice, IPlaybackSession> resolveSession,
+            Action<IPlaybackSession> viaSession, Action<IDevice> viaDevice)
+        {
+            if (resolveSession == null) { viaDevice(device); return; }
+            var session = resolveSession(device);
+            if (session != null) viaSession(session);
         }
 
         private static IDevice GetDevice(IDevices devices, string action)
