@@ -9,7 +9,7 @@ namespace KlangHub.Core.Diagnostics
     public interface ILogger
     {
         void Log(string message);
-        void Log(Exception ex, string message = null);
+        void Log(Exception ex, string? message = null);
         void SetCallback(Action<string> logCallbackIn);
     }
 }

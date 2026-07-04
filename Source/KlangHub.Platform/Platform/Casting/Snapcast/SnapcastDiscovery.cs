@@ -13,7 +13,7 @@ namespace KlangHub.Platform.Casting.Snapcast
         private const string ServiceType = "_snapcast._tcp";
         private readonly MdnsDiscovery mdns;
 
-        public event EventHandler<CastDeviceDescriptor> DeviceDiscovered;
+        public event EventHandler<CastDeviceDescriptor>? DeviceDiscovered;
 
         public SnapcastDiscovery(MdnsDiscovery mdnsIn)
         {
@@ -35,7 +35,7 @@ namespace KlangHub.Platform.Casting.Snapcast
         }
 
         /// <summary>Map a discovered snapserver announcement to one endpoint descriptor, keyed by address:port.</summary>
-        internal static CastDeviceDescriptor ToDescriptor(MdnsService service)
+        internal static CastDeviceDescriptor? ToDescriptor(MdnsService service)
         {
             if (service == null || string.IsNullOrEmpty(service.Address) || service.Port <= 0)
                 return null;

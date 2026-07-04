@@ -13,9 +13,9 @@ namespace KlangHub.Streaming
 {
     public class StreamingConnection : IStreamingConnection
     {
-        private Socket Socket;
-        private IDevice device;
-        private ILogger logger;
+        private Socket? Socket;
+        private IDevice device = null!;
+        private ILogger logger = null!;
         private readonly IAudioHeader audioHeader;
         private bool isAudioHeaderSent;
         private int reduceLagCounter = 0;
@@ -42,14 +42,14 @@ namespace KlangHub.Streaming
         /// Thread for streaming the captured data.
         /// </summary>
         /// <param name="param">the streaming connection</param>
-        private static void StreamThread(object param)
+        private static void StreamThread(object? param)
         {
-            var thisRef = (WeakReference<StreamingConnection>)param;
+            var thisRef = (WeakReference<StreamingConnection>)param!;
             try
             {
                 while (true)
                 {
-                    if (!thisRef.TryGetTarget(out StreamingConnection streamer) || streamer == null)
+                    if (!thisRef.TryGetTarget(out StreamingConnection? streamer) || streamer == null)
                     {
                         // Instance is dead
                         return;
@@ -78,7 +78,7 @@ namespace KlangHub.Streaming
                                 deviceState == DeviceState.Paused)
                             {
                                 streamer.Dispose();
-                                streamer.logger.Log(ex, $"[{DateTime.Now.ToLongTimeString()}] [{streamer.device.GetHost()}:{streamer.device.GetPort()}] Disconnected Send");
+                                streamer.logger.Log(ex, $"[{DateTime.Now.ToLongTimeString()}] [{streamer.device!.GetHost()}:{streamer.device.GetPort()}] Disconnected Send");
                                 streamer.device?.SetDeviceState(DeviceState.ConnectError);
                                 streamer.device?.CloseConnection();
                             }
@@ -223,7 +223,7 @@ namespace KlangHub.Streaming
 
             try
             {
-                return Socket?.RemoteEndPoint?.ToString();
+                return (Socket?.RemoteEndPoint?.ToString())!;
             }
             catch (Exception)
             {

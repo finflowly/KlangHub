@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using KlangHub.Discover;
 using KlangHub.Discover.Interfaces;
 
@@ -17,7 +18,7 @@ namespace KlangHub.Platform.Casting.Chromecast
         private readonly Dictionary<string, DiscoveredDevice> byId = new();
         private readonly object sync = new();
 
-        public event EventHandler<CastDeviceDescriptor> DeviceDiscovered;
+        public event EventHandler<CastDeviceDescriptor>? DeviceDiscovered;
 
         public ChromecastDeviceDiscovery(IDiscoverDevices innerIn)
         {
@@ -38,7 +39,7 @@ namespace KlangHub.Platform.Casting.Chromecast
         /// Chromecast-internal: re-find the concrete device a descriptor's Id came from.
         /// (Not on IDeviceDiscovery — only the Chromecast provider needs it.)
         /// </summary>
-        public bool TryGetDevice(string id, out DiscoveredDevice device)
+        public bool TryGetDevice(string id, [MaybeNullWhen(false)] out DiscoveredDevice device)
         {
             lock (sync)
             {

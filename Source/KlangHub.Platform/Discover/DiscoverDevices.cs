@@ -15,13 +15,13 @@ namespace KlangHub.Discover
         public const int MaxNumberOfTries = 15;
         private const string serviceType = "_googlecast._tcp";
         private const string serviceTypeEmbedded = "_googlezone._tcp";
-        private Action<DiscoveredDevice> onDiscovered;
-        private List<DiscoveredDevice> discoveredDevices;
-        private Timer timer;
-        private List<MsdnIps> msdnIps;
-        private readonly ILogger logger;
+        private Action<DiscoveredDevice> onDiscovered = null!;
+        private List<DiscoveredDevice>? discoveredDevices;
+        private Timer? timer;
+        private List<MsdnIps>? msdnIps;
+        private readonly ILogger? logger;
 
-        public DiscoverDevices(ILogger loggerIn = null)
+        public DiscoverDevices(ILogger? loggerIn = null)
         {
             logger = loggerIn;
         }
@@ -71,7 +71,7 @@ namespace KlangHub.Discover
         /// <summary>
         /// Callback for when a device is changed.
         /// </summary>
-        private void OnServiceChanged(object sender, ServiceAnnouncementEventArgs e)
+        private void OnServiceChanged(object? sender, ServiceAnnouncementEventArgs e)
         {
             //TODO
         }
@@ -79,7 +79,7 @@ namespace KlangHub.Discover
         /// <summary>
         /// Callback for when a device is removed.
         /// </summary>
-        private void OnServiceRemoved(object sender, ServiceAnnouncementEventArgs e)
+        private void OnServiceRemoved(object? sender, ServiceAnnouncementEventArgs e)
         {
             //TODO
         }
@@ -87,7 +87,7 @@ namespace KlangHub.Discover
         /// <summary>
         /// Callback for when a device is added.
         /// </summary>
-        private void OnServiceAdded(object sender, ServiceAnnouncementEventArgs e)
+        private void OnServiceAdded(object? sender, ServiceAnnouncementEventArgs e)
         {
             if (e == null || e.Announcement == null || e.Announcement.Addresses == null || e.Announcement.Addresses.Count == 0
                 || e.Announcement.Txt == null || discoveredDevices == null)
@@ -108,10 +108,10 @@ namespace KlangHub.Discover
                 IPAddress = ipv4.ToString(),
                 Protocol = e.Announcement.Type,
                 Port = e.Announcement.Port,
-                Name = e.Announcement.Txt.Where(x => x.ToString().StartsWith("fn=")).FirstOrDefault()?.Replace("fn=", ""),
+                Name = (e.Announcement.Txt.Where(x => x.ToString().StartsWith("fn=")).FirstOrDefault()?.Replace("fn=", ""))!,
                 Headers = JsonSerializer.Serialize(e.Announcement.Txt),
                 Usn = e.Announcement.Hostname,
-                Id = e.Announcement.Txt.Where(x => x.ToString().StartsWith("id=")).FirstOrDefault()?.Replace("id=", ""),
+                Id = (e.Announcement.Txt.Where(x => x.ToString().StartsWith("id=")).FirstOrDefault()?.Replace("id=", ""))!,
             };
 
             if (discoveredDevice.Name != null 
@@ -127,7 +127,7 @@ namespace KlangHub.Discover
         /// <summary>
         /// Call the callback function for the discovered devices.
         /// </summary>
-        private void OnAddDevice(object sender, ElapsedEventArgs e)
+        private void OnAddDevice(object? sender, ElapsedEventArgs e)
         {
             if (discoveredDevices == null)
                 return;
@@ -153,6 +153,6 @@ namespace KlangHub.Discover
     internal class MsdnIps
     {
         public DateTime Added { get; set; }
-        public IPEndPoint Endpoint { get; set; }
+        public IPEndPoint Endpoint { get; set; } = null!;
     }
 }

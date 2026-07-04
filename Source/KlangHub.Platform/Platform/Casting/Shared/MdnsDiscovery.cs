@@ -24,7 +24,7 @@ namespace KlangHub.Platform.Casting.Shared
         private bool started;
 
         /// <summary>Raised for each discovered service (on Tmds.MDns's callback thread).</summary>
-        public event Action<MdnsService> ServiceFound;
+        public event Action<MdnsService>? ServiceFound;
 
         /// <summary>Begin browsing the given service types. Idempotent: only the first call browses
         /// (mDNS discovery is continuous), so repeated ScanForDevices calls do not stack browsers.</summary>
@@ -55,7 +55,7 @@ namespace KlangHub.Platform.Casting.Shared
 
         public void Dispose() { }
 
-        private void OnServiceAdded(object sender, ServiceAnnouncementEventArgs e)
+        private void OnServiceAdded(object? sender, ServiceAnnouncementEventArgs e)
         {
             var a = e?.Announcement;
             if (a == null || a.Addresses == null || a.Addresses.Count == 0)

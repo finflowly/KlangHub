@@ -12,25 +12,25 @@ namespace KlangHub.Communication
 {
     public class DeviceCommunication : IDeviceCommunication
     {
-        private IDevice device;
-        private Action<byte[]> sendMessage;
-        private Func<bool> isDeviceConnected;
+        private IDevice device = null!;
+        private Action<byte[]> sendMessage = null!;
+        private Func<bool> isDeviceConnected = null!;
         private readonly ICastHost applicationLogic;
         private readonly ILogger logger;
         private readonly IChromeCastMessages chromeCastMessages;
         private string chromeCastDestination;
         private readonly string chromeCastSource;
-        private string chromeCastApplicationSessionNr;
+        private string chromeCastApplicationSessionNr = null!;
         private int chromeCastMediaSessionId;
         private int requestId;
-        private VolumeSetItem lastVolumeSetItem;
-        private VolumeSetItem nextVolumeSetItem;
+        private VolumeSetItem? lastVolumeSetItem;
+        private VolumeSetItem? nextVolumeSetItem;
         private bool Connected = false;
         private bool IsDisposed = false;
         private UserMode userMode = UserMode.Stopped;
         private bool pendingStatusMessage = false;
         private DateTime lastReceivedMessage = DateTime.MinValue;
-        private string statusText;
+        private string? statusText;
 
         public DeviceCommunication(ICastHost applicationLogicIn, ILogger loggerIn)
         {
@@ -101,7 +101,7 @@ namespace KlangHub.Communication
         /// </summary>
         /// <param name="sourceId"></param>
         /// <param name="destinationId"></param>
-        public void Connect(string sourceId = null, string destinationId = null)
+        public void Connect(string? sourceId = null, string? destinationId = null)
         {
             if (chromeCastMessages == null || IsDisposed)
                 return;
@@ -182,7 +182,7 @@ namespace KlangHub.Communication
             if ((nextVolumeSetItem != null && lastVolumeSetItem == null)
                 || (lastVolumeSetItem != null && DateTime.Now.Subtract(lastVolumeSetItem.SendAt) > new TimeSpan(0, 0, 1)))
             {
-                lastVolumeSetItem = nextVolumeSetItem;
+                lastVolumeSetItem = nextVolumeSetItem!;
                 lastVolumeSetItem.RequestId = GetNextRequestId();
                 lastVolumeSetItem.SendAt = DateTime.Now;
                 SendMessage(chromeCastMessages.GetVolumeSetMessage(lastVolumeSetItem.Setting, lastVolumeSetItem.RequestId));
@@ -301,7 +301,7 @@ namespace KlangHub.Communication
         /// <returns>the status text</returns>
         public string GetStatusText()
         {
-            return statusText;
+            return statusText!;
         }
 
         /// <summary>
@@ -393,7 +393,7 @@ namespace KlangHub.Communication
             logger.Log($"{Properties.Strings.Log_In} [{DateTime.Now.ToLongTimeString()}] [{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var message = JsonSerializer.Deserialize<PayloadMessageBase>(castMessage.PayloadUtf8, options);
+            var message = JsonSerializer.Deserialize<PayloadMessageBase>(castMessage.PayloadUtf8, options)!;
             if (message.type != "PING" && message.type != "PONG")
             {
                 lastReceivedMessage = DateTime.Now;
@@ -522,7 +522,7 @@ namespace KlangHub.Communication
         /// Handle a media status message from the device.
         /// </summary>
         /// <param name="mediaStatusMessage">the media status message</param>
-        private void OnReceiveMediaStatus(MessageMediaStatus mediaStatusMessage)
+        private void OnReceiveMediaStatus(MessageMediaStatus? mediaStatusMessage)
         {
             if (mediaStatusMessage == null || device == null || IsDisposed)
                 return;
@@ -533,7 +533,7 @@ namespace KlangHub.Communication
                 mediaStatusMessage?.status?.First()?.volume?.stepInterval > 0)
                 device.OnVolumeUpdate(mediaStatusMessage.status.First().volume);
 
-            chromeCastMediaSessionId = mediaStatusMessage.status.Any() ? mediaStatusMessage.status.First().mediaSessionId : 1;
+            chromeCastMediaSessionId = mediaStatusMessage!.status.Any() ? mediaStatusMessage.status.First().mediaSessionId : 1;
 
             if (device.IsConnected() && mediaStatusMessage.status.Any())
             {
@@ -562,7 +562,7 @@ namespace KlangHub.Communication
         /// </summary>
         /// <param name="mediaStatusMessage">a media status message</param>
         /// <returns>the playing time, format hh:mm</returns>
-        private string GetPlayingTime(MessageMediaStatus mediaStatusMessage)
+        private string? GetPlayingTime(MessageMediaStatus mediaStatusMessage)
         {
             if (mediaStatusMessage == null || IsDisposed)
                 return string.Empty;
@@ -581,7 +581,7 @@ namespace KlangHub.Communication
         /// Handle a receiver status message from the device.
         /// </summary>
         /// <param name="receiverStatusMessage">a receiver status message</param>
-        private void OnReceiveReceiverStatus(MessageReceiverStatus receiverStatusMessage)
+        private void OnReceiveReceiverStatus(MessageReceiverStatus? receiverStatusMessage)
         {
             if (receiverStatusMessage == null || device == null || IsDisposed)
                 return;
@@ -616,7 +616,7 @@ namespace KlangHub.Communication
                 }
             }
 
-            if (lastVolumeSetItem != null && lastVolumeSetItem.RequestId == receiverStatusMessage.requestId)
+            if (lastVolumeSetItem != null && lastVolumeSetItem.RequestId == receiverStatusMessage!.requestId)
             {
                 lastVolumeSetItem = null;
                 SendVolumeSet();

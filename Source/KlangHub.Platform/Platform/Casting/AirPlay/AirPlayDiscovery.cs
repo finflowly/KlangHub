@@ -26,7 +26,7 @@ namespace KlangHub.Platform.Casting.AirPlay
         private readonly MdnsDiscovery mdns;
         private readonly ILogger logger;
 
-        public event EventHandler<CastDeviceDescriptor> DeviceDiscovered;
+        public event EventHandler<CastDeviceDescriptor>? DeviceDiscovered;
 
         public AirPlayDiscovery(MdnsDiscovery mdnsIn, ILogger loggerIn)
         {
@@ -54,7 +54,7 @@ namespace KlangHub.Platform.Casting.AirPlay
 
         /// <summary>Map an AirPlay/RAOP announcement to one descriptor: id from the stable deviceid (MAC),
         /// then pk, then address; a friendly name from the service instance (RAOP's "MAC@Name" -> "Name").</summary>
-        internal static CastDeviceDescriptor ToDescriptor(MdnsService service)
+        internal static CastDeviceDescriptor? ToDescriptor(MdnsService service)
         {
             if (service == null || string.IsNullOrEmpty(service.Address))
                 return null;
@@ -94,7 +94,7 @@ namespace KlangHub.Platform.Casting.AirPlay
             return !string.IsNullOrEmpty(service.HostName) ? service.HostName : service.Address;
         }
 
-        private static string Value(IReadOnlyDictionary<string, string> txt, string key) =>
+        private static string? Value(IReadOnlyDictionary<string, string> txt, string key) =>
             txt.TryGetValue(key, out var v) && !string.IsNullOrEmpty(v) ? v : null;
     }
 }

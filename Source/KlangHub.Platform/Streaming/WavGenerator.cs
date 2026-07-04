@@ -11,7 +11,7 @@ namespace KlangHub.Streaming
     public class WavGenerator
     {
         private WaveFormat waveFormat = new WaveFormat(44100, 2);
-        private WaveOutEvent player;
+        private WaveOutEvent? player;
 
         /// <summary>
         /// Play (looping) silence, to make sure there always something captured.
@@ -138,7 +138,7 @@ namespace KlangHub.Streaming
         private LoopStream CreateStream(WaveDataChunk data)
         {
             if (data == null)
-                return null;
+                return null!;
 
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);

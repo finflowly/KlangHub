@@ -7,7 +7,7 @@ namespace KlangHub.Core.Models
     /// </summary>
     public class NetworkAdapter
     {
-        public IPAddress IPAddress { get; set; }
+        public IPAddress? IPAddress { get; set; }
         public bool IsEthernet { get; set; }
     }
 }

@@ -9,20 +9,20 @@ namespace KlangHub.Streaming
 {
     public class StateObject
     {
-        public Socket workSocket = null;
+        public Socket? workSocket = null;
         public const int bufferSize = 2048;
-        public byte[] buffer;
+        public byte[] buffer = null!;
         public StringBuilder receiveBuffer = new StringBuilder();
     }
 
     public class StreamingRequestsListener : IStreamingRequestsListener, IDisposable
     {
         public ManualResetEvent allDone = new ManualResetEvent(false);
-        private Action<Socket, string> onConnectCallback;
-        private Socket listener;
-        private string ip;
+        private Action<Socket, string>? onConnectCallback;
+        private Socket listener = null!;
+        private string? ip;
         private int port;
-        private ILogger logger;
+        private ILogger logger = null!;
 
         public string GetStreamimgUrl()
         {
@@ -49,7 +49,7 @@ namespace KlangHub.Streaming
 
                 listener.Bind(localEndPoint);
                 listener.Listen(100);
-                var endPoint = (IPEndPoint)listener.LocalEndPoint;
+                var endPoint = (IPEndPoint?)listener.LocalEndPoint;
                 if (endPoint != null)
                 {
                     ip = endPoint.Address?.ToString();
@@ -121,7 +121,7 @@ namespace KlangHub.Streaming
             try
             {
                 var state = (StateObject)asyncResult.AsyncState;
-                var handlerSocket = state.workSocket;
+                var handlerSocket = state.workSocket!;
 
                 var bytesRead = handlerSocket.EndReceive(asyncResult);
                 if (bytesRead > 0)

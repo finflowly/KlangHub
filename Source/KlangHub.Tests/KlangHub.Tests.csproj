@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <Nullable>disable</Nullable>
     <IsPackable>false</IsPackable>
     <!-- references the WinForms app + platform, so target net8.0-windows with WinForms available -->
     <UseWindowsForms>true</UseWindowsForms>

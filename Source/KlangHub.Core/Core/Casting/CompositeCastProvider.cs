@@ -56,7 +56,7 @@ namespace KlangHub.Core.Casting
     {
         private readonly IReadOnlyList<IDeviceDiscovery> inner;
 
-        public event EventHandler<CastDeviceDescriptor> DeviceDiscovered;
+        public event EventHandler<CastDeviceDescriptor>? DeviceDiscovered;
 
         public CompositeDeviceDiscovery(IEnumerable<IDeviceDiscovery> innerIn)
         {

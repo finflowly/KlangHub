@@ -7,7 +7,7 @@ namespace KlangHub.Communication.Interfaces
 {
     public interface IDeviceCommunication
     {
-        void Connect(string sourceId = null, string destinationId = null);
+        void Connect(string? sourceId = null, string? destinationId = null);
         void Launch();
         void LaunchAndLoadMedia();
         void LoadMedia();

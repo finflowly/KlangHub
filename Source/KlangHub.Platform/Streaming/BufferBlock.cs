@@ -4,7 +4,7 @@ namespace KlangHub.Streaming
 {
     public class BufferBlock
     {
-        public byte[] Data;
+        public byte[] Data = null!;
         public int Used;
         private int SpaceLeft { 
             get 

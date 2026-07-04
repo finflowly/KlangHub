@@ -18,21 +18,21 @@ namespace KlangHub.Platform.Audio
     /// </summary>
     public sealed class LoopbackCaptureEngine : IAudioCaptureEngine
     {
-        private WasapiCapture soundIn;
+        private WasapiCapture? soundIn;
         private bool isRecording = false;
-        private WaveFormat waveFormat;
+        private WaveFormat? waveFormat;
         private DateTime latestDataAvailable;
-        private System.Timers.Timer dataAvailableTimer;
-        private System.Timers.Timer getDevicesTimer;
+        private System.Timers.Timer? dataAvailableTimer;
+        private System.Timers.Timer? getDevicesTimer;
         private readonly ILogger logger;
-        private Thread eventThread;
-        private BufferBlock bufferCaptured, bufferSend;
+        private Thread? eventThread;
+        private BufferBlock bufferCaptured = null!, bufferSend = null!;
         private readonly object bufferSwapSync = new();
-        private AudioCaptureSettings settings;
+        private AudioCaptureSettings settings = null!;
 
-        public event EventHandler<AudioFrame> DataAvailable;
-        public event EventHandler<byte[]> LevelSampled;
-        public event EventHandler<AudioDeviceListEventArgs> DevicesChanged;
+        public event EventHandler<AudioFrame>? DataAvailable;
+        public event EventHandler<byte[]>? LevelSampled;
+        public event EventHandler<AudioDeviceListEventArgs>? DevicesChanged;
 
         public LoopbackCaptureEngine(ILogger loggerIn)
         {
@@ -58,7 +58,7 @@ namespace KlangHub.Platform.Audio
             DoStart(null, null);
         }
 
-        private void DoStart(object sender, ElapsedEventArgs e)
+        private void DoStart(object? sender, ElapsedEventArgs? e)
         {
             ScanDevices();
             if (!isRecording)
@@ -184,7 +184,7 @@ namespace KlangHub.Platform.Audio
             return false;
         }
 
-        private void OnDataAvailable(object sender, WaveInEventArgs e)
+        private void OnDataAvailable(object? sender, WaveInEventArgs e)
         {
             if (soundIn == null || soundIn.WaveFormat == null)
                 return;
@@ -215,7 +215,7 @@ namespace KlangHub.Platform.Audio
             catch (Exception ex)
             {
                 logger.Log(ex, "LoopbackCaptureEngine.GetDefaultDevice");
-                return null;
+                return null!;
             }
         }
 
@@ -240,7 +240,7 @@ namespace KlangHub.Platform.Audio
         private static AudioCaptureDevice ToDevice(MMDevice device)
         {
             if (device == null)
-                return null;
+                return null!;
 
             return new AudioCaptureDevice(
                 device.ID,
@@ -257,14 +257,14 @@ namespace KlangHub.Platform.Audio
             _ => AudioFlow.All
         };
 
-        private static void EventThread(object param)
+        private static void EventThread(object? param)
         {
-            var thisRef = (WeakReference<LoopbackCaptureEngine>)param;
+            var thisRef = (WeakReference<LoopbackCaptureEngine>)param!;
             try
             {
                 while (true)
                 {
-                    if (!thisRef.TryGetTarget(out LoopbackCaptureEngine engine) || engine == null)
+                    if (!thisRef.TryGetTarget(out LoopbackCaptureEngine? engine) || engine == null)
                     {
                         // Instance is dead
                         return;
@@ -301,7 +301,7 @@ namespace KlangHub.Platform.Audio
             }
         }
 
-        private void OnRecordingStopped(object sender, StoppedEventArgs e)
+        private void OnRecordingStopped(object? sender, StoppedEventArgs e)
         {
             if (isRecording)
             {
@@ -333,7 +333,7 @@ namespace KlangHub.Platform.Audio
             }
         }
 
-        private void OnCheckForSilence(object sender, ElapsedEventArgs e)
+        private void OnCheckForSilence(object? sender, ElapsedEventArgs e)
         {
             if (waveFormat == null)
                 return;

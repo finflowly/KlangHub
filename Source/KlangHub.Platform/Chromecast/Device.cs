@@ -23,7 +23,7 @@ namespace KlangHub.Application
     public class Device : IDevice, IPlaybackSession
     {
         private readonly IDeviceCommunication deviceCommunication;
-        private IStreamingConnection streamingConnection;
+        private IStreamingConnection? streamingConnection;
         private readonly IDeviceConnection deviceConnection;
         private readonly DiscoveredDevice discoveredDevice;
         private Volume volumeSetting;
@@ -33,18 +33,18 @@ namespace KlangHub.Application
         private DateTime lastGetStatus;
         private bool devicePlayedWhenStopped;
         private bool wasPlayingWhenConnectError;
-        private DeviceEureka eureka;
-        private Action<DeviceEureka> setDeviceInformationCallback;
-        private Action<Action, CancellationTokenSource> startTask;
+        private DeviceEureka eureka = null!;
+        private Action<DeviceEureka> setDeviceInformationCallback = null!;
+        private Action<Action, CancellationTokenSource?> startTask = null!;
         //private Action<IDevice> stopGroup;
-        private Func<IDevice, bool> isGroupStatusBlank;
-        private Action<bool> autoMute;
+        private Func<IDevice, bool> isGroupStatusBlank = null!;
+        private Action<bool> autoMute = null!;
         private DateTime? lastLoadMessageTime;
         private DateTime? addStreamingConnectionTime;
 
         private bool isDisposed;
 
-        delegate void SetDeviceStateCallback(DeviceState state, string text = null);
+        delegate void SetDeviceStateCallback(DeviceState state, string? text = null);
 
         public Device(ILogger loggerIn, ICastHost applicationLogicIn)
         {
@@ -70,7 +70,7 @@ namespace KlangHub.Application
         /// </summary>
         /// <param name="discoveredDeviceIn">the discovered device</param>
         public void Initialize(DiscoveredDevice discoveredDeviceIn, Action<DeviceEureka> setDeviceInformationCallbackIn
-            , Action<IDevice> stopGroupIn, Action<Action, CancellationTokenSource> startTaskIn, Func<IDevice, bool> isGroupStatusBlankIn
+            , Action<IDevice> stopGroupIn, Action<Action, CancellationTokenSource?> startTaskIn, Func<IDevice, bool> isGroupStatusBlankIn
             , Action<bool> autoMuteIn)
         {
             setDeviceInformationCallback = setDeviceInformationCallbackIn;
@@ -96,7 +96,7 @@ namespace KlangHub.Application
                 logger.Log($"Discovered device: {discoveredDeviceIn?.Name} {discoveredDeviceIn?.IPAddress}:{discoveredDeviceIn?.Port} {JsonSerializer.Serialize(discoveredDeviceIn?.Eureka?.Multizone?.Groups)} {discoveredDeviceIn?.Id}");
             }
 
-            if (discoveredDeviceIn.Headers != null) discoveredDevice.Headers = discoveredDeviceIn.Headers;
+            if (discoveredDeviceIn!.Headers != null) discoveredDevice.Headers = discoveredDeviceIn.Headers;
             if (discoveredDeviceIn.IPAddress != null) discoveredDevice.IPAddress = discoveredDeviceIn.IPAddress;
             if (discoveredDeviceIn.MACAddress != null) discoveredDevice.MACAddress = discoveredDeviceIn.MACAddress;
             if (discoveredDeviceIn.Id != null) discoveredDevice.Id = discoveredDeviceIn.Id;
@@ -206,7 +206,7 @@ namespace KlangHub.Application
         /// </summary>
         /// <param name="state">the state</param>
         /// <param name="statusText">status text</param>
-        public void SetDeviceState(DeviceState state, string statusText = null)
+        public void SetDeviceState(DeviceState state, string? statusText = null)
         {
             if (discoveredDevice == null || isDisposed)
                 return;
@@ -649,8 +649,8 @@ namespace KlangHub.Application
         // no neutral consumer is wired yet (ChromecastProvider.CreateSession is step 2.2b-3), so until
         // then these members are inert and change no existing behaviour.
 
-        public event EventHandler<PlaybackState> StateChanged;
-        public event EventHandler<VolumeStatus> VolumeChanged;
+        public event EventHandler<PlaybackState>? StateChanged;
+        public event EventHandler<VolumeStatus>? VolumeChanged;
 
         CastDeviceDescriptor IPlaybackSession.Device =>
             new(ChromecastDeviceId.From(discoveredDevice), GetFriendlyName(), ProviderId.Chromecast, IsGroup());

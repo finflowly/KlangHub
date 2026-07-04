@@ -8,17 +8,17 @@ namespace KlangHub.Discover
     {
         private const string GroupIdentifier = "\"md=Google Cast Group\"";
 
-        public string Name { get; set; }
-        public string IPAddress { get; set; }
+        public string Name { get; set; } = null!;
+        public string IPAddress { get; set; } = null!;
         public int Port { get; set; }
-        public string Protocol { get; set; }
-        public string Usn { get; set; }
-        public string Headers { get; set; }
+        public string Protocol { get; set; } = null!;
+        public string Usn { get; set; } = null!;
+        public string Headers { get; set; } = null!;
         public bool AddedByDeviceInfo { get; set; }
         [XmlIgnore]
-        public DeviceEureka Eureka { get; set; }
+        public DeviceEureka Eureka { get; set; } = null!;
         [XmlIgnore]
-        public Group Group { get; set; }
+        public Group Group { get; set; } = null!;
         public DeviceState DeviceState { get; set; }
         public bool IsGroup {
             get
@@ -38,7 +38,7 @@ namespace KlangHub.Discover
             }
         }
 
-        public string MACAddress { get; set; }
-        public string Id { get; set; }
+        public string MACAddress { get; set; } = null!;
+        public string Id { get; set; } = null!;
     }
 }

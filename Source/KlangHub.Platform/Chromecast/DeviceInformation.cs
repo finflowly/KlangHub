@@ -1,4 +1,4 @@
-﻿using KlangHub.Discover;
+using KlangHub.Discover;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +11,12 @@ using System.Text.Json.Serialization;
 namespace KlangHub.Application
 {
     /// <summary>
-    /// Get all device info with: 
+    /// Get all device info with:
     /// http://<ip>:8008/setup/eureka_info?params=version,audio,name,build_info,detail,device_info,net,wifi,setup,settings,opt_in,opencast,multizone,proxy,night_mode_params,user_eq,room_equalizer&options=detail
     /// </summary>
     public static class DeviceInformation
     {
-        public static Action GetDeviceInformation(DiscoveredDevice discoveredDevice, Action<DeviceEureka> callback, Action onFailed, ILogger logger)
+        public static Action GetDeviceInformation(DiscoveredDevice discoveredDevice, Action<DeviceEureka> callback, Action? onFailed, ILogger logger)
         {
             return (async () => {
                 try
@@ -33,7 +33,7 @@ namespace KlangHub.Application
                     {
                         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                         var eureka = JsonSerializer.Deserialize<DeviceEureka>(eurekaInfo, options);
-                        callback?.Invoke(eureka);
+                        callback?.Invoke(eureka!);
                     }
                     else
                     {
@@ -85,46 +85,46 @@ namespace KlangHub.Application
 
     public class DeviceEureka
     {
-        public Audio Audio { get; set; }
+        public Audio Audio { get; set; } = null!;
         [JsonPropertyName("build_info")]
-        public BuildInfo BuildInfo { get; set; }
-        public Detail Detail { get; set; }
+        public BuildInfo BuildInfo { get; set; } = null!;
+        public Detail Detail { get; set; } = null!;
         [JsonPropertyName("device_info")]
-        public DeviceInfo DeviceInfo { get; set; }
-        public Multizone Multizone { get; set; }
-        public string Name { get; set; }
-        public Net Net { get; set; }
+        public DeviceInfo DeviceInfo { get; set; } = null!;
+        public Multizone Multizone { get; set; } = null!;
+        public string Name { get; set; } = null!;
+        public Net Net { get; set; } = null!;
         [JsonPropertyName("opt_in")]
-        public OptIn OptIn { get; set; }
-        public Proxy Proxy { get; set; }
-        public Settings Settings { get; set; }
-        public Setup Setup { get; set; }
+        public OptIn OptIn { get; set; } = null!;
+        public Proxy Proxy { get; set; } = null!;
+        public Settings Settings { get; set; } = null!;
+        public Setup Setup { get; set; } = null!;
         [JsonPropertyName("user_eq")]
-        public UserEq UserEq { get; set; }
+        public UserEq UserEq { get; set; } = null!;
         public int Version { get; set; }
-        public Wifi Wifi { get; set; }
-        public string Bssid { get; set; }
-        public string Build_version { get; set; }
-        public string Cast_build_revision { get; set; }
-        public ClosedCaption Closed_caption { get; set; }
+        public Wifi Wifi { get; set; } = null!;
+        public string Bssid { get; set; } = null!;
+        public string Build_version { get; set; } = null!;
+        public string Cast_build_revision { get; set; } = null!;
+        public ClosedCaption Closed_caption { get; set; } = null!;
         public bool Connected { get; set; }
         public bool Ethernet_connected { get; set; }
         public bool Has_update { get; set; }
-        public string Hotspot_bssid { get; set; }
-        public string Ip_address { get; set; }
-        public string Locale { get; set; }
-        public Location Location { get; set; }
-        public string Mac_address { get; set; }
+        public string Hotspot_bssid { get; set; } = null!;
+        public string Ip_address { get; set; } = null!;
+        public string Locale { get; set; } = null!;
+        public Location Location { get; set; } = null!;
+        public string Mac_address { get; set; } = null!;
         public int Noise_level { get; set; }
-        public string Public_key { get; set; }
-        public string Release_track { get; set; }
+        public string Public_key { get; set; } = null!;
+        public string Release_track { get; set; } = null!;
         public int Setup_state { get; set; }
-        public SetupStats Setup_stats { get; set; }
+        public SetupStats Setup_stats { get; set; } = null!;
         public int Signal_level { get; set; }
-        public string Ssdp_udn { get; set; }
-        public string Ssid { get; set; }
+        public string Ssdp_udn { get; set; } = null!;
+        public string Ssid { get; set; } = null!;
         public int Time_format { get; set; }
-        public string Timezone { get; set; }
+        public string Timezone { get; set; } = null!;
         public bool Tos_accepted { get; set; }
         public double Uptime { get; set; }
         public bool Wpa_configured { get; set; }
@@ -136,7 +136,7 @@ namespace KlangHub.Application
             switch (Version)
             {
                 case 8:
-                    return DeviceInfo?.Mac_address;
+                    return (DeviceInfo?.Mac_address)!;
                 case 10:
                 case 12:
                     return Mac_address;
@@ -172,7 +172,7 @@ namespace KlangHub.Application
     public class Location
     {
         [JsonPropertyName("country_code")]
-        public string CountryCode { get; set; }
+        public string CountryCode { get; set; } = null!;
         public double Latitude { get; set; }
         public double Longitude { get; set; }
     }
@@ -201,31 +201,31 @@ namespace KlangHub.Application
     public class BuildInfo
     {
         public int Build_type { get; set; }
-        public string Cast_build_revision { get; set; }
+        public string Cast_build_revision { get; set; } = null!;
         public int Cast_control_version { get; set; }
         public int Preview_channel_state { get; set; }
-        public string Release_track { get; set; }
-        public string System_build_number { get; set; }
+        public string Release_track { get; set; } = null!;
+        public string System_build_number { get; set; } = null!;
     }
 
     public class IconList
     {
         public int Depth { get; set; }
         public int Height { get; set; }
-        public string Mimetype { get; set; }
-        public string Url { get; set; }
+        public string Mimetype { get; set; } = null!;
+        public string Url { get; set; } = null!;
         public int Width { get; set; }
     }
 
     public class Locale
     {
-        public string Display_string { get; set; }
+        public string Display_string { get; set; } = null!;
     }
 
     public class Detail
     {
-        public List<IconList> Icon_list { get; set; }
-        public Locale Locale { get; set; }
+        public List<IconList> Icon_list { get; set; } = null!;
+        public Locale Locale { get; set; } = null!;
     }
 
     public class Capabilities
@@ -258,30 +258,30 @@ namespace KlangHub.Application
     {
         [JsonPropertyName("4k_blocked")]
         public int DI4kBlocked { get; set; }
-        public Capabilities Capabilities { get; set; }
-        public string Cloud_device_id { get; set; }
-        public string Factory_country_code { get; set; }
-        public string Hotspot_bssid { get; set; }
-        public string Local_authorization_token_hash { get; set; }
-        public string Mac_address { get; set; }
-        public string Manufacturer { get; set; }
-        public string Model_name { get; set; }
-        public string Product_name { get; set; }
-        public string Public_key { get; set; }
-        public string Ssdp_udn { get; set; }
+        public Capabilities Capabilities { get; set; } = null!;
+        public string Cloud_device_id { get; set; } = null!;
+        public string Factory_country_code { get; set; } = null!;
+        public string Hotspot_bssid { get; set; } = null!;
+        public string Local_authorization_token_hash { get; set; } = null!;
+        public string Mac_address { get; set; } = null!;
+        public string Manufacturer { get; set; } = null!;
+        public string Model_name { get; set; } = null!;
+        public string Product_name { get; set; } = null!;
+        public string Public_key { get; set; } = null!;
+        public string Ssdp_udn { get; set; } = null!;
         public double Uptime { get; set; }
     }
 
     public class Group
     {
         public int Cast_port { get; set; }
-        public string Channel_selection { get; set; }
-        public string Elected_leader { get; set; }
-        public string Leader { get; set; }
+        public string Channel_selection { get; set; } = null!;
+        public string Elected_leader { get; set; } = null!;
+        public string Leader { get; set; } = null!;
         public bool Multichannel_group { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public double Stereo_balance { get; set; }
-        public string Uuid { get; set; }
+        public string Uuid { get; set; } = null!;
     }
 
     public class Multizone
@@ -289,15 +289,15 @@ namespace KlangHub.Application
         public double Audio_output_delay { get; set; }
         public double Audio_output_delay_hdmi { get; set; }
         public double Audio_output_delay_oem { get; set; }
-        public string Aux_in_group { get; set; }
-        public List<Group> Groups { get; set; }
+        public string Aux_in_group { get; set; } = null!;
+        public List<Group> Groups { get; set; } = null!;
         public int Multichannel_status { get; set; }
     }
 
     public class Net
     {
         public bool Ethernet_connected { get; set; }
-        public string Ip_address { get; set; }
+        public string Ip_address { get; set; } = null!;
         public bool Online { get; set; }
     }
 
@@ -320,7 +320,7 @@ namespace KlangHub.Application
 
     public class Proxy
     {
-        public string Mode { get; set; }
+        public string Mode { get; set; } = null!;
     }
 
     public class ClosedCaption
@@ -329,10 +329,10 @@ namespace KlangHub.Application
 
     public class Settings
     {
-        public ClosedCaption Closed_caption { get; set; }
+        public ClosedCaption Closed_caption { get; set; } = null!;
         public int Control_notifications { get; set; }
-        public string Country_code { get; set; }
-        public string Locale { get; set; }
+        public string Country_code { get; set; } = null!;
+        public string Locale { get; set; } = null!;
         public int Network_standby { get; set; }
         public bool System_sound_effects { get; set; }
         public int Time_format { get; set; }
@@ -351,8 +351,8 @@ namespace KlangHub.Application
     public class Setup
     {
         public int Setup_state { get; set; }
-        public string Ssid_suffix { get; set; }
-        public Stats Stats { get; set; }
+        public string Ssid_suffix { get; set; } = null!;
+        public Stats Stats { get; set; } = null!;
         public bool Tos_accepted { get; set; }
     }
 
@@ -372,19 +372,19 @@ namespace KlangHub.Application
 
     public class UserEq
     {
-        public HighShelf High_shelf { get; set; }
-        public LowShelf Low_shelf { get; set; }
+        public HighShelf High_shelf { get; set; } = null!;
+        public LowShelf Low_shelf { get; set; } = null!;
         public int Max_peaking_eqs { get; set; }
-        public List<object> Peaking_eqs { get; set; }
+        public List<object> Peaking_eqs { get; set; } = null!;
     }
 
     public class Wifi
     {
-        public string Bssid { get; set; }
+        public string Bssid { get; set; } = null!;
         public bool Has_changes { get; set; }
         public int Noise_level { get; set; }
         public int Signal_level { get; set; }
-        public string Ssid { get; set; }
+        public string Ssid { get; set; } = null!;
         public bool Wpa_configured { get; set; }
         public int Wpa_id { get; set; }
         public int Wpa_state { get; set; }

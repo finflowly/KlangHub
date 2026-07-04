@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace KlangHub.Communication.Classes
 {
@@ -7,12 +7,12 @@ namespace KlangHub.Communication.Classes
     /// </summary>
     public class PayloadMessageBase
     {
-        public string type { get; set; }
+        public string type { get; set; } = null!;
     }
 
     public class MessageVolume : PayloadMessageBase
     {
-        public SendVolume volume { get; set; }
+        public SendVolume volume { get; set; } = null!;
         public int requestId { get; set; }
     }
 
@@ -23,7 +23,7 @@ namespace KlangHub.Communication.Classes
 
     public class MessageVolumeMute : PayloadMessageBase
     {
-        public SendVolumeMute volume { get; set; }
+        public SendVolumeMute volume { get; set; } = null!;
         public int requestId { get; set; }
     }
 
@@ -34,7 +34,7 @@ namespace KlangHub.Communication.Classes
 
     public class MessageLaunch : PayloadMessageBase
     {
-        public string appId { get; set; }
+        public string appId { get; set; } = null!;
         public int requestId { get; set; }
     }
 
@@ -42,16 +42,16 @@ namespace KlangHub.Communication.Classes
     {
         public bool autoplay { get; set; }
         public float currentTime { get; set; }
-        public List<object> activeTrackIds { get; set; }
-        public string repeatMode { get; set; }
-        public Media media { get; set; }
+        public List<object> activeTrackIds { get; set; } = null!;
+        public string repeatMode { get; set; } = null!;
+        public Media media { get; set; } = null!;
         public int requestId { get; set; }
     }
 
     public class MessagePause : PayloadMessageBase
     {
         public int mediaSessionId { get; set; }
-        public string sessionId { get; set; }
+        public string sessionId { get; set; } = null!;
         public int requestId { get; set; }
     }
 
@@ -62,23 +62,23 @@ namespace KlangHub.Communication.Classes
 
     public class Media
     {
-        public string contentId { get; set; }
-        public string contentType { get; set; }
-        public string streamType { get; set; }
-        public Metadata metadata { get; set; }
+        public string contentId { get; set; } = null!;
+        public string contentType { get; set; } = null!;
+        public string streamType { get; set; } = null!;
+        public Metadata metadata { get; set; } = null!;
     }
 
     public class Metadata
     {
         public int type { get; set; }
         public int metadataType { get; set; }
-        public string title { get; set; }
-        public List<Image> images { get; set; }
+        public string title { get; set; } = null!;
+        public List<Image> images { get; set; } = null!;
     }
 
     public class Image
     {
-        public string url { get; set; }
+        public string url { get; set; } = null!;
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ namespace KlangHub.Communication.Classes
     }
 
     /// <summary>
-    /// If calling 'LOAD' a second time with the same url and the first is still 'loading' 
+    /// If calling 'LOAD' a second time with the same url and the first is still 'loading'
     /// , you get this message from the device.
     /// type = 'LOAD_CANCELLED'
     /// </summary>
@@ -106,7 +106,7 @@ namespace KlangHub.Communication.Classes
     /// </summary>
     public class MessageMediaStatus : PayloadMessageBase
     {
-        public List<MediaStatus> status { get; set; }
+        public List<MediaStatus> status { get; set; } = null!;
         public int requestId { get; set; }
     }
 
@@ -114,21 +114,21 @@ namespace KlangHub.Communication.Classes
     {
         public int mediaSessionId { get; set; }
         public int playbackRate { get; set; }
-        public string playerState { get; set; }
+        public string playerState { get; set; } = null!;
         public float currentTime { get; set; }
         public int supportedMediaCommands { get; set; }
-        public Volume volume { get; set; }
-        public List<object> activeTrackIds { get; set; }
-        public Media media { get; set; }
+        public Volume volume { get; set; } = null!;
+        public List<object> activeTrackIds { get; set; } = null!;
+        public Media media { get; set; } = null!;
         public int currentItemId { get; set; }
-        public ExtendedStatus extendedStatus { get; set; }
-        public string repeatMode { get; set; }
+        public ExtendedStatus extendedStatus { get; set; } = null!;
+        public string repeatMode { get; set; } = null!;
     }
 
     public class ExtendedStatus
     {
-        public string playerState { get; set; }
-        public Media media { get; set; }
+        public string playerState { get; set; } = null!;
+        public Media media { get; set; } = null!;
     }
 
     /// <summary>
@@ -138,18 +138,18 @@ namespace KlangHub.Communication.Classes
     public class MessageReceiverStatus : PayloadMessageBase
     {
         public int requestId { get; set; }
-        public ReceiverStatus status { get; set; }
+        public ReceiverStatus status { get; set; } = null!;
     }
 
     public class ReceiverStatus
     {
-        public List<Application> applications { get; set; }
-        public Volume volume { get; set; }
+        public List<Application> applications { get; set; } = null!;
+        public Volume volume { get; set; } = null!;
     }
 
     public class Volume
     {
-        public string controlType { get; set; }
+        public string controlType { get; set; } = null!;
         public float level { get; set; }
         public bool muted { get; set; }
         public float stepInterval { get; set; }
@@ -157,17 +157,17 @@ namespace KlangHub.Communication.Classes
 
     public class Application
     {
-        public string appId { get; set; }
-        public string displayName { get; set; }
+        public string appId { get; set; } = null!;
+        public string displayName { get; set; } = null!;
         public bool isIdleScreen { get; set; }
-        public List<Namespaces> namespaces { get; set; }
-        public string sessionId { get; set; }
-        public string statusText { get; set; }
-        public string transportId { get; set; }
+        public List<Namespaces> namespaces { get; set; } = null!;
+        public string sessionId { get; set; } = null!;
+        public string statusText { get; set; } = null!;
+        public string transportId { get; set; } = null!;
     }
 
     public class Namespaces
     {
-        public string name { get; set; }
+        public string name { get; set; } = null!;
     }
 }

@@ -19,10 +19,10 @@ namespace KlangHub.Communication
         private const string namespaceReceiver = "urn:x-cast:com.google.cast.receiver";
         private const string namespaceMedia = "urn:x-cast:com.google.cast.media";
 
-        public CastMessage GetVolumeSetMessage(Volume volume, int requestId, string sourceId = null, string destinationId = null)
+        public CastMessage GetVolumeSetMessage(Volume volume, int requestId, string? sourceId = null, string? destinationId = null)
         {
             if (volume == null)
-                return null;
+                return null!;
 
             var volumeMessage = new MessageVolume
             {
@@ -36,7 +36,7 @@ namespace KlangHub.Communication
             return GetCastMessage(volumeMessage, namespaceReceiver, sourceId, destinationId);
         }
 
-        public CastMessage GetVolumeMuteMessage(bool muted, int requestId, string sourceId = null, string destinationId = null)
+        public CastMessage GetVolumeMuteMessage(bool muted, int requestId, string? sourceId = null, string? destinationId = null)
         {
             var volumeMessage = new MessageVolumeMute
             {
@@ -50,7 +50,7 @@ namespace KlangHub.Communication
             return GetCastMessage(volumeMessage, namespaceReceiver, sourceId, destinationId);
         }
 
-        public CastMessage GetConnectMessage(string sourceId = null, string destinationId = null)
+        public CastMessage GetConnectMessage(string? sourceId = null, string? destinationId = null)
         {
             return GetCastMessage(new PayloadMessageBase { type = "CONNECT" }, namespaceConnect, sourceId, destinationId);
         }
@@ -128,7 +128,7 @@ namespace KlangHub.Communication
             return GetCastMessage(new MessagePause { type = "STOP", sessionId = sessionId, mediaSessionId = mediaSessionId, requestId = requestId }, namespaceMedia, sourceId, destinationId);
         }
 
-        public CastMessage GetCastMessage(PayloadMessageBase message, string msgNamespace, string sourceId = null, string destinationId = null)
+        public CastMessage GetCastMessage(PayloadMessageBase message, string msgNamespace, string? sourceId = null, string? destinationId = null)
         {
             if (string.IsNullOrWhiteSpace(sourceId)) sourceId = "sender-0";
             if (string.IsNullOrWhiteSpace(destinationId)) destinationId = "receiver-0";

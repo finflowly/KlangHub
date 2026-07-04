@@ -11,7 +11,7 @@ namespace KlangHub.Communication
     /// </summary>
     public class DeviceReceiveBuffer : IDeviceReceiveBuffer
     {
-        private Action<CastMessage> onReceiveMessage;
+        private Action<CastMessage>? onReceiveMessage;
 
         /// <summary>
         /// Received data from a device.

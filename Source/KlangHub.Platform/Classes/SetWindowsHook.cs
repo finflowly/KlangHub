@@ -23,9 +23,9 @@ namespace KlangHub.Classes
         private const int VK_LMENU = 0xA4;   // left Alt
         private const int VK_RMENU = 0xA5;   // right Alt
 
-        private static Action onVolumeUp;
-        private static Action onVolumeDown;
-        private static Action onVolumeMute;
+        private static Action? onVolumeUp;
+        private static Action? onVolumeDown;
+        private static Action? onVolumeMute;
         private static readonly LowLevelKeyboardProc callbackProcedure = HookCallback;
         private static IntPtr hookId = IntPtr.Zero;
         private static bool isPressedInCtrl = false;
@@ -73,7 +73,7 @@ namespace KlangHub.Classes
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
         {
             using (Process currentProcess = Process.GetCurrentProcess())
-            using (ProcessModule currentModule = currentProcess.MainModule)
+            using (ProcessModule currentModule = currentProcess.MainModule!)
             {
                 return SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(currentModule.ModuleName), 0);
             }

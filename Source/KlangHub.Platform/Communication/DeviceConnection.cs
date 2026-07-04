@@ -13,20 +13,20 @@ namespace KlangHub.Communication
 {
     public class DeviceConnection : IDeviceConnection, IDisposable
     {
-        private Func<string> getHost;
-        private Func<int> getPort;
-        private Action<DeviceState, string> setDeviceState;
-        private Action<CastMessage> onReceiveMessage;
-        private Action<Action> startTask;
+        private Func<string> getHost = null!;
+        private Func<int> getPort = null!;
+        private Action<DeviceState, string> setDeviceState = null!;
+        private Action<CastMessage> onReceiveMessage = null!;
+        private Action<Action> startTask = null!;
         private readonly ILogger logger;
         private readonly IDeviceReceiveBuffer deviceReceiveBuffer;
         private const int bufferSize = 2048;
-        private TcpClient tcpClient;
-        private SslStream sslStream;
-        private byte[] receiveBuffer;
+        private TcpClient? tcpClient;
+        private SslStream sslStream = null!;
+        private byte[]? receiveBuffer;
         private DeviceConnectionState state;
-        private IAsyncResult currentAynchResult;
-        private byte[] sendBuffer;
+        private IAsyncResult currentAynchResult = null!;
+        private byte[]? sendBuffer;
         private bool IsDisposed = false;
 
         public DeviceConnection(ILogger loggerIn)
@@ -74,7 +74,7 @@ namespace KlangHub.Communication
                 try
                 {
                     state = DeviceConnectionState.Error;
-                    setDeviceState?.Invoke(DeviceState.ConnectError, null);
+                    setDeviceState?.Invoke(DeviceState.ConnectError, null!);
                     var host = getHost?.Invoke();
                     logger.Log($"ex [{host}]: Connect {ex.Message}");
                     CloseConnection();
@@ -123,7 +123,7 @@ namespace KlangHub.Communication
                     tcpClient.EndConnect(ar);
                     sslStream = new SslStream(tcpClient.GetStream(), false, new RemoteCertificateValidationCallback(DontValidateServerCertificate), null);
                     var host = getHost?.Invoke();
-                    sslStream.AuthenticateAsClient(host, new X509CertificateCollection(), SslProtocols.Tls12, true);
+                    sslStream.AuthenticateAsClient(host!, new X509CertificateCollection(), SslProtocols.Tls12, true);
                     StartReceive();
                     DoSendMessage();
                     state = DeviceConnectionState.Connected;
@@ -134,7 +134,7 @@ namespace KlangHub.Communication
                 try
                 {
                     state = DeviceConnectionState.Error;
-                    setDeviceState?.Invoke(DeviceState.ConnectError, null);
+                    setDeviceState?.Invoke(DeviceState.ConnectError, null!);
                     var host = getHost?.Invoke();
                     logger.Log($"ex [{host}]: ConnectCallback {ex.Message}");
                     CloseConnection();
@@ -235,7 +235,7 @@ namespace KlangHub.Communication
             if (ar == null || deviceReceiveBuffer == null || receiveBuffer == null || IsDisposed)
                 return;
 
-            SslStream stream = (SslStream)ar.AsyncState;
+            SslStream stream = (SslStream)ar.AsyncState!;
             int byteCount = -1;
             try
             {
@@ -307,7 +307,7 @@ namespace KlangHub.Communication
         /// Don't validate the ssl certificate.
         /// </summary>
         /// <returns></returns>
-        public bool DontValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        public bool DontValidateServerCertificate(object? sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
         {
             return true;
         }

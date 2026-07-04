@@ -14,6 +14,6 @@ namespace KlangHub.Core.Casting
         string GetStreamingUrl();
         string GetStreamTitle();
         bool GetAutoRestart();
-        void StartTask(Action action, CancellationTokenSource cancellationTokenSource = null);
+        void StartTask(Action action, CancellationTokenSource? cancellationTokenSource = null);
     }
 }

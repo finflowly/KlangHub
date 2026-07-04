@@ -9,7 +9,7 @@ namespace KlangHub.Classes
         public static void StartApplicationWhenWindowsStarts(bool enable, string valueName, string exePath)
         {
             RegistryKey rk = Registry.CurrentUser.OpenSubKey
-                ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true)!;
 
             // Clean up the pre-rebrand autostart entry.
             rk.DeleteValue("Desktop Audio Streamer", false);
