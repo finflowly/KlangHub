@@ -12,6 +12,7 @@ namespace KlangHub.UserControls
     {
         private readonly IDevice device;
         private readonly Func<IPlaybackSession> sessionAccessor;
+        private readonly IPlaybackSession session;
         private Action PlayPause_Click;
 
         public DeviceControl(IDevice deviceIn, Func<IPlaybackSession> sessionAccessorIn = null)
@@ -19,6 +20,17 @@ namespace KlangHub.UserControls
             InitializeComponent();
             device = deviceIn;
             sessionAccessor = sessionAccessorIn;
+
+            // 2.2b-4.5: observe the device via the neutral session. Subscribe once to the stable session
+            // and unsubscribe on Disposed so Device cannot hold a delegate to a disposed control.
+            try { session = sessionAccessorIn?.Invoke(); }
+            catch (InvalidOperationException) { session = null; }
+            if (session != null)
+            {
+                session.VolumeChanged += OnSessionVolumeChanged;
+                Disposed += (s, e) => session.VolumeChanged -= OnSessionVolumeChanged;
+            }
+
             btnDevice.FlatAppearance.MouseOverBackColor = btnDevice.BackColor;
             btnDevice.BackColorChanged += (s, e) =>
             {
@@ -117,26 +129,27 @@ namespace KlangHub.UserControls
             PlayPause_Click = playPauseAction;
         }
 
-        public void OnVolumeUpdate(Volume volume)
+        // 2.2b-4.5: neutral volume observation, fed by the session's VolumeChanged event.
+        private void OnSessionVolumeChanged(object sender, VolumeStatus volume) => RenderVolume(volume);
+
+        private void RenderVolume(VolumeStatus volume)
         {
             if (IsDisposed) return;
             if (InvokeRequired)
             {
-                Invoke(new Action<Volume>(OnVolumeUpdate), new object[] { volume });
+                Invoke(new Action<VolumeStatus>(RenderVolume), new object[] { volume });
                 return;
             }
 
-            trbVolume.Value = (int)(volume.level * 100);
+            trbVolume.Value = (int)(volume.Level * 100);
             trbVolume.Enabled = true;
             pictureVolumeMute.Enabled = true;
-            int change = (int)(volume.stepInterval * 100);
+            int change = (int)(volume.StepInterval * 100);
+            if (change < 1) change = 1;   // TrackBar requires >= 1
             trbVolume.LargeChange = change;
             trbVolume.SmallChange = change;
             trbVolume.TickFrequency = change;
-            if (volume.muted)
-                pictureVolumeMute.Image = Properties.Resources.Mute;
-            else
-                pictureVolumeMute.Image = Properties.Resources.Unmute;
+            pictureVolumeMute.Image = volume.Muted ? Properties.Resources.Mute : Properties.Resources.Unmute;
         }
 
         private void TrbVolume_Scroll(object sender, EventArgs e)

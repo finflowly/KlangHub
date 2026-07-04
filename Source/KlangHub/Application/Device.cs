@@ -547,8 +547,8 @@ namespace KlangHub.Application
                 latestVolumeSet = 0;
             }
 
-            deviceControl.OnVolumeUpdate(volume);
-            VolumeChanged?.Invoke(this, new VolumeStatus(volumeSetting.level, volumeSetting.muted));
+            // 2.2b-4.5: DeviceControl observes volume via VolumeChanged (no direct push).
+            VolumeChanged?.Invoke(this, new VolumeStatus(volumeSetting.level, volumeSetting.muted, volumeSetting.stepInterval));
         }
 
         private bool LevelIsOk(float level)
@@ -738,7 +738,7 @@ namespace KlangHub.Application
 
         string IPlaybackSession.StatusText => GetStatusText() ?? string.Empty;
 
-        VolumeStatus IPlaybackSession.Volume => new(volumeSetting?.level ?? 0f, volumeSetting?.muted ?? false);
+        VolumeStatus IPlaybackSession.Volume => new(volumeSetting?.level ?? 0f, volumeSetting?.muted ?? false, volumeSetting?.stepInterval ?? 0.05f);
 
         void IPlaybackSession.Connect() => deviceCommunication.Connect();
         void IPlaybackSession.Play() => ResumePlaying();
