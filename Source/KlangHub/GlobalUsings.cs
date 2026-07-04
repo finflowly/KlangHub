@@ -5,3 +5,4 @@
 global using KlangHub.Core.Models;
 global using KlangHub.Core.Audio;
 global using KlangHub.Core.Casting;
+global using KlangHub.Core.Diagnostics;
