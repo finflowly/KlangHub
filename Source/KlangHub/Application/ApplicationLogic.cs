@@ -32,6 +32,9 @@ namespace KlangHub.Application
         private readonly IDeviceStatusTimer deviceStatusTimer;
         private readonly ICastProvider castProvider;
         private NotifyIcon notifyIcon;
+        // 2.2b-H3a: ApplicationLogic owns the per-device tray menu items (moved off IDevice/Device so
+        // IDevice becomes WinForms-free). Keyed by device id; add/remove run on different threads.
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, ToolStripMenuItem> deviceMenuItems = new();
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
         private UserSettings settings = new UserSettings();
@@ -173,7 +176,8 @@ namespace KlangHub.Application
                 }
 
                 notifyIcon?.ContextMenuStrip?.Items?.Insert(0, menuItem);
-                deviceIn.SetMenuItem(menuItem);
+                if (deviceIn is IPlaybackSession menuSession)
+                    deviceMenuItems[menuSession.Device.Id] = menuItem;
                 SubscribeMenuChecked(deviceIn, menuItem);
                 RequestDeviceStatus(deviceIn);
             }
@@ -190,21 +194,24 @@ namespace KlangHub.Application
         /// </summary>
         private void OnRemoveDevice(IDevice device)
         {
-            if (device == null)
+            if (device == null || !(device is IPlaybackSession session))
                 return;
 
-            var menuItem = device.GetMenuItem();
-            var strip = notifyIcon?.ContextMenuStrip;
-            if (menuItem != null && strip != null)
+            var id = session.Device.Id;
+
+            if (deviceMenuItems.TryRemove(id, out var menuItem) && menuItem != null)
             {
-                if (!strip.IsDisposed && strip.InvokeRequired)
-                    strip.BeginInvoke(new Action(() => RemoveMenuItem(strip, menuItem)));
-                else
-                    RemoveMenuItem(strip, menuItem);
+                var strip = notifyIcon?.ContextMenuStrip;
+                if (strip != null)
+                {
+                    if (!strip.IsDisposed && strip.InvokeRequired)
+                        strip.BeginInvoke(new Action(() => RemoveMenuItem(strip, menuItem)));
+                    else
+                        RemoveMenuItem(strip, menuItem);
+                }
             }
 
-            if (device is IPlaybackSession session)
-                mainForm.RemoveDevice(session.Device.Id);
+            mainForm.RemoveDevice(id);
         }
 
         private static void RemoveMenuItem(ContextMenuStrip strip, ToolStripMenuItem item)

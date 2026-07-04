@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Windows.Forms;
 using KlangHub.Communication;
 using KlangHub.Communication.Classes;
 using KlangHub.ProtocolBuffer;
@@ -22,8 +21,6 @@ namespace KlangHub.Application
         string GetHost();
         string GetFriendlyName();
         DeviceState GetDeviceState();
-        ToolStripMenuItem GetMenuItem();
-        void SetMenuItem(ToolStripMenuItem menuItem);
         void VolumeUp();
         void VolumeDown();
         void VolumeMute();

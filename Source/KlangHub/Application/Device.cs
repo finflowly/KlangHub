@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Windows.Forms;
 using NAudio.Wave;
 using KlangHub.Communication;
 using KlangHub.Communication.Classes;
-using KlangHub.UserControls;
 using KlangHub.Streaming.Interfaces;
 using KlangHub.Communication.Interfaces;
 using KlangHub.Classes;
@@ -29,7 +27,6 @@ namespace KlangHub.Application
         private IStreamingConnection streamingConnection;
         private readonly IDeviceConnection deviceConnection;
         private readonly DiscoveredDevice discoveredDevice;
-        private ToolStripMenuItem menuItem;
         private Volume volumeSetting;
         private DateTime latestVolumeChange;
         private float latestVolumeSet;
@@ -125,7 +122,6 @@ namespace KlangHub.Application
         /// <param name="eureka"></param>
         private void SetDeviceInformation(DeviceEureka eurekaIn)
         {
-            SetDeviceName(GetDiscoveredDevice()?.Name);
             eureka = eurekaIn;
             setDeviceInformationCallback?.Invoke(eureka);
         }
@@ -383,19 +379,6 @@ namespace KlangHub.Application
         }
 
         /// <summary>
-        /// Set the friendly name of the device.
-        /// </summary>
-        private void SetDeviceName(string name)
-        {
-            if (menuItem == null || isDisposed)
-                return;
-
-            // 2.2b-4.7: the DeviceControl reads its title from the descriptor at creation; only the tray
-            // menu item is kept in sync here (a rename during a session is not reflected in the card title).
-            menuItem.Text = name;
-        }
-
-        /// <summary>
         /// Returns the device state.
         /// </summary>
         public DeviceState GetDeviceState()
@@ -404,25 +387,6 @@ namespace KlangHub.Application
                 return DeviceState.Disposed;
 
             return discoveredDevice.DeviceState;
-        }
-
-        /// <summary>
-        /// Set the menu item in the systray.
-        /// </summary>
-        public void SetMenuItem(ToolStripMenuItem menuItemIn)
-        {
-            menuItem = menuItemIn;
-        }
-
-        /// <summary>
-        /// Return the menuitem in the systray.
-        /// </summary>
-        public ToolStripMenuItem GetMenuItem()
-        {
-            if (isDisposed)
-                return null;
-
-            return menuItem;
         }
 
         /// <summary>
@@ -537,10 +501,6 @@ namespace KlangHub.Application
             if (!IsGroup())
             {
                 startTask(DeviceInformation.GetDeviceInformation(discoveredDevice, SetDeviceInformation, logger), null);
-            }
-            else
-            {
-                SetDeviceName(discoveredDevice.Name);
             }
         }
 
