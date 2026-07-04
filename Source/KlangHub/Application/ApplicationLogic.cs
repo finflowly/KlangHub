@@ -154,16 +154,62 @@ namespace KlangHub.Application
                 {
                     Text = deviceIn.GetFriendlyName()
                 };
-                menuItem.Click += deviceIn.OnClickPlayPause;
+
+                // 2.2b-4.4a: drive the tray per-device Play/Stop through the neutral casting session
+                // (castProvider.CreateSession -> IPlaybackSession). The descriptor is captured now; the
+                // session is re-resolved on each click. Falls back to the direct device path only if no
+                // provider is present (does not happen in normal composition, but keeps the null-guard
+                // style used by ScanForDevices).
+                if (castProvider != null && deviceIn is IPlaybackSession playbackSession)
+                {
+                    var descriptor = playbackSession.Device;
+                    menuItem.Click += (s, e) => TrayTogglePlayStop(descriptor);
+                }
+                else
+                {
+                    menuItem.Click += deviceIn.OnClickPlayPause;
+                }
+
                 notifyIcon?.ContextMenuStrip?.Items?.Insert(0, menuItem);
                 deviceIn.SetMenuItem(menuItem);
-                deviceIn.OnGetStatus();
+                RequestDeviceStatus(deviceIn);
             }
             catch (Exception ex)
             {
                 logger.Log(ex, "ApplicationLogic.OnAddDevice");
             }
             mainForm.AddDevice(deviceIn);
+        }
+
+        /// <summary>
+        /// 2.2b-4.4a: toggle Play/Stop for one device via the neutral casting session. Resolving the
+        /// descriptor through castProvider.CreateSession can throw if the device has meanwhile left the
+        /// registry; we swallow that to a no-op, matching the old direct path (OnClickPlayStop no-ops on
+        /// a disposed device). Ownership/lifecycle of the returned session is addressed later in 4.4.
+        /// </summary>
+        private void TrayTogglePlayStop(CastDeviceDescriptor descriptor)
+        {
+            try
+            {
+                castProvider.CreateSession(descriptor).TogglePlayStop();
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Log(ex, "ApplicationLogic.TrayTogglePlayStop");
+            }
+        }
+
+        /// <summary>
+        /// 2.2b-4.4a: single-device status refresh via the neutral session (RequestStatus maps 1:1 to
+        /// OnGetStatus). Called at add time when the device is present, so no miss-guard is needed here;
+        /// falls back to the direct device call if no provider is present.
+        /// </summary>
+        private void RequestDeviceStatus(IDevice deviceIn)
+        {
+            if (castProvider != null && deviceIn is IPlaybackSession playbackSession)
+                castProvider.CreateSession(playbackSession.Device).RequestStatus();
+            else
+                deviceIn.OnGetStatus();
         }
 
         /// <summary>
