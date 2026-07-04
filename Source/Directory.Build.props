@@ -1,0 +1,10 @@
+<Project>
+  <!-- Tier2-B: shared MSBuild properties for all KlangHub projects (net10). The target framework stays
+       per-project (net10.0 for Core vs net10.0-windows for Platform/App/Tests). <Nullable> is enabled
+       here in Tier2-C. -->
+  <PropertyGroup>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>
