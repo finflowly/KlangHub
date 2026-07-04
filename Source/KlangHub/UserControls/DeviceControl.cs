@@ -63,6 +63,10 @@ namespace KlangHub.UserControls
             return btnDevice.Text;
         }
 
+        // 2.2b-4.7: neutral identity exposed for MainForm-owned filtering and removal.
+        public bool IsGroup => descriptor?.IsGroup ?? false;
+        public string Id => descriptor?.Id;
+
         // 2.2b-4.5: neutral status observation, fed by the session's StateChanged event.
         private void OnSessionStateChanged(object sender, PlaybackState state)
             => RenderStatus(state, session?.StatusText ?? string.Empty);

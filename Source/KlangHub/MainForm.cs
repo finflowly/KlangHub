@@ -231,7 +231,7 @@ namespace KlangHub
             pnlDevices.Controls.Add(deviceControl);
             var filter = GetFilterDevices();
             if (filter != null)
-                deviceControl.Visible = FilterDevices.ShowFilterDevices(device, filter.Value);
+                deviceControl.Visible = FilterDevices.ShowFilterDevices(deviceControl.IsGroup, filter.Value);
 
             // Sort alphabetically.
             var deviceName = device.GetFriendlyName();
@@ -1052,7 +1052,7 @@ namespace KlangHub
 
         public void SetFilterDevices(FilterDevicesEnum value)
         {
-            if (cmbFilterDevices == null || applicationLogic == null)
+            if (cmbFilterDevices == null)
                 return;
 
             FillFilterDevices();
@@ -1061,7 +1061,7 @@ namespace KlangHub
                 if ((FilterDevicesEnum)((ComboboxItem)cmbFilterDevices.Items[i]).Value == value)
                     cmbFilterDevices.SelectedIndex = i;
             }
-            applicationLogic.SetFilterDevices(value);
+            ApplyFilter(value);
         }
 
         public FilterDevicesEnum? GetFilterDevices()
@@ -1074,10 +1074,27 @@ namespace KlangHub
 
         private void CmbFilterDevices_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (applicationLogic == null)
+            if (cmbFilterDevices?.SelectedItem == null)
                 return;
 
-            applicationLogic.SetFilterDevices((FilterDevicesEnum)((ComboboxItem)cmbFilterDevices.SelectedItem).Value);
+            ApplyFilter((FilterDevicesEnum)((ComboboxItem)cmbFilterDevices.SelectedItem).Value);
+        }
+
+        // 2.2b-4.7: MainForm owns filter visibility (keyed on each control's own IsGroup), replacing the
+        // old Devices.SetFilterDevices -> device.GetDeviceControl().Visible reverse-coupling path.
+        private void ApplyFilter(FilterDevicesEnum value)
+        {
+            if (pnlDevices == null)
+                return;
+
+            if (InvokeRequired)
+            {
+                Invoke(new Action<FilterDevicesEnum>(ApplyFilter), new object[] { value });
+                return;
+            }
+
+            foreach (var dc in pnlDevices.Controls.OfType<DeviceControl>())
+                dc.Visible = FilterDevices.ShowFilterDevices(dc.IsGroup, value);
         }
 
         public void SetStartLastUsedDevices(bool value)

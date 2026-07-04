@@ -26,7 +26,6 @@ namespace KlangHub.Application.Interfaces
         void SetStreamFormat(SupportedStreamFormat format);
         void SetCulture(string culture);
         string GetStreamingUrl();
-        void SetFilterDevices(FilterDevicesEnum value);
         bool WasPlaying(DiscoveredDevice discoveredDevice);
         void ClearMp3Buffer();
         void StartTask(Action action, CancellationTokenSource cancellationTokenSource = null);

@@ -7,19 +7,16 @@ namespace KlangHub.Classes
         /// <summary>
         /// Determine if the device is shown, depending on the filter.
         /// </summary>
-        public static bool ShowFilterDevices(IDevice device, FilterDevicesEnum value)
+        public static bool ShowFilterDevices(bool isGroup, FilterDevicesEnum value)
         {
-            if (device == null)
-                return false;
-
             switch (value)
             {
                 case FilterDevicesEnum.ShowAll:
                     return true;
                 case FilterDevicesEnum.DevicesOnly:
-                    return !device.IsGroup();
+                    return !isGroup;
                 case FilterDevicesEnum.GroupsOnly:
-                    return device.IsGroup();
+                    return isGroup;
                 default:
                     return true;
             }

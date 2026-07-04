@@ -612,18 +612,6 @@ namespace KlangHub.Application
         }
 
         /// <summary>
-        /// The devices filter has changed.
-        /// </summary>
-        /// <param name="value">new filter value</param>
-        public void SetFilterDevices(FilterDevicesEnum value)
-        {
-            if (devices == null)
-                return;
-
-            devices.SetFilterDevices(value);
-        }
-
-        /// <summary>
         /// Was the device playing when the application was closed for the last time?
         /// </summary>
         /// <returns>true if the device was playing, or false</returns>

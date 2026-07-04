@@ -407,24 +407,6 @@ namespace KlangHub.Application
         }
 
         /// <summary>
-        /// The devices filter has changed.
-        /// </summary>
-        /// <param name="value">new filter value</param>
-        public void SetFilterDevices(FilterDevicesEnum value)
-        {
-            if (deviceList == null)
-                return;
-
-            foreach (var device in deviceList)
-            {
-                if (device == null ||device.GetDeviceControl() == null || device.GetDeviceControl().IsDisposed)
-                    continue;
-
-                device.GetDeviceControl().Visible = FilterDevices.ShowFilterDevices(device, value);
-            }
-        }
-
-        /// <summary>
         /// Set the device buffer in seconds.
         /// </summary>
         /// <param name="bufferInSeconds">the buffer in seconds</param>

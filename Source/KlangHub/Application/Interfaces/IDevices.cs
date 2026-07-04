@@ -24,7 +24,6 @@ namespace KlangHub.Application
         void Dispose();
         void SetDependencies(MainForm mainFormIn, IApplicationLogic applicationLogicIn);
         List<DiscoveredDevice> GetHosts();
-        void SetFilterDevices(FilterDevicesEnum value);
         void SetExtraBufferInSeconds(int bufferInSeconds);
         void AutoMute(bool mute);
         List<IDevice> GetDeviceList();
