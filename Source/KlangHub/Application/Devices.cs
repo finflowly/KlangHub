@@ -178,6 +178,7 @@ namespace KlangHub.Application
         /// <param name="eurekaIn"></param>
         private void SetDeviceInformation(DeviceEureka eurekaIn)
         {
+            logger?.Log($"eureka: name='{eurekaIn?.GetName()}' ip={eurekaIn?.GetIpAddress()} mac={eurekaIn?.GetMacAddress()}");
             var discoveredDevice = new DiscoveredDevice
             {
                 IPAddress = eurekaIn.GetIpAddress(),

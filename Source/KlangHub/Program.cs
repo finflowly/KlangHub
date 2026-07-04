@@ -34,7 +34,7 @@ namespace KlangHub
 
                 var logger = new Logger();
                 var devices = new Devices(logger);
-                var discoverDevices = new DiscoverDevices();
+                var discoverDevices = new DiscoverDevices(logger);
                 var chromecastDiscovery = new ChromecastDeviceDiscovery(discoverDevices);
                 chromecastDiscovery.DeviceDiscovered += (s, d) => { if (chromecastDiscovery.TryGetDevice(d.Id, out var full)) devices.OnDeviceAvailable(full); };
                 var chromecastProvider = new ChromecastProvider(
@@ -116,7 +116,7 @@ namespace KlangHub
 
                 var logger = new Logger();
                 var devices = new Devices(logger);
-                var discoverDevices = new DiscoverDevices();
+                var discoverDevices = new DiscoverDevices(logger);
                 var chromecastDiscovery = new ChromecastDeviceDiscovery(discoverDevices);
                 chromecastDiscovery.DeviceDiscovered += (s, d) => { if (chromecastDiscovery.TryGetDevice(d.Id, out var full)) devices.OnDeviceAvailable(full); };
                 var chromecastProvider = new ChromecastProvider(

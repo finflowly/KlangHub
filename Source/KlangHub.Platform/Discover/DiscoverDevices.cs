@@ -19,9 +19,11 @@ namespace KlangHub.Discover
         private List<DiscoveredDevice> discoveredDevices;
         private Timer timer;
         private List<MsdnIps> msdnIps;
+        private readonly ILogger logger;
 
-        public DiscoverDevices()
+        public DiscoverDevices(ILogger loggerIn = null)
         {
+            logger = loggerIn;
         }
 
         /// <summary>
@@ -96,6 +98,8 @@ namespace KlangHub.Discover
             // one would produce a broken duplicate ("Invalid URI" on eureka + "address is invalid in this
             // context" on connect), so skip announcements that carry no IPv4 address.
             var ipv4 = e.Announcement.Addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+            var fnDbg = e.Announcement.Txt.FirstOrDefault(x => x.ToString().StartsWith("fn="))?.Replace("fn=", "");
+            logger?.Log($"mDNS [{e.Announcement.Type}] fn='{fnDbg}' addrs=[{string.Join(", ", e.Announcement.Addresses)}] -> {(ipv4 == null ? "SKIPPED (no IPv4)" : ipv4.ToString())}");
             if (ipv4 == null)
                 return;
 
