@@ -17,7 +17,8 @@ namespace KlangHub.Rest
         private const string errorDeviceNotFound = "{\"errors\": { \"status\": \"404 Not Found\", \"id\": \"3\", \"title\": \"Device not found\" } }";
         private const string errorWrongVolume = "{\"errors\": { \"status\": \"400 Bad Request\", \"id\": \"3\", \"title\": \"Volume should be an integer between 0 and 100 (/volume/<device>/<volume>)\" } }";
         
-        public static void Process(Socket socket, string request, IDevices devices, ILogger logger, IMainForm mainForm)
+        public static void Process(Socket socket, string request, IDevices devices, ILogger logger, IMainForm mainForm,
+            Func<IDevice, IPlaybackSession> resolveSession)
         {
             if (request == null || socket == null)
                 return;
@@ -36,13 +37,13 @@ namespace KlangHub.Rest
                 var action = WebUtility.UrlDecode(requestAction[1].ToLowerInvariant());
                 logger.Log($"RestApiHandler: {action}");
                 if (action.StartsWith("/start"))
-                    response = Start(action.Replace("/start", ""), devices);
+                    response = Start(action.Replace("/start", ""), devices, resolveSession);
                 else if (action.StartsWith("/stop"))
-                    response = Stop(action.Replace("/stop", ""), devices);
+                    response = Stop(action.Replace("/stop", ""), devices, resolveSession);
                 else if (action.StartsWith("/volume"))
-                    response = Volume(action.Replace("/volume", ""), devices);
+                    response = Volume(action.Replace("/volume", ""), devices, resolveSession);
                 else if (action.StartsWith("/togglemute"))
-                    response = ToggleMute(action.Replace("/togglemute", ""), devices);
+                    response = ToggleMute(action.Replace("/togglemute", ""), devices, resolveSession);
                 else if (action.StartsWith("/list"))
                     response = List(devices);
                 else if (action.StartsWith("/restartrecording"))
@@ -91,7 +92,7 @@ namespace KlangHub.Rest
             return response;
         }
 
-        private static string ToggleMute(string action, IDevices devices)
+        private static string ToggleMute(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
         {
             if (string.IsNullOrEmpty(action.Replace("/", "")))
             {
@@ -114,7 +115,7 @@ namespace KlangHub.Rest
             return response;
         }
 
-        private static string Volume(string action, IDevices devices)
+        private static string Volume(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
         {
             var device = GetDevice(devices, action);
             if (device == null)
@@ -136,7 +137,7 @@ namespace KlangHub.Rest
             return response;
         }
 
-        private static string Stop(string action, IDevices devices)
+        private static string Stop(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
         {
             if (string.IsNullOrEmpty(action.Replace("/", "")))
             {
@@ -159,7 +160,7 @@ namespace KlangHub.Rest
             return response;
         }
 
-        private static string Start(string action, IDevices devices)
+        private static string Start(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
         {
             if (string.IsNullOrEmpty(action.Replace("/", "")))
             {

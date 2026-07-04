@@ -82,7 +82,9 @@ namespace KlangHub.Application
                 streamingRequestListener.StartListening(ipAddress, OnStreamingRequestConnect, logger);
             });
             StartTask(() => {
-                new RestApi().StartListening(ipAddress, RestApiHandler.Process, logger, devices, mainForm);
+                new RestApi().StartListening(ipAddress,
+                    (socket, req, devs, log, form) => RestApiHandler.Process(socket, req, devs, log, form, ResolveSession),
+                    logger, devices, mainForm);
             });
         }
 
@@ -210,6 +212,18 @@ namespace KlangHub.Application
                 castProvider.CreateSession(playbackSession.Device).RequestStatus();
             else
                 deviceIn.OnGetStatus();
+        }
+
+        /// <summary>
+        /// 2.2b-4.4f: name/device -> neutral session resolver for the REST handler. Wraps CreateSession's
+        /// throw-on-miss into a null return so REST sites (incl. broadcast) simply skip a vanished device.
+        /// </summary>
+        private IPlaybackSession ResolveSession(IDevice device)
+        {
+            if (castProvider == null || !(device is IPlaybackSession playbackSession))
+                return null;
+            try { return castProvider.CreateSession(playbackSession.Device); }
+            catch (InvalidOperationException) { return null; }
         }
 
         /// <summary>
