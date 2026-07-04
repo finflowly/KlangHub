@@ -31,23 +31,17 @@ namespace KlangHub.Application
         private readonly IDiscoverDevices discoverDevices;
         private readonly IDeviceStatusTimer deviceStatusTimer;
         private readonly ICastProvider castProvider;
+        // 2.2b-H4b: the WinForms-free orchestration (streaming pipeline, listener lifecycle, discovery
+        // start, task runner, ICastHost). ApplicationLogic is now a thin tray shell that delegates here.
+        private readonly Orchestration.Orchestrator orchestrator;
         private NotifyIcon notifyIcon;
         // 2.2b-H3a: ApplicationLogic owns the per-device tray menu items (moved off IDevice/Device so
         // IDevice becomes WinForms-free). Keyed by device id; add/remove run on different threads.
         private readonly System.Collections.Concurrent.ConcurrentDictionary<string, ToolStripMenuItem> deviceMenuItems = new();
-        private const int trbLagMaximumValue = 1000;
-        private int reduceLagThreshold = trbLagMaximumValue;
         private UserSettings settings = new UserSettings();
-        private IAudioEncoder mp3Encoder = null;
-        private SupportedStreamFormat StreamFormatSelected = SupportedStreamFormat.Mp3_320;
         private string Culture;
-        // 2.2b-H4a-3: neutral stream title so ICastHost.GetStreamTitle is headless; kept in sync from the UI.
-        private string streamTitle = Properties.Strings.ChromeCast_StreamTitle;
         private readonly ILogger logger;
         private Size defaultSize = new Size(850, 550);
-        private TasksToCancel taskList;
-
-        private bool AutoRestart { get; set; } = false;
 
         public ApplicationLogic(IDevices devicesIn, IDiscoverDevices discoverDevicesIn
             , IConfiguration configurationIn
@@ -63,6 +57,7 @@ namespace KlangHub.Application
             deviceStatusTimer = deviceStatusTimerIn;
             logger = loggerIn;
             castProvider = castProviderIn;
+            orchestrator = new Orchestration.Orchestrator(devicesIn, streamingRequestListenerIn, castProviderIn, loggerIn);
         }
 
         /// <summary>
@@ -70,11 +65,10 @@ namespace KlangHub.Application
         /// </summary>
         public void Initialize()
         {
-            taskList = new TasksToCancel();
             AddNotifyIcon();
             LoadSettings();
             configuration.Load(ApplyConfiguration, logger);
-            ScanForDevices();
+            orchestrator.ScanForDevices();
             deviceStatusTimer.StartPollingDevice(devices.OnGetStatus);
             var ipAddress = Network.GetIp4Address();
             if (ipAddress == null)
@@ -83,10 +77,8 @@ namespace KlangHub.Application
                 return;
             }
 
-            StartTask(() => {
-                streamingRequestListener.StartListening(ipAddress, OnStreamingRequestConnect, logger);
-            });
-            StartTask(() => {
+            orchestrator.StartStreamingListener(ipAddress);
+            orchestrator.StartTask(() => {
                 new RestApi().StartListening(ipAddress,
                     (socket, req, devs, log, form) => RestApiHandler.Process(socket, req, devs, log, form, ResolveSession),
                     logger, devices, mainForm);
@@ -99,52 +91,19 @@ namespace KlangHub.Application
         /// <param name="socketIn">the connected socket</param>
         /// <param name="httpRequestIn">the HTTP headers, including the 'CAST-DEVICE-CAPABILITIES' header</param>
         public void OnStreamingRequestConnect(Socket socketIn, string httpRequestIn)
-        {
-            if (devices == null)
-                return;
-
-            logger.Log(string.Format("Connection added from {0}", socketIn.RemoteEndPoint));
-            devices.AddStreamingConnection(socketIn, httpRequestIn, StreamFormatSelected);
-        }
+            => orchestrator.OnStreamingRequestConnect(socketIn, httpRequestIn);
 
         /// <summary>
         /// Callback for the loopback recorder, new audio data is captured.
         /// </summary>
         /// <param name="dataToSendIn">the audio data in wav format</param>
         /// <param name="formatIn">the wav format that's used</param>
-        public void OnRecordingDataAvailable(AudioFrame frame)
-        {
-            if (devices == null || frame == null)
-                return;
-
-            var formatIn = new AudioFormat(frame.SampleRate, frame.BitsPerSample, frame.Channels);
-            var dataToSendIn = frame.Data;
-
-            if (!StreamFormatSelected.Equals(SupportedStreamFormat.Wav) &&
-                !StreamFormatSelected.Equals(SupportedStreamFormat.Wav_16bit) &&
-                !StreamFormatSelected.Equals(SupportedStreamFormat.Wav_24bit) &&
-                !StreamFormatSelected.Equals(SupportedStreamFormat.Wav_32bit))
-            {
-                if (mp3Encoder == null)
-                {
-                    mp3Encoder = new Mp3Encoder(formatIn, StreamFormatSelected, logger);
-                }
-                mp3Encoder.Encode(dataToSendIn.ToArray());
-                dataToSendIn = mp3Encoder.Read();
-            }
-            if (dataToSendIn.Length > 0)
-            {
-                devices.OnRecordingDataAvailable(dataToSendIn, formatIn, reduceLagThreshold, StreamFormatSelected);
-            }
-        }
+        public void OnRecordingDataAvailable(AudioFrame frame) => orchestrator.OnRecordingDataAvailable(frame);
 
         /// <summary>
         /// Clear the audio data in the mp3 encoder.
         /// </summary>
-        public void ClearMp3Buffer()
-        {
-            mp3Encoder = null;
-        }
+        public void ClearMp3Buffer() => orchestrator.ClearMp3Buffer();
 
         /// <summary>
         /// Callback for Devices, a new device is added.
@@ -299,68 +258,26 @@ namespace KlangHub.Application
         /// <summary>
         /// The user changed the checkbox to automatically restart devices when closed.
         /// </summary>
-        public void OnSetAutoRestart(bool autoRestartIn)
-        {
-            AutoRestart = autoRestartIn;
-        }
+        public void OnSetAutoRestart(bool autoRestartIn) => orchestrator.SetAutoRestart(autoRestartIn);
 
         /// <summary>
         /// Automaticaly restart devices y/n.
         /// </summary>
-        public bool GetAutoRestart()
-        {
-            return AutoRestart;
-        }
+        public bool GetAutoRestart() => orchestrator.GetAutoRestart();
 
         /// <summary>
         /// The user changed the ip address in the user interface.
         /// Restart streaming using the new ip address.
         /// </summary>
         /// <param name="ipAddressIn">the selected ip address</param>
-        public void ChangeIPAddressUsed(IPAddress ipAddressIn)
-        {
-            if (devices == null || streamingRequestListener == null)
-                return;
-
-            logger.Log($"Change IP4 address: {ipAddressIn}");
-            devices.Stop();
-            streamingRequestListener.StopListening();
-            ScanForDevices();
-            StartTask(() => {
-                streamingRequestListener.StartListening(ipAddressIn, OnStreamingRequestConnect, logger);
-            });
-            var cancellationTokenSource = new CancellationTokenSource();
-            StartTask(() =>
-            {
-                Task.Delay(2500).Wait();
-
-                if (cancellationTokenSource.IsCancellationRequested)
-                    return;
-
-                devices.Start();
-            }, cancellationTokenSource);
-        }
+        public void ChangeIPAddressUsed(IPAddress ipAddressIn) => orchestrator.ChangeIPAddressUsed(ipAddressIn);
 
         /// <summary>
         /// The user changed the stream format in the user interface.
         /// Restart streaming in the new format.
         /// </summary>
         /// <param name="formatIn">the chosen format</param>
-        public void SetStreamFormat(SupportedStreamFormat formatIn)
-        {
-            if (devices == null)
-                return;
-
-            if (formatIn != StreamFormatSelected)
-            {
-                logger.Log($"Set stream format to {formatIn}");
-                StreamFormatSelected = formatIn;
-                mp3Encoder = null;
-
-                devices.Stop();
-                devices.Start();
-            }
-        }
+        public void SetStreamFormat(SupportedStreamFormat formatIn) => orchestrator.SetStreamFormat(formatIn);
 
         /// <summary>
         /// The user changed the language in the user interface.
@@ -374,13 +291,7 @@ namespace KlangHub.Application
         /// <summary>
         /// Search for new devices in the network.
         /// </summary>
-        public void ScanForDevices()
-        {
-            if (devices == null || castProvider == null)
-                return;
-
-            castProvider.Discovery.Start();
-        }
+        public void ScanForDevices() => orchestrator.ScanForDevices();
 
         /// <summary>
         /// Load and apply the settings.
@@ -496,13 +407,13 @@ namespace KlangHub.Application
                 }
             }
             settings.ChromecastDiscoveredDevices = discoveredDevices;
+            settings.StreamFormat = orchestrator.GetStreamFormat();
             settings.UseKeyboardShortCuts = mainForm.GetUseKeyboardShortCuts();
             settings.AutoStartDevices = mainForm.GetAutoStartDevices();
             settings.AutoRestart = mainForm.GetAutoRestart();
             settings.StartLastUsedDevices = mainForm.GetStartLastUsedDevices();
             settings.ShowWindowOnStart = mainForm.GetShowWindowOnStart();
             settings.Ip4AddressUsed = mainForm.GetIP4AddressUsed();
-            settings.StreamFormat = StreamFormatSelected;
             settings.Culture = Culture;
             settings.LogDeviceCommunication = mainForm.GetLogDeviceCommunication();
             settings.ShowLagControl = mainForm.GetShowLagControl();
@@ -603,13 +514,7 @@ namespace KlangHub.Application
         /// Get the streaming url.
         /// </summary>
         /// <returns>the url that can be used to open a stream</returns>
-        public string GetStreamingUrl()
-        {
-            if (streamingRequestListener == null)
-                return null;
-
-            return streamingRequestListener.GetStreamimgUrl();
-        }
+        public string GetStreamingUrl() => orchestrator.GetStreamingUrl();
 
         /// <summary>
         /// Close the application.
@@ -620,10 +525,7 @@ namespace KlangHub.Application
             Dispose(true);
         }
 
-        public void SetLagThreshold(int lagThresholdIn)
-        {
-            reduceLagThreshold = lagThresholdIn;
-        }
+        public void SetLagThreshold(int lagThresholdIn) => orchestrator.SetLagThreshold(lagThresholdIn);
 
         /// <summary>
         /// Dispose.
@@ -639,14 +541,12 @@ namespace KlangHub.Application
         protected virtual void Dispose(bool disposing)
         {
             devices?.Dispose();
-            streamingRequestListener?.StopListening();
-            streamingRequestListener?.Dispose();
-            mp3Encoder?.Dispose();
+            orchestrator?.StopAndDisposeStreaming();
             NativeMethods.StopSetWindowsHooks();
             if (notifyIcon != null) notifyIcon.Visible = false;
             notifyIcon?.Dispose();
             mainForm?.Dispose();
-            taskList?.Dispose();
+            orchestrator?.DisposeTaskList();
         }
 
         /// <summary>
@@ -672,15 +572,9 @@ namespace KlangHub.Application
             return false;
         }
 
-        public void SetStreamTitle(string title)
-        {
-            streamTitle = title;
-        }
+        public void SetStreamTitle(string title) => orchestrator.SetStreamTitle(title);
 
-        public string GetStreamTitle()
-        {
-            return streamTitle;
-        }
+        public string GetStreamTitle() => orchestrator.GetStreamTitle();
 
         #region private helpers
 
@@ -761,9 +655,7 @@ namespace KlangHub.Application
         /// Start an action in a new task.
         /// </summary>
         public void StartTask(Action action, CancellationTokenSource cancellationTokenSource = null)
-        {
-            taskList.Add(action, cancellationTokenSource);
-        }
+            => orchestrator.StartTask(action, cancellationTokenSource);
 
         /// <summary>
         /// 
