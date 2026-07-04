@@ -39,17 +39,20 @@ namespace KlangHub
                     descriptor => devices.GetDeviceList()
                         .OfType<IPlaybackSession>()
                         .FirstOrDefault(s => s.Device.Id == descriptor.Id));
+                // 2.2b-H4a-4: front the provider(s) with a CompositeCastProvider so the app still sees one
+                // ICastProvider; a second provider (AirPlay 2 / Snapcast) is added by extending this array.
+                var castProvider = new CompositeCastProvider(new ICastProvider[] { chromecastProvider });
                 var mainForm = new MainForm(
                         new ApplicationLogic(devices
                             , discoverDevices
                             , new Configuration()
                             , new StreamingRequestsListener()
                             , new DeviceStatusTimer()
-                            , logger, chromecastProvider)
+                            , logger, castProvider)
                         , devices
                         , new LoopbackCaptureEngine(logger)
                         , logger
-                        , chromecastProvider);
+                        , castProvider);
                 System.Windows.Forms.Application.Run(mainForm);
             }
             catch (Exception)
@@ -105,17 +108,20 @@ namespace KlangHub
                     descriptor => devices.GetDeviceList()
                         .OfType<IPlaybackSession>()
                         .FirstOrDefault(s => s.Device.Id == descriptor.Id));
+                // 2.2b-H4a-4: front the provider(s) with a CompositeCastProvider so the app still sees one
+                // ICastProvider; a second provider (AirPlay 2 / Snapcast) is added by extending this array.
+                var castProvider = new CompositeCastProvider(new ICastProvider[] { chromecastProvider });
                 MainForm = new MainForm(
                         new ApplicationLogic(devices
                             , discoverDevices
                             , new Configuration()
                             , new StreamingRequestsListener()
                             , new DeviceStatusTimer()
-                            , logger, chromecastProvider)
+                            , logger, castProvider)
                         , devices
                         , new LoopbackCaptureEngine(logger)
                         , logger
-                        , chromecastProvider);
+                        , castProvider);
                 System.Windows.Forms.Application.Run(MainForm);
             }
         }
