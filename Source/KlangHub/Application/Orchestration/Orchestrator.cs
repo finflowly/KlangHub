@@ -34,10 +34,10 @@ namespace KlangHub.Application.Orchestration
         public event Action<IDevice> DeviceAdded;
         public event Action<IDevice> DeviceRemoved;
 
-        private const int trbLagMaximumValue = 1000;
-        private int reduceLagThreshold = trbLagMaximumValue;
-        private IAudioEncoder mp3Encoder = null;
-        private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Mp3_320;
+        // 2.2b-M2: Chromecast audio delivery behind the neutral IAudioSink seam. OnRecordingDataAvailable
+        // fans raw PCM to every sink; today there is one (Chromecast). AirPlay/Snapcast sinks join here later.
+        private readonly ChromecastAudioSink chromecastSink;
+        private readonly IAudioSink[] audioSinks;
         private string streamTitle = Properties.Strings.ChromeCast_StreamTitle;
         private bool autoRestart = false;
 
@@ -49,6 +49,8 @@ namespace KlangHub.Application.Orchestration
             castProvider = castProviderIn;
             deviceStatusTimer = deviceStatusTimerIn;
             logger = loggerIn;
+            chromecastSink = new ChromecastAudioSink(devicesIn, loggerIn);
+            audioSinks = new IAudioSink[] { chromecastSink };
             devices.SetCallback(RaiseDeviceAdded);
             devices.SetRemoveCallback(RaiseDeviceRemoved);
         }
@@ -127,68 +129,23 @@ namespace KlangHub.Application.Orchestration
         // ---------- streaming pipeline ----------
 
         public void OnStreamingRequestConnect(Socket socketIn, string httpRequestIn)
-        {
-            if (devices == null)
-                return;
+            => chromecastSink.AcceptStreamingConnection(socketIn, httpRequestIn);
 
-            logger.Log(string.Format("Connection added from {0}", socketIn.RemoteEndPoint));
-            devices.AddStreamingConnection(socketIn, httpRequestIn, streamFormatSelected);
-        }
-
+        /// <summary>Fan one captured (raw PCM) frame out to every active audio sink (2.2b-M2).</summary>
         public void OnRecordingDataAvailable(AudioFrame frame)
         {
-            if (devices == null || frame == null)
-                return;
-
-            var formatIn = new AudioFormat(frame.SampleRate, frame.BitsPerSample, frame.Channels);
-            var dataToSendIn = frame.Data;
-
-            if (!streamFormatSelected.Equals(SupportedStreamFormat.Wav) &&
-                !streamFormatSelected.Equals(SupportedStreamFormat.Wav_16bit) &&
-                !streamFormatSelected.Equals(SupportedStreamFormat.Wav_24bit) &&
-                !streamFormatSelected.Equals(SupportedStreamFormat.Wav_32bit))
-            {
-                if (mp3Encoder == null)
-                {
-                    mp3Encoder = new Mp3Encoder(formatIn, streamFormatSelected, logger);
-                }
-                mp3Encoder.Encode(dataToSendIn.ToArray());
-                dataToSendIn = mp3Encoder.Read();
-            }
-            if (dataToSendIn.Length > 0)
-            {
-                devices.OnRecordingDataAvailable(dataToSendIn, formatIn, reduceLagThreshold, streamFormatSelected);
-            }
+            foreach (var sink in audioSinks)
+                sink.Write(frame);
         }
 
-        public void ClearMp3Buffer()
-        {
-            mp3Encoder = null;
-        }
+        public void ClearMp3Buffer() => chromecastSink.ClearEncoder();
 
-        public void SetStreamFormat(SupportedStreamFormat formatIn)
-        {
-            if (devices == null)
-                return;
+        public void SetStreamFormat(SupportedStreamFormat formatIn) => chromecastSink.SetStreamFormat(formatIn);
 
-            if (formatIn != streamFormatSelected)
-            {
-                logger.Log($"Set stream format to {formatIn}");
-                streamFormatSelected = formatIn;
-                mp3Encoder = null;
-
-                devices.Stop();
-                devices.Start();
-            }
-        }
-
-        public void SetLagThreshold(int lagThresholdIn)
-        {
-            reduceLagThreshold = lagThresholdIn;
-        }
+        public void SetLagThreshold(int lagThresholdIn) => chromecastSink.SetLagThreshold(lagThresholdIn);
 
         /// <summary>Read the current stream format (the settings shell persists it).</summary>
-        public SupportedStreamFormat GetStreamFormat() => streamFormatSelected;
+        public SupportedStreamFormat GetStreamFormat() => chromecastSink.StreamFormat;
 
         // ---------- discovery start + streaming-listener lifecycle ----------
 
@@ -263,7 +220,7 @@ namespace KlangHub.Application.Orchestration
         {
             streamingRequestListener?.StopListening();
             streamingRequestListener?.Dispose();
-            mp3Encoder?.Dispose();
+            chromecastSink.DisposeEncoder();
         }
 
         public void DisposeTaskList()
