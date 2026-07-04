@@ -13,7 +13,6 @@ namespace KlangHub.UserControls
         private readonly IDevice device;
         private readonly Func<IPlaybackSession> sessionAccessor;
         private Action PlayPause_Click;
-        private Action Stop_Click;
 
         public DeviceControl(IDevice deviceIn, Func<IPlaybackSession> sessionAccessorIn = null)
         {
@@ -113,10 +112,9 @@ namespace KlangHub.UserControls
             Update();
         }
 
-        public void SetClickCallBack(Action playPauseAction, Action stopAction)
+        public void SetClickCallBack(Action playPauseAction)
         {
             PlayPause_Click = playPauseAction;
-            Stop_Click = stopAction;
         }
 
         public void OnVolumeUpdate(Volume volume)
@@ -212,14 +210,6 @@ namespace KlangHub.UserControls
                 TryOnSession(s => s.TogglePlayStop());
             else
                 PlayPause_Click();   // fallback: unchanged callback
-        }
-
-        private void BtnDeviceStop_Click(object sender, EventArgs e)
-        {
-            if (device == null || device.IsDisposed())
-                return;
-
-            Stop_Click();
         }
     }
 }

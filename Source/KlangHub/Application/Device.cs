@@ -152,18 +152,6 @@ namespace KlangHub.Application
         }
 
         /// <summary>
-        /// Stop button is clicked.
-        /// </summary>
-        private void OnClickStop()
-        {
-            if (deviceCommunication == null || isDisposed)
-                return;
-
-            deviceCommunication.OnStop_Click();
-            autoMute(deviceCommunication.GetUserMode() == UserMode.Playing);
-        }
-
-        /// <summary>
         /// Load the stream on the device.
         /// </summary>
         public void Start()
@@ -451,7 +439,7 @@ namespace KlangHub.Application
                 return;
 
             deviceControl = deviceControlIn;
-            deviceControl.SetClickCallBack(OnClickPlayStop, OnClickStop);
+            deviceControl.SetClickCallBack(OnClickPlayStop);
         }
 
         /// <summary>

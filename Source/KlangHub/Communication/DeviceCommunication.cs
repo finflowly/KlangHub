@@ -686,37 +686,6 @@ namespace KlangHub.Communication
             }
         }
 
-        public void OnStop_Click()
-        {
-            switch (device.GetDeviceState())
-            {
-                case DeviceState.Buffering:
-                case DeviceState.Playing:
-                case DeviceState.LaunchingApplication:
-                case DeviceState.LaunchedApplication:
-                case DeviceState.LoadingMedia:
-                case DeviceState.LoadingMediaCheckFirewall:
-                case DeviceState.Paused:
-                case DeviceState.Undefined:
-                    Stop();
-                    break;
-                case DeviceState.Idle:
-                case DeviceState.NotConnected:
-                case DeviceState.Connected:
-                case DeviceState.ConnectError:
-                case DeviceState.Closed:
-                case DeviceState.LoadCancelled:
-                case DeviceState.LoadFailed:
-                case DeviceState.InvalidRequest:
-                case DeviceState.Disposed:
-                default:
-                    LaunchAndLoadMedia();
-                    Task.Delay(750).Wait();
-                    Stop();
-                    break;
-            }
-        }
-
         public void Disconnect()
         {
             Connected = false;

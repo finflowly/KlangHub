@@ -22,7 +22,6 @@ namespace KlangHub.Communication.Interfaces
         void Disconnect();
         void Stop(bool changeUserMode = false);
         void OnPlayStop_Click();
-        void OnStop_Click();
         void ResumePlaying();
         void Dispose();
         UserMode GetUserMode();
