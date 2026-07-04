@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>KlangHub</RootNamespace>
     <AssemblyName>KlangHub</AssemblyName>
@@ -45,20 +45,16 @@
     <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
   </Target>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility">
-      <Version>9.0.3</Version>
-    </PackageReference>
+    <!-- net10 bump: Microsoft.CSharp (no `dynamic` usage), Microsoft.VisualBasic (WindowsFormsApplicationBase
+         ships in-box via Microsoft.VisualBasic.Forms under net10.0-windows WinForms), and the legacy
+         System.Memory / System.Numerics.Vectors / System.Runtime.CompilerServices.Unsafe /
+         System.Threading.Tasks.Extensions polyfills are all part of the shared framework now — dropped. -->
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="10.0.9" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
-    <PackageReference Include="System.Memory" Version="4.6.2" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.1" />
-    <PackageReference Include="System.Text.Json" Version="9.0.3" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.2" />
+    <!-- net10: System.Text.Json is provided in-box by the shared framework (SDK NU1510) — no package ref needed. -->
     <PackageReference Include="Tmds.MDns" Version="0.8.0" />
   </ItemGroup>
   <ItemGroup>
