@@ -82,24 +82,20 @@ namespace KlangHub.UserControls
             }
 
             lblStatus.Text = $"{Resource.Get(state.ToString())} {statusText}".Trim();
-            var tmpMenuItem = device.GetMenuItem();
 
             switch (state)
             {
                 case PlaybackState.Buffering:
                 case PlaybackState.Playing:
                     SetBackColor(Color.PaleGreen);
-                    if (tmpMenuItem != null) tmpMenuItem.Checked = true;
                     picturePlayPause.Image = Properties.Resources.Stop;
                     break;
                 case PlaybackState.Error:
                     SetBackColor(Color.PeachPuff);
-                    if (tmpMenuItem != null) tmpMenuItem.Checked = false;
                     picturePlayPause.Image = Properties.Resources.Play;
                     break;
                 default:
                     SetBackColor(Color.LightGray);
-                    if (tmpMenuItem != null) tmpMenuItem.Checked = false;
                     picturePlayPause.Image = Properties.Resources.Play;
                     break;
             }

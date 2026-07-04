@@ -174,6 +174,7 @@ namespace KlangHub.Application
 
                 notifyIcon?.ContextMenuStrip?.Items?.Insert(0, menuItem);
                 deviceIn.SetMenuItem(menuItem);
+                SubscribeMenuChecked(deviceIn, menuItem);
                 RequestDeviceStatus(deviceIn);
             }
             catch (Exception ex)
@@ -212,6 +213,27 @@ namespace KlangHub.Application
                 castProvider.CreateSession(playbackSession.Device).RequestStatus();
             else
                 deviceIn.OnGetStatus();
+        }
+
+        /// <summary>
+        /// 2.2b-4.6: the tray item's Checked follows playback via the neutral StateChanged (moved out of
+        /// DeviceControl). Marshalled through the ContextMenuStrip (a Control) since the event may arrive
+        /// off the UI thread. Not explicitly unsubscribed - the menu item lives ~process-long (bounded).
+        /// </summary>
+        private void SubscribeMenuChecked(IDevice deviceIn, ToolStripMenuItem menuItem)
+        {
+            if (!(deviceIn is IPlaybackSession session))
+                return;
+
+            session.StateChanged += (s, state) =>
+            {
+                bool isPlaying = state == Core.Casting.PlaybackState.Playing || state == Core.Casting.PlaybackState.Buffering;
+                var strip = notifyIcon?.ContextMenuStrip;
+                if (strip != null && !strip.IsDisposed && strip.InvokeRequired)
+                    strip.BeginInvoke(new Action(() => { if (!menuItem.IsDisposed) menuItem.Checked = isPlaying; }));
+                else if (!menuItem.IsDisposed)
+                    menuItem.Checked = isPlaying;
+            };
         }
 
         /// <summary>
