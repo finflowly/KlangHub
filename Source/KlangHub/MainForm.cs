@@ -1047,7 +1047,15 @@ namespace KlangHub
 
         private void ChkStartApplicationWhenWindowsStarts_CheckedChanged(object sender, EventArgs e)
         {
-            WindowsStartup.StartApplicationWhenWindowsStarts(chkStartApplicationWhenWindowsStarts.Checked);
+            try
+            {
+                WindowsStartup.StartApplicationWhenWindowsStarts(
+                    chkStartApplicationWhenWindowsStarts.Checked, "KlangHub", System.Windows.Forms.Application.ExecutablePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void FillFilterDevices()
