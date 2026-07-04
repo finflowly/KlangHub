@@ -7,6 +7,9 @@ using KlangHub.Streaming;
 using KlangHub.Platform.Audio;
 using KlangHub.Discover;
 using KlangHub.Platform.Casting.Chromecast;
+using KlangHub.Platform.Casting.AirPlay;
+using KlangHub.Platform.Casting.Snapcast;
+using KlangHub.Platform.Casting.Shared;
 
 namespace KlangHub
 {
@@ -39,9 +42,22 @@ namespace KlangHub
                     descriptor => devices.GetDeviceList()
                         .OfType<IPlaybackSession>()
                         .FirstOrDefault(s => s.Device.Id == descriptor.Id));
-                // 2.2b-H4a-4: front the provider(s) with a CompositeCastProvider so the app still sees one
-                // ICastProvider; a second provider (AirPlay 2 / Snapcast) is added by extending this array.
-                var castProvider = new CompositeCastProvider(new ICastProvider[] { chromecastProvider });
+                // 2.2b-H4a-4 / M3-4: front the providers with a CompositeCastProvider so the app still sees
+                // one ICastProvider. Chromecast keeps its direct wiring above; AirPlay + Snapcast join as
+                // discovery-only providers (CreateSession throws until their sessions land in M4+).
+                var castProvider = new CompositeCastProvider(new ICastProvider[]
+                {
+                    chromecastProvider,
+                    new SnapcastProvider(new SnapcastDiscovery(new MdnsDiscovery())),
+                    new AirPlayProvider(new AirPlayDiscovery(new MdnsDiscovery(), logger)),
+                });
+                // 2.2b-M3-4: surface discovered non-Chromecast endpoints in the log (the tray device list is
+                // still Chromecast-Device-based; a neutral-descriptor UI comes later).
+                castProvider.Discovery.DeviceDiscovered += (s, d) =>
+                {
+                    if (d.Provider != ProviderId.Chromecast)
+                        logger.Log($"Discovered {d.Provider} endpoint: {d.Name} ({d.Id})");
+                };
                 var mainForm = new MainForm(
                         new ApplicationLogic(devices
                             , discoverDevices
@@ -108,9 +124,22 @@ namespace KlangHub
                     descriptor => devices.GetDeviceList()
                         .OfType<IPlaybackSession>()
                         .FirstOrDefault(s => s.Device.Id == descriptor.Id));
-                // 2.2b-H4a-4: front the provider(s) with a CompositeCastProvider so the app still sees one
-                // ICastProvider; a second provider (AirPlay 2 / Snapcast) is added by extending this array.
-                var castProvider = new CompositeCastProvider(new ICastProvider[] { chromecastProvider });
+                // 2.2b-H4a-4 / M3-4: front the providers with a CompositeCastProvider so the app still sees
+                // one ICastProvider. Chromecast keeps its direct wiring above; AirPlay + Snapcast join as
+                // discovery-only providers (CreateSession throws until their sessions land in M4+).
+                var castProvider = new CompositeCastProvider(new ICastProvider[]
+                {
+                    chromecastProvider,
+                    new SnapcastProvider(new SnapcastDiscovery(new MdnsDiscovery())),
+                    new AirPlayProvider(new AirPlayDiscovery(new MdnsDiscovery(), logger)),
+                });
+                // 2.2b-M3-4: surface discovered non-Chromecast endpoints in the log (the tray device list is
+                // still Chromecast-Device-based; a neutral-descriptor UI comes later).
+                castProvider.Discovery.DeviceDiscovered += (s, d) =>
+                {
+                    if (d.Provider != ProviderId.Chromecast)
+                        logger.Log($"Discovered {d.Provider} endpoint: {d.Name} ({d.Id})");
+                };
                 MainForm = new MainForm(
                         new ApplicationLogic(devices
                             , discoverDevices
