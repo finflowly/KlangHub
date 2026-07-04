@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using NAudio.Wave;
 using KlangHub.Streaming.Interfaces;
 using KlangHub.Classes;
-using KlangHub.Application.Interfaces;
 using KlangHub.Application;
 using KlangHub.Communication;
 using System.Diagnostics;

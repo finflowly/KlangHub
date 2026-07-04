@@ -1,6 +1,5 @@
 ﻿using System.Net.Sockets;
 using KlangHub.Application;
-using KlangHub.Application.Interfaces;
 using KlangHub.Classes;
 
 namespace KlangHub.Streaming.Interfaces

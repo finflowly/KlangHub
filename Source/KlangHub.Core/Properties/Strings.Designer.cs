@@ -22,21 +22,21 @@ namespace KlangHub.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Strings() {
+        public Strings() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KlangHub.Properties.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace KlangHub.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Buffering.
         /// </summary>
-        internal static string Buffering {
+        public static string Buffering {
             get {
                 return ResourceManager.GetString("Buffering", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Clear Log.
         /// </summary>
-        internal static string Button_ClearLog_Text {
+        public static string Button_ClearLog_Text {
             get {
                 return ResourceManager.GetString("Button_ClearLog_Text", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Copy to clipboard.
         /// </summary>
-        internal static string Button_ClipboardCopy_Text {
+        public static string Button_ClipboardCopy_Text {
             get {
                 return ResourceManager.GetString("Button_ClipboardCopy_Text", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Down.
         /// </summary>
-        internal static string Button_Down_Text {
+        public static string Button_Down_Text {
             get {
                 return ResourceManager.GetString("Button_Down_Text", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Mute.
         /// </summary>
-        internal static string Button_Mute_Text {
+        public static string Button_Mute_Text {
             get {
                 return ResourceManager.GetString("Button_Mute_Text", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Reset Settings.
         /// </summary>
-        internal static string Button_ResetSetting_Text {
+        public static string Button_ResetSetting_Text {
             get {
                 return ResourceManager.GetString("Button_ResetSetting_Text", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Scan again for devices.
         /// </summary>
-        internal static string Button_ScanAgain_Text {
+        public static string Button_ScanAgain_Text {
             get {
                 return ResourceManager.GetString("Button_ScanAgain_Text", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Sync Devices.
         /// </summary>
-        internal static string Button_SyncDevices_Text {
+        public static string Button_SyncDevices_Text {
             get {
                 return ResourceManager.GetString("Button_SyncDevices_Text", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Up.
         /// </summary>
-        internal static string Button_Up_Text {
+        public static string Button_Up_Text {
             get {
                 return ResourceManager.GetString("Button_Up_Text", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Automatically restart when the stream is closed.
         /// </summary>
-        internal static string Check_AutomaticallyRestart_Text {
+        public static string Check_AutomaticallyRestart_Text {
             get {
                 return ResourceManager.GetString("Check_AutomaticallyRestart_Text", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Automatically start devices at startup.
         /// </summary>
-        internal static string Check_AutomaticallyStart_Text {
+        public static string Check_AutomaticallyStart_Text {
             get {
                 return ResourceManager.GetString("Check_AutomaticallyStart_Text", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Auto-mute/unmute desktop audio.
         /// </summary>
-        internal static string Check_AutoMute_Text {
+        public static string Check_AutoMute_Text {
             get {
                 return ResourceManager.GetString("Check_AutoMute_Text", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Automatically start last used devices and groups at startup.
         /// </summary>
-        internal static string Check_AutonaticallyStartLastUsed_Text {
+        public static string Check_AutonaticallyStartLastUsed_Text {
             get {
                 return ResourceManager.GetString("Check_AutonaticallyStartLastUsed_Text", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Convert multi-channel audio to stereo output.
         /// </summary>
-        internal static string Check_ConvertMultiChannelToStereo_Text {
+        public static string Check_ConvertMultiChannelToStereo_Text {
             get {
                 return ResourceManager.GetString("Check_ConvertMultiChannelToStereo_Text", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Dark mode.
         /// </summary>
-        internal static string Check_DarkMode_Text {
+        public static string Check_DarkMode_Text {
             get {
                 return ResourceManager.GetString("Check_DarkMode_Text", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Use Keyboard shortcuts: Up = Ctrl+Alt+U; Down = Ctrl+Alt+D; (Un)Mute = Ctrl+Alt+M.
         /// </summary>
-        internal static string Check_KeyboardShortcuts_Text {
+        public static string Check_KeyboardShortcuts_Text {
             get {
                 return ResourceManager.GetString("Check_KeyboardShortcuts_Text", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Log device communication.
         /// </summary>
-        internal static string Check_LogDeviceCommunication_Text {
+        public static string Check_LogDeviceCommunication_Text {
             get {
                 return ResourceManager.GetString("Check_LogDeviceCommunication_Text", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Minimize to systray when closing.
         /// </summary>
-        internal static string Check_MinimizeToTray_Text {
+        public static string Check_MinimizeToTray_Text {
             get {
                 return ResourceManager.GetString("Check_MinimizeToTray_Text", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Show lag control (experimental).
         /// </summary>
-        internal static string Check_ShowLagControl_Text {
+        public static string Check_ShowLagControl_Text {
             get {
                 return ResourceManager.GetString("Check_ShowLagControl_Text", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Show window at startup.
         /// </summary>
-        internal static string Check_ShowWindowOnStart_Text {
+        public static string Check_ShowWindowOnStart_Text {
             get {
                 return ResourceManager.GetString("Check_ShowWindowOnStart_Text", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Start application when Windows starts.
         /// </summary>
-        internal static string Check_StartApplicationWhenWindowsStarts_Text {
+        public static string Check_StartApplicationWhenWindowsStarts_Text {
             get {
                 return ResourceManager.GetString("Check_StartApplicationWhenWindowsStarts_Text", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Desktop Audio Streamer.
         /// </summary>
-        internal static string ChromeCast_StreamTitle {
+        public static string ChromeCast_StreamTitle {
             get {
                 return ResourceManager.GetString("ChromeCast_StreamTitle", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Closed.
         /// </summary>
-        internal static string Closed {
+        public static string Closed {
             get {
                 return ResourceManager.GetString("Closed", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connected.
         /// </summary>
-        internal static string Connected {
+        public static string Connected {
             get {
                 return ResourceManager.GetString("Connected", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connect Error.
         /// </summary>
-        internal static string ConnectError {
+        public static string ConnectError {
             get {
                 return ResourceManager.GetString("ConnectError", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Devices only.
         /// </summary>
-        internal static string DevicesOnly {
+        public static string DevicesOnly {
             get {
                 return ResourceManager.GetString("DevicesOnly", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Disposed.
         /// </summary>
-        internal static string Disposed {
+        public static string Disposed {
             get {
                 return ResourceManager.GetString("Disposed", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Devices (click name to start streaming).
         /// </summary>
-        internal static string Group_Devices_Text {
+        public static string Group_Devices_Text {
             get {
                 return ResourceManager.GetString("Group_Devices_Text", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Lag Control.
         /// </summary>
-        internal static string Group_Lag_Text {
+        public static string Group_Lag_Text {
             get {
                 return ResourceManager.GetString("Group_Lag_Text", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Options.
         /// </summary>
-        internal static string Group_Options_Text {
+        public static string Group_Options_Text {
             get {
                 return ResourceManager.GetString("Group_Options_Text", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Volume all devices:.
         /// </summary>
-        internal static string Group_VolumeAllDevices_Text {
+        public static string Group_VolumeAllDevices_Text {
             get {
                 return ResourceManager.GetString("Group_VolumeAllDevices_Text", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Groups only.
         /// </summary>
-        internal static string GroupsOnly {
+        public static string GroupsOnly {
             get {
                 return ResourceManager.GetString("GroupsOnly", resourceCulture);
             }
@@ -351,7 +351,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Idle.
         /// </summary>
-        internal static string Idle {
+        public static string Idle {
             get {
                 return ResourceManager.GetString("Idle", resourceCulture);
             }
@@ -360,7 +360,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid Request.
         /// </summary>
-        internal static string InvalidRequest {
+        public static string InvalidRequest {
             get {
                 return ResourceManager.GetString("InvalidRequest", resourceCulture);
             }
@@ -369,7 +369,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Device buffer (in seconds).
         /// </summary>
-        internal static string Label_BufferInSeconds_Text {
+        public static string Label_BufferInSeconds_Text {
             get {
                 return ResourceManager.GetString("Label_BufferInSeconds_Text", resourceCulture);
             }
@@ -378,7 +378,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Filter devices.
         /// </summary>
-        internal static string Label_FilterDevices_Text {
+        public static string Label_FilterDevices_Text {
             get {
                 return ResourceManager.GetString("Label_FilterDevices_Text", resourceCulture);
             }
@@ -387,7 +387,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to IP4 address used:.
         /// </summary>
-        internal static string Label_IPAddressUsed_Text {
+        public static string Label_IPAddressUsed_Text {
             get {
                 return ResourceManager.GetString("Label_IPAddressUsed_Text", resourceCulture);
             }
@@ -396,7 +396,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Latest keep-alive message:.
         /// </summary>
-        internal static string Label_KeepAlive_Text {
+        public static string Label_KeepAlive_Text {
             get {
                 return ResourceManager.GetString("Label_KeepAlive_Text", resourceCulture);
             }
@@ -405,7 +405,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Experimental feature: Try to keep the buffer on the device as small as possible without hearing dropouts..
         /// </summary>
-        internal static string Label_LagExperimental_Text {
+        public static string Label_LagExperimental_Text {
             get {
                 return ResourceManager.GetString("Label_LagExperimental_Text", resourceCulture);
             }
@@ -414,7 +414,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Language.
         /// </summary>
-        internal static string Label_Language_Text {
+        public static string Label_Language_Text {
             get {
                 return ResourceManager.GetString("Label_Language_Text", resourceCulture);
             }
@@ -423,7 +423,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Information about options on Github.
         /// </summary>
-        internal static string Label_LinkHelp_Text {
+        public static string Label_LinkHelp_Text {
             get {
                 return ResourceManager.GetString("Label_LinkHelp_Text", resourceCulture);
             }
@@ -432,7 +432,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to maximum lag / best quality.
         /// </summary>
-        internal static string Label_MaximumLag_Text {
+        public static string Label_MaximumLag_Text {
             get {
                 return ResourceManager.GetString("Label_MaximumLag_Text", resourceCulture);
             }
@@ -441,7 +441,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to minimum lag / poor quality.
         /// </summary>
-        internal static string Label_MinimumLag_Text {
+        public static string Label_MinimumLag_Text {
             get {
                 return ResourceManager.GetString("Label_MinimumLag_Text", resourceCulture);
             }
@@ -450,7 +450,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to A new version is available on Github.
         /// </summary>
-        internal static string Label_NewVersionAvailable {
+        public static string Label_NewVersionAvailable {
             get {
                 return ResourceManager.GetString("Label_NewVersionAvailable", resourceCulture);
             }
@@ -459,7 +459,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Recording device:.
         /// </summary>
-        internal static string Label_RecordingDevice_Text {
+        public static string Label_RecordingDevice_Text {
             get {
                 return ResourceManager.GetString("Label_RecordingDevice_Text", resourceCulture);
             }
@@ -468,7 +468,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Stream format.
         /// </summary>
-        internal static string Label_StreamFormat_Text {
+        public static string Label_StreamFormat_Text {
             get {
                 return ResourceManager.GetString("Label_StreamFormat_Text", resourceCulture);
             }
@@ -477,7 +477,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The mp3 formats have a long lag and buffering time..
         /// </summary>
-        internal static string Label_StreamFormatExtra_Text {
+        public static string Label_StreamFormatExtra_Text {
             get {
                 return ResourceManager.GetString("Label_StreamFormatExtra_Text", resourceCulture);
             }
@@ -486,7 +486,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to English.
         /// </summary>
-        internal static string Language {
+        public static string Language {
             get {
                 return ResourceManager.GetString("Language", resourceCulture);
             }
@@ -495,7 +495,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to English.
         /// </summary>
-        internal static string Language_English {
+        public static string Language_English {
             get {
                 return ResourceManager.GetString("Language_English", resourceCulture);
             }
@@ -504,7 +504,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to French.
         /// </summary>
-        internal static string Language_French {
+        public static string Language_French {
             get {
                 return ResourceManager.GetString("Language_French", resourceCulture);
             }
@@ -513,7 +513,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Launched Application.
         /// </summary>
-        internal static string LaunchedApplication {
+        public static string LaunchedApplication {
             get {
                 return ResourceManager.GetString("LaunchedApplication", resourceCulture);
             }
@@ -522,7 +522,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Launching Application.
         /// </summary>
-        internal static string LaunchingApplication {
+        public static string LaunchingApplication {
             get {
                 return ResourceManager.GetString("LaunchingApplication", resourceCulture);
             }
@@ -531,7 +531,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Load Cancelled.
         /// </summary>
-        internal static string LoadCancelled {
+        public static string LoadCancelled {
             get {
                 return ResourceManager.GetString("LoadCancelled", resourceCulture);
             }
@@ -540,7 +540,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Load Failed.
         /// </summary>
-        internal static string LoadFailed {
+        public static string LoadFailed {
             get {
                 return ResourceManager.GetString("LoadFailed", resourceCulture);
             }
@@ -549,7 +549,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loading Media.
         /// </summary>
-        internal static string LoadingMedia {
+        public static string LoadingMedia {
             get {
                 return ResourceManager.GetString("LoadingMedia", resourceCulture);
             }
@@ -558,7 +558,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Check Firewall &amp; Wi-Fi Privacy Status.
         /// </summary>
-        internal static string LoadingMediaCheckFirewall {
+        public static string LoadingMediaCheckFirewall {
             get {
                 return ResourceManager.GetString("LoadingMediaCheckFirewall", resourceCulture);
             }
@@ -567,7 +567,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to in.
         /// </summary>
-        internal static string Log_In {
+        public static string Log_In {
             get {
                 return ResourceManager.GetString("Log_In", resourceCulture);
             }
@@ -576,7 +576,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to out.
         /// </summary>
-        internal static string Log_Out {
+        public static string Log_Out {
             get {
                 return ResourceManager.GetString("Log_Out", resourceCulture);
             }
@@ -585,7 +585,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Desktop Audio Streamer.
         /// </summary>
-        internal static string MainForm_Text {
+        public static string MainForm_Text {
             get {
                 return ResourceManager.GetString("MainForm_Text", resourceCulture);
             }
@@ -594,7 +594,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No IP addresses found on your device..
         /// </summary>
-        internal static string MessageBox_NoIPAddress {
+        public static string MessageBox_NoIPAddress {
             get {
                 return ResourceManager.GetString("MessageBox_NoIPAddress", resourceCulture);
             }
@@ -603,7 +603,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No recording devices found..
         /// </summary>
-        internal static string MessageBox_NoRecordingDevices {
+        public static string MessageBox_NoRecordingDevices {
             get {
                 return ResourceManager.GetString("MessageBox_NoRecordingDevices", resourceCulture);
             }
@@ -612,7 +612,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Mp3 (128 kbps).
         /// </summary>
-        internal static string Mp3_128 {
+        public static string Mp3_128 {
             get {
                 return ResourceManager.GetString("Mp3_128", resourceCulture);
             }
@@ -621,7 +621,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Mp3 (320 kbps).
         /// </summary>
-        internal static string Mp3_320 {
+        public static string Mp3_320 {
             get {
                 return ResourceManager.GetString("Mp3_320", resourceCulture);
             }
@@ -630,7 +630,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Not Connected.
         /// </summary>
-        internal static string NotConnected {
+        public static string NotConnected {
             get {
                 return ResourceManager.GetString("NotConnected", resourceCulture);
             }
@@ -639,7 +639,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Paused.
         /// </summary>
-        internal static string Paused {
+        public static string Paused {
             get {
                 return ResourceManager.GetString("Paused", resourceCulture);
             }
@@ -648,7 +648,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Playing.
         /// </summary>
-        internal static string Playing {
+        public static string Playing {
             get {
                 return ResourceManager.GetString("Playing", resourceCulture);
             }
@@ -657,7 +657,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
-        internal static string ShowAll {
+        public static string ShowAll {
             get {
                 return ResourceManager.GetString("ShowAll", resourceCulture);
             }
@@ -666,7 +666,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Log.
         /// </summary>
-        internal static string Tab_Log_Text {
+        public static string Tab_Log_Text {
             get {
                 return ResourceManager.GetString("Tab_Log_Text", resourceCulture);
             }
@@ -675,7 +675,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Devices.
         /// </summary>
-        internal static string Tab_Main_Text {
+        public static string Tab_Main_Text {
             get {
                 return ResourceManager.GetString("Tab_Main_Text", resourceCulture);
             }
@@ -684,7 +684,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Options.
         /// </summary>
-        internal static string Tab_Options_Text {
+        public static string Tab_Options_Text {
             get {
                 return ResourceManager.GetString("Tab_Options_Text", resourceCulture);
             }
@@ -693,7 +693,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Group.
         /// </summary>
-        internal static string Tooltip_Group_Text {
+        public static string Tooltip_Group_Text {
             get {
                 return ResourceManager.GetString("Tooltip_Group_Text", resourceCulture);
             }
@@ -702,7 +702,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Recording level.
         /// </summary>
-        internal static string Tooltip_RecordingLevel_Text {
+        public static string Tooltip_RecordingLevel_Text {
             get {
                 return ResourceManager.GetString("Tooltip_RecordingLevel_Text", resourceCulture);
             }
@@ -711,7 +711,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
-        internal static string TrayIcon_Close {
+        public static string TrayIcon_Close {
             get {
                 return ResourceManager.GetString("TrayIcon_Close", resourceCulture);
             }
@@ -720,7 +720,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Version.
         /// </summary>
-        internal static string Version {
+        public static string Version {
             get {
                 return ResourceManager.GetString("Version", resourceCulture);
             }
@@ -729,7 +729,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Wav (44100 Hz/16bit).
         /// </summary>
-        internal static string Wav {
+        public static string Wav {
             get {
                 return ResourceManager.GetString("Wav", resourceCulture);
             }
@@ -738,7 +738,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Wav (Soundcard&apos;s sample rate/16bit).
         /// </summary>
-        internal static string Wav_16bit {
+        public static string Wav_16bit {
             get {
                 return ResourceManager.GetString("Wav_16bit", resourceCulture);
             }
@@ -747,7 +747,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Wav (Soundcard&apos;s sample rate/24bit).
         /// </summary>
-        internal static string Wav_24bit {
+        public static string Wav_24bit {
             get {
                 return ResourceManager.GetString("Wav_24bit", resourceCulture);
             }
@@ -756,7 +756,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Wav (Soundcard&apos;s sample rate/32bit).
         /// </summary>
-        internal static string Wav_32bit {
+        public static string Wav_32bit {
             get {
                 return ResourceManager.GetString("Wav_32bit", resourceCulture);
             }
@@ -765,7 +765,7 @@ namespace KlangHub.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The mp3 formats have a long lag and buffering time..
         /// </summary>
-        internal static string Label_StreamTitle_Text
+        public static string Label_StreamTitle_Text
         {
             get
             {

@@ -1,4 +1,3 @@
-using KlangHub.Application.Interfaces;
 using KlangHub.Classes;
 
 namespace KlangHub.Platform.Audio

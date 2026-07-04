@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Timers;
-using KlangHub.Application.Interfaces;
 using KlangHub.Streaming;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;

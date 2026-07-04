@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using KlangHub.Application.Interfaces;
 using KlangHub.Communication.Interfaces;
 using KlangHub.ProtocolBuffer;
 

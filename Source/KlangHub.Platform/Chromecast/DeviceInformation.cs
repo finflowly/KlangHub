@@ -1,5 +1,4 @@
-﻿using KlangHub.Application.Interfaces;
-using KlangHub.Discover;
+﻿using KlangHub.Discover;
 using System;
 using System.Collections.Generic;
 using System.IO;

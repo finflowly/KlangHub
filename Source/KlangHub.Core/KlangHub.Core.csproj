@@ -5,4 +5,15 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
+  <!-- 2.2b-H3b: shared localized strings moved here from the app so both App and Platform can use them.
+       The generated Strings class hard-codes the ResourceManager base name "KlangHub.Properties.Strings",
+       so pin the embedded manifest names via LogicalName (Core's RootNamespace would otherwise prefix them). -->
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Strings.resx">
+      <LogicalName>KlangHub.Properties.Strings.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Strings.fr.resx">
+      <LogicalName>KlangHub.Properties.Strings.fr.resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
