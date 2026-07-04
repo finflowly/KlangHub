@@ -42,6 +42,14 @@ namespace KlangHub.Core.Casting
         void Pause();
         void Stop();
 
+        /// <summary>
+        /// Toggle playback as a single user action (the tray/UI play-stop button). Provider-specific:
+        /// each provider decides, from its own state, whether this starts, resumes, (re)loads or stops.
+        /// Chromecast maps it 1:1 onto its existing OnClickPlayStop state machine, so no neutral consumer
+        /// has to reconstruct that logic from the coarser <see cref="PlaybackState"/>.
+        /// </summary>
+        void TogglePlayStop();
+
         /// <summary>Set the endpoint volume level (0.0 .. 1.0).</summary>
         void SetVolume(float level);
 

@@ -756,6 +756,9 @@ namespace KlangHub.Application
         void IPlaybackSession.Play() => ResumePlaying();
         void IPlaybackSession.Pause() => deviceCommunication.PauseMedia();
         void IPlaybackSession.Stop() => Stop(true);
+        // 1:1 delegation to the existing play/stop state machine (userMode flip + DeviceState-based
+        // dispatch inside DeviceCommunication.OnPlayStop_Click). Behaviour-identical to the tray button.
+        void IPlaybackSession.TogglePlayStop() => OnClickPlayStop();
         void IPlaybackSession.SetVolume(float level) => VolumeSet(level);
         void IPlaybackSession.SetMuted(bool muted) => deviceCommunication.VolumeMute(muted);
         void IPlaybackSession.RequestStatus() => OnGetStatus();
