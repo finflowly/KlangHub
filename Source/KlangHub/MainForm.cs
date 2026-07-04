@@ -214,6 +214,21 @@ namespace KlangHub
             return () => castProvider.CreateSession(descriptor);     // re-resolved per volume action
         }
 
+        // 2.2b-4.7: remove a device's control when the device is gone (mirrors AddDevice's marshaling).
+        public void RemoveDevice(string id)
+        {
+            if (InvokeRequired) { Invoke(new Action<string>(RemoveDevice), new object[] { id }); return; }
+            if (IsDisposed || pnlDevices == null)
+                return;
+
+            var dc = pnlDevices.Controls.OfType<DeviceControl>().FirstOrDefault(c => c.Id == id);
+            if (dc != null)
+            {
+                dc.Hide();
+                dc.Dispose();
+            }
+        }
+
         public void AddDevice(IDevice device)
         {
             if (device == null || pnlDevices == null)
@@ -227,7 +242,6 @@ namespace KlangHub
             if (IsDisposed) return;
 
             var deviceControl = new DeviceControl(BuildSessionAccessor(device));
-            device.SetDeviceControl(deviceControl);
             pnlDevices.Controls.Add(deviceControl);
             var filter = GetFilterDevices();
             if (filter != null)

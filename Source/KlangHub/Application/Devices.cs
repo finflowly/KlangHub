@@ -15,6 +15,7 @@ namespace KlangHub.Application
     {
         private readonly List<IDevice> deviceList = new List<IDevice>();
         private Action<Device> onAddDeviceCallback;
+        private Action<IDevice> onRemoveDeviceCallback;
         private bool AutoStart;
         private bool StartLastUsedDevices;
         private IMainForm mainForm;
@@ -317,7 +318,10 @@ namespace KlangHub.Application
                     for (int i = deviceList.Count - 1; i >= 0; i--)
                     {
                         if (deviceList[i].GetDeviceState() == DeviceState.Disposed)
+                        {
+                            onRemoveDeviceCallback?.Invoke(deviceList[i]);   // let the UI drop control + tray item
                             deviceList.RemoveAt(i);
+                        }
                     }
                 }
             }
@@ -377,6 +381,15 @@ namespace KlangHub.Application
         public void SetCallback(Action<Device> onAddDeviceCallbackIn)
         {
             onAddDeviceCallback = onAddDeviceCallbackIn;
+        }
+
+        /// <summary>
+        /// 2.2b-4.7: callback for when a device is removed (disposed), so the UI can drop the control +
+        /// tray item. Fired from OnGetStatus cleanup on the DeviceStatusTimer thread.
+        /// </summary>
+        public void SetRemoveCallback(Action<IDevice> onRemoveDeviceCallbackIn)
+        {
+            onRemoveDeviceCallback = onRemoveDeviceCallbackIn;
         }
 
         /// <summary>

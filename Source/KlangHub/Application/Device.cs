@@ -29,7 +29,6 @@ namespace KlangHub.Application
         private IStreamingConnection streamingConnection;
         private readonly IDeviceConnection deviceConnection;
         private readonly DiscoveredDevice discoveredDevice;
-        private DeviceControl deviceControl;
         private ToolStripMenuItem menuItem;
         private Volume volumeSetting;
         private DateTime latestVolumeChange;
@@ -408,25 +407,6 @@ namespace KlangHub.Application
         }
 
         /// <summary>
-        /// Returns the user interface control of the device.
-        /// </summary>
-        public DeviceControl GetDeviceControl()
-        {
-            return deviceControl;
-        }
-
-        /// <summary>
-        /// Set the user interface control of the device.
-        /// </summary>
-        public void SetDeviceControl(DeviceControl deviceControlIn)
-        {
-            if (deviceControlIn == null || isDisposed)
-                return;
-
-            deviceControl = deviceControlIn;
-        }
-
-        /// <summary>
         /// Set the menu item in the systray.
         /// </summary>
         public void SetMenuItem(ToolStripMenuItem menuItemIn)
@@ -605,8 +585,6 @@ namespace KlangHub.Application
             deviceCommunication?.Dispose();
             streamingConnection?.Dispose();
             deviceConnection?.Dispose();
-            deviceControl?.Hide();
-            deviceControl?.Dispose();
         }
 
         /// <summary>

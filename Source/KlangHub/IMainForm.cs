@@ -17,6 +17,7 @@ namespace KlangHub
         void SetLagValue(int lagValue);
         void SetWindowVisibility(bool visible);
         void AddDevice(IDevice device);
+        void RemoveDevice(string id);
         void Dispose();
         void SetAutoRestart(bool autoRestart);
         bool GetUseKeyboardShortCuts();

@@ -21,6 +21,7 @@ namespace KlangHub.Application
         void Stop(bool changeUserMode = false);
         void SetSettings(UserSettings settings);
         void SetCallback(Action<Device> onAddDeviceCallbackIn);
+        void SetRemoveCallback(Action<IDevice> onRemoveDeviceCallbackIn);
         void Dispose();
         void SetDependencies(MainForm mainFormIn, IApplicationLogic applicationLogicIn);
         List<DiscoveredDevice> GetHosts();

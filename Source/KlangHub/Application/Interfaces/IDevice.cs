@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 using System.Windows.Forms;
 using NAudio.Wave;
-using KlangHub.UserControls;
 using KlangHub.Communication;
 using KlangHub.Communication.Classes;
 using KlangHub.ProtocolBuffer;
@@ -24,7 +23,6 @@ namespace KlangHub.Application
         string GetHost();
         string GetFriendlyName();
         DeviceState GetDeviceState();
-        void SetDeviceControl(DeviceControl deviceControl);
         ToolStripMenuItem GetMenuItem();
         void SetMenuItem(ToolStripMenuItem menuItem);
         void VolumeUp();
@@ -34,7 +32,6 @@ namespace KlangHub.Application
         void Stop(bool changeUserMode);
         void Start();
         void OnReceiveMessage(CastMessage castMessage);
-        DeviceControl GetDeviceControl();
         int GetPort();
         DiscoveredDevice GetDiscoveredDevice();
         void SendSilence();

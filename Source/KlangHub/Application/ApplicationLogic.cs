@@ -52,6 +52,7 @@ namespace KlangHub.Application
         {
             devices = devicesIn;
             devices.SetCallback(OnAddDevice);
+            devices.SetRemoveCallback(OnRemoveDevice);
             discoverDevices = discoverDevicesIn;
             configuration = configurationIn;
             streamingRequestListener = streamingRequestListenerIn;
@@ -182,6 +183,36 @@ namespace KlangHub.Application
                 logger.Log(ex, "ApplicationLogic.OnAddDevice");
             }
             mainForm.AddDevice(deviceIn);
+        }
+
+        /// <summary>
+        /// 2.2b-4.7: a device was removed (disposed) - drop its tray menu item and its UI control.
+        /// Called from Devices cleanup on the DeviceStatusTimer thread; each UI touch is marshalled.
+        /// </summary>
+        private void OnRemoveDevice(IDevice device)
+        {
+            if (device == null)
+                return;
+
+            var menuItem = device.GetMenuItem();
+            var strip = notifyIcon?.ContextMenuStrip;
+            if (menuItem != null && strip != null)
+            {
+                if (!strip.IsDisposed && strip.InvokeRequired)
+                    strip.BeginInvoke(new Action(() => RemoveMenuItem(strip, menuItem)));
+                else
+                    RemoveMenuItem(strip, menuItem);
+            }
+
+            if (device is IPlaybackSession session)
+                mainForm.RemoveDevice(session.Device.Id);
+        }
+
+        private static void RemoveMenuItem(ContextMenuStrip strip, ToolStripMenuItem item)
+        {
+            if (!strip.IsDisposed && strip.Items.Contains(item))
+                strip.Items.Remove(item);
+            item.Dispose();
         }
 
         /// <summary>
