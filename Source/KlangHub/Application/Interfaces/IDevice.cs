@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Windows.Forms;
-using NAudio.Wave;
 using KlangHub.Communication;
 using KlangHub.Communication.Classes;
 using KlangHub.ProtocolBuffer;
@@ -17,7 +16,7 @@ namespace KlangHub.Application
         void Initialize(DiscoveredDevice discoveredDevice, Action<DeviceEureka> deviceInformationCallback, Action<IDevice> stopGroup, Action<Action, CancellationTokenSource> startTaskIn, Func<IDevice, bool> isGroupStatusBlankIn, Action<bool> autoMuteIn);
         bool AddStreamingConnection(string remoteAddress, Socket socket);
         void OnGetStatus();
-        void OnRecordingDataAvailable(byte[] dataToSend, WaveFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat);
+        void OnRecordingDataAvailable(byte[] dataToSend, AudioFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat);
         void OnClickPlayPause(object sender, EventArgs e);
         string GetUsn();
         string GetHost();

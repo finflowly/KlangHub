@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using NAudio.Wave;
 using KlangHub.Application.Interfaces;
 using System.Collections.Generic;
 using KlangHub.Classes;
@@ -12,7 +11,7 @@ namespace KlangHub.Application
     {
         void AddStreamingConnection(Socket socket, string httpRequest, SupportedStreamFormat streamFormat);
         void OnGetStatus();
-        void OnRecordingDataAvailable(byte[] dataToSend, WaveFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat);
+        void OnRecordingDataAvailable(byte[] dataToSend, AudioFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat);
         void OnDeviceAvailable(DiscoveredDevice discoveredDevice);
         void VolumeUp();
         void VolumeDown();

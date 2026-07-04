@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using NAudio.Wave;
 using KlangHub.Classes;
 using KlangHub.Platform.Audio;
 using KlangHub.Application.Interfaces;
@@ -113,7 +112,7 @@ namespace KlangHub.Application
             if (devices == null || frame == null)
                 return;
 
-            var formatIn = new WaveFormat(frame.SampleRate, frame.BitsPerSample, frame.Channels);
+            var formatIn = new AudioFormat(frame.SampleRate, frame.BitsPerSample, frame.Channels);
             var dataToSendIn = frame.Data;
 
             if (!StreamFormatSelected.Equals(SupportedStreamFormat.Wav) &&

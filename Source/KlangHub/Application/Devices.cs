@@ -284,7 +284,7 @@ namespace KlangHub.Application
         /// <param name="format">the wav format that's used</param>
         /// <param name="reduceLagThreshold">value for the lag control</param>
         /// <param name="streamFormat">the stream format</param>
-        public void OnRecordingDataAvailable(byte[] dataToSend, WaveFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat)
+        public void OnRecordingDataAvailable(byte[] dataToSend, AudioFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat)
         {
             if (deviceList == null || dataToSend == null || applicationBuffer == null)
                 return;

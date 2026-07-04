@@ -1,5 +1,4 @@
 ﻿using KlangHub.Application;
-using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace KlangHub.Classes
     public class ApplicationBuffer
     {
         private readonly List<ApplicationBufferItem> applicationBuffer = new List<ApplicationBufferItem>();
-        private WaveFormat waveFormat = new WaveFormat();
+        private AudioFormat waveFormat = new AudioFormat(44100, 16, 2);
         private int reduceLagThreshold;
         private SupportedStreamFormat streamFormatSelected;
         private bool startBufferSend;
@@ -61,7 +60,7 @@ namespace KlangHub.Classes
         /// <summary>
         /// Add bytes to the application buffer.
         /// </summary>
-        public void AddToBuffer(byte[] dataToSend, WaveFormat formatIn, int reduceLagThresholdIn, SupportedStreamFormat streamFormatIn)
+        public void AddToBuffer(byte[] dataToSend, AudioFormat formatIn, int reduceLagThresholdIn, SupportedStreamFormat streamFormatIn)
         {
             waveFormat = formatIn;
             reduceLagThreshold = reduceLagThresholdIn;

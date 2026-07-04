@@ -119,7 +119,7 @@ namespace KlangHub.Streaming
         /// <param name="format">the audio format</param>
         /// <param name="reduceLagThreshold">lag control value</param>
         /// <param name="streamFormat">the stream format selected</param>
-        public void SendData(byte[] dataToSend, WaveFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat)
+        public void SendData(byte[] dataToSend, AudioFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat)
         {
             if (dataToSend == null || dataToSend.Length == 0 || format == null)
                 return;

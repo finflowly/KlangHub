@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Text;
-using NAudio.Wave;
 using KlangHub.Streaming.Interfaces;
 using KlangHub.Classes;
+using KlangHub.Platform.Audio;
 
 namespace KlangHub.Streaming
 {
@@ -11,7 +11,7 @@ namespace KlangHub.Streaming
         /// <summary>
         /// Generate a header for a maximum length WAV stream.
         /// </summary>
-        public byte[] GetRiffHeader(WaveFormat format, uint dataSize = 0)
+        public byte[] GetRiffHeader(AudioFormat format, uint dataSize = 0)
         {
             if (format == null)
                 return new byte[0];
@@ -27,7 +27,7 @@ namespace KlangHub.Streaming
             writer.Write(chunkSize);
             writer.Write(Encoding.UTF8.GetBytes("WAVE"));
             writer.Write(Encoding.UTF8.GetBytes("fmt "));
-            format.Serialize(writer);
+            format.ToWaveFormat().Serialize(writer);   // byte-identical to the old WaveFormat.Serialize
             writer.Write(Encoding.UTF8.GetBytes("fact"));
             writer.Write(factChunkSize);
             writer.Write(numberOfSamples);
@@ -43,7 +43,7 @@ namespace KlangHub.Streaming
         /// </summary>
         /// <param name="format">the format of the stream</param>
         /// <returns>a mp3 header</returns>
-        public byte[] GetMp3Header(WaveFormat format, SupportedStreamFormat streamFormat)
+        public byte[] GetMp3Header(AudioFormat format, SupportedStreamFormat streamFormat)
         {
             if (format == null)
                 return new byte[0];

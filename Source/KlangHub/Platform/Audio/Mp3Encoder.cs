@@ -1,6 +1,5 @@
 using KlangHub.Application.Interfaces;
 using KlangHub.Classes;
-using NAudio.Wave;
 
 namespace KlangHub.Platform.Audio
 {
@@ -13,9 +12,9 @@ namespace KlangHub.Platform.Audio
     {
         private readonly Mp3Stream inner;
 
-        public Mp3Encoder(WaveFormat format, SupportedStreamFormat streamFormat, ILogger logger)
+        public Mp3Encoder(AudioFormat format, SupportedStreamFormat streamFormat, ILogger logger)
         {
-            inner = new Mp3Stream(format, streamFormat, logger);
+            inner = new Mp3Stream(format.ToWaveFormat(), streamFormat, logger);
         }
 
         public void Encode(byte[] wav) => inner.Encode(wav);

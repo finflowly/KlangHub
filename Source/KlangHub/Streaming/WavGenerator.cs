@@ -1,6 +1,7 @@
 ﻿using NAudio.Wave;
 using System;
 using System.IO;
+using KlangHub.Platform.Audio;
 
 namespace KlangHub.Streaming
 {
@@ -144,7 +145,7 @@ namespace KlangHub.Streaming
 
             // Write the wav header
             var header = new AudioHeader();
-            writer.Write(header.GetRiffHeader(waveFormat, data.Length));
+            writer.Write(header.GetRiffHeader(waveFormat.ToAudioFormat(), data.Length));
 
             // Write the data chunk
             foreach (short dataPoint in data.AudioSamples)

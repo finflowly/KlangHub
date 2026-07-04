@@ -168,7 +168,7 @@ namespace KlangHub.Application
         /// <param name="format">the wav format</param>
         /// <param name="reduceLagThreshold">lag value</param>
         /// <param name="streamFormat">the stream format</param>
-        public void OnRecordingDataAvailable(byte[] dataToSend, WaveFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat)
+        public void OnRecordingDataAvailable(byte[] dataToSend, AudioFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat)
         {
             if (streamingConnection == null || dataToSend == null || dataToSend.Length == 0 || isDisposed)
                 return;
@@ -526,7 +526,7 @@ namespace KlangHub.Application
         public void SendSilence()
         {
             var silence = new WavGenerator().GetSilenceBytes(5);
-            OnRecordingDataAvailable(silence, new WaveFormat(44100, 2), 1000, SupportedStreamFormat.Mp3_320);
+            OnRecordingDataAvailable(silence, new AudioFormat(44100, 16, 2), 1000, SupportedStreamFormat.Mp3_320);
         }
 
         /// <summary>
