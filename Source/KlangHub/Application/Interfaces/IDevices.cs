@@ -22,7 +22,7 @@ namespace KlangHub.Application
         void SetCallback(Action<Device> onAddDeviceCallbackIn);
         void SetRemoveCallback(Action<IDevice> onRemoveDeviceCallbackIn);
         void Dispose();
-        void SetDependencies(MainForm mainFormIn, IApplicationLogic applicationLogicIn);
+        void SetDependencies(IMainForm mainFormIn, IApplicationLogic applicationLogicIn);
         List<DiscoveredDevice> GetHosts();
         void SetExtraBufferInSeconds(int bufferInSeconds);
         void AutoMute(bool mute);

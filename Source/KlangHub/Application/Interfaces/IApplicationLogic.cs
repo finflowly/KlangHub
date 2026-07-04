@@ -16,7 +16,7 @@ namespace KlangHub.Application.Interfaces
         void OnAddDevice(IDevice device);
         void OnRecordingDataAvailable(AudioFrame frame);
         void OnStreamingRequestConnect(Socket handlerSocket, string httpRequest);
-        void SetDependencies(MainForm mainForm);
+        void SetDependencies(IMainForm mainForm);
         void CloseApplication();
         void OnSetAutoRestart(bool autoRestart);
         void ChangeIPAddressUsed(IPAddress ipAddress);

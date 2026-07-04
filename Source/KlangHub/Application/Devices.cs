@@ -397,7 +397,7 @@ namespace KlangHub.Application
         /// </summary>
         /// <param name="mainFormIn">the main form</param>
         /// <param name="applicationLogicIn">the application logic</param>
-        public void SetDependencies(MainForm mainFormIn, IApplicationLogic applicationLogicIn)
+        public void SetDependencies(IMainForm mainFormIn, IApplicationLogic applicationLogicIn)
         {
             mainForm = mainFormIn;
             applicationLogic = applicationLogicIn;

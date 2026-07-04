@@ -289,7 +289,7 @@ namespace KlangHub.Application
         /// Set the dependencies.
         /// </summary>
         /// <param name="mainFormIn">the form</param>
-        public void SetDependencies(MainForm mainFormIn)
+        public void SetDependencies(IMainForm mainFormIn)
         {
             mainForm = mainFormIn;
         }
