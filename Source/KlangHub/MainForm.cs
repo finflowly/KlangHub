@@ -392,7 +392,7 @@ namespace KlangHub
                 return;
 
             if (chkHook.Checked)
-                NativeMethods.StartSetWindowsHooks(devices);
+                NativeMethods.StartSetWindowsHooks(devices.VolumeUp, devices.VolumeDown, devices.VolumeMute);
             else
                 NativeMethods.StopSetWindowsHooks();
         }

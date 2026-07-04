@@ -1,17 +1,31 @@
-﻿using System;
+using System;
 using System.Diagnostics;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using KlangHub.Application;
 
 namespace KlangHub.Classes
 {
+    // 2.2b-H4a: WinForms-free (raw virtual-key codes instead of System.Windows.Forms.Keys) and App-free
+    // (three neutral volume callbacks instead of IDevices), so this low-level keyboard hook lives in
+    // KlangHub.Platform. The Ctrl+Alt+U / Ctrl+Alt+D / Ctrl+Alt+M chord policy is unchanged.
     public class NativeMethods
     {
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
         private const int WM_KEYUP = 0x0101;
-        private static IDevices devices;
+
+        // Virtual-key codes. System.Windows.Forms.Keys enum values ARE these VK codes, so this is a
+        // byte-for-byte equivalent of the previous (Keys)Marshal.ReadInt32 switch.
+        private const int VK_U = 0x55;
+        private const int VK_D = 0x44;
+        private const int VK_M = 0x4D;
+        private const int VK_LCONTROL = 0xA2;
+        private const int VK_RCONTROL = 0xA3;
+        private const int VK_LMENU = 0xA4;   // left Alt
+        private const int VK_RMENU = 0xA5;   // right Alt
+
+        private static Action onVolumeUp;
+        private static Action onVolumeDown;
+        private static Action onVolumeMute;
         private static readonly LowLevelKeyboardProc callbackProcedure = HookCallback;
         private static IntPtr hookId = IntPtr.Zero;
         private static bool isPressedInCtrl = false;
@@ -22,12 +36,13 @@ namespace KlangHub.Classes
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         /// <summary>
-        /// Start using hte hook.
+        /// Start using the hook. The callbacks fire on the Ctrl+Alt+U/D/M chords (volume up/down/mute).
         /// </summary>
-        /// <param name="devicesIn">devices object that's used to trigger the events</param>
-        public static void StartSetWindowsHooks(IDevices devicesIn)
+        public static void StartSetWindowsHooks(Action onVolumeUpIn, Action onVolumeDownIn, Action onVolumeMuteIn)
         {
-            devices = devicesIn;
+            onVolumeUp = onVolumeUpIn;
+            onVolumeDown = onVolumeDownIn;
+            onVolumeMute = onVolumeMuteIn;
 
             try
             {
@@ -55,8 +70,6 @@ namespace KlangHub.Classes
         /// <summary>
         /// Set the hooks on the system.
         /// </summary>
-        /// <param name="proc">the callback</param>
-        /// <returns></returns>
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
         {
             using (Process currentProcess = Process.GetCurrentProcess())
@@ -75,37 +88,34 @@ namespace KlangHub.Classes
             var isKeyUp = wParam == (IntPtr)WM_KEYUP;
             if (nCode >= 0 && (isKeyDown || isKeyUp))
             {
-                var key = (Keys)Marshal.ReadInt32(lParam);
-                switch (key)
+                var vk = Marshal.ReadInt32(lParam);
+                switch (vk)
                 {
-                    case Keys.U:
-                        if (isKeyDown)
-                            isPressedInU = true;
-                        else
-                            isPressedInU = false;
+                    case VK_U:
+                        isPressedInU = isKeyDown;
                         break;
-                    case Keys.D:
-                        isPressedInD = isKeyDown ? true : false;
+                    case VK_D:
+                        isPressedInD = isKeyDown;
                         break;
-                    case Keys.M:
-                        isPressedInM = isKeyDown ? true : false;
+                    case VK_M:
+                        isPressedInM = isKeyDown;
                         break;
-                    case Keys.LControlKey:
-                    case Keys.RControlKey:
-                        isPressedInCtrl = isKeyDown ? true : false;
+                    case VK_LCONTROL:
+                    case VK_RCONTROL:
+                        isPressedInCtrl = isKeyDown;
                         break;
-                    case Keys.LMenu:
-                    case Keys.RMenu:
-                        isPressedInAlt = isKeyDown ? true : false;
+                    case VK_LMENU:
+                    case VK_RMENU:
+                        isPressedInAlt = isKeyDown;
                         break;
                     default:
                         break;
                 }
                 if (isPressedInCtrl && isPressedInAlt)
                 {
-                    if (isPressedInU) devices.VolumeUp();
-                    if (isPressedInD) devices.VolumeDown();
-                    if (isPressedInM) devices.VolumeMute();
+                    if (isPressedInU) onVolumeUp?.Invoke();
+                    if (isPressedInD) onVolumeDown?.Invoke();
+                    if (isPressedInM) onVolumeMute?.Invoke();
                 }
             }
             return CallNextHookEx(hookId, nCode, wParam, lParam);
