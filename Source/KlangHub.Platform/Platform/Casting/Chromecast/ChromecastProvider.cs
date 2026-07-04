@@ -34,7 +34,9 @@ namespace KlangHub.Platform.Casting.Chromecast
         public CastProviderCapabilities Capabilities { get; } = new(
             ConsumesLocalCapture: true,
             SupportsGrouping: true,
-            SupportsVolumeControl: true);
+            SupportsVolumeControl: true,
+            DeliveryModel: DeliveryModel.PullHttp,
+            RequiresPairing: false);
 
         public IDeviceDiscovery Discovery => discovery;
 

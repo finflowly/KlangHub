@@ -101,5 +101,18 @@ namespace KlangHub.Tests.Core
             chromecast.Received(1).Dispose();
             airplay.Received(1).Dispose();
         }
+
+        [Fact]
+        public void RequiresPairing_is_true_if_any_fronted_provider_requires_it()
+        {
+            var chromecast = FakeProvider(ProviderId.Chromecast,
+                new CastProviderCapabilities(true, true, true, DeliveryModel.PullHttp, RequiresPairing: false));
+            var airplay = FakeProvider(ProviderId.AirPlay,
+                new CastProviderCapabilities(true, false, true, DeliveryModel.PushRtp, RequiresPairing: true));
+
+            var composite = new CompositeCastProvider(new[] { chromecast, airplay });
+
+            Assert.True(composite.Capabilities.RequiresPairing);
+        }
     }
 }

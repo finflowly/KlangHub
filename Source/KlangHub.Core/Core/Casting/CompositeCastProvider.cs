@@ -29,7 +29,9 @@ namespace KlangHub.Core.Casting
         public CastProviderCapabilities Capabilities => new CastProviderCapabilities(
             ConsumesLocalCapture: providers.Values.Any(p => p.Capabilities.ConsumesLocalCapture),
             SupportsGrouping: providers.Values.Any(p => p.Capabilities.SupportsGrouping),
-            SupportsVolumeControl: providers.Values.Any(p => p.Capabilities.SupportsVolumeControl));
+            SupportsVolumeControl: providers.Values.Any(p => p.Capabilities.SupportsVolumeControl),
+            RequiresPairing: providers.Values.Any(p => p.Capabilities.RequiresPairing));
+        // DeliveryModel is left at its default: it is per-provider and not meaningful aggregated on the composite.
 
         public IDeviceDiscovery Discovery => discovery;
 
