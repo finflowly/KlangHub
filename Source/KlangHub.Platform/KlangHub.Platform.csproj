@@ -7,6 +7,10 @@
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <!-- 2.2b-H4c: let the test project reach internal Chromecast helpers (ChromecastStateMapper, ChromecastDeviceId). -->
+    <InternalsVisibleTo Include="KlangHub.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Google.ProtocolBuffers">
       <HintPath>ProtocolBuffer\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
