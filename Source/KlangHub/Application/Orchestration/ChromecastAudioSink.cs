@@ -47,7 +47,9 @@ namespace KlangHub.Application.Orchestration
                 {
                     mp3Encoder = new Mp3Encoder(formatIn, streamFormatSelected, logger);
                 }
-                mp3Encoder.Encode(dataToSendIn.ToArray());
+                // Tier2-A1: dataToSendIn is already frame.Data (a fresh per-frame array read synchronously
+                // by the encoder) — the old .ToArray() clone was pure waste.
+                mp3Encoder.Encode(dataToSendIn);
                 dataToSendIn = mp3Encoder.Read();
             }
             if (dataToSendIn.Length > 0)

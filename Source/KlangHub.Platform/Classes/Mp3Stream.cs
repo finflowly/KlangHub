@@ -42,10 +42,11 @@ namespace KlangHub.Classes
 
             try
             {
-                var writeBuffer = buffer.ToArray();
-                lock(Writer)
+                // Tier2-A2: LAME writes synchronously inside the lock, so the defensive buffer.ToArray()
+                // clone was dead weight — write the caller's buffer directly.
+                lock (Writer)
                 {
-                    Writer.Write(writeBuffer, 0, writeBuffer.Length);
+                    Writer.Write(buffer, 0, buffer.Length);
                 }
             }
             catch (Exception ex)

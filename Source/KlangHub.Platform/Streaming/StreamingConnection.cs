@@ -8,8 +8,6 @@ using KlangHub.Application;
 using KlangHub.Communication;
 using System.Diagnostics;
 using System.Threading;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace KlangHub.Streaming
 {
@@ -59,15 +57,18 @@ namespace KlangHub.Streaming
 
                     // Stream the data that is captured.
                     streamer.SwapBuffer();
-                    if (streamer.bufferSend.Used > 0)
+                    // Tier2-E: send straight from the send buffer (zero allocation) instead of the old
+                    // Take().ToArray() -> List.AddRange -> ToArray() triple copy. count is captured and Used
+                    // reset before the send, preserving the original "reset-before-send" drop semantics; the
+                    // buffer is stable until the next SwapBuffer and Socket.Send is synchronous.
+                    var count = streamer.bufferSend.Used;
+                    if (count > 0)
                     {
-                        var bytes = new List<byte>();
-                        bytes.AddRange(streamer.bufferSend.Data.Take(streamer.bufferSend.Used).ToArray());
                         streamer.bufferSend.Used = 0;
 
                         try
                         {
-                            streamer.Socket?.Send(bytes.ToArray());
+                            streamer.Socket?.Send(streamer.bufferSend.Data, 0, count, SocketFlags.None);
                         }
                         catch (Exception ex)
                         {

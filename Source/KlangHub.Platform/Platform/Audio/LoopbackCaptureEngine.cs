@@ -278,7 +278,10 @@ namespace KlangHub.Platform.Audio
                     engine.SwapBuffer();
                     if (engine.bufferSend.Used > 0)
                     {
-                        var bytes = engine.bufferSend.Data.Take(engine.bufferSend.Used).ToArray();
+                        // Tier2-A3: still a fresh array (downstream ApplicationBuffer retains the reference,
+                        // so it must not be pooled/reused) — but AsSpan().ToArray() drops the LINQ per-byte
+                        // enumerator on this up-to-1000 Hz path.
+                        var bytes = engine.bufferSend.Data.AsSpan(0, engine.bufferSend.Used).ToArray();
                         engine.RaiseDataAvailable(bytes);
                         engine.bufferSend.Used = 0;
                         engine.LevelSampled?.Invoke(engine, bytes);
