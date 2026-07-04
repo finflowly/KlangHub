@@ -9,6 +9,10 @@ namespace KlangHub.Core.Casting
     ///
     /// Commands are fire-and-forget; observed results arrive via <see cref="StateChanged"/> /
     /// <see cref="VolumeChanged"/>. (Cloud/REST providers may later want Task-returning variants.)
+    ///
+    /// <see cref="IDisposable.Dispose"/> releases any PER-SESSION resources. A provider that hosts the
+    /// session on a shared, longer-lived object (Chromecast: the session IS the live device) implements
+    /// Dispose() as a no-op - disposing a session must never tear down a shared endpoint.
     /// </summary>
     public interface IPlaybackSession : IDisposable
     {

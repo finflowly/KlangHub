@@ -5,8 +5,10 @@ namespace KlangHub.Core.Casting
     /// <summary>
     /// A casting protocol as a first-class, swappable peer (Chromecast today; Spotify Connect,
     /// Amazon Alexa Cast, ... later). Owns its discovery and creates playback sessions for its devices.
-    /// Disposing the provider disposes its <see cref="Discovery"/>; sessions from
-    /// <see cref="CreateSession"/> are owned (and disposed) by the caller.
+    /// Disposing the provider disposes its <see cref="Discovery"/>. Session ownership is provider-defined:
+    /// a provider may return an owned, disposable session, or a NON-OWNING view over a shared endpoint.
+    /// The Chromecast provider returns the latter - its session's <c>Dispose()</c> is a no-op and the
+    /// device's lifetime stays with the provider/registry.
     /// </summary>
     public interface ICastProvider : IDisposable
     {

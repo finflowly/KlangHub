@@ -763,5 +763,13 @@ namespace KlangHub.Application
         void IPlaybackSession.SetMuted(bool muted) => deviceCommunication.VolumeMute(muted);
         void IPlaybackSession.RequestStatus() => OnGetStatus();
         void IPlaybackSession.Disconnect() => deviceCommunication.Disconnect();
+
+        // 2.2b-4.4d (ownership): IPlaybackSession is IDisposable, but a Chromecast session is a NON-OWNING
+        // control view over this shared, Devices-owned Device. Disposing a session must NOT tear the device
+        // down - that would kill the connection, streaming and UI for every other holder. The real,
+        // destructive teardown is the public Device.Dispose() (the IDevice slot), invoked only by Devices.
+        // IDevice.Dispose() and IDisposable.Dispose() are distinct interface slots, so the public Dispose()
+        // still serves IDevice unchanged.
+        void IDisposable.Dispose() { /* no-op: non-owning session */ }
     }
 }
