@@ -470,12 +470,12 @@ namespace KlangHub.Application
                 {
                     if (playing)
                     {
-                        SystemVolume.Mute(true, mainForm);
+                        SystemVolume.Mute(true, mainForm.GetHandle());
                         isMuted = true;
                     }
                     else if (!playing && !IsAnyDevicePlaying() && isMuted)
                     {
-                        SystemVolume.Mute(false, mainForm);
+                        SystemVolume.Mute(false, mainForm.GetHandle());
                         isMuted = false;
                     }
                 }
