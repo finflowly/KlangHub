@@ -226,8 +226,7 @@ namespace KlangHub
             }
             if (IsDisposed) return;
 
-            var deviceControl = new DeviceControl(device, BuildSessionAccessor(device));
-            deviceControl.SetDeviceName(device.GetFriendlyName());
+            var deviceControl = new DeviceControl(BuildSessionAccessor(device));
             device.SetDeviceControl(deviceControl);
             pnlDevices.Controls.Add(deviceControl);
             var filter = GetFilterDevices();

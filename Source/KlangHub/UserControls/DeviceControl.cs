@@ -10,21 +10,21 @@ namespace KlangHub.UserControls
 {
     public partial class DeviceControl : UserControl
     {
-        private readonly IDevice device;
         private readonly Func<IPlaybackSession> sessionAccessor;
         private readonly IPlaybackSession session;
-        private Action PlayPause_Click;
+        private readonly CastDeviceDescriptor descriptor;
 
-        public DeviceControl(IDevice deviceIn, Func<IPlaybackSession> sessionAccessorIn = null)
+        public DeviceControl(Func<IPlaybackSession> sessionAccessorIn)
         {
             InitializeComponent();
-            device = deviceIn;
             sessionAccessor = sessionAccessorIn;
 
-            // 2.2b-4.5: observe the device via the neutral session. Subscribe once to the stable session
-            // and unsubscribe on Disposed so Device cannot hold a delegate to a disposed control.
+            // 2.2b-4.5/4.6: DeviceControl is a pure neutral-session consumer. Resolve the stable session
+            // once, derive its descriptor for identity, subscribe to observation events, and unsubscribe
+            // on Disposed so Device cannot hold a delegate to a disposed control.
             try { session = sessionAccessorIn?.Invoke(); }
             catch (InvalidOperationException) { session = null; }
+            descriptor = session?.Device;
             if (session != null)
             {
                 session.StateChanged += OnSessionStateChanged;
@@ -34,7 +34,8 @@ namespace KlangHub.UserControls
                     session.StateChanged -= OnSessionStateChanged;
                     session.VolumeChanged -= OnSessionVolumeChanged;
                 };
-                RenderStatus(session.State, session.StatusText);   // initial render (volume renders on first event)
+                SetDeviceName(descriptor.Name);                    // initial name + group
+                RenderStatus(session.State, session.StatusText);   // initial status (volume on first event)
             }
 
             btnDevice.FlatAppearance.MouseOverBackColor = btnDevice.BackColor;
@@ -53,7 +54,7 @@ namespace KlangHub.UserControls
             }
 
             btnDevice.Text = name;
-            pictureGroup.Visible = device.IsGroup();
+            pictureGroup.Visible = descriptor?.IsGroup ?? false;
             toolTipGroup.SetToolTip(pictureGroup, Properties.Strings.Tooltip_Group_Text);
         }
 
@@ -72,7 +73,7 @@ namespace KlangHub.UserControls
         // to: playing/buffering = PaleGreen, error = PeachPuff, everything else = LightGray.
         private void RenderStatus(PlaybackState state, string statusText)
         {
-            if (device == null || device.IsDisposed())
+            if (IsDisposed)
                 return;
 
             if (InvokeRequired)
@@ -115,11 +116,6 @@ namespace KlangHub.UserControls
             Update();
         }
 
-        public void SetClickCallBack(Action playPauseAction)
-        {
-            PlayPause_Click = playPauseAction;
-        }
-
         // 2.2b-4.5: neutral volume observation, fed by the session's VolumeChanged event.
         private void OnSessionVolumeChanged(object sender, VolumeStatus volume) => RenderVolume(volume);
 
@@ -145,35 +141,27 @@ namespace KlangHub.UserControls
 
         private void TrbVolume_Scroll(object sender, EventArgs e)
         {
-            if (device == null || device.IsDisposed())
-                return;
-
+            if (IsDisposed) return;
             // 2.2b-4.4b: volume via the neutral session (SetVolume == VolumeSet, 1:1).
-            if (sessionAccessor != null)
-                TryOnSession(s => s.SetVolume(trbVolume.Value / 100f));
-            else
-                device.VolumeSet(trbVolume.Value / 100f);
+            TryOnSession(s => s.SetVolume(trbVolume.Value / 100f));
         }
 
         private void PictureVolumeMute_Click(object sender, EventArgs e)
         {
-            if (device == null || device.IsDisposed())
-                return;
-
-            // 2.2b-4.4b: mute toggle via the neutral session. Volume.Muted is the same lossless bool
-            // that device.VolumeMute() negates, so SetMuted(!Muted) is behaviour-equivalent.
-            if (sessionAccessor != null)
-                TryOnSession(s => s.SetMuted(!s.Volume.Muted));
-            else
-                device.VolumeMute();
+            if (IsDisposed) return;
+            // 2.2b-4.4b: mute toggle via the neutral session. Volume.Muted is the lossless bool the old
+            // device.VolumeMute() negated, so SetMuted(!Muted) is behaviour-equivalent.
+            TryOnSession(s => s.SetMuted(!s.Volume.Muted));
         }
 
-        // Resolve this device's session and run an action on it. A device that has left the registry
-        // makes CreateSession throw; we swallow that to a no-op, matching the disposed-device guard above.
+        // Run an action on this device's freshly-resolved session. No provider (designer) or a device
+        // that left the registry (CreateSession throws) -> no-op, matching the old disposed-device guard.
         private void TryOnSession(Action<IPlaybackSession> action)
         {
+            if (sessionAccessor == null)
+                return;
             try { action(sessionAccessor()); }
-            catch (InvalidOperationException) { /* device gone -> no-op */ }
+            catch (InvalidOperationException) { }
         }
 
         private void DeviceControl_MouseDown(object sender, MouseEventArgs e)
@@ -206,14 +194,9 @@ namespace KlangHub.UserControls
 
         private void BtnDevicePlay_Click(object sender, EventArgs e)
         {
-            if (device == null || device.IsDisposed())
-                return;
-
+            if (IsDisposed) return;
             // 2.2b-4.4c: play/stop toggle via the neutral session (TogglePlayStop == OnClickPlayStop, 1:1).
-            if (sessionAccessor != null)
-                TryOnSession(s => s.TogglePlayStop());
-            else
-                PlayPause_Click();   // fallback: unchanged callback
+            TryOnSession(s => s.TogglePlayStop());
         }
     }
 }

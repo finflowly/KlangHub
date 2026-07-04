@@ -439,7 +439,6 @@ namespace KlangHub.Application
                 return;
 
             deviceControl = deviceControlIn;
-            deviceControl.SetClickCallBack(OnClickPlayStop);
         }
 
         /// <summary>
