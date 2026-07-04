@@ -31,6 +31,7 @@ namespace KlangHub
         private readonly ILogger logger;
         private IPAddress previousIpAddress;
         private readonly IAudioCaptureEngine captureEngine;
+        private readonly ICastProvider castProvider;
         private Size windowSize;
         private readonly StringBuilder log = new StringBuilder();
         private string previousRecordingDeviceID = null;
@@ -41,12 +42,13 @@ namespace KlangHub
         private AudioCaptureDevice previousDefaultDevice;
         private readonly WavGenerator wavGenerator;
 
-        public MainForm(IApplicationLogic applicationLogicIn, IDevices devicesIn, IAudioCaptureEngine captureEngineIn, ILogger loggerIn)
+        public MainForm(IApplicationLogic applicationLogicIn, IDevices devicesIn, IAudioCaptureEngine captureEngineIn, ILogger loggerIn, ICastProvider castProviderIn)
         {
             InitializeComponent();
 
             ApplyLocalization();
             captureEngine = captureEngineIn;
+            castProvider = castProviderIn;
             applicationLogic = applicationLogicIn;
             devices = devicesIn;
             logger = loggerIn;
@@ -202,6 +204,16 @@ namespace KlangHub
             }
         }
 
+        // 2.2b-4.4b: per-device session accessor for the control (volume/mute). Null when no provider is
+        // wired (e.g. the parameterless designer ctor); the control then falls back to the direct device path.
+        private Func<IPlaybackSession> BuildSessionAccessor(IDevice device)
+        {
+            if (castProvider == null || !(device is IPlaybackSession playbackSession))
+                return null;
+            var descriptor = playbackSession.Device;                 // stable Id, captured now
+            return () => castProvider.CreateSession(descriptor);     // re-resolved per volume action
+        }
+
         public void AddDevice(IDevice device)
         {
             if (device == null || pnlDevices == null)
@@ -214,7 +226,7 @@ namespace KlangHub
             }
             if (IsDisposed) return;
 
-            var deviceControl = new DeviceControl(device);
+            var deviceControl = new DeviceControl(device, BuildSessionAccessor(device));
             deviceControl.SetDeviceName(device.GetFriendlyName());
             deviceControl.SetStatus(device.GetDeviceState(), null);
             device.SetDeviceControl(deviceControl);

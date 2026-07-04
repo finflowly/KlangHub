@@ -11,13 +11,15 @@ namespace KlangHub.UserControls
     public partial class DeviceControl : UserControl
     {
         private readonly IDevice device;
+        private readonly Func<IPlaybackSession> sessionAccessor;
         private Action PlayPause_Click;
         private Action Stop_Click;
 
-        public DeviceControl(IDevice deviceIn)
+        public DeviceControl(IDevice deviceIn, Func<IPlaybackSession> sessionAccessorIn = null)
         {
             InitializeComponent();
             device = deviceIn;
+            sessionAccessor = sessionAccessorIn;
             btnDevice.FlatAppearance.MouseOverBackColor = btnDevice.BackColor;
             btnDevice.BackColorChanged += (s, e) =>
             {
@@ -144,7 +146,11 @@ namespace KlangHub.UserControls
             if (device == null || device.IsDisposed())
                 return;
 
-            device.VolumeSet(trbVolume.Value / 100f);
+            // 2.2b-4.4b: volume via the neutral session (SetVolume == VolumeSet, 1:1).
+            if (sessionAccessor != null)
+                TryOnSession(s => s.SetVolume(trbVolume.Value / 100f));
+            else
+                device.VolumeSet(trbVolume.Value / 100f);
         }
 
         private void PictureVolumeMute_Click(object sender, EventArgs e)
@@ -152,7 +158,20 @@ namespace KlangHub.UserControls
             if (device == null || device.IsDisposed())
                 return;
 
-            device.VolumeMute();
+            // 2.2b-4.4b: mute toggle via the neutral session. Volume.Muted is the same lossless bool
+            // that device.VolumeMute() negates, so SetMuted(!Muted) is behaviour-equivalent.
+            if (sessionAccessor != null)
+                TryOnSession(s => s.SetMuted(!s.Volume.Muted));
+            else
+                device.VolumeMute();
+        }
+
+        // Resolve this device's session and run an action on it. A device that has left the registry
+        // makes CreateSession throw; we swallow that to a no-op, matching the disposed-device guard above.
+        private void TryOnSession(Action<IPlaybackSession> action)
+        {
+            try { action(sessionAccessor()); }
+            catch (InvalidOperationException) { /* device gone -> no-op */ }
         }
 
         private void DeviceControl_MouseDown(object sender, MouseEventArgs e)

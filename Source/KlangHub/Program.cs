@@ -48,7 +48,8 @@ namespace KlangHub
                             , logger, chromecastProvider)
                         , devices
                         , new LoopbackCaptureEngine(logger)
-                        , logger);
+                        , logger
+                        , chromecastProvider);
                 System.Windows.Forms.Application.Run(mainForm);
             }
             catch (Exception)
@@ -113,7 +114,8 @@ namespace KlangHub
                             , logger, chromecastProvider)
                         , devices
                         , new LoopbackCaptureEngine(logger)
-                        , logger);
+                        , logger
+                        , chromecastProvider);
                 System.Windows.Forms.Application.Run(MainForm);
             }
         }
