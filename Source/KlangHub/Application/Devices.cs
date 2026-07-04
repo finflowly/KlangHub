@@ -166,12 +166,18 @@ namespace KlangHub.Application
             if (discoveredDevice.IsGroup)
                 return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.Id == discoveredDevice.Id);
 
-            // Dedup non-groups by MAC when available; fall back to IP for devices with no eureka MAC
-            // (mDNS-fallback devices) so multiple such devices don't collapse into one.
+            // Dedup non-groups by MAC only when BOTH sides have one; otherwise fall back to IP. This
+            // collapses an eureka-discovered device (has MAC) and an mDNS-fallback one (no MAC) for the same
+            // speaker into a single entry, instead of showing it twice.
             var mac = discoveredDevice.Eureka?.GetMacAddress();
-            if (!string.IsNullOrEmpty(mac))
-                return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.Eureka?.GetMacAddress() == mac);
-            return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.IPAddress == discoveredDevice.IPAddress);
+            return deviceList.FirstOrDefault(d =>
+            {
+                var dd = d.GetDiscoveredDevice();
+                var dmac = dd?.Eureka?.GetMacAddress();
+                if (!string.IsNullOrEmpty(mac) && !string.IsNullOrEmpty(dmac))
+                    return string.Equals(dmac, mac, StringComparison.OrdinalIgnoreCase);
+                return dd?.IPAddress == discoveredDevice.IPAddress;
+            });
         }
 
         /// <summary>
@@ -205,6 +211,14 @@ namespace KlangHub.Application
         {
             if (discoveredDevice == null || string.IsNullOrEmpty(discoveredDevice.IPAddress))
                 return;
+
+            // Don't create a duplicate if this speaker is already known (e.g. eureka_info succeeded on
+            // another announcement, or a previous fallback already added it).
+            lock (deviceList)
+            {
+                if (deviceList.Any(d => d.GetDiscoveredDevice()?.IPAddress == discoveredDevice.IPAddress))
+                    return;
+            }
 
             logger?.Log($"Adding '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) from mDNS - no eureka_info.");
             SetDeviceInformation(new DeviceEureka { Name = discoveredDevice.Name, Ip_address = discoveredDevice.IPAddress });

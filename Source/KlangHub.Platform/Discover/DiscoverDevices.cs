@@ -91,12 +91,17 @@ namespace KlangHub.Discover
                 || e.Announcement.Txt == null || discoveredDevices == null)
                 return;
 
+            // KlangHub reaches devices over IPv4 (the http://<ip>:8008 eureka_info URL and the :8009 cast
+            // connection). A device often sends separate mDNS announcements per address family; an IPv6-only
+            // one would produce a broken duplicate ("Invalid URI" on eureka + "address is invalid in this
+            // context" on connect), so skip announcements that carry no IPv4 address.
+            var ipv4 = e.Announcement.Addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+            if (ipv4 == null)
+                return;
+
             var discoveredDevice = new DiscoveredDevice
             {
-                // Prefer an IPv4 address: Tmds.MDns can list IPv6 first, which breaks both the http://<ip>:8008
-                // eureka_info URL and the :8009 cast connection (-> a device that "Error"s while other apps work).
-                IPAddress = (e.Announcement.Addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                             ?? e.Announcement.Addresses[0]).ToString(),
+                IPAddress = ipv4.ToString(),
                 Protocol = e.Announcement.Type,
                 Port = e.Announcement.Port,
                 Name = e.Announcement.Txt.Where(x => x.ToString().StartsWith("fn=")).FirstOrDefault()?.Replace("fn=", ""),
