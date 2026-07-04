@@ -115,3 +115,6 @@ $RECYCLE.BIN/
 *.received.*
 .localhistory/
 *.GhostDoc.xml
+
+# Build output / packaged releases
+dist/

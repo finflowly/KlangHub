@@ -499,7 +499,7 @@ namespace KlangHub.Application
         {
             if (!IsGroup())
             {
-                startTask(DeviceInformation.GetDeviceInformation(discoveredDevice, SetDeviceInformation, logger), null);
+                startTask(DeviceInformation.GetDeviceInformation(discoveredDevice, SetDeviceInformation, null, logger), null);
             }
         }
 

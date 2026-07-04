@@ -45,14 +45,19 @@ namespace KlangHub.Application
                 return;
 
             if (discoveredDevice.Port == 0 || discoveredDevice.Port == 10001)
+            {
+                logger?.Log($"Discovery: ignoring '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) - port {discoveredDevice.Port}.");
                 return;
+            }
 
             if (ignoreIpAddresses.Contains(discoveredDevice.IPAddress))
                 return;
 
             if (!discoveredDevice.AddedByDeviceInfo && !discoveredDevice.IsGroup)
             {
-                applicationLogic.StartTask(DeviceInformation.GetDeviceInformation(discoveredDevice, SetDeviceInformation, logger));
+                logger?.Log($"Discovery: '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) - fetching eureka_info.");
+                applicationLogic.StartTask(DeviceInformation.GetDeviceInformation(
+                    discoveredDevice, SetDeviceInformation, () => AddFromMdnsFallback(discoveredDevice), logger));
             }
             else
             {
@@ -64,6 +69,7 @@ namespace KlangHub.Application
                         var newDevice = new Device(logger, applicationLogic);
                         newDevice.Initialize(discoveredDevice, SetDeviceInformation, StopGroup, applicationLogic.StartTask, IsGroupStatusBlank, AutoMute);
                         deviceList.Add(newDevice);
+                        logger?.Log($"Device added: '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}:{discoveredDevice.Port}){(discoveredDevice.IsGroup ? " [group]" : string.Empty)}.");
                         onAddDeviceCallback?.Invoke(newDevice);
 
                         var wasPlaying = applicationLogic.WasPlaying(discoveredDevice);
@@ -159,8 +165,13 @@ namespace KlangHub.Application
 
             if (discoveredDevice.IsGroup)
                 return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.Id == discoveredDevice.Id);
-            else
-                return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.Eureka?.GetMacAddress() == discoveredDevice.Eureka?.GetMacAddress());
+
+            // Dedup non-groups by MAC when available; fall back to IP for devices with no eureka MAC
+            // (mDNS-fallback devices) so multiple such devices don't collapse into one.
+            var mac = discoveredDevice.Eureka?.GetMacAddress();
+            if (!string.IsNullOrEmpty(mac))
+                return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.Eureka?.GetMacAddress() == mac);
+            return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.IPAddress == discoveredDevice.IPAddress);
         }
 
         /// <summary>
@@ -182,6 +193,21 @@ namespace KlangHub.Application
                 Eureka = eurekaIn
             };
             OnDeviceAvailable(discoveredDevice);
+        }
+
+        /// <summary>
+        /// Fallback when a discovered device does not serve the :8008 eureka_info endpoint (TV-integrated
+        /// Cast / soundbars / third-party devices). Add it from the mDNS announcement so it is still shown
+        /// and castable over :8009 - other cast apps don't require eureka_info either. Reuses the normal add
+        /// path via a minimal eureka carrying just the discovered name + IP.
+        /// </summary>
+        private void AddFromMdnsFallback(DiscoveredDevice discoveredDevice)
+        {
+            if (discoveredDevice == null || string.IsNullOrEmpty(discoveredDevice.IPAddress))
+                return;
+
+            logger?.Log($"Adding '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) from mDNS - no eureka_info.");
+            SetDeviceInformation(new DeviceEureka { Name = discoveredDevice.Name, Ip_address = discoveredDevice.IPAddress });
         }
 
         /// <summary>

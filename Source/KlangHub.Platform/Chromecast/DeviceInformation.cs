@@ -16,7 +16,7 @@ namespace KlangHub.Application
     /// </summary>
     public static class DeviceInformation
     {
-        public static Action GetDeviceInformation(DiscoveredDevice discoveredDevice, Action<DeviceEureka> callback, ILogger logger)
+        public static Action GetDeviceInformation(DiscoveredDevice discoveredDevice, Action<DeviceEureka> callback, Action onFailed, ILogger logger)
         {
             return (async () => {
                 try
@@ -35,10 +35,19 @@ namespace KlangHub.Application
                         var eureka = JsonSerializer.Deserialize<DeviceEureka>(eurekaInfo, options);
                         callback?.Invoke(eureka);
                     }
+                    else
+                    {
+                        // Many Cast targets (TV-integrated Cast, soundbars, third-party devices) do not serve
+                        // Google's :8008 eureka_info setup endpoint, yet are perfectly castable over :8009.
+                        // Don't silently drop them - fall back to adding from the mDNS announcement.
+                        logger?.Log($"eureka_info for {discoveredDevice?.IPAddress} returned HTTP {(int)response.StatusCode}; adding via mDNS fallback.");
+                        onFailed?.Invoke();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    logger?.Log(ex, "DeviceInformation.GetDeviceInformation");
+                    logger?.Log(ex, $"DeviceInformation.GetDeviceInformation [{discoveredDevice?.IPAddress}] - adding via mDNS fallback");
+                    onFailed?.Invoke();
                 }
             });
         }
