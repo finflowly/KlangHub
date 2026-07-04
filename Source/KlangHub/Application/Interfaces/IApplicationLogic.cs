@@ -13,7 +13,6 @@ namespace KlangHub.Application.Interfaces
     {
         void Initialize();
         void SetLagThreshold(int lagThreshold);
-        void OnAddDevice(IDevice device);
         void OnRecordingDataAvailable(AudioFrame frame);
         void OnStreamingRequestConnect(Socket handlerSocket, string httpRequest);
         void SetDependencies(IMainForm mainForm);

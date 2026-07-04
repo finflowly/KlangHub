@@ -49,15 +49,17 @@ namespace KlangHub.Application
             , ILogger loggerIn, ICastProvider castProviderIn)
         {
             devices = devicesIn;
-            devices.SetCallback(OnAddDevice);
-            devices.SetRemoveCallback(OnRemoveDevice);
             discoverDevices = discoverDevicesIn;
             configuration = configurationIn;
             streamingRequestListener = streamingRequestListenerIn;
             deviceStatusTimer = deviceStatusTimerIn;
             logger = loggerIn;
             castProvider = castProviderIn;
-            orchestrator = new Orchestration.Orchestrator(devicesIn, streamingRequestListenerIn, castProviderIn, loggerIn);
+            orchestrator = new Orchestration.Orchestrator(devicesIn, streamingRequestListenerIn, castProviderIn, deviceStatusTimerIn, loggerIn);
+            // 2.2b-H4b-2: the orchestrator owns the device add/remove flow and raises neutral events; the
+            // tray shell reacts here (create/remove menu items + mainForm add/remove).
+            orchestrator.DeviceAdded += OnDeviceAdded;
+            orchestrator.DeviceRemoved += OnRemoveDevice;
         }
 
         /// <summary>
@@ -69,7 +71,7 @@ namespace KlangHub.Application
             LoadSettings();
             configuration.Load(ApplyConfiguration, logger);
             orchestrator.ScanForDevices();
-            deviceStatusTimer.StartPollingDevice(devices.OnGetStatus);
+            orchestrator.StartStatusPolling();
             var ipAddress = Network.GetIp4Address();
             if (ipAddress == null)
             {
@@ -78,11 +80,7 @@ namespace KlangHub.Application
             }
 
             orchestrator.StartStreamingListener(ipAddress);
-            orchestrator.StartTask(() => {
-                new RestApi().StartListening(ipAddress,
-                    (socket, req, devs, log, form) => RestApiHandler.Process(socket, req, devs, log, form, ResolveSession),
-                    logger, devices, mainForm);
-            });
+            orchestrator.StartRestApi(ipAddress, mainForm.RestartRecording);
         }
 
         /// <summary>
@@ -109,7 +107,7 @@ namespace KlangHub.Application
         /// Callback for Devices, a new device is added.
         /// </summary>
         /// <param name="deviceIn">the new device</param>
-        public void OnAddDevice(IDevice deviceIn)
+        private void OnDeviceAdded(IDevice deviceIn)
         {
             if (deviceIn == null || mainForm == null)
                 return;
@@ -129,7 +127,7 @@ namespace KlangHub.Application
                 if (castProvider != null && deviceIn is IPlaybackSession playbackSession)
                 {
                     var descriptor = playbackSession.Device;
-                    menuItem.Click += (s, e) => TrayTogglePlayStop(descriptor);
+                    menuItem.Click += (s, e) => orchestrator.TogglePlayStop(descriptor);
                 }
                 else
                 {
@@ -140,7 +138,7 @@ namespace KlangHub.Application
                 if (deviceIn is IPlaybackSession menuSession)
                     deviceMenuItems[menuSession.Device.Id] = menuItem;
                 SubscribeMenuChecked(deviceIn, menuItem);
-                RequestDeviceStatus(deviceIn);
+                orchestrator.RequestDeviceStatus(deviceIn);
             }
             catch (Exception ex)
             {
@@ -183,37 +181,6 @@ namespace KlangHub.Application
         }
 
         /// <summary>
-        /// 2.2b-4.4a: toggle Play/Stop for one device via the neutral casting session. Resolving the
-        /// descriptor through castProvider.CreateSession can throw if the device has meanwhile left the
-        /// registry; we swallow that to a no-op, matching the old direct path (OnClickPlayStop no-ops on
-        /// a disposed device). Ownership/lifecycle of the returned session is addressed later in 4.4.
-        /// </summary>
-        private void TrayTogglePlayStop(CastDeviceDescriptor descriptor)
-        {
-            try
-            {
-                castProvider.CreateSession(descriptor).TogglePlayStop();
-            }
-            catch (InvalidOperationException ex)
-            {
-                logger.Log(ex, "ApplicationLogic.TrayTogglePlayStop");
-            }
-        }
-
-        /// <summary>
-        /// 2.2b-4.4a: single-device status refresh via the neutral session (RequestStatus maps 1:1 to
-        /// OnGetStatus). Called at add time when the device is present, so no miss-guard is needed here;
-        /// falls back to the direct device call if no provider is present.
-        /// </summary>
-        private void RequestDeviceStatus(IDevice deviceIn)
-        {
-            if (castProvider != null && deviceIn is IPlaybackSession playbackSession)
-                castProvider.CreateSession(playbackSession.Device).RequestStatus();
-            else
-                deviceIn.OnGetStatus();
-        }
-
-        /// <summary>
         /// 2.2b-4.6: the tray item's Checked follows playback via the neutral StateChanged (moved out of
         /// DeviceControl). Marshalled through the ContextMenuStrip (a Control) since the event may arrive
         /// off the UI thread. Not explicitly unsubscribed - the menu item lives ~process-long (bounded).
@@ -232,18 +199,6 @@ namespace KlangHub.Application
                 else if (!menuItem.IsDisposed)
                     menuItem.Checked = isPlaying;
             };
-        }
-
-        /// <summary>
-        /// 2.2b-4.4f: name/device -> neutral session resolver for the REST handler. Wraps CreateSession's
-        /// throw-on-miss into a null return so REST sites (incl. broadcast) simply skip a vanished device.
-        /// </summary>
-        private IPlaybackSession ResolveSession(IDevice device)
-        {
-            if (castProvider == null || !(device is IPlaybackSession playbackSession))
-                return null;
-            try { return castProvider.CreateSession(playbackSession.Device); }
-            catch (InvalidOperationException) { return null; }
         }
 
         /// <summary>

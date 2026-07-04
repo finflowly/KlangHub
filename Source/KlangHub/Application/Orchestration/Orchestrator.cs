@@ -8,6 +8,7 @@ using KlangHub.Classes;
 using KlangHub.Platform.Audio;
 using KlangHub.Application.Interfaces;
 using KlangHub.Streaming.Interfaces;
+using KlangHub.Rest;
 
 namespace KlangHub.Application.Orchestration
 {
@@ -24,8 +25,14 @@ namespace KlangHub.Application.Orchestration
         private readonly IDevices devices;
         private readonly IStreamingRequestsListener streamingRequestListener;
         private readonly ICastProvider castProvider;
+        private readonly IDeviceStatusTimer deviceStatusTimer;
         private readonly ILogger logger;
         private readonly TasksToCancel taskList = new TasksToCancel();
+
+        /// <summary>Raised when a device is added/removed; the tray shell reacts with WinForms (menu items).
+        /// Raised on the discovery / status-timer thread - subscribers must marshal their UI work.</summary>
+        public event Action<IDevice> DeviceAdded;
+        public event Action<IDevice> DeviceRemoved;
 
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
@@ -35,12 +42,70 @@ namespace KlangHub.Application.Orchestration
         private bool autoRestart = false;
 
         public Orchestrator(IDevices devicesIn, IStreamingRequestsListener streamingRequestListenerIn,
-            ICastProvider castProviderIn, ILogger loggerIn)
+            ICastProvider castProviderIn, IDeviceStatusTimer deviceStatusTimerIn, ILogger loggerIn)
         {
             devices = devicesIn;
             streamingRequestListener = streamingRequestListenerIn;
             castProvider = castProviderIn;
+            deviceStatusTimer = deviceStatusTimerIn;
             logger = loggerIn;
+            devices.SetCallback(RaiseDeviceAdded);
+            devices.SetRemoveCallback(RaiseDeviceRemoved);
+        }
+
+        // ---------- device add/remove eventing + neutral session bridging ----------
+
+        private void RaiseDeviceAdded(IDevice device) => DeviceAdded?.Invoke(device);
+
+        private void RaiseDeviceRemoved(IDevice device) => DeviceRemoved?.Invoke(device);
+
+        /// <summary>Toggle Play/Stop for one device via the neutral casting session. Swallows the
+        /// throw-on-miss (device left the registry) to a no-op, matching the old direct path.</summary>
+        public void TogglePlayStop(CastDeviceDescriptor descriptor)
+        {
+            try
+            {
+                castProvider.CreateSession(descriptor).TogglePlayStop();
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Log(ex, "Orchestrator.TogglePlayStop");
+            }
+        }
+
+        /// <summary>Single-device status refresh via the neutral session (RequestStatus maps 1:1 to
+        /// OnGetStatus). Called at add time when the device is present, so no miss-guard is needed.</summary>
+        public void RequestDeviceStatus(IDevice deviceIn)
+        {
+            if (castProvider != null && deviceIn is IPlaybackSession playbackSession)
+                castProvider.CreateSession(playbackSession.Device).RequestStatus();
+            else
+                deviceIn.OnGetStatus();
+        }
+
+        /// <summary>name/device -> neutral session resolver for the REST handler. Wraps CreateSession's
+        /// throw-on-miss into a null return so REST sites simply skip a vanished device.</summary>
+        public IPlaybackSession ResolveSession(IDevice device)
+        {
+            if (castProvider == null || !(device is IPlaybackSession playbackSession))
+                return null;
+            try { return castProvider.CreateSession(playbackSession.Device); }
+            catch (InvalidOperationException) { return null; }
+        }
+
+        public void StartStatusPolling()
+        {
+            deviceStatusTimer.StartPollingDevice(devices.OnGetStatus);
+        }
+
+        public void StartRestApi(IPAddress ipAddress, Action restartRecording)
+        {
+            StartTask(() =>
+            {
+                new RestApi().StartListening(ipAddress,
+                    (socket, req, devs, log, restart) => RestApiHandler.Process(socket, req, devs, log, restart, ResolveSession),
+                    logger, devices, restartRecording);
+            });
         }
 
         // ---------- streaming pipeline ----------

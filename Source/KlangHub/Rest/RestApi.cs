@@ -12,20 +12,20 @@ namespace KlangHub.Rest
     public class RestApi : IDisposable
     {
         public ManualResetEvent allDone = new ManualResetEvent(false);
-        private Action<Socket, string, IDevices, ILogger, IMainForm> onConnectCallback;
+        private Action<Socket, string, IDevices, ILogger, Action> onConnectCallback;
         private Socket listener;
         private string ip;
         private int port;
         private ILogger logger;
         private IDevices devices;
-        private IMainForm mainForm;
+        private Action restartRecording;
 
         /// <summary>
         /// Start listening for new API request.
         /// </summary>
         /// <param name="ipAddress"></param>
         /// <param name="onConnectCallbackIn"></param>
-        public void StartListening(IPAddress ipAddress, Action<Socket, string, IDevices, ILogger, IMainForm> onConnectCallbackIn, ILogger loggerIn, IDevices devicesIn, IMainForm mainFormIn)
+        public void StartListening(IPAddress ipAddress, Action<Socket, string, IDevices, ILogger, Action> onConnectCallbackIn, ILogger loggerIn, IDevices devicesIn, Action restartRecordingIn)
         {
             if (ipAddress == null || onConnectCallbackIn == null)
                 return;
@@ -33,7 +33,7 @@ namespace KlangHub.Rest
             logger = loggerIn;
             onConnectCallback = onConnectCallbackIn;
             devices = devicesIn;
-            mainForm = mainFormIn;
+            restartRecording = restartRecordingIn;
 
             try
             {
@@ -123,7 +123,7 @@ namespace KlangHub.Rest
                     if (state.receiveBuffer.ToString().IndexOf("\r\n\r\n") >= 0)
                     {
                         logger.Log(state.receiveBuffer.ToString());
-                        onConnectCallback?.Invoke(handlerSocket, state.receiveBuffer.ToString(), devices, logger, mainForm);
+                        onConnectCallback?.Invoke(handlerSocket, state.receiveBuffer.ToString(), devices, logger, restartRecording);
                         handlerSocket.Close();
                     }
                     else

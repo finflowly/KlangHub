@@ -17,7 +17,7 @@ namespace KlangHub.Rest
         private const string errorDeviceNotFound = "{\"errors\": { \"status\": \"404 Not Found\", \"id\": \"3\", \"title\": \"Device not found\" } }";
         private const string errorWrongVolume = "{\"errors\": { \"status\": \"400 Bad Request\", \"id\": \"3\", \"title\": \"Volume should be an integer between 0 and 100 (/volume/<device>/<volume>)\" } }";
         
-        public static void Process(Socket socket, string request, IDevices devices, ILogger logger, IMainForm mainForm,
+        public static void Process(Socket socket, string request, IDevices devices, ILogger logger, Action restartRecording,
             Func<IDevice, IPlaybackSession> resolveSession)
         {
             if (request == null || socket == null)
@@ -47,7 +47,7 @@ namespace KlangHub.Rest
                 else if (action.StartsWith("/list"))
                     response = List(devices);
                 else if (action.StartsWith("/restartrecording"))
-                    response = RestartRecording(mainForm);
+                    response = RestartRecording(restartRecording);
                 else
                     response = errorNotSupported;
 
@@ -64,9 +64,9 @@ namespace KlangHub.Rest
             }
         }
 
-        private static string RestartRecording(IMainForm mainForm)
+        private static string RestartRecording(Action restartRecording)
         {
-            mainForm.RestartRecording();
+            restartRecording?.Invoke();
             var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/restartrecording\" } } }";
             return response;
         }
