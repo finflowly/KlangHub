@@ -55,6 +55,9 @@ namespace KlangHub
             logger.SetCallback(Log);
             devices.SetDependencies(this, applicationLogic);
             applicationLogic.SetDependencies(this);
+            // 2.2b-H4a-3: keep the neutral host's stream title in sync with the UI, so ICastHost.GetStreamTitle
+            // no longer reaches into WinForms (the load message reads the live title as before).
+            txtStreamTitle.TextChanged += (s, e) => applicationLogic.SetStreamTitle(txtStreamTitle.Text);
             wavGenerator = new WavGenerator();
             previousRecordingDeviceExists = false;
         }

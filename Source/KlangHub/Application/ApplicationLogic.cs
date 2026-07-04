@@ -41,6 +41,8 @@ namespace KlangHub.Application
         private IAudioEncoder mp3Encoder = null;
         private SupportedStreamFormat StreamFormatSelected = SupportedStreamFormat.Mp3_320;
         private string Culture;
+        // 2.2b-H4a-3: neutral stream title so ICastHost.GetStreamTitle is headless; kept in sync from the UI.
+        private string streamTitle = Properties.Strings.ChromeCast_StreamTitle;
         private readonly ILogger logger;
         private Size defaultSize = new Size(850, 550);
         private TasksToCancel taskList;
@@ -603,10 +605,9 @@ namespace KlangHub.Application
         /// <returns>the url that can be used to open a stream</returns>
         public string GetStreamingUrl()
         {
-            if (mainForm == null || streamingRequestListener == null)
+            if (streamingRequestListener == null)
                 return null;
 
-            mainForm.GetStreamFormat();
             return streamingRequestListener.GetStreamimgUrl();
         }
 
@@ -671,9 +672,14 @@ namespace KlangHub.Application
             return false;
         }
 
+        public void SetStreamTitle(string title)
+        {
+            streamTitle = title;
+        }
+
         public string GetStreamTitle()
         {
-            return mainForm.GetStreamTitle();
+            return streamTitle;
         }
 
         #region private helpers
