@@ -87,13 +87,16 @@ namespace KlangHub.Discover
         /// </summary>
         private void OnServiceAdded(object sender, ServiceAnnouncementEventArgs e)
         {
-            if (e == null || e.Announcement == null || e.Announcement.Addresses == null || e.Announcement.Txt == null
-                || discoveredDevices == null)
+            if (e == null || e.Announcement == null || e.Announcement.Addresses == null || e.Announcement.Addresses.Count == 0
+                || e.Announcement.Txt == null || discoveredDevices == null)
                 return;
 
             var discoveredDevice = new DiscoveredDevice
             {
-                IPAddress = e.Announcement.Addresses[0].ToString(),
+                // Prefer an IPv4 address: Tmds.MDns can list IPv6 first, which breaks both the http://<ip>:8008
+                // eureka_info URL and the :8009 cast connection (-> a device that "Error"s while other apps work).
+                IPAddress = (e.Announcement.Addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                             ?? e.Announcement.Addresses[0]).ToString(),
                 Protocol = e.Announcement.Type,
                 Port = e.Announcement.Port,
                 Name = e.Announcement.Txt.Where(x => x.ToString().StartsWith("fn=")).FirstOrDefault()?.Replace("fn=", ""),
