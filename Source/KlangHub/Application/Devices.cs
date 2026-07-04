@@ -183,7 +183,7 @@ namespace KlangHub.Application
 
         /// <summary>A real, usable MAC identity - not empty and not the all-zeros placeholder some Cast
         /// devices (Google TV / Android TV) report in eureka_info.</summary>
-        private static bool HasRealMac(string mac) =>
+        internal static bool HasRealMac(string mac) =>
             !string.IsNullOrEmpty(mac) && mac != "00:00:00:00:00:00";
 
         /// <summary>
