@@ -2,7 +2,6 @@
 using System.Linq;
 using KlangHub.Communication.Classes;
 using KlangHub.ProtocolBuffer;
-using KlangHub.Application.Interfaces;
 using KlangHub.Communication.Interfaces;
 using System.Threading.Tasks;
 using KlangHub.Application;
@@ -16,7 +15,7 @@ namespace KlangHub.Communication
         private IDevice device;
         private Action<byte[]> sendMessage;
         private Func<bool> isDeviceConnected;
-        private readonly IApplicationLogic applicationLogic;
+        private readonly ICastHost applicationLogic;
         private readonly ILogger logger;
         private readonly IChromeCastMessages chromeCastMessages;
         private string chromeCastDestination;
@@ -33,7 +32,7 @@ namespace KlangHub.Communication
         private DateTime lastReceivedMessage = DateTime.MinValue;
         private string statusText;
 
-        public DeviceCommunication(IApplicationLogic applicationLogicIn, ILogger loggerIn)
+        public DeviceCommunication(ICastHost applicationLogicIn, ILogger loggerIn)
         {
             applicationLogic = applicationLogicIn;
             logger = loggerIn;

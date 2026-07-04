@@ -9,7 +9,6 @@ using KlangHub.Classes;
 using KlangHub.Streaming;
 using KlangHub.ProtocolBuffer;
 using KlangHub.Discover;
-using KlangHub.Application.Interfaces;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Text.Json;
@@ -47,7 +46,7 @@ namespace KlangHub.Application
 
         delegate void SetDeviceStateCallback(DeviceState state, string text = null);
 
-        public Device(ILogger loggerIn, IApplicationLogic applicationLogicIn)
+        public Device(ILogger loggerIn, ICastHost applicationLogicIn)
         {
             logger = loggerIn;
             deviceConnection = new DeviceConnection(logger);

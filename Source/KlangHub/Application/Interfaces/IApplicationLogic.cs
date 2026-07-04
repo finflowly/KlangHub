@@ -9,7 +9,7 @@ using NAudio.Wave;
 
 namespace KlangHub.Application.Interfaces
 {
-    public interface IApplicationLogic
+    public interface IApplicationLogic : ICastHost
     {
         void Initialize();
         void SetLagThreshold(int lagThreshold);
@@ -19,18 +19,14 @@ namespace KlangHub.Application.Interfaces
         void SetDependencies(MainForm mainForm);
         void CloseApplication();
         void OnSetAutoRestart(bool autoRestart);
-        bool GetAutoRestart();
         void ChangeIPAddressUsed(IPAddress ipAddress);
         void ScanForDevices();
         void ResetSettings();
         void SetStreamFormat(SupportedStreamFormat format);
         void SetCulture(string culture);
-        string GetStreamingUrl();
         bool WasPlaying(DiscoveredDevice discoveredDevice);
         void ClearMp3Buffer();
-        void StartTask(Action action, CancellationTokenSource cancellationTokenSource = null);
         void SaveSettings();
         void SetRecordingDevice(AudioCaptureDevice recordingDevice);
-        string   GetStreamTitle();
     }
 }
