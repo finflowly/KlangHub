@@ -248,7 +248,7 @@ namespace KlangHub.Application
                 DoFirewallCheckSaveTimes(state);
 
                 discoveredDevice.DeviceState = state;
-                deviceControl?.SetStatus(discoveredDevice.DeviceState, statusText);
+                // 2.2b-4.5: DeviceControl observes status via StateChanged (no direct push).
                 StateChanged?.Invoke(this, ChromecastStateMapper.ToPlaybackState(state));
             }
         }

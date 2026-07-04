@@ -228,7 +228,6 @@ namespace KlangHub
 
             var deviceControl = new DeviceControl(device, BuildSessionAccessor(device));
             deviceControl.SetDeviceName(device.GetFriendlyName());
-            deviceControl.SetStatus(device.GetDeviceState(), null);
             device.SetDeviceControl(deviceControl);
             pnlDevices.Controls.Add(deviceControl);
             var filter = GetFilterDevices();

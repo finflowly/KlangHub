@@ -27,8 +27,14 @@ namespace KlangHub.UserControls
             catch (InvalidOperationException) { session = null; }
             if (session != null)
             {
+                session.StateChanged += OnSessionStateChanged;
                 session.VolumeChanged += OnSessionVolumeChanged;
-                Disposed += (s, e) => session.VolumeChanged -= OnSessionVolumeChanged;
+                Disposed += (s, e) =>
+                {
+                    session.StateChanged -= OnSessionStateChanged;
+                    session.VolumeChanged -= OnSessionVolumeChanged;
+                };
+                RenderStatus(session.State, session.StatusText);   // initial render (volume renders on first event)
             }
 
             btnDevice.FlatAppearance.MouseOverBackColor = btnDevice.BackColor;
@@ -56,56 +62,45 @@ namespace KlangHub.UserControls
             return btnDevice.Text;
         }
 
-        public void SetStatus(DeviceState state, string text)
+        // 2.2b-4.5: neutral status observation, fed by the session's StateChanged event.
+        private void OnSessionStateChanged(object sender, PlaybackState state)
+            => RenderStatus(state, session?.StatusText ?? string.Empty);
+
+        // Renders from the neutral PlaybackState (+ StatusText). Documented fidelity loss vs the old
+        // DeviceState rendering: LoadingMediaCheckFirewall -> Loading loses MistyRose (the firewall hint
+        // survives as text via StatusText), and LoadCancelled -> Idle loses PeachPuff. Colours collapse
+        // to: playing/buffering = PaleGreen, error = PeachPuff, everything else = LightGray.
+        private void RenderStatus(PlaybackState state, string statusText)
         {
             if (device == null || device.IsDisposed())
                 return;
 
             if (InvokeRequired)
             {
-                Invoke(new Action<DeviceState, string>(SetStatus), new object[] { state, text });
+                Invoke(new Action<PlaybackState, string>(RenderStatus), new object[] { state, statusText });
                 return;
             }
 
-            lblStatus.Text = $"{Resource.Get(state.ToString())} {text}";
+            lblStatus.Text = $"{Resource.Get(state.ToString())} {statusText}".Trim();
             var tmpMenuItem = device.GetMenuItem();
 
             switch (state)
             {
-                case DeviceState.LoadingMediaCheckFirewall:
-                    SetBackColor(Color.MistyRose);
-                    lblStatus.Text = $"{Resource.Get(state.ToString())}";
-                    if (tmpMenuItem != null) tmpMenuItem.Checked = false;
-                    picturePlayPause.Image = Properties.Resources.Play;
-                    break;
-                case DeviceState.NotConnected:
-                case DeviceState.Connected:
-                case DeviceState.Idle:
-                case DeviceState.Disposed:
-                case DeviceState.LaunchingApplication:
-                case DeviceState.LaunchedApplication:
-                case DeviceState.LoadingMedia:
-                case DeviceState.Closed:
-                case DeviceState.Paused:
-                    SetBackColor(Color.LightGray);
-                    if (tmpMenuItem != null) tmpMenuItem.Checked = false;
-                    picturePlayPause.Image = Properties.Resources.Play;
-                    break;
-                case DeviceState.Buffering:
-                case DeviceState.Playing:
+                case PlaybackState.Buffering:
+                case PlaybackState.Playing:
                     SetBackColor(Color.PaleGreen);
                     if (tmpMenuItem != null) tmpMenuItem.Checked = true;
                     picturePlayPause.Image = Properties.Resources.Stop;
                     break;
-                case DeviceState.ConnectError:
-                case DeviceState.LoadCancelled:
-                case DeviceState.LoadFailed:
-                case DeviceState.InvalidRequest:
+                case PlaybackState.Error:
                     SetBackColor(Color.PeachPuff);
                     if (tmpMenuItem != null) tmpMenuItem.Checked = false;
                     picturePlayPause.Image = Properties.Resources.Play;
                     break;
                 default:
+                    SetBackColor(Color.LightGray);
+                    if (tmpMenuItem != null) tmpMenuItem.Checked = false;
+                    picturePlayPause.Image = Properties.Resources.Play;
                     break;
             }
         }
