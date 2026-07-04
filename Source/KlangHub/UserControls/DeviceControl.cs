@@ -207,7 +207,11 @@ namespace KlangHub.UserControls
             if (device == null || device.IsDisposed())
                 return;
 
-            PlayPause_Click();
+            // 2.2b-4.4c: play/stop toggle via the neutral session (TogglePlayStop == OnClickPlayStop, 1:1).
+            if (sessionAccessor != null)
+                TryOnSession(s => s.TogglePlayStop());
+            else
+                PlayPause_Click();   // fallback: unchanged callback
         }
 
         private void BtnDeviceStop_Click(object sender, EventArgs e)
