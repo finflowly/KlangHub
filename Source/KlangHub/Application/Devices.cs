@@ -166,11 +166,25 @@ namespace KlangHub.Application
             if (discoveredDevice.IsGroup)
                 return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.Id == discoveredDevice.Id);
 
+            // Dedup by MAC only when it is a REAL MAC. Google TV / Android TV / several speakers report a
+            // placeholder all-zeros MAC (00:00:00:00:00:00) in eureka - that is not an identity. Treating it
+            // as a real MAC collapses every such device into one tile (Google TV + TCL TV + Enchant all merge,
+            // hiding devices and misrouting casts to whichever eureka'd last). For no/placeholder MAC, dedup
+            // by IP so each distinct device keeps its own tile.
             var mac = discoveredDevice.Eureka?.GetMacAddress();
-            if (!string.IsNullOrEmpty(mac))
-                return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.Eureka?.GetMacAddress() == mac);
+            if (HasRealMac(mac))
+                return deviceList.FirstOrDefault(d =>
+                {
+                    var dmac = d.GetDiscoveredDevice()?.Eureka?.GetMacAddress();
+                    return HasRealMac(dmac) && dmac == mac;
+                });
             return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.IPAddress == discoveredDevice.IPAddress);
         }
+
+        /// <summary>A real, usable MAC identity - not empty and not the all-zeros placeholder some Cast
+        /// devices (Google TV / Android TV) report in eureka_info.</summary>
+        private static bool HasRealMac(string mac) =>
+            !string.IsNullOrEmpty(mac) && mac != "00:00:00:00:00:00";
 
         /// <summary>
         /// Callback for when the device information is collected.
