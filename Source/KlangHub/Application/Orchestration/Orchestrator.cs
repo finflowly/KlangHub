@@ -108,6 +108,22 @@ namespace KlangHub.Application.Orchestration
             });
         }
 
+        /// <summary>Neutral startup sequence: discovery + status polling + streaming listener + REST.
+        /// The shell does the UI-side AddNotifyIcon/LoadSettings/config load first, then calls this.</summary>
+        public void Start(Action restartRecording)
+        {
+            ScanForDevices();
+            StartStatusPolling();
+            var ipAddress = Network.GetIp4Address();
+            if (ipAddress == null)
+            {
+                logger.Log(Properties.Strings.MessageBox_NoIPAddress);
+                return;
+            }
+            StartStreamingListener(ipAddress);
+            StartRestApi(ipAddress, restartRecording);
+        }
+
         // ---------- streaming pipeline ----------
 
         public void OnStreamingRequestConnect(Socket socketIn, string httpRequestIn)

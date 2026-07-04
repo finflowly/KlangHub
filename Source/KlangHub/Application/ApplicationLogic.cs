@@ -72,17 +72,7 @@ namespace KlangHub.Application
             AddNotifyIcon();
             LoadSettings();
             configuration.Load(ApplyConfiguration, logger);
-            orchestrator.ScanForDevices();
-            orchestrator.StartStatusPolling();
-            var ipAddress = Network.GetIp4Address();
-            if (ipAddress == null)
-            {
-                logger.Log(Properties.Strings.MessageBox_NoIPAddress);
-                return;
-            }
-
-            orchestrator.StartStreamingListener(ipAddress);
-            orchestrator.StartRestApi(ipAddress, mainForm.RestartRecording);
+            orchestrator.Start(mainForm.RestartRecording);
         }
 
         /// <summary>
