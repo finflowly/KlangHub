@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualBasic.ApplicationServices;
 using System.Windows.Forms;
 using KlangHub.Application;
@@ -33,7 +34,11 @@ namespace KlangHub
                 var discoverDevices = new DiscoverDevices();
                 var chromecastDiscovery = new ChromecastDeviceDiscovery(discoverDevices);
                 chromecastDiscovery.DeviceDiscovered += (s, d) => { if (chromecastDiscovery.TryGetDevice(d.Id, out var full)) devices.OnDeviceAvailable(full); };
-                var chromecastProvider = new ChromecastProvider(chromecastDiscovery);
+                var chromecastProvider = new ChromecastProvider(
+                    chromecastDiscovery,
+                    descriptor => devices.GetDeviceList()
+                        .OfType<IPlaybackSession>()
+                        .FirstOrDefault(s => s.Device.Id == descriptor.Id));
                 var mainForm = new MainForm(
                         new ApplicationLogic(devices
                             , discoverDevices
@@ -94,7 +99,11 @@ namespace KlangHub
                 var discoverDevices = new DiscoverDevices();
                 var chromecastDiscovery = new ChromecastDeviceDiscovery(discoverDevices);
                 chromecastDiscovery.DeviceDiscovered += (s, d) => { if (chromecastDiscovery.TryGetDevice(d.Id, out var full)) devices.OnDeviceAvailable(full); };
-                var chromecastProvider = new ChromecastProvider(chromecastDiscovery);
+                var chromecastProvider = new ChromecastProvider(
+                    chromecastDiscovery,
+                    descriptor => devices.GetDeviceList()
+                        .OfType<IPlaybackSession>()
+                        .FirstOrDefault(s => s.Device.Id == descriptor.Id));
                 MainForm = new MainForm(
                         new ApplicationLogic(devices
                             , discoverDevices
