@@ -1,15 +1,30 @@
-# KlangHub — Project Checkpoint (2026-07-04)
+# KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
-**HEAD:** `a632cf6` · **Branch:** `master` · **Tests:** 65 green (`dotnet test`) · **Working tree:** clean
-**Latest verified build/zip:** `dist/KlangHub-Release-a632cf6.zip` (framework-dependent, needs .NET 8 Desktop Runtime)
+**HEAD:** `098a9d5` · **Branch:** `master` · **Tests:** 65 green (`dotnet test`) · **Working tree:** clean
+**Runtime:** **.NET 10** (LTS). Framework-dependent build → needs the **.NET 10 Desktop Runtime** discoverable
+by the app host (installed machine-wide at `C:\Program Files\dotnet`, 10.0.9 — HW-confirmed by the maintainer).
 
 This document is the authoritative resume point. Paste the "Quick-start for a new chat" block (bottom) into a
 new session.
 
 ---
 
+## 0. Update 2026-07-05 — .NET 10 LTS migration + package cleanup (commit `098a9d5`)
+All four projects retargeted **net8 → net10** (Core `net10.0`; Platform/App/Tests `net10.0-windows`).
+Package bumps: NAudio 2.2.1→**2.3.0** (stable; 3.0.0 is preview-only), Microsoft.Windows.Compatibility
+9.0.3→**10.0.9**, test tooling (Microsoft.NET.Test.Sdk 18.7.0, xunit 2.9.3, xunit.runner.visualstudio 3.1.5,
+NSubstitute 5.3.0). **NAudio.Lame 2.1.0 + Tmds.MDns 0.8.0 were already latest** → untouched (also keeps the
+fragile mDNS discovery path unchanged). **Removed 7 now-redundant packages** (all in-box on net10):
+Microsoft.CSharp, Microsoft.VisualBasic (WindowsFormsApplicationBase ships via Microsoft.VisualBasic.Forms),
+System.Memory, System.Numerics.Vectors, System.Runtime.CompilerServices.Unsafe,
+System.Threading.Tasks.Extensions, System.Text.Json (×2, per SDK NU1510). Build 0 errors, 65/65 green,
+app smoke-tested on the net10 runtime. `Nullable` deliberately **not** enabled (large non-behaviour-preserving
+churn — separate future task). Deeper audio hot-path optimizations also deferred (Tier B).
+
+---
+
 ## 1. What KlangHub is
-A Windows / .NET 8 WinForms app that captures the PC's audio and casts it to Chromecast devices (mid-rebrand
+A Windows / .NET 10 WinForms app that captures the PC's audio and casts it to Chromecast devices (mid-rebrand
 from "ChromeCast-Desktop-Audio-Streamer"). Chromecast is a **pull** model: the app runs an HTTP streaming
 server; the device connects and pulls the stream.
 
@@ -78,9 +93,10 @@ with a targeted fix here.
 - **AirPlay streaming** — a large, dedicated later spike (transient HomeKit pairing SRP-6a + X25519/Ed25519 +
   ChaCha20 + ALAC/RTP; no usable managed .NET sender → port/interop the Apache-2.0 `airplay2-sender-cpp`).
   Discovery already works. Note: the Enchant/TCL/Soundbar are AirPlay2-capable too.
-- **Housekeeping (non-blocking):** net8→net10 LTS bump (low-effort; net8 EOL 2026-11-10); move
-  Orchestrator/SettingsService to a `KlangHub.App.Core` lib so Tests needn't reference the WinExe; namespace
-  tidy (IDevice/Device still `KlangHub.Application`).
+- **Housekeeping (non-blocking):** ~~net8→net10 LTS bump~~ **DONE 2026-07-05** (commit `098a9d5`, see §0);
+  move Orchestrator/SettingsService to a `KlangHub.App.Core` lib so Tests needn't reference the WinExe;
+  namespace tidy (IDevice/Device still `KlangHub.Application`); optional later: enable `<Nullable>` +
+  audio hot-path optimizations (Tier B, deferred).
 
 ## 6. Open decisions already made (the maintainer)
 - D1 void→Task: **yes** (done in M2-2). · D2 Snapcast: **connect to existing server** first. ·
@@ -94,9 +110,15 @@ commit (strictly behaviour-preserving) → report honestly. Large ambitious-but-
 surface honest risks/caveats.
 
 ## 8. Build / dev environment notes
-- SDK: `%USERPROFILE%\.dotnet\dotnet.exe` (8.0.422, per-user, not on PATH).
+- SDK: `%USERPROFILE%\.dotnet\dotnet.exe` — now **10.0.301** (and 8.0.422), per-user, **not on PATH** (the
+  `dotnet` on PATH is `C:\Program Files\dotnet` which has runtimes only, no SDK → build with the per-user exe).
+- .NET 10 **runtimes** are installed both per-user (`~/.dotnet`, 10.0.9) **and machine-wide**
+  (`C:\Program Files\dotnet`, NETCore.App + WindowsDesktop.App 10.0.9) — the latter is what lets the
+  framework-dependent EXE launch on a plain double-click (the app host searches the machine-wide location, not
+  `~/.dotnet`; a per-user-only runtime needs `DOTNET_ROOT` set or a self-contained publish).
 - Build the **.sln** in Release (`dotnet build Source/KlangHub.sln -c Release`) — the legacy `Setup Project`
-  vdproj is skipped by the CLI. Output: `Source/KlangHub/bin/Release/net8.0-windows/KlangHub.exe`.
+  vdproj is skipped by the CLI (harmless MSB4078 warning). Output:
+  `Source/KlangHub/bin/Release/net10.0-windows/KlangHub.exe`.
 - **Kill running `KlangHub.exe` before a Release build** — a running instance locks Core/Platform DLLs
   (MSB3021/3027).
 - `dist/` is gitignored; zips are `dist/KlangHub-Release-<shorthash>.zip` (framework-dependent, ~83 MB).
@@ -109,8 +131,9 @@ surface honest risks/caveats.
 
 ## Quick-start for a new chat (paste this)
 
-> KlangHub (Windows/.NET8 WinForms Chromecast audio caster). We're at commit `a632cf6` on master, 65 tests
-> green, working tree clean. The full state is in `docs/CHECKPOINT-2026-07-04.md` (read it). Summary:
+> KlangHub (Windows/**.NET10** WinForms Chromecast audio caster). We're at commit `098a9d5` on master, 65 tests
+> green, working tree clean. The full state is in `docs/CHECKPOINT-2026-07-04.md` (read it — esp. §0 for the
+> net10 migration). Summary:
 > 3-project split (Core/Platform/App) done; Orchestrator + SettingsService + CompositeCastProvider +
 > IAudioSink seam + Task-based control all in place (phases H1–H4c, M1, M2, M3). The Chromecast
 > discovery-robustness saga (the Harman Kardon "Enchant Speaker" multi-device network) is **resolved and
