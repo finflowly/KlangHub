@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using KlangHub.Application;
 using KlangHub.Classes;
@@ -160,11 +161,11 @@ namespace KlangHub.UserControls
 
         // Run an action on this device's freshly-resolved session. No provider (designer) or a device
         // that left the registry (CreateSession throws) -> no-op, matching the old disposed-device guard.
-        private void TryOnSession(Action<IPlaybackSession> action)
+        private void TryOnSession(Func<IPlaybackSession, Task> action)
         {
             if (sessionAccessor == null)
                 return;
-            try { action(sessionAccessor()); }
+            try { _ = action(sessionAccessor()); }   // 2.2b-M2: fire-and-forget (Chromecast completes synchronously)
             catch (InvalidOperationException) { }
         }
 

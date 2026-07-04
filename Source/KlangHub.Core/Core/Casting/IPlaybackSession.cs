@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace KlangHub.Core.Casting
 {
@@ -7,8 +8,9 @@ namespace KlangHub.Core.Casting
     /// NAudio or UI types. A Chromecast implementation wraps the existing DeviceCommunication state
     /// machine unchanged and maps <c>DeviceState</c> onto <see cref="PlaybackState"/> at the boundary.
     ///
-    /// Commands are fire-and-forget; observed results arrive via <see cref="StateChanged"/> /
-    /// <see cref="VolumeChanged"/>. (Cloud/REST providers may later want Task-returning variants.)
+    /// Control commands are Task-returning (2.2b-M2): network providers (AirPlay/Snapcast) can await
+    /// success/failure; the Chromecast impl does its synchronous work and returns a completed Task.
+    /// Observed state still arrives via <see cref="StateChanged"/> / <see cref="VolumeChanged"/>.
     ///
     /// <see cref="IDisposable.Dispose"/> releases any PER-SESSION resources. A provider that hosts the
     /// session on a shared, longer-lived object (Chromecast: the session IS the live device) implements
@@ -38,13 +40,13 @@ namespace KlangHub.Core.Casting
         event EventHandler<VolumeStatus> VolumeChanged;
 
         /// <summary>Open the session. Idempotent / re-entrant: safe to call to re-establish a dropped connection.</summary>
-        void Connect();
+        Task Connect();
 
         /// <summary>Start or resume playback of the source on this endpoint.</summary>
-        void Play();
+        Task Play();
 
-        void Pause();
-        void Stop();
+        Task Pause();
+        Task Stop();
 
         /// <summary>
         /// Toggle playback as a single user action (the tray/UI play-stop button). Provider-specific:
@@ -52,16 +54,16 @@ namespace KlangHub.Core.Casting
         /// Chromecast maps it 1:1 onto its existing OnClickPlayStop state machine, so no neutral consumer
         /// has to reconstruct that logic from the coarser <see cref="PlaybackState"/>.
         /// </summary>
-        void TogglePlayStop();
+        Task TogglePlayStop();
 
         /// <summary>Set the endpoint volume level (0.0 .. 1.0).</summary>
-        void SetVolume(float level);
+        Task SetVolume(float level);
 
-        void SetMuted(bool muted);
+        Task SetMuted(bool muted);
 
         /// <summary>Ask the endpoint for a fresh status update (result arrives via events).</summary>
-        void RequestStatus();
+        Task RequestStatus();
 
-        void Disconnect();
+        Task Disconnect();
     }
 }

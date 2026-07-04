@@ -661,17 +661,19 @@ namespace KlangHub.Application
 
         VolumeStatus IPlaybackSession.Volume => new(volumeSetting?.level ?? 0f, volumeSetting?.muted ?? false, volumeSetting?.stepInterval ?? 0.05f);
 
-        void IPlaybackSession.Connect() => deviceCommunication.Connect();
-        void IPlaybackSession.Play() => ResumePlaying();
-        void IPlaybackSession.Pause() => deviceCommunication.PauseMedia();
-        void IPlaybackSession.Stop() => Stop(true);
+        // 2.2b-M2: control methods are Task-returning on the contract; Chromecast's work is synchronous
+        // (DeviceCommunication state machine), so each does its work and returns a completed Task.
+        Task IPlaybackSession.Connect() { deviceCommunication.Connect(); return Task.CompletedTask; }
+        Task IPlaybackSession.Play() { ResumePlaying(); return Task.CompletedTask; }
+        Task IPlaybackSession.Pause() { deviceCommunication.PauseMedia(); return Task.CompletedTask; }
+        Task IPlaybackSession.Stop() { Stop(true); return Task.CompletedTask; }
         // 1:1 delegation to the existing play/stop state machine (userMode flip + DeviceState-based
         // dispatch inside DeviceCommunication.OnPlayStop_Click). Behaviour-identical to the tray button.
-        void IPlaybackSession.TogglePlayStop() => OnClickPlayStop();
-        void IPlaybackSession.SetVolume(float level) => VolumeSet(level);
-        void IPlaybackSession.SetMuted(bool muted) => deviceCommunication.VolumeMute(muted);
-        void IPlaybackSession.RequestStatus() => OnGetStatus();
-        void IPlaybackSession.Disconnect() => deviceCommunication.Disconnect();
+        Task IPlaybackSession.TogglePlayStop() { OnClickPlayStop(); return Task.CompletedTask; }
+        Task IPlaybackSession.SetVolume(float level) { VolumeSet(level); return Task.CompletedTask; }
+        Task IPlaybackSession.SetMuted(bool muted) { deviceCommunication.VolumeMute(muted); return Task.CompletedTask; }
+        Task IPlaybackSession.RequestStatus() { OnGetStatus(); return Task.CompletedTask; }
+        Task IPlaybackSession.Disconnect() { deviceCommunication.Disconnect(); return Task.CompletedTask; }
 
         // 2.2b-4.4d (ownership): IPlaybackSession is IDisposable, but a Chromecast session is a NON-OWNING
         // control view over this shared, Devices-owned Device. Disposing a session must NOT tear the device

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KlangHub.Rest
 {
@@ -182,11 +183,11 @@ namespace KlangHub.Rest
         //   session == null        -> device left the registry: skip (no-op), matching the old
         //                             disposed-device guard; keeps broadcast fan-out best-effort.
         private static void Control(IDevice device, Func<IDevice, IPlaybackSession> resolveSession,
-            Action<IPlaybackSession> viaSession, Action<IDevice> viaDevice)
+            Func<IPlaybackSession, Task> viaSession, Action<IDevice> viaDevice)
         {
             if (resolveSession == null) { viaDevice(device); return; }
             var session = resolveSession(device);
-            if (session != null) viaSession(session);
+            if (session != null) _ = viaSession(session);   // 2.2b-M2: fire-and-forget (Chromecast completes synchronously)
         }
 
         private static IDevice GetDevice(IDevices devices, string action)
