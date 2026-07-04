@@ -214,43 +214,27 @@ namespace KlangHub.Application
         /// <param name="statusText">status text</param>
         public void SetDeviceState(DeviceState state, string statusText = null)
         {
-            if (deviceControl == null || deviceControl.IsDisposed || discoveredDevice == null || isDisposed)
+            if (discoveredDevice == null || isDisposed)
                 return;
 
-            if (deviceControl.InvokeRequired)
-            {
-                if (!deviceControl.IsDisposed)
-                {
-                    try
-                    {
-                        SetDeviceStateCallback callback = new SetDeviceStateCallback(SetDeviceState);
-                        deviceControl?.Invoke(callback, new object[] { state, statusText });
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Log(ex, "Device.SetDeviceState");
-                    }
-                }
-            }
-            else
-            {
-                // Restart when recovering from a connection error.
-                if (state != DeviceState.ConnectError && wasPlayingWhenConnectError)
-                {
-                    wasPlayingWhenConnectError = false;
-                    ResumePlaying();
-                }
-                else if (state == DeviceState.ConnectError && GetDeviceState() == DeviceState.Playing)
-                {
-                    wasPlayingWhenConnectError = true;
-                }
+            // 2.2b-4.7: no UI marshaling here anymore. The state-machine logic runs on the caller's
+            // (comm) thread and StateChanged is raised; observers (DeviceControl, tray) self-marshal.
 
-                DoFirewallCheckSaveTimes(state);
-
-                discoveredDevice.DeviceState = state;
-                // 2.2b-4.5: DeviceControl observes status via StateChanged (no direct push).
-                StateChanged?.Invoke(this, ChromecastStateMapper.ToPlaybackState(state));
+            // Restart when recovering from a connection error.
+            if (state != DeviceState.ConnectError && wasPlayingWhenConnectError)
+            {
+                wasPlayingWhenConnectError = false;
+                ResumePlaying();
             }
+            else if (state == DeviceState.ConnectError && GetDeviceState() == DeviceState.Playing)
+            {
+                wasPlayingWhenConnectError = true;
+            }
+
+            DoFirewallCheckSaveTimes(state);
+
+            discoveredDevice.DeviceState = state;
+            StateChanged?.Invoke(this, ChromecastStateMapper.ToPlaybackState(state));
         }
 
         /// <summary>
@@ -404,10 +388,11 @@ namespace KlangHub.Application
         /// </summary>
         private void SetDeviceName(string name)
         {
-            if (deviceControl == null || menuItem == null || isDisposed)
+            if (menuItem == null || isDisposed)
                 return;
 
-            deviceControl.SetDeviceName(name);
+            // 2.2b-4.7: the DeviceControl reads its title from the descriptor at creation; only the tray
+            // menu item is kept in sync here (a rename during a session is not reflected in the card title).
             menuItem.Text = name;
         }
 
@@ -528,7 +513,7 @@ namespace KlangHub.Application
         /// <param name="volume">the volume on the device</param>
         public void OnVolumeUpdate(Volume volume)
         {
-            if (deviceControl == null || isDisposed)
+            if (isDisposed)
                 return;
 
             var tmpLevel = volume.level;
