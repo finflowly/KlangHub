@@ -38,7 +38,8 @@ namespace KlangHub.Application
         // 2.2b-H3a: ApplicationLogic owns the per-device tray menu items (moved off IDevice/Device so
         // IDevice becomes WinForms-free). Keyed by device id; add/remove run on different threads.
         private readonly System.Collections.Concurrent.ConcurrentDictionary<string, ToolStripMenuItem> deviceMenuItems = new();
-        private UserSettings settings = new UserSettings();
+        // 2.2b-H4b-3: neutral settings persistence/merge (owns the UserSettings); the shell keeps the UI mapping.
+        private readonly Orchestration.SettingsService settingsService;
         private string Culture;
         private readonly ILogger logger;
         private Size defaultSize = new Size(850, 550);
@@ -55,6 +56,7 @@ namespace KlangHub.Application
             deviceStatusTimer = deviceStatusTimerIn;
             logger = loggerIn;
             castProvider = castProviderIn;
+            settingsService = new Orchestration.SettingsService(loggerIn);
             orchestrator = new Orchestration.Orchestrator(devicesIn, streamingRequestListenerIn, castProviderIn, deviceStatusTimerIn, loggerIn);
             // 2.2b-H4b-2: the orchestrator owns the device add/remove flow and raises neutral events; the
             // tray shell reacts here (create/remove menu items + mainForm add/remove).
@@ -253,16 +255,13 @@ namespace KlangHub.Application
         /// </summary>
         private void LoadSettings()
         {
-            if (settings == null || devices == null || mainForm == null)
+            if (devices == null || mainForm == null)
                 return;
 
             try
             {
-                if (!settings.Upgraded ?? true)
-                {
-                    settings.Upgrade();
-                    settings.Upgraded = true;
-                }
+                settingsService.Upgrade();
+                var settings = settingsService.Settings;
 
                 devices.SetSettings(settings);
                 mainForm.SetAutoStart(settings.AutoStartDevices ?? false);
@@ -291,14 +290,7 @@ namespace KlangHub.Application
                 mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo ?? false);
                 mainForm.SetDarkMode(settings.DarkMode ?? false);
                 mainForm.SetStreamTitle(settings.StreamTitle ?? Properties.Strings.ChromeCast_StreamTitle);
-                if (settings.ChromecastDiscoveredDevices != null)
-                {
-                    settings.ChromecastDiscoveredDevices = RemoveOldEntries(settings.ChromecastDiscoveredDevices);
-                    for (int i = 0; i < settings.ChromecastDiscoveredDevices.Count; i++)
-                    {
-                        StartTask(DeviceInformation.CheckDeviceIsOn(settings.ChromecastDiscoveredDevices[i], devices.OnDeviceAvailable, logger));
-                    }
-                }
+                settingsService.StartDeviceChecks(devices, orchestrator.StartTask);
             }
             catch (ConfigurationErrorsException ex)
             {
@@ -313,55 +305,11 @@ namespace KlangHub.Application
         /// </summary>
         public void SaveSettings()
         {
-            if (settings == null || devices == null || mainForm == null)
+            if (devices == null || mainForm == null)
                 return;
 
-            var discoveredDevices = settings.ChromecastDiscoveredDevices;
-            if (discoveredDevices == null)
-                discoveredDevices = new List<DiscoveredDevice>();
-
-            // Remove (old) entries of devices without a saved MAC address,
-            // and remove (old) entries of groups without a saved ID.
-            discoveredDevices = RemoveOldEntries(discoveredDevices);
-
-            foreach (var host in devices.GetHosts())
-            {
-                if (host.IsGroup)
-                {
-                    var discoveredDevice = discoveredDevices.Where(x => x.Id == host.Id);
-                    if (!discoveredDevice.Any())
-                    {
-                        discoveredDevices.Add(host);
-                    }
-                    else
-                    {
-                        if (host.DeviceState == Communication.DeviceState.ConnectError)
-                        {
-                            discoveredDevices.Remove(discoveredDevice.First());
-                        }
-                        else
-                        {
-                            discoveredDevice.First().Name = host.Name;
-                            discoveredDevice.First().IPAddress = host.IPAddress;
-                            discoveredDevice.First().Port = host.Port;
-                            discoveredDevice.First().DeviceState = host.DeviceState;
-                        }
-                    }
-                }
-                else
-                {
-                    var discoveredDevice = discoveredDevices.Where(x => x.MACAddress == host.MACAddress);
-                    if (!discoveredDevice.Any())
-                    {
-                        discoveredDevices.Add(host);
-                    }
-                    else
-                    {
-                        discoveredDevice.First().DeviceState = host.DeviceState;
-                    }
-                }
-            }
-            settings.ChromecastDiscoveredDevices = discoveredDevices;
+            settingsService.MergeDiscoveredHosts(devices);
+            var settings = settingsService.Settings;
             settings.StreamFormat = orchestrator.GetStreamFormat();
             settings.UseKeyboardShortCuts = mainForm.GetUseKeyboardShortCuts();
             settings.AutoStartDevices = mainForm.GetAutoStartDevices();
@@ -386,17 +334,7 @@ namespace KlangHub.Application
             settings.DarkMode = mainForm.GetDarkMode();
             settings.StreamTitle = mainForm.GetStreamTitle();
 
-            settings.Save();
-        }
-
-        /// <summary>
-        /// Remove (old) entries of devices without a saved MAC address,
-        /// and remove (old) entries of groups without a saved ID.
-        /// </summary>
-        private static List<DiscoveredDevice> RemoveOldEntries(List<DiscoveredDevice> discoveredDevices)
-        {
-            return discoveredDevices.Where(
-                            x => (x.IsGroup && !string.IsNullOrEmpty(x.Id)) || (!x.IsGroup && !string.IsNullOrEmpty(x.MACAddress))).ToList();
+            settingsService.Save();
         }
 
         /// <summary>
@@ -407,9 +345,7 @@ namespace KlangHub.Application
             if (devices == null || mainForm == null)
                 return;
 
-            if (settings == null)
-                settings = new UserSettings();
-
+            var settings = settingsService.Settings;
             settings.ChromecastDiscoveredDevices = new List<DiscoveredDevice>();
             settings.UseKeyboardShortCuts = false;
             settings.AutoStartDevices = false;
@@ -453,7 +389,7 @@ namespace KlangHub.Application
             mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo.Value);
             mainForm.SetDarkMode(settings.DarkMode.Value);
             mainForm.SetStreamTitle(Properties.Strings.ChromeCast_StreamTitle);
-            settings.Save();
+            settingsService.Save();
             devices?.Dispose();
             if (notifyIcon?.ContextMenuStrip != null)
             {
@@ -508,24 +444,7 @@ namespace KlangHub.Application
         /// Was the device playing when the application was closed for the last time?
         /// </summary>
         /// <returns>true if the device was playing, or false</returns>
-        public bool WasPlaying(DiscoveredDevice discoveredDevice)
-        {
-            if (settings.ChromecastDiscoveredDevices == null)
-                return false;
-
-            for (int i = 0; i < settings.ChromecastDiscoveredDevices.Count; i++)
-            {
-                if (settings.ChromecastDiscoveredDevices[i].Port == discoveredDevice.Port &&
-                    settings.ChromecastDiscoveredDevices[i].Name == discoveredDevice.Name)
-                {
-                    return settings.ChromecastDiscoveredDevices[i].DeviceState == Communication.DeviceState.Playing ||
-                        settings.ChromecastDiscoveredDevices[i].DeviceState == Communication.DeviceState.Buffering ||
-                        settings.ChromecastDiscoveredDevices[i].DeviceState == Communication.DeviceState.LoadingMedia;
-                }
-            }
-
-            return false;
-        }
+        public bool WasPlaying(DiscoveredDevice discoveredDevice) => settingsService.WasPlaying(discoveredDevice);
 
         public void SetStreamTitle(string title) => orchestrator.SetStreamTitle(title);
 
