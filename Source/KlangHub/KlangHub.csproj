@@ -71,5 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KlangHub.Core\KlangHub.Core.csproj" />
+    <ProjectReference Include="..\KlangHub.Platform\KlangHub.Platform.csproj" />
   </ItemGroup>
 </Project>
