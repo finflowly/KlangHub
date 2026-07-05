@@ -11,10 +11,10 @@ namespace KlangHub.Tests.Core
 
         [Theory]
         [InlineData("Playing", "Wiedergabe")]
-        [InlineData("Tab_Main_Text", "Geräte")]
+        [InlineData("Tab_Main_Text", "Räume")]         // HiFi copy pass: "Geräte" -> "Räume"
         [InlineData("Language", "Deutsch")]            // the language's self-name (drives the picker item)
-        [InlineData("Button_ScanAgain_Text", "Erneut nach Geräten suchen")]
-        [InlineData("Group_Options_Text", "Optionen")]
+        [InlineData("Button_ScanAgain_Text", "Räume neu suchen")]
+        [InlineData("Group_Options_Text", "Einstellungen")]
         public void German_strings_resolve(string key, string expected)
         {
             Assert.Equal(expected, KlangHub.Properties.Strings.ResourceManager.GetString(key, De));

@@ -136,109 +136,109 @@
     <value>Unknown</value>
   </data>
   <data name="Button_ClearLog_Text" xml:space="preserve">
-    <value>Clear Log</value>
+    <value>Clear log</value>
   </data>
   <data name="Button_ClipboardCopy_Text" xml:space="preserve">
     <value>Copy to clipboard</value>
   </data>
   <data name="Button_Down_Text" xml:space="preserve">
-    <value>Down</value>
+    <value>Softer</value>
   </data>
   <data name="Button_Mute_Text" xml:space="preserve">
-    <value>Mute</value>
+    <value>Mute all</value>
   </data>
   <data name="Button_ResetSetting_Text" xml:space="preserve">
-    <value>Reset Settings</value>
+    <value>Restore defaults</value>
   </data>
   <data name="Button_ScanAgain_Text" xml:space="preserve">
-    <value>Scan again for devices</value>
+    <value>Find rooms again</value>
   </data>
   <data name="Button_SyncDevices_Text" xml:space="preserve">
-    <value>Sync Devices</value>
+    <value>Sync rooms</value>
   </data>
   <data name="Button_Up_Text" xml:space="preserve">
-    <value>Up</value>
+    <value>Louder</value>
   </data>
   <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
-    <value>Automatically restart when the stream is closed</value>
+    <value>Recover playback automatically</value>
   </data>
   <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
-    <value>Automatically start devices at startup</value>
+    <value>Start playing on launch</value>
   </data>
   <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
-    <value>Use Keyboard shortcuts: Up = Ctrl+Alt+U; Down = Ctrl+Alt+D; (Un)Mute = Ctrl+Alt+M</value>
+    <value>Shortcuts: Louder = Ctrl+Alt+U · Softer = Ctrl+Alt+D · Mute = Ctrl+Alt+M</value>
   </data>
   <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
-    <value>Log device communication</value>
+    <value>Record a device log</value>
   </data>
   <data name="Check_ShowLagControl_Text" xml:space="preserve">
-    <value>Show lag control (experimental)</value>
+    <value>Show fine-tuning (experimental)</value>
   </data>
   <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
-    <value>Show window at startup</value>
+    <value>Open the window at startup</value>
   </data>
   <data name="ChromeCast_StreamTitle" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="Closed" xml:space="preserve">
-    <value>Closed</value>
+    <value>Disconnected</value>
   </data>
   <data name="Connected" xml:space="preserve">
     <value>Connected</value>
   </data>
   <data name="ConnectError" xml:space="preserve">
-    <value>Connect Error</value>
+    <value>Connection error</value>
   </data>
   <data name="Disposed" xml:space="preserve">
-    <value>Disposed</value>
+    <value>Stopped</value>
   </data>
   <data name="Group_Devices_Text" xml:space="preserve">
-    <value>Devices (click name to start streaming)</value>
+    <value>Your rooms</value>
   </data>
   <data name="Group_Lag_Text" xml:space="preserve">
-    <value>Lag Control</value>
+    <value>Fine-tuning</value>
   </data>
   <data name="Group_Options_Text" xml:space="preserve">
-    <value>Options</value>
+    <value>Settings</value>
   </data>
   <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
-    <value>Volume all devices:</value>
+    <value>All rooms</value>
   </data>
   <data name="Idle" xml:space="preserve">
-    <value>Idle</value>
+    <value>Ready</value>
   </data>
   <data name="InvalidRequest" xml:space="preserve">
-    <value>Invalid Request</value>
+    <value>Invalid request</value>
   </data>
   <data name="Label_IPAddressUsed_Text" xml:space="preserve">
-    <value>IP4 address used:</value>
+    <value>Home network address (IPv4)</value>
   </data>
   <data name="Label_KeepAlive_Text" xml:space="preserve">
-    <value>Latest keep-alive message:</value>
+    <value>Last keep-alive:</value>
   </data>
   <data name="Label_LagExperimental_Text" xml:space="preserve">
-    <value>Experimental feature: Try to keep the buffer on the device as small as possible without hearing dropouts.</value>
+    <value>Experimental: keep the device buffer as small as possible without hearing dropouts.</value>
   </data>
   <data name="Label_Language_Text" xml:space="preserve">
     <value>Language</value>
   </data>
   <data name="Label_MaximumLag_Text" xml:space="preserve">
-    <value>maximum lag / best quality</value>
+    <value>larger buffer / best quality</value>
   </data>
   <data name="Label_MinimumLag_Text" xml:space="preserve">
-    <value>minimum lag / poor quality</value>
+    <value>smaller buffer / lowest latency</value>
   </data>
   <data name="Label_NewVersionAvailable" xml:space="preserve">
-    <value>A new version is available on Github</value>
+    <value>A new version is available on GitHub</value>
   </data>
   <data name="Label_RecordingDevice_Text" xml:space="preserve">
-    <value>Recording device:</value>
+    <value>Audio source</value>
   </data>
   <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
-    <value>The mp3 formats have a long lag and buffering time.</value>
+    <value>MP3 compresses harder and adds latency — choose FLAC for true HiFi.</value>
   </data>
   <data name="Label_StreamFormat_Text" xml:space="preserve">
-    <value>Stream format</value>
+    <value>Sound quality</value>
   </data>
   <data name="Language_English" xml:space="preserve">
     <value>English</value>
@@ -247,19 +247,19 @@
     <value>French</value>
   </data>
   <data name="LaunchedApplication" xml:space="preserve">
-    <value>Launched Application</value>
+    <value>Receiver started</value>
   </data>
   <data name="LaunchingApplication" xml:space="preserve">
-    <value>Launching Application</value>
+    <value>Starting receiver</value>
   </data>
   <data name="LoadCancelled" xml:space="preserve">
-    <value>Load Cancelled</value>
+    <value>Cancelled</value>
   </data>
   <data name="LoadFailed" xml:space="preserve">
-    <value>Load Failed</value>
+    <value>Load failed</value>
   </data>
   <data name="LoadingMedia" xml:space="preserve">
-    <value>Loading Media</value>
+    <value>Loading sound</value>
   </data>
   <data name="Log_In" xml:space="preserve">
     <value>in</value>
@@ -271,19 +271,19 @@
     <value>KlangHub</value>
   </data>
   <data name="MessageBox_NoIPAddress" xml:space="preserve">
-    <value>No IP addresses found on your device.</value>
+    <value>No network address found.</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
-    <value>No recording devices found.</value>
+    <value>No audio source found.</value>
   </data>
   <data name="Mp3_128" xml:space="preserve">
-    <value>Mp3 (128 kbps)</value>
+    <value>MP3 · 128 kbps (compressed)</value>
   </data>
   <data name="Mp3_320" xml:space="preserve">
-    <value>Mp3 (320 kbps)</value>
+    <value>MP3 · 320 kbps (compressed)</value>
   </data>
   <data name="NotConnected" xml:space="preserve">
-    <value>Not Connected</value>
+    <value>Not connected</value>
   </data>
   <data name="Paused" xml:space="preserve">
     <value>Paused</value>
@@ -295,28 +295,28 @@
     <value>Log</value>
   </data>
   <data name="Tab_Options_Text" xml:space="preserve">
-    <value>Options</value>
+    <value>Settings</value>
   </data>
   <data name="TrayIcon_Close" xml:space="preserve">
-    <value>Close</value>
+    <value>Quit</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>Wav (44100 Hz/16bit)</value>
+    <value>WAV · CD quality (44.1 kHz / 16-bit)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
-    <value>Devices</value>
+    <value>Rooms</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>English</value>
   </data>
   <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
-    <value>Start application when Windows starts</value>
+    <value>Launch with Windows</value>
   </data>
   <data name="DevicesOnly" xml:space="preserve">
-    <value>Devices only</value>
+    <value>Speakers only</value>
   </data>
   <data name="GroupsOnly" xml:space="preserve">
     <value>Groups only</value>
@@ -325,54 +325,54 @@
     <value>All</value>
   </data>
   <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
-    <value>Automatically start last used devices and groups at startup</value>
+    <value>Resume the last rooms on launch</value>
   </data>
   <data name="Label_LinkHelp_Text" xml:space="preserve">
-    <value>Information about options on Github</value>
+    <value>Help and documentation</value>
   </data>
   <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
-    <value>Recording level</value>
+    <value>Input level</value>
   </data>
   <data name="Label_FilterDevices_Text" xml:space="preserve">
-    <value>Filter devices</value>
+    <value>Show</value>
   </data>
   <data name="Tooltip_Group_Text" xml:space="preserve">
     <value>Group</value>
   </data>
   <data name="Label_BufferInSeconds_Text" xml:space="preserve">
-    <value>Device buffer (in seconds)</value>
+    <value>Sound buffer (seconds)</value>
   </data>
   <data name="Check_AutoMute_Text" xml:space="preserve">
-    <value>Auto-mute/unmute desktop audio</value>
+    <value>Auto-mute the PC's own speakers</value>
   </data>
   <data name="LoadingMediaCheckFirewall" xml:space="preserve">
-    <value>Check Firewall &amp; Wi-Fi Privacy Status</value>
+    <value>Check firewall and Wi-Fi sharing</value>
   </data>
   <data name="Check_MinimizeToTray_Text" xml:space="preserve">
-    <value>Minimize to systray when closing</value>
+    <value>Keep running in the tray when closed</value>
   </data>
   <data name="Wav_16bit" xml:space="preserve">
-    <value>Wav (Soundcard's sample rate/16bit)</value>
+    <value>WAV · 16-bit (uncompressed)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>Wav (Soundcard's sample rate/24bit)</value>
+    <value>WAV · 24-bit HiFi (uncompressed)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>Wav (Soundcard's sample rate/32bit — uncompressed LPCM)</value>
+    <value>WAV · 32-bit (uncompressed, LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC (lossless HiFi — recommended)</value>
+    <value>FLAC · lossless HiFi (recommended)</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
-    <value>Live from your PC</value>
+    <value>Live sound from your PC</value>
   </data>
   <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
-    <value>Convert multi-channel audio to stereo output</value>
+    <value>Downmix multi-channel to stereo</value>
   </data>
   <data name="Check_DarkMode_Text" xml:space="preserve">
-    <value>Dark mode</value>
+    <value>Dark theme</value>
   </data>
   <data name="Label_StreamTitle_Text" xml:space="preserve">
-    <value>Stream title</value>
+    <value>Name shown on the receiver</value>
   </data>
 </root>

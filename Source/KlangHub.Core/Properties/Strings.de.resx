@@ -60,10 +60,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Buffering" xml:space="preserve">
-    <value>Puffern</value>
+    <value>Puffert</value>
   </data>
   <data name="Connecting" xml:space="preserve">
-    <value>Verbinden…</value>
+    <value>Verbindet</value>
   </data>
   <data name="Disconnected" xml:space="preserve">
     <value>Getrennt</value>
@@ -72,7 +72,7 @@
     <value>Fehler</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Lädt…</value>
+    <value>Lädt</value>
   </data>
   <data name="Unknown" xml:space="preserve">
     <value>Unbekannt</value>
@@ -87,43 +87,43 @@
     <value>Leiser</value>
   </data>
   <data name="Button_Mute_Text" xml:space="preserve">
-    <value>Stumm</value>
+    <value>Alle stumm</value>
   </data>
   <data name="Button_ResetSetting_Text" xml:space="preserve">
-    <value>Einstellungen zurücksetzen</value>
+    <value>Auf Standard zurücksetzen</value>
   </data>
   <data name="Button_ScanAgain_Text" xml:space="preserve">
-    <value>Erneut nach Geräten suchen</value>
+    <value>Räume neu suchen</value>
   </data>
   <data name="Button_SyncDevices_Text" xml:space="preserve">
-    <value>Geräte synchronisieren</value>
+    <value>Räume abgleichen</value>
   </data>
   <data name="Button_Up_Text" xml:space="preserve">
     <value>Lauter</value>
   </data>
   <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
-    <value>Automatisch neu starten, wenn der Stream geschlossen wird</value>
+    <value>Nach Abbruch automatisch weiterspielen</value>
   </data>
   <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
-    <value>Geräte beim Start automatisch starten</value>
+    <value>Beim Start automatisch losspielen</value>
   </data>
   <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
-    <value>Tastenkürzel verwenden: Lauter = Strg+Alt+U; Leiser = Strg+Alt+D; Stumm (an/aus) = Strg+Alt+M</value>
+    <value>Tastenkürzel: Lauter = Strg+Alt+U · Leiser = Strg+Alt+D · Stumm = Strg+Alt+M</value>
   </data>
   <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
-    <value>Gerätekommunikation protokollieren</value>
+    <value>Geräte-Protokoll aufzeichnen</value>
   </data>
   <data name="Check_ShowLagControl_Text" xml:space="preserve">
-    <value>Lag-Regler anzeigen (experimentell)</value>
+    <value>Feinabstimmung anzeigen (experimentell)</value>
   </data>
   <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
-    <value>Fenster beim Start anzeigen</value>
+    <value>Fenster beim Start zeigen</value>
   </data>
   <data name="ChromeCast_StreamTitle" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="Closed" xml:space="preserve">
-    <value>Geschlossen</value>
+    <value>Getrennt</value>
   </data>
   <data name="Connected" xml:space="preserve">
     <value>Verbunden</value>
@@ -132,19 +132,19 @@
     <value>Verbindungsfehler</value>
   </data>
   <data name="Disposed" xml:space="preserve">
-    <value>Verworfen</value>
+    <value>Beendet</value>
   </data>
   <data name="Group_Devices_Text" xml:space="preserve">
-    <value>Geräte (Namen anklicken, um das Streaming zu starten)</value>
+    <value>Deine Räume</value>
   </data>
   <data name="Group_Lag_Text" xml:space="preserve">
-    <value>Lag-Regelung</value>
+    <value>Feinabstimmung</value>
   </data>
   <data name="Group_Options_Text" xml:space="preserve">
-    <value>Optionen</value>
+    <value>Einstellungen</value>
   </data>
   <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
-    <value>Lautstärke aller Geräte:</value>
+    <value>Alle Räume</value>
   </data>
   <data name="Idle" xml:space="preserve">
     <value>Bereit</value>
@@ -153,34 +153,34 @@
     <value>Ungültige Anfrage</value>
   </data>
   <data name="Label_IPAddressUsed_Text" xml:space="preserve">
-    <value>Verwendete IPv4-Adresse:</value>
+    <value>Heimnetz-Adresse (IPv4)</value>
   </data>
   <data name="Label_KeepAlive_Text" xml:space="preserve">
-    <value>Letzte Keep-Alive-Nachricht:</value>
+    <value>Letztes Lebenszeichen:</value>
   </data>
   <data name="Label_LagExperimental_Text" xml:space="preserve">
-    <value>Experimentelle Funktion: Den Puffer auf dem Gerät so klein wie möglich halten, ohne Aussetzer zu hören.</value>
+    <value>Experimentell: den Puffer am Gerät so klein wie möglich halten, ohne Aussetzer zu hören.</value>
   </data>
   <data name="Label_Language_Text" xml:space="preserve">
     <value>Sprache</value>
   </data>
   <data name="Label_MaximumLag_Text" xml:space="preserve">
-    <value>maximaler Lag / beste Qualität</value>
+    <value>größerer Puffer / beste Qualität</value>
   </data>
   <data name="Label_MinimumLag_Text" xml:space="preserve">
-    <value>minimaler Lag / geringere Qualität</value>
+    <value>kleinerer Puffer / geringste Latenz</value>
   </data>
   <data name="Label_NewVersionAvailable" xml:space="preserve">
-    <value>Auf GitHub ist eine neue Version verfügbar</value>
+    <value>Eine neue Version ist auf GitHub verfügbar</value>
   </data>
   <data name="Label_RecordingDevice_Text" xml:space="preserve">
-    <value>Aufnahmegerät:</value>
+    <value>Klangquelle</value>
   </data>
   <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
-    <value>Die MP3-Formate haben eine lange Verzögerung und Pufferzeit.</value>
+    <value>MP3 komprimiert stärker und bringt mehr Latenz — für echtes HiFi FLAC wählen.</value>
   </data>
   <data name="Label_StreamFormat_Text" xml:space="preserve">
-    <value>Stream-Format</value>
+    <value>Klangqualität</value>
   </data>
   <data name="Language_English" xml:space="preserve">
     <value>Englisch</value>
@@ -189,19 +189,19 @@
     <value>Französisch</value>
   </data>
   <data name="LaunchedApplication" xml:space="preserve">
-    <value>Anwendung gestartet</value>
+    <value>Empfänger gestartet</value>
   </data>
   <data name="LaunchingApplication" xml:space="preserve">
-    <value>Anwendung wird gestartet</value>
+    <value>Empfänger wird gestartet</value>
   </data>
   <data name="LoadCancelled" xml:space="preserve">
-    <value>Laden abgebrochen</value>
+    <value>Abgebrochen</value>
   </data>
   <data name="LoadFailed" xml:space="preserve">
     <value>Laden fehlgeschlagen</value>
   </data>
   <data name="LoadingMedia" xml:space="preserve">
-    <value>Medien werden geladen</value>
+    <value>Lädt Klang</value>
   </data>
   <data name="Log_In" xml:space="preserve">
     <value>in</value>
@@ -213,16 +213,16 @@
     <value>KlangHub</value>
   </data>
   <data name="MessageBox_NoIPAddress" xml:space="preserve">
-    <value>Auf deinem Gerät wurden keine IP-Adressen gefunden.</value>
+    <value>Keine Adresse im Heimnetz gefunden.</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
-    <value>Keine Aufnahmegeräte gefunden.</value>
+    <value>Keine Klangquelle gefunden.</value>
   </data>
   <data name="Mp3_128" xml:space="preserve">
-    <value>Mp3 (128 kbps)</value>
+    <value>MP3 · 128 kbps (komprimiert)</value>
   </data>
   <data name="Mp3_320" xml:space="preserve">
-    <value>Mp3 (320 kbps)</value>
+    <value>MP3 · 320 kbps (komprimiert)</value>
   </data>
   <data name="NotConnected" xml:space="preserve">
     <value>Nicht verbunden</value>
@@ -237,28 +237,28 @@
     <value>Protokoll</value>
   </data>
   <data name="Tab_Options_Text" xml:space="preserve">
-    <value>Optionen</value>
+    <value>Einstellungen</value>
   </data>
   <data name="TrayIcon_Close" xml:space="preserve">
-    <value>Schließen</value>
+    <value>Beenden</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>Wav (44100 Hz/16 Bit)</value>
+    <value>WAV · CD-Qualität (44,1 kHz / 16-Bit)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
-    <value>Geräte</value>
+    <value>Räume</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Deutsch</value>
   </data>
   <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
-    <value>Anwendung beim Windows-Start starten</value>
+    <value>Mit Windows starten</value>
   </data>
   <data name="DevicesOnly" xml:space="preserve">
-    <value>Nur Geräte</value>
+    <value>Nur Lautsprecher</value>
   </data>
   <data name="GroupsOnly" xml:space="preserve">
     <value>Nur Gruppen</value>
@@ -267,54 +267,54 @@
     <value>Alle</value>
   </data>
   <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
-    <value>Zuletzt verwendete Geräte und Gruppen beim Start automatisch starten</value>
+    <value>Zuletzt gespielte Räume beim Start fortsetzen</value>
   </data>
   <data name="Label_LinkHelp_Text" xml:space="preserve">
-    <value>Informationen zu den Optionen auf GitHub</value>
+    <value>Hilfe und Dokumentation</value>
   </data>
   <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
-    <value>Aufnahmepegel</value>
+    <value>Eingangspegel</value>
   </data>
   <data name="Label_FilterDevices_Text" xml:space="preserve">
-    <value>Geräte filtern</value>
+    <value>Anzeige</value>
   </data>
   <data name="Tooltip_Group_Text" xml:space="preserve">
     <value>Gruppe</value>
   </data>
   <data name="Label_BufferInSeconds_Text" xml:space="preserve">
-    <value>Gerätepuffer (in Sekunden)</value>
+    <value>Klangpuffer (Sekunden)</value>
   </data>
   <data name="Check_AutoMute_Text" xml:space="preserve">
-    <value>Desktop-Audio automatisch stummschalten/aktivieren</value>
+    <value>Desktop-Ton automatisch stummschalten</value>
   </data>
   <data name="LoadingMediaCheckFirewall" xml:space="preserve">
-    <value>Firewall- &amp; WLAN-Datenschutzstatus prüfen</value>
+    <value>Firewall und WLAN-Freigabe prüfen</value>
   </data>
   <data name="Check_MinimizeToTray_Text" xml:space="preserve">
-    <value>Beim Schließen in den Infobereich minimieren</value>
+    <value>Beim Schließen in den Infobereich legen</value>
   </data>
   <data name="Wav_16bit" xml:space="preserve">
-    <value>Wav (Abtastrate der Soundkarte/16 Bit)</value>
+    <value>WAV · 16-Bit (unkomprimiert)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>Wav (Abtastrate der Soundkarte/24 Bit)</value>
+    <value>WAV · 24-Bit HiFi (unkomprimiert)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>Wav (Abtastrate der Soundkarte/32 Bit — unkomprimiertes LPCM)</value>
+    <value>WAV · 32-Bit (unkomprimiert, LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC (verlustfrei HiFi — empfohlen)</value>
+    <value>FLAC · verlustfrei HiFi (empfohlen)</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
-    <value>Live vom PC</value>
+    <value>Live-Klang von deinem PC</value>
   </data>
   <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
-    <value>Mehrkanal-Audio in Stereo umwandeln</value>
+    <value>Mehrkanal-Ton auf Stereo mischen</value>
   </data>
   <data name="Check_DarkMode_Text" xml:space="preserve">
-    <value>Dunkler Modus</value>
+    <value>Dunkles Design</value>
   </data>
   <data name="Label_StreamTitle_Text" xml:space="preserve">
-    <value>Stream-Titel</value>
+    <value>Anzeigename auf dem Empfänger</value>
   </data>
 </root>
