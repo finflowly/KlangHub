@@ -82,6 +82,11 @@ namespace KlangHub.Classes
                 case SupportedStreamFormat.Mp3_320:
                     BufferSizeInBytes = ExtraBufferInSeconds * 40000 + BufferSizeInBytesDefault;
                     break;
+                case SupportedStreamFormat.Flac:
+                    // Lossless but compressed (~half of 16-bit WAV); size like the WAV/Mp3_320 tier so the
+                    // startup buffer over-provisions slightly rather than risking under-buffering.
+                    BufferSizeInBytes = ExtraBufferInSeconds * 40000 + BufferSizeInBytesDefault;
+                    break;
                 case SupportedStreamFormat.Mp3_128:
                     BufferSizeInBytes = ExtraBufferInSeconds * 16000 + BufferSizeInBytesDefault;
                     break;

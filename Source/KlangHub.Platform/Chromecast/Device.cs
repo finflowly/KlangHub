@@ -328,7 +328,7 @@ namespace KlangHub.Application
         /// <param name="remoteAddress">remote IP address of the streaming connection</param>
         /// <param name="socket">socket of the streaming connection</param>
         /// <returns></returns>
-        public bool AddStreamingConnection(string remoteAddress, Socket socket)
+        public bool AddStreamingConnection(string remoteAddress, Socket socket, SupportedStreamFormat streamFormat)
         {
             if (discoveredDevice == null || isDisposed)
                 return false;
@@ -344,7 +344,7 @@ namespace KlangHub.Application
             {
                 streamingConnection = new StreamingConnection();
                 streamingConnection.SetDependencies(socket, this, logger);
-                streamingConnection.SendStartStreamingResponse();
+                streamingConnection.SendStartStreamingResponse(streamFormat);
                 return true;
             }
 

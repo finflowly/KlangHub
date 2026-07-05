@@ -172,24 +172,31 @@ namespace KlangHub.Streaming
         }
 
         /// <summary>
-        /// Send the HTTP header.
+        /// Send the HTTP header. The Content-Type is codec-aware (see <see cref="StreamCodec"/>) so it always
+        /// matches the LOAD payload and the bytes actually streamed — the old code hardcoded audio/wav even for
+        /// MP3/FLAC streams.
         /// </summary>
-        public void SendStartStreamingResponse()
+        public void SendStartStreamingResponse(SupportedStreamFormat streamFormat)
         {
-            var startStreamingResponse = Encoding.ASCII.GetBytes(GetStartStreamingResponse());
+            var startStreamingResponse = Encoding.ASCII.GetBytes(GetStartStreamingResponse(streamFormat));
             Send(startStreamingResponse);
         }
 
         /// <summary>
         /// Return the HTTP header.
         /// </summary>
-        private static string GetStartStreamingResponse()
+        private static string GetStartStreamingResponse(SupportedStreamFormat streamFormat)
         {
+            var contentType = StreamCodec.ContentType(streamFormat);
+            var fileName = StreamCodec.IsMp3(streamFormat) ? "stream.mp3"
+                : StreamCodec.IsFlac(streamFormat) ? "stream.flac"
+                : "stream.wav";
+
             var httpStartStreamingReply = new StringBuilder();
 
             httpStartStreamingReply.Append("HTTP/1.0 200 OK\r\n");
-            httpStartStreamingReply.Append("Content-Disposition: inline; filename=\"stream.wav\"\r\n");
-            httpStartStreamingReply.Append("Content-Type: audio/wav\r\n");
+            httpStartStreamingReply.Append($"Content-Disposition: inline; filename=\"{fileName}\"\r\n");
+            httpStartStreamingReply.Append($"Content-Type: {contentType}\r\n");
             httpStartStreamingReply.Append("Connection: keep-alive\r\n");
             httpStartStreamingReply.Append("\r\n");
 

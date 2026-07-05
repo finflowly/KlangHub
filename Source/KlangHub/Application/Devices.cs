@@ -322,7 +322,7 @@ namespace KlangHub.Application
             var remoteAddress = ((IPEndPoint)socket.RemoteEndPoint!).Address.ToString();
             foreach (var device in deviceList)
             {
-                if (device.AddStreamingConnection(remoteAddress, socket))
+                if (device.AddStreamingConnection(remoteAddress, socket, streamFormatIn))
                 {
                     applicationBuffer.SendStartupBuffer(device, streamFormatIn);
                     break;

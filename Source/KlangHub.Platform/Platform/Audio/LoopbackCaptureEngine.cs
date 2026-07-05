@@ -153,6 +153,12 @@ namespace KlangHub.Platform.Audio
                     case SupportedStreamFormat.Wav_32bit:
                         soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 32, nrChannels);
                         break;
+                    case SupportedStreamFormat.Flac:
+                        // FLAC needs INTEGER PCM (the WASAPI mix format is typically 32-bit float). Force
+                        // 16-bit int — universally decodable and losslessly FLAC-compressed. (24-bit HiFi is a
+                        // follow-up once hardware confirms the live-FLAC path.)
+                        soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 16, nrChannels);
+                        break;
                     default:
                         break;
                 }

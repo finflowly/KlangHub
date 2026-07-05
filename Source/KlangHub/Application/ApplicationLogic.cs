@@ -440,6 +440,9 @@ namespace KlangHub.Application
 
         public string GetStreamTitle() => orchestrator.GetStreamTitle();
 
+        /// <summary>Codec-aware MIME type for the selected stream format (kept in sync with the HTTP header).</summary>
+        public string GetStreamContentType() => StreamCodec.ContentType(orchestrator.GetStreamFormat());
+
         #region private helpers
 
         /// <summary>

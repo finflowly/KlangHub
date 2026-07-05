@@ -342,6 +342,9 @@
   <data name="Wav_32bit" xml:space="preserve">
     <value>Wav ((taux d'échantillonnage de la carte son/32bit)</value>
   </data>
+  <data name="Flac" xml:space="preserve">
+    <value>FLAC (sans perte — recommandé)</value>
+  </data>
   <data name="Wav_16bit" xml:space="preserve">
     <value>Wav ((taux d'échantillonnage de la carte son/16bit)</value>
   </data>

@@ -18,7 +18,7 @@ namespace KlangHub.Application.Orchestration
 
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
-        private IAudioEncoder? mp3Encoder = null;
+        private IAudioEncoder? encoder = null;
         private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Mp3_320;
 
         public ChromecastAudioSink(IDevices devicesIn, ILogger loggerIn)
@@ -38,24 +38,30 @@ namespace KlangHub.Application.Orchestration
             var formatIn = new AudioFormat(frame.SampleRate, frame.BitsPerSample, frame.Channels);
             var dataToSendIn = frame.Data;
 
-            if (!streamFormatSelected.Equals(SupportedStreamFormat.Wav) &&
-                !streamFormatSelected.Equals(SupportedStreamFormat.Wav_16bit) &&
-                !streamFormatSelected.Equals(SupportedStreamFormat.Wav_24bit) &&
-                !streamFormatSelected.Equals(SupportedStreamFormat.Wav_32bit))
+            // WAV/LPCM streams pass raw PCM straight through; compressed/lossless-coded formats (MP3, FLAC) run
+            // through their encoder. StreamCodec is the single source of truth for that decision.
+            if (!StreamCodec.IsWav(streamFormatSelected))
             {
-                if (mp3Encoder == null)
+                if (encoder == null)
                 {
-                    mp3Encoder = new Mp3Encoder(formatIn, streamFormatSelected, logger);
+                    encoder = CreateEncoder(streamFormatSelected, formatIn);
                 }
                 // Tier2-A1: dataToSendIn is already frame.Data (a fresh per-frame array read synchronously
                 // by the encoder) — the old .ToArray() clone was pure waste.
-                mp3Encoder.Encode(dataToSendIn);
-                dataToSendIn = mp3Encoder.Read();
+                encoder.Encode(dataToSendIn);
+                dataToSendIn = encoder.Read();
             }
             if (dataToSendIn.Length > 0)
             {
                 devices.OnRecordingDataAvailable(dataToSendIn, formatIn, reduceLagThreshold, streamFormatSelected);
             }
+        }
+
+        private IAudioEncoder CreateEncoder(SupportedStreamFormat format, AudioFormat formatIn)
+        {
+            return StreamCodec.IsFlac(format)
+                ? new FlacEncoder(formatIn, logger)
+                : new Mp3Encoder(formatIn, format, logger);
         }
 
         /// <summary>A device opened its HTTP streaming connection (Chromecast pulls the stream).</summary>
@@ -77,17 +83,17 @@ namespace KlangHub.Application.Orchestration
             {
                 logger.Log($"Set stream format to {formatIn}");
                 streamFormatSelected = formatIn;
-                mp3Encoder = null;
+                encoder = null;
 
                 devices.Stop();
                 devices.Start();
             }
         }
 
-        public void ClearEncoder() => mp3Encoder = null;
+        public void ClearEncoder() => encoder = null;
 
         public void SetLagThreshold(int lagThresholdIn) => reduceLagThreshold = lagThresholdIn;
 
-        public void DisposeEncoder() => mp3Encoder?.Dispose();
+        public void DisposeEncoder() => encoder?.Dispose();
     }
 }

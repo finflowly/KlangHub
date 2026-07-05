@@ -129,7 +129,7 @@ namespace KlangHub.Communication
                 return;
 
             device.SetDeviceState(DeviceState.LoadingMedia, null);
-            SendMessage(chromeCastMessages.GetLoadMessage(applicationLogic.GetStreamingUrl(), chromeCastSource, chromeCastDestination, GetNextRequestId(), applicationLogic.GetStreamTitle()));
+            SendMessage(chromeCastMessages.GetLoadMessage(applicationLogic.GetStreamingUrl(), chromeCastSource, chromeCastDestination, GetNextRequestId(), applicationLogic.GetStreamTitle(), applicationLogic.GetStreamContentType()));
         }
 
         /// <summary>

@@ -66,7 +66,7 @@ namespace KlangHub.Communication
             return GetCastMessage(message, namespaceReceiver);
         }
 
-        public CastMessage GetLoadMessage(string streamingUrl, string sourceId, string destinationId, int requestId, string streamTitle)
+        public CastMessage GetLoadMessage(string streamingUrl, string sourceId, string destinationId, int requestId, string streamTitle, string contentType)
         {
             var message = new MessageLoad
             {
@@ -78,7 +78,7 @@ namespace KlangHub.Communication
                 media = new Media
                 {
                     contentId = streamingUrl,
-                    contentType = "audio/wav",
+                    contentType = contentType,
                     streamType = "BUFFERED", // BUFFERED or LIVE
                     metadata = new Metadata
                     {
