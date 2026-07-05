@@ -79,6 +79,12 @@ namespace KlangHub.Application
                     }
                     else
                     {
+                        // Preserve the stable mDNS id= across the device's OWN eureka re-fetch (Flow 2 passes
+                        // id=null): otherwise the re-fetch would wipe the tile's stored id, defeating the
+                        // id-reconcile on a LATER DHCP move. Seen in the HW log as alternating `id=b3f62d38…`
+                        // / `id=` lines for the same device.
+                        if (string.IsNullOrEmpty(discoveredDevice.Id))
+                            discoveredDevice.Id = existingDevice.GetDiscoveredDevice()?.Id!;
                         existingDevice.Initialize(discoveredDevice, e => SetDeviceInformation(e), StopGroup, applicationLogic.StartTask, IsGroupStatusBlank, AutoMute);
                     }
                 }
