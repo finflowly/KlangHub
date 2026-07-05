@@ -278,7 +278,7 @@ namespace KlangHub.Application
                 mainForm.SetAutoMute(settings.AutoMute ?? false);
                 mainForm.SetMinimizeToTray(settings.MinimizeToTray ?? false);
                 mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo ?? false);
-                mainForm.SetDarkMode(settings.DarkMode ?? false);
+                mainForm.SetDarkMode(settings.DarkMode ?? true);
                 mainForm.SetStreamTitle(settings.StreamTitle ?? Properties.Strings.ChromeCast_StreamTitle);
                 settingsService.StartDeviceChecks(devices, orchestrator.StartTask);
             }
@@ -364,6 +364,7 @@ namespace KlangHub.Application
             settings.AutoMute = false;
             settings.MinimizeToTray = false;
             settings.ConvertMultiChannelToStereo = false;
+            settings.DarkMode = true;   // premium "hi-fi console" dark theme is the out-of-box default
             devices.SetSettings(settings);
             mainForm.SetAutoStart(settings.AutoStartDevices.Value);
             mainForm.SetStartLastUsedDevices(settings.StartLastUsedDevices.Value);
@@ -484,7 +485,7 @@ namespace KlangHub.Application
 
                 notifyIcon = new NotifyIcon();
                 System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-                notifyIcon.Icon = (Icon?)resources.GetObject("$this.Icon");
+                notifyIcon.Icon = Classes.Theme.LoadAppIcon() ?? (Icon?)resources.GetObject("$this.Icon");
                 notifyIcon.Visible = true;
                 notifyIcon.Text = Properties.Strings.MainForm_Text;
                 notifyIcon.ContextMenuStrip = contextMenuStrip;

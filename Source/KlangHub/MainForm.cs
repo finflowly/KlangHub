@@ -60,6 +60,7 @@ namespace KlangHub
             txtStreamTitle.TextChanged += (s, e) => applicationLogic.SetStreamTitle(txtStreamTitle.Text);
             wavGenerator = new WavGenerator();
             previousRecordingDeviceExists = false;
+            SetupPremiumChrome();
         }
 
         public MainForm()
@@ -261,10 +262,11 @@ namespace KlangHub
                     if (string.CompareOrdinal(deviceName, name) < 0)
                     {
                         pnlDevices.Controls.SetChildIndex(deviceControl, i);
-                        return;
+                        break;
                     }
                 }
             }
+            AutoSizeToDeviceCount();
         }
 
         public void ShowLagControl(bool showLag)
@@ -1416,19 +1418,11 @@ namespace KlangHub
 
         public void ApplyTheme(Control? item, bool darkmode)
         {
-            if (item == null) 
-            { 
+            if (item == null)
+            {
                 item = this;
-                if (darkmode)
-                {
-                    BackColor = Color.Black;
-                    ForeColor = Color.White;
-                }
-                else
-                {
-                    BackColor = SystemColors.Control;
-                    ForeColor = Color.Black;
-                }
+                BackColor = darkmode ? Classes.Theme.Ink : SystemColors.Control;
+                ForeColor = darkmode ? Classes.Theme.Ivory : Color.Black;
             }
 
             foreach (var control in item.Controls)
@@ -1436,63 +1430,196 @@ namespace KlangHub
                 DoApplyTheme(control, darkmode);
                 ApplyTheme((Control)control, darkmode);
             }
-
         }
 
+        // The KlangHub "hi-fi console" theme: a warm-dark palette (Classes.Theme) applied across the stock
+        // WinForms controls. Device cards own-draw themselves and are skipped here.
         private void DoApplyTheme(object item, bool darkmode)
         {
-            var backColor = darkmode ? Color.Black : Color.White;
-            var buttonColor = darkmode ? Color.Black : Color.Transparent;
-            var controlColor = darkmode ? Color.Black : SystemColors.Control;
-            var foreColor = darkmode ? Color.Gray : Color.Black;
+            var ink = darkmode ? Classes.Theme.Ink : Color.White;
+            var surface = darkmode ? Classes.Theme.Surface : SystemColors.Control;
+            var recessed = darkmode ? Classes.Theme.Ink2 : SystemColors.Window;
+            var text = darkmode ? Classes.Theme.Ivory : Color.Black;
+            var subtle = darkmode ? Classes.Theme.Slate : SystemColors.GrayText;
 
-            if (item is TabPage tp)
+            switch (item)
             {
-                tp.BackColor = backColor;
-                tp.ForeColor = foreColor;
+                case DeviceControl:
+                    return; // owner-drawn; leave it alone
+                case TabControl tc:
+                    tc.BackColor = ink; tc.ForeColor = text;
+                    break;
+                case TabPage tp:
+                    tp.BackColor = ink; tp.ForeColor = text;
+                    break;
+                case GroupBox gb:
+                    gb.BackColor = ink; gb.ForeColor = subtle;
+                    break;
+                case TextBox tb:
+                    tb.BackColor = recessed; tb.ForeColor = text;
+                    tb.BorderStyle = darkmode ? BorderStyle.FixedSingle : BorderStyle.Fixed3D;
+                    break;
+                case LinkLabel ll:
+                    ll.BackColor = ink; ll.LinkColor = Classes.Theme.Amber;
+                    ll.ActiveLinkColor = Classes.Theme.Ivory; ll.VisitedLinkColor = Classes.Theme.AmberDim;
+                    break;
+                case CheckBox chk:
+                    chk.BackColor = Color.Transparent; chk.ForeColor = text; chk.FlatStyle = FlatStyle.Flat;
+                    chk.FlatAppearance.BorderColor = Classes.Theme.Line;
+                    break;
+                case ComboBox cb:
+                    cb.BackColor = surface; cb.ForeColor = text; cb.FlatStyle = FlatStyle.Flat;
+                    break;
+                case FlowLayoutPanel flp when flp.Parent is not DeviceControl:
+                    flp.BackColor = ink; flp.ForeColor = text;
+                    break;
+                case Panel pnl when pnl.Parent is not DeviceControl:
+                    pnl.BackColor = ink; pnl.ForeColor = text;
+                    break;
+                case Button btn when btn.Parent is not DeviceControl:
+                    btn.BackColor = surface; btn.ForeColor = text;
+                    btn.FlatStyle = FlatStyle.Flat;
+                    btn.FlatAppearance.BorderColor = Classes.Theme.Line;
+                    btn.FlatAppearance.MouseOverBackColor = darkmode ? Classes.Theme.Raised : SystemColors.ControlLight;
+                    btn.UseVisualStyleBackColor = false;
+                    break;
+                case Label lbl when lbl.Parent is not DeviceControl:
+                    lbl.BackColor = Color.Transparent; lbl.ForeColor = subtle;
+                    break;
             }
-            if (item is GroupBox gb)
+        }
+
+        private UserControls.AppHeaderControl? headerControl;
+
+        /// <summary>
+        /// Applies the premium "hi-fi console" chrome: the branded header band above the master-volume bar, and
+        /// owner-drawn group boxes (the stock etched border is over-drawn so the dark theme reads cleanly).
+        /// </summary>
+        private void SetupPremiumChrome()
+        {
+            if (tabPageMain == null || headerControl != null)
+                return;
+
+            headerControl = new UserControls.AppHeaderControl(CountDevices);
+            tabPageMain.Controls.Add(headerControl);  // last-added => top-most Dock=Top, sits above grpVolume
+
+            ThemeGroupBoxBorder(grpVolume);
+            ThemeGroupBoxBorder(grpDevices);
+            ThemeGroupBoxBorder(grpLag);
+            ThemeGroupBoxBorder(grpOptions);
+            pnlDevices.BackColor = Classes.Theme.Ink;
+            SetupComboBoxDarkDraw(this);
+
+            var icon = Classes.Theme.LoadAppIcon();
+            if (icon != null) Icon = icon;   // amber-ring brand mark on the title bar + taskbar
+
+            if (volumeMeter != null) { volumeMeter.BackColor = Classes.Theme.Ink2; volumeMeter.ForeColor = Classes.Theme.Amber; }
+        }
+
+        // WinForms DropDownList combos ignore BackColor, so owner-draw them for the dark theme.
+        private void SetupComboBoxDarkDraw(Control parent)
+        {
+            foreach (Control c in parent.Controls)
             {
-                gb.BackColor = backColor;
-                gb.ForeColor = foreColor;
-            }
-            if (item is TextBox tb)
-            {
-                tb.BackColor = controlColor;
-                tb.ForeColor = foreColor;
-            }
-            if (item is FlowLayoutPanel flp)
-            {
-                if (!(((Control)item).Parent is DeviceControl))
+                if (c is ComboBox cb)
                 {
-                    flp.BackColor = backColor;
-                    flp.ForeColor = foreColor;
+                    cb.FlatStyle = FlatStyle.Flat;
+                    cb.DrawMode = DrawMode.OwnerDrawFixed;
+                    cb.DrawItem -= ComboBox_DrawItem;
+                    cb.DrawItem += ComboBox_DrawItem;
                 }
+                if (c.HasChildren) SetupComboBoxDarkDraw(c);
             }
-            if (item is Button button)
+        }
+
+        private void ComboBox_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (sender is not ComboBox cb) return;
+            bool dark = GetDarkMode();
+            bool selected = (e.State & DrawItemState.Selected) != 0;
+            var bg = dark ? (selected ? Classes.Theme.Raised : Classes.Theme.Surface) : (selected ? SystemColors.Highlight : SystemColors.Window);
+            var fg = dark ? Classes.Theme.Ivory : (selected ? SystemColors.HighlightText : SystemColors.ControlText);
+            using (var b = new SolidBrush(bg)) e.Graphics.FillRectangle(b, e.Bounds);
+            if (e.Index >= 0)
+                TextRenderer.DrawText(e.Graphics, cb.GetItemText(cb.Items[e.Index]), cb.Font,
+                    new Point(e.Bounds.X + 2, e.Bounds.Y + 1), fg);
+        }
+
+        private (int total, int playing) CountDevices()
+        {
+            int total = 0, playing = 0;
+            if (pnlDevices != null)
+                foreach (var c in pnlDevices.Controls)
+                    if (c is UserControls.DeviceControl dc) { total++; if (dc.IsPlaying) playing++; }
+            return (total, playing);
+        }
+
+        // Over-draw the stock GroupBox etched border with Ink (children paint themselves on top) and re-draw the
+        // caption as a quiet uppercase slate label - so the box reads as a clean section, not a 3D frame.
+        private void ThemeGroupBoxBorder(GroupBox gb)
+        {
+            if (gb == null) return;
+            gb.Paint += (s, e) =>
             {
-                if (((Control)item).Parent is DeviceControl)
+                if (!GetDarkMode()) return;
+                var g = e.Graphics;
+                using (var b = new SolidBrush(Classes.Theme.Ink))
                 {
-                    button.BackColor = Color.LightGray;
-                    button.ForeColor = SystemColors.ControlText;
+                    g.FillRectangle(b, 0, 0, gb.Width, 15);
+                    g.FillRectangle(b, 0, 0, 3, gb.Height);
+                    g.FillRectangle(b, gb.Width - 3, 0, 3, gb.Height);
+                    g.FillRectangle(b, 0, gb.Height - 3, gb.Width, 3);
                 }
-                else
+                if (!string.IsNullOrEmpty(gb.Text))
                 {
-                    button.BackColor = buttonColor;
-                    button.ForeColor = foreColor;
-                    button.FlatStyle = darkmode ? FlatStyle.Flat : FlatStyle.Standard;
+                    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                    using var tb = new SolidBrush(Classes.Theme.Slate);
+                    g.DrawString(gb.Text.ToUpperInvariant(), Classes.Theme.Label, tb, 6, 1);
                 }
-            }
-            if (item is LinkLabel linklabel)
-            {
-                linklabel.BackColor = backColor;
-                linklabel.ForeColor = foreColor;
-            }
-            if (item is ComboBox cb)
-            {
-                cb.BackColor = backColor;
-                cb.ForeColor = foreColor;
-            }
+            };
+            gb.Invalidate();
+        }
+
+        /// <summary>
+        /// Sizes the window to the number of device tiles so the first start is already well-proportioned and it
+        /// re-fits when a late speaker appears (some announce ~40 s in). Measures the current non-device chrome at
+        /// runtime, so it needs no hard-coded layout constants, and clamps to the screen's working area.
+        /// </summary>
+        public void AutoSizeToDeviceCount()
+        {
+            if (InvokeRequired) { Invoke(new Action(AutoSizeToDeviceCount)); return; }
+            if (pnlDevices == null || WindowState != FormWindowState.Normal) return;
+            if (pnlDevices.Width <= 0 || pnlDevices.Height <= 0) return;
+
+            int count = 0;
+            foreach (var c in pnlDevices.Controls)
+                if (c is UserControls.DeviceControl dc && dc.Visible) count++;
+            if (count == 0) return;
+
+            int cols = count <= 1 ? 1 : count > 6 ? 3 : 2;
+            int rows = (count + cols - 1) / cols;
+            const int cellW = 322 + 14, cellH = 152 + 14;   // card + margins
+            int needPnlW = cols * cellW + 20;                // + scrollbar / inner padding
+            int needPnlH = rows * cellH + 10;
+
+            int chromeW = ClientSize.Width - pnlDevices.Width;   // everything that isn't the device viewport
+            int chromeH = ClientSize.Height - pnlDevices.Height;
+
+            var wa = Screen.FromControl(this).WorkingArea;
+            int wantW = Math.Min(chromeW + needPnlW, wa.Width - 40);
+            int wantH = Math.Min(chromeH + needPnlH, wa.Height - 40);
+            wantW = Math.Max(wantW, 520);
+            wantH = Math.Max(wantH, 420);
+
+            if (Math.Abs(wantW - ClientSize.Width) < 8 && Math.Abs(wantH - ClientSize.Height) < 8)
+                return;   // already about right - avoid thrash
+
+            ClientSize = new Size(wantW, wantH);
+
+            // keep the window on-screen after growing
+            int nx = Math.Max(wa.Left, Math.Min(Left, wa.Right - Width));
+            int ny = Math.Max(wa.Top, Math.Min(Top, wa.Bottom - Height));
+            if (nx != Left || ny != Top) Location = new Point(nx, ny);
         }
 
         private void chkDarkMode_CheckedChanged(object sender, EventArgs e)

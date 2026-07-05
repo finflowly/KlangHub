@@ -29,7 +29,7 @@
             grpVolume = new System.Windows.Forms.GroupBox();
             pnlVolumeMeter = new System.Windows.Forms.FlowLayoutPanel();
             lblDb = new System.Windows.Forms.Label();
-            volumeMeter = new NAudio.Gui.VolumeMeter();
+            volumeMeter = new KlangHub.UserControls.BrandedVuMeter();
             pnlVolumeAllButtons = new System.Windows.Forms.FlowLayoutPanel();
             btnVolumeUp = new System.Windows.Forms.Button();
             btnVolumeDown = new System.Windows.Forms.Button();
@@ -261,12 +261,12 @@
             volumeMeter.Amplitude = 0F;
             volumeMeter.BackColor = System.Drawing.SystemColors.Window;
             volumeMeter.ForeColor = System.Drawing.SystemColors.ActiveCaption;
-            volumeMeter.Location = new System.Drawing.Point(3, 6);
+            volumeMeter.Location = new System.Drawing.Point(3, 4);
             volumeMeter.Margin = new System.Windows.Forms.Padding(3, 6, 3, 4);
             volumeMeter.MaxDb = 18F;
             volumeMeter.MinDb = -60F;
             volumeMeter.Name = "volumeMeter";
-            volumeMeter.Size = new System.Drawing.Size(9, 50);
+            volumeMeter.Size = new System.Drawing.Size(16, 54);
             volumeMeter.TabIndex = 19;
             // 
             // pnlVolumeAllButtons
@@ -1026,7 +1026,7 @@
         private System.Windows.Forms.ComboBox cmbStreamFormat;
         private System.Windows.Forms.LinkLabel linkHelp;
         private System.Windows.Forms.FlowLayoutPanel pnlVolumeMeter;
-        private NAudio.Gui.VolumeMeter volumeMeter;
+        private KlangHub.UserControls.BrandedVuMeter volumeMeter;
         private System.Windows.Forms.ToolTip volumeMeterTooltip;
         private System.Windows.Forms.Label lblDb;
         private System.Windows.Forms.Label lblBufferInSeconds;
