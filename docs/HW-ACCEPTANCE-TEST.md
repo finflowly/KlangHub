@@ -1,6 +1,6 @@
 # KlangHub — Hardware-Abnahme (Premium Chromecast 2026 Sprint)
 
-**Build:** `dist/KlangHub-Release-f4f9e6d.zip` (framework-abhängig, läuft auf dem maschinenweiten .NET-10-Runtime).
+**Build:** `dist/KlangHub-Release-1b52010.zip` (framework-abhängig, läuft auf dem maschinenweiten .NET-10-Runtime).
 **Zweck:** die eine Sache abnehmen, die ich ohne Geräte nicht selbst testen kann. Alles Code-seitige ist grün
 (140 Tests, App bootet, Artwork-Endpunkt über echten Socket verifiziert, FLAC verlustfrei + ~440× Echtzeit).
 
