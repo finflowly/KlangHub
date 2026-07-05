@@ -76,3 +76,20 @@ PerMonitorV2-DPI (`Program.cs`) · Protokoll als farbcodierte Konsole · `Speake
 | Kopf-Titel | „5 Geräte · 1 spielen" (hardcoded) → **„5 Räume · 1 spielt"** (RESX) |
 | Karte | „Cast-Gerät" → **Raum · Modell** |
 „Klangqualität" bleibt (echtes HiFi-Deutsch).
+
+## Umsetzungsstand (2026-07-05)
+Alle Phasen **0–5 umgesetzt & committet** auf Branch `redesign/premium-ui` (7 Commits; master unberührt).
+Jede Phase: Build 0 Fehler + 140 Tests grün; Full-Solution-Build grün.
+
+**Bewusste Abweichungen / offene visuelle Iteration:**
+- **Pille zustandsabhängig** (Format beim Spielen, sonst bereit/Gruppe/erneut verbinden) — folgt dem verbindlichen
+  `UI Konzept.png` (nicht der „immer Format"-Vereinfachung des Konzept-Boards).
+- **Phase 3 Header:** globales VU raus + Vokabular gefixt; der tiefe Umbau (eine form-level Zeile + owner-drawn
+  Tab-Deck, Filter/Suche in den Kopf) ist **für die visuelle Iteration zurückgestellt** — blind zu riskant.
+- **Phase 4 Einstellungen:** Toggles + Dark-Selects via Subclassing (alle Bindungen erhalten). Der vollständige
+  Umbau in Section-Cards/`TableLayoutPanel` bleibt für den visuellen Pass.
+- **Karten-Copy** (Status/Untertitel) noch als DE-Literale — RESX-Lokalisierung (EN/FR) ist Folgeschritt.
+- **Protokoll** noch Roh-Konsole — farbcodierte Konsole = Folgeschritt.
+
+**Braucht the maintainer's Auge (Sandbox hat kein Display):** weißer Rand weg?, Titelleiste als nahtloser Block?,
+Karten-Zustände/Glow/Fokus?, Toggles + Combo-Chevron in den Einstellungen?, DPI-Schärfe.
