@@ -36,6 +36,7 @@ namespace KlangHub.Classes
         // amber at low alpha for pill fills / playing tint
         public static readonly Color AmberSoft = Color.FromArgb(36, 0xE8, 0xB6, 0x5A);
         public static readonly Color AmberTint = Color.FromArgb(16, 0xE8, 0xB6, 0x5A);
+        public static readonly Color OnAmber = Color.FromArgb(0x19, 0x13, 0x08); // warm near-black text/glyph on amber fills
 
         // ---- layout metrics (8-px grid) ----
         public const int Grid = 8;

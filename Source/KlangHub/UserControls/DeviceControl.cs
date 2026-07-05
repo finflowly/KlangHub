@@ -15,8 +15,9 @@ namespace KlangHub.UserControls
     /// A premium, owner-drawn device tile (the "room card"). Draws its own warm-dark surface, status dot,
     /// format pill, name/subtitle, a live amber level meter while playing, and a compact volume slider + play
     /// button. The neutral-session wiring (state/volume events, play/volume/mute via IPlaybackSession) is
-    /// unchanged from the previous control - only the presentation is new. Adds two per-speaker features:
-    /// a live playing-time and a hard maximum-volume cap (SpeakerPrefs).
+    /// unchanged - only the presentation is new. The card is keyboard-focusable (2-px amber focus ring;
+    /// Space/Enter = play, Left/Right = volume). Adds two per-speaker features: a live playing-time and a hard
+    /// maximum-volume cap (SpeakerPrefs).
     /// </summary>
     public partial class DeviceControl : UserControl
     {
@@ -40,6 +41,7 @@ namespace KlangHub.UserControls
 
         // hit regions (computed in OnPaint layout)
         private Rectangle playRect, muteRect, sliderRect, overflowRect, cardRect;
+        private Rectangle meterBand, timeBand;   // exact repaint regions for the animation timer
         private bool draggingVolume;
         private bool hovering;
         private Point mouseDownAt;
@@ -48,8 +50,10 @@ namespace KlangHub.UserControls
         public DeviceControl(Func<IPlaybackSession> sessionAccessorIn)
         {
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint
-                     | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
+                     | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw
+                     | ControlStyles.Selectable, true);
             InitializeComponent();
+            TabStop = true;   // keyboard-focusable card
 
             sessionAccessor = sessionAccessorIn;
             try { session = sessionAccessorIn?.Invoke(); }
@@ -143,15 +147,15 @@ namespace KlangHub.UserControls
                         meterTargets[i] = 0.2f + (float)rnd.NextDouble() * 0.8f;
                     meterHeights[i] += (meterTargets[i] - meterHeights[i]) * 0.35f;
                 }
-                Invalidate(new Rectangle(0, 84, Width, 26));   // meter band
-                Invalidate(new Rectangle(Width - 90, 36, 90, 24)); // playing-time
+                Invalidate(meterBand.IsEmpty ? ClientRectangle : meterBand);   // meter band (exact draw region)
+                if (!timeBand.IsEmpty) Invalidate(timeBand);                   // playing-time
             }
             else
             {
                 bool changed = false;
                 for (int i = 0; i < meterHeights.Length; i++)
                     if (meterHeights[i] > 0.16f) { meterHeights[i] += (0.15f - meterHeights[i]) * 0.3f; changed = true; }
-                if (changed) Invalidate(new Rectangle(0, 84, Width, 26));
+                if (changed) Invalidate(meterBand.IsEmpty ? ClientRectangle : meterBand);
             }
         }
 
@@ -166,23 +170,26 @@ namespace KlangHub.UserControls
 
             bool playing = state == PlaybackState.Playing || state == PlaybackState.Buffering;
             bool error = state == PlaybackState.Error;
+            bool group = descriptor?.IsGroup == true;
             cardRect = new Rectangle(2, 2, Width - 5, Height - 5);
             var cardF = new RectangleF(cardRect.X, cardRect.Y, cardRect.Width, cardRect.Height);
 
-            // glow behind a playing card
+            // soft amber glow behind a playing card (the signature)
             if (playing)
             {
                 using var glow = new GraphicsPath();
-                glow.AddPath(Theme.RoundedRect(RectangleF.Inflate(cardF, 2, 2), 15), false);
+                glow.AddPath(Theme.RoundedRect(RectangleF.Inflate(cardF, 2, 2), Theme.RadCard), false);
                 using var gb = new PathGradientBrush(glow) { CenterColor = Color.FromArgb(60, Theme.Amber), SurroundColors = new[] { Color.FromArgb(0, Theme.Amber) } };
                 g.FillPath(gb, glow);
             }
 
-            // card surface
-            Theme.FillRounded(g, cardF, 13, playing ? Blend(Theme.Surface, Theme.Amber, 0.05f) : Theme.Surface);
-            Theme.DrawRounded(g, cardF, 13, playing ? Color.FromArgb(150, Theme.Amber) : (hovering ? Theme.LineHi : Theme.Line), 1.2f);
+            // card surface: playing = amber-tinted; hovered = lifted onto 'Raised'; else the flat surface
+            Color surface = playing ? Theme.Blend(Theme.Surface, Theme.Amber, 0.05f) : hovering ? Theme.Raised : Theme.Surface;
+            Color borderCol = playing ? Color.FromArgb(150, Theme.Amber) : error ? Color.FromArgb(90, Theme.Ember) : hovering ? Theme.LineHi : Theme.Line;
+            Theme.FillRounded(g, cardF, Theme.RadCard, surface);
+            Theme.DrawRounded(g, cardF, Theme.RadCard, borderCol, 1.2f);
 
-            // left accent bar
+            // left accent bar (amber playing / ember error)
             var accent = playing ? Theme.Amber : error ? Theme.Ember : Color.Transparent;
             if (accent != Color.Transparent)
             {
@@ -191,54 +198,57 @@ namespace KlangHub.UserControls
                 g.FillPath(ab, ap);
             }
 
-            int padL = 18, padR = Width - 18;
+            int padL = Theme.PadCard, padR = Width - Theme.PadCard;
 
-            // ---- status row ----
+            // ---- status row: dot + word (left) ----
             Color dotColor = playing ? Theme.Amber : error ? Theme.Ember : Theme.Blue;
+            Color labelColor = playing ? Theme.Amber : error ? Theme.Ember : Theme.Blend(Theme.Slate, Theme.Ivory, 0.35f);
             string statusLabel = StatusWord(state);
-            var dotY = 20;
+            int dotY = 20;
             using (var db = new SolidBrush(dotColor)) g.FillEllipse(db, padL, dotY - 4, 8, 8);
             if (playing) DrawGlowDot(g, padL + 4, dotY, Theme.Amber);
-            DrawText(g, statusLabel, Theme.Label, playing ? Theme.Amber : error ? Theme.Ember : Color.FromArgb(0xA7, 0xB4, 0xC8), padL + 15, dotY - 8);
+            DrawText(g, statusLabel, Theme.Label, labelColor, padL + 15, dotY - 8);
 
-            // format / group pill (right)
-            string pillText = descriptor?.IsGroup == true ? "Gruppe"
+            // ---- pill (right): format while playing, else the status/action (ember for error) ----
+            string pillText = group ? "Gruppe"
                 : playing ? Theme.CurrentFormatLabel
                 : error ? "erneut verbinden" : "bereit";
-            Color pillFg = descriptor?.IsGroup == true ? Color.FromArgb(0xA7, 0xB4, 0xC8)
-                : playing ? Theme.Amber : Theme.Slate;
-            DrawPill(g, pillText, pillFg, playing, padR, dotY);
+            Color pillFg = playing ? Theme.Amber : error ? Theme.Ember
+                : group ? Theme.Blend(Theme.Slate, Theme.Ivory, 0.35f) : Theme.Slate;
+            Color? pillTint = playing ? Theme.Amber : error ? Theme.Ember : (Color?)null;
+            DrawPill(g, pillText, pillFg, pillTint, padR, dotY);
 
-            // ---- identity row ----
+            // ---- identity row: icon + name + subtitle (+ live playing time) ----
             int icoSize = 36, icoY = 44;
             DrawDeviceIcon(g, new Rectangle(padL, icoY, icoSize, icoSize), playing);
             int nameX = padL + icoSize + 12;
-            // playing time (right of name row)
             if (playingSince.HasValue)
             {
                 var span = DateTime.Now - playingSince.Value;
                 string t = span.TotalHours >= 1 ? span.ToString(@"h\:mm\:ss") : span.ToString(@"mm\:ss");
                 var sz = g.MeasureString(t, Theme.Data);
-                DrawText(g, t, Theme.Data, Theme.Slate, padR - sz.Width, icoY + 2);
+                DrawText(g, t, Theme.Data, Theme.Slate, padR - sz.Width, icoY + 3);
+                timeBand = new Rectangle((int)(padR - sz.Width) - 2, icoY, (int)sz.Width + 6, 24);
             }
-            DrawText(g, deviceName, Theme.Name, Theme.Ivory, nameX, icoY + 1);
+            else timeBand = Rectangle.Empty;
+            DrawText(g, deviceName, Theme.Name, Theme.Ivory, nameX, icoY - 1);
             string sub = Subtitle();
             if (!string.IsNullOrEmpty(sub))
                 DrawText(g, sub, Theme.Small, Theme.Slate, nameX, icoY + 22);
 
-            // ---- level meter ----
+            // ---- level meter (the signature) ----
             int meterY = 92, meterH = 20, barW = 4, gap = 3, meterX = padL;
             for (int i = 0; i < meterHeights.Length; i++)
             {
                 float h = Math.Max(3, meterHeights[i] * meterH);
                 var r = new RectangleF(meterX + i * (barW + gap), meterY + (meterH - h), barW, h);
-                Color c = playing ? Theme.Amber : Color.FromArgb(0x24, 0x2C, 0x36);
-                using var bb = new SolidBrush(playing ? Blend(Theme.AmberDim, Theme.Amber, meterHeights[i]) : c);
+                using var bb = new SolidBrush(playing ? Theme.Blend(Theme.AmberDim, Theme.Amber, meterHeights[i]) : Theme.MeterOff);
                 using var bp = Theme.RoundedRect(r, 1.5f);
                 g.FillPath(bb, bp);
             }
+            meterBand = new Rectangle(meterX - 2, meterY - 2, meterHeights.Length * (barW + gap) + 4, meterH + 4);
 
-            // ---- control row ----
+            // ---- control row: play + speaker + slider + % + overflow ----
             int ctlY = Height - 34;
             playRect = new Rectangle(padL, ctlY, 32, 28);
             DrawPlayButton(g, playRect, playing);
@@ -253,17 +263,19 @@ namespace KlangHub.UserControls
             DrawVolumeSlider(g, sliderRect);
 
             string pct = muted ? "stumm" : (volume + "%");
-            DrawText(g, pct, Theme.Small, muted ? Theme.Amber : Theme.Slate, sliderRect.Right + 8, ctlY + 6);
+            DrawText(g, pct, Theme.Data, muted ? Theme.Amber : Theme.Slate, sliderRect.Right + 8, ctlY + 5);
 
             overflowRect = new Rectangle(padR - ovW, ctlY, ovW, 28);
             DrawOverflow(g, overflowRect);
+
+            // ---- keyboard focus ring ----
+            if (Focused) Theme.DrawFocusRing(g, cardF, Theme.RadCard);
         }
 
         private string Subtitle()
         {
             if (descriptor?.IsGroup == true) return "Multiroom-Gruppe";
             var sc = statusText?.Trim();
-            if (state == PlaybackState.Error && !string.IsNullOrEmpty(sc)) return sc!;
             if (!string.IsNullOrEmpty(sc)) return sc!;
             return descriptor?.Id != null ? "Cast-Gerät" : string.Empty;
         }
@@ -285,14 +297,18 @@ namespace KlangHub.UserControls
             g.DrawString(text, f, b, x, y, sf);
         }
 
-        private void DrawPill(Graphics g, string text, Color fg, bool amber, int rightEdge, int centerY)
+        private void DrawPill(Graphics g, string text, Color fg, Color? tint, int rightEdge, int centerY)
         {
             var sz = g.MeasureString(text, Theme.Label);
-            var w = sz.Width + 18; var h = 19f;
-            var r = new RectangleF(rightEdge - w, centerY - 4 - h / 2 + 4, w, h);
-            if (amber) { Theme.FillRounded(g, r, h / 2, Theme.AmberSoft); Theme.DrawRounded(g, r, h / 2, Color.FromArgb(72, Theme.Amber)); }
-            else Theme.DrawRounded(g, r, h / 2, Theme.Line);
-            DrawText(g, text, Theme.Label, fg, r.X + 9, r.Y + 2.5f);
+            float w = sz.Width + 18, h = 20f;
+            var r = new RectangleF(rightEdge - w, centerY - h / 2f, w, h);
+            if (tint.HasValue)
+            {
+                Theme.FillRounded(g, r, h / 2f, Color.FromArgb(28, tint.Value));
+                Theme.DrawRounded(g, r, h / 2f, Color.FromArgb(120, tint.Value));
+            }
+            else Theme.DrawRounded(g, r, h / 2f, Theme.Line);
+            DrawText(g, text, Theme.Label, fg, r.X + 9, r.Y + 3f);
         }
 
         private static void DrawGlowDot(Graphics g, int cx, int cy, Color c)
@@ -305,8 +321,8 @@ namespace KlangHub.UserControls
 
         private void DrawDeviceIcon(Graphics g, Rectangle r, bool playing)
         {
-            Theme.FillRounded(g, r, 9, Theme.Ink2);
-            Theme.DrawRounded(g, r, 9, playing ? Color.FromArgb(90, Theme.Amber) : Theme.Line);
+            Theme.FillRounded(g, r, Theme.RadControl, Theme.Ink2);
+            Theme.DrawRounded(g, r, Theme.RadControl, playing ? Color.FromArgb(90, Theme.Amber) : Theme.Line);
             using var pen = new Pen(playing ? Theme.Amber : Theme.Slate, 1.6f);
             int cx = r.X + r.Width / 2, cy = r.Y + r.Height / 2;
             if (descriptor?.IsGroup == true)
@@ -316,7 +332,6 @@ namespace KlangHub.UserControls
             }
             else
             {
-                // speaker: rounded body + cone
                 var body = new Rectangle(cx - 6, cy - 9, 12, 18);
                 using var bp = Theme.RoundedRect(body, 3);
                 g.DrawPath(pen, bp);
@@ -327,9 +342,9 @@ namespace KlangHub.UserControls
         private void DrawPlayButton(Graphics g, Rectangle r, bool playing)
         {
             var rf = new RectangleF(r.X, r.Y, r.Width, r.Height);
-            if (playing) { Theme.FillRounded(g, rf, 8, Theme.Amber); }
-            else { Theme.FillRounded(g, rf, 8, Theme.Ink2); Theme.DrawRounded(g, rf, 8, Theme.Line); }
-            var col = playing ? Color.FromArgb(0x19, 0x13, 0x08) : Theme.Ivory;
+            if (playing) { Theme.FillRounded(g, rf, Theme.RadControl, Theme.Amber); }
+            else { Theme.FillRounded(g, rf, Theme.RadControl, Theme.Ink2); Theme.DrawRounded(g, rf, Theme.RadControl, Theme.Line); }
+            var col = playing ? Theme.OnAmber : Theme.Ivory;
             int cx = r.X + r.Width / 2, cy = r.Y + r.Height / 2;
             using var b = new SolidBrush(col);
             if (playing)
@@ -368,7 +383,7 @@ namespace KlangHub.UserControls
             Theme.FillRounded(g, trackRect, 2.5f, Theme.Ink2);
             Theme.DrawRounded(g, trackRect, 2.5f, Theme.Line);
 
-            // dimmed region above the per-speaker cap
+            // per-speaker hard cap marker
             if (maxVolume < 100)
             {
                 float capX = r.X + r.Width * (maxVolume / 100f);
@@ -396,15 +411,6 @@ namespace KlangHub.UserControls
             for (int i = -1; i <= 1; i++) g.FillEllipse(b, cx - 1.5f, cy + i * 6 - 1.5f, 3, 3);
         }
 
-        private static Color Blend(Color a, Color b, float t)
-        {
-            t = Math.Clamp(t, 0, 1);
-            return Color.FromArgb(
-                (int)(a.R + (b.R - a.R) * t),
-                (int)(a.G + (b.G - a.G) * t),
-                (int)(a.B + (b.B - a.B) * t));
-        }
-
         // ---------------- interaction ----------------
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -428,6 +434,7 @@ namespace KlangHub.UserControls
         {
             base.OnMouseDown(e);
             if (e.Button != MouseButtons.Left) return;
+            Focus();   // clicking the card gives it keyboard focus
             mouseDownAt = e.Location;
             downOnBody = false;
 
@@ -449,6 +456,28 @@ namespace KlangHub.UserControls
                 TryOnSession(s => s.TogglePlayStop());   // click the card body toggles play (familiar behaviour)
             downOnBody = false;
         }
+
+        // keyboard: card focusable, Space/Enter toggles play, Left/Right nudge volume
+        protected override bool IsInputKey(Keys keyData) =>
+            keyData is Keys.Left or Keys.Right or Keys.Space || base.IsInputKey(keyData);
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            switch (e.KeyCode)
+            {
+                case Keys.Space:
+                case Keys.Enter:
+                    TryOnSession(s => s.TogglePlayStop()); e.Handled = true; break;
+                case Keys.Left:
+                    ApplyVolumeAbsolute(Math.Max(0, volume - stepPercent) / 100f); e.Handled = true; break;
+                case Keys.Right:
+                    ApplyVolumeAbsolute(Math.Min(100, volume + stepPercent) / 100f); e.Handled = true; break;
+            }
+        }
+
+        protected override void OnEnter(EventArgs e) { base.OnEnter(e); Invalidate(); }
+        protected override void OnLeave(EventArgs e) { base.OnLeave(e); Invalidate(); }
 
         private bool SliderHit(Point p) =>
             p.X >= sliderRect.X - 6 && p.X <= sliderRect.Right + 6 && Math.Abs(p.Y - (sliderRect.Y + sliderRect.Height / 2)) <= 12;
