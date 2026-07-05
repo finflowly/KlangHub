@@ -71,7 +71,7 @@ namespace KlangHub.Platform.Casting.Shared
 
         /// <summary>Parse Tmds.MDns's "key=value" TXT records into a case-insensitive dictionary
         /// (first value wins; a bare key maps to empty string).</summary>
-        internal static IReadOnlyDictionary<string, string> ParseTxt(IList<string> txt)
+        internal static IReadOnlyDictionary<string, string> ParseTxt(IList<string>? txt)
         {
             var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (txt == null)

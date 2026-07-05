@@ -24,7 +24,7 @@ namespace KlangHub.Tests.Platform
             var d = AirPlayDiscovery.ToDescriptor(
                 Service("Living Room", "lr.local", "192.168.0.9", ("deviceid", "00:11:22:33:44:55"), ("model", "AudioAccessory5,1")));
 
-            Assert.Equal("00:11:22:33:44:55", d.Id);
+            Assert.Equal("00:11:22:33:44:55", d!.Id);
             Assert.Equal("Living Room", d.Name);
             Assert.Equal(ProviderId.AirPlay, d.Provider);
             Assert.False(d.IsGroup);
@@ -36,7 +36,7 @@ namespace KlangHub.Tests.Platform
             var d = AirPlayDiscovery.ToDescriptor(
                 Service("001122334455@Kitchen", "k.local", "192.168.0.10", ("pk", "abcdef")));
 
-            Assert.Equal("abcdef", d.Id);          // no deviceid -> pk
+            Assert.Equal("abcdef", d!.Id);          // no deviceid -> pk
             Assert.Equal("Kitchen", d.Name);        // "<MAC>@Kitchen" -> "Kitchen"
         }
 
@@ -45,7 +45,7 @@ namespace KlangHub.Tests.Platform
         [InlineData("AirPlay2", null, "1,3")]         // encryption type 3 (FairPlay) -> AirPlay 2
         [InlineData("LegacyRaop", null, "1")]         // only AES -> legacy RAOP
         [InlineData("Unknown", null, null)]           // no signals
-        public void Classify_distinguishes_legacy_raop_from_airplay2(string expected, string srcvers, string et)
+        public void Classify_distinguishes_legacy_raop_from_airplay2(string expected, string? srcvers, string? et)
         {
             var txt = new List<(string, string)>();
             if (srcvers != null) txt.Add(("srcvers", srcvers));

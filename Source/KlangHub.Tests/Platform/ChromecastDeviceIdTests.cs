@@ -15,7 +15,7 @@ namespace KlangHub.Tests.Platform
         {
             var id = ChromecastDeviceId.From(new DiscoveredDevice
             {
-                Usn = null,
+                Usn = null!,
                 MACAddress = "00:00:00:00:00:00",
                 IPAddress = "192.168.1.112",
                 Port = 8009,
@@ -29,7 +29,7 @@ namespace KlangHub.Tests.Platform
         {
             var id = ChromecastDeviceId.From(new DiscoveredDevice
             {
-                Usn = null,
+                Usn = null!,
                 MACAddress = "AA:BB:CC:DD:EE:FF",
                 IPAddress = "192.168.1.201",
                 Port = 8009,

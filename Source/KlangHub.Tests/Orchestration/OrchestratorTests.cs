@@ -15,7 +15,7 @@ namespace KlangHub.Tests.Orchestration
 {
     public class OrchestratorTests
     {
-        private static Orchestrator NewOrchestrator(IDevices devices = null, ICastProvider castProvider = null)
+        private static Orchestrator NewOrchestrator(IDevices? devices = null, ICastProvider? castProvider = null)
         {
             return new Orchestrator(
                 devices ?? Substitute.For<IDevices>(),
@@ -74,16 +74,16 @@ namespace KlangHub.Tests.Orchestration
         public void DeviceRemoved_event_fires_when_the_devices_remove_callback_is_invoked()
         {
             var devices = Substitute.For<IDevices>();
-            Action<IDevice> removeCallback = null;
+            Action<IDevice>? removeCallback = null;
             devices.When(d => d.SetRemoveCallback(Arg.Any<Action<IDevice>>()))
                    .Do(ci => removeCallback = ci.Arg<Action<IDevice>>());
 
             var orch = NewOrchestrator(devices: devices);
 
-            IDevice removed = null;
+            IDevice? removed = null;
             orch.DeviceRemoved += d => removed = d;
             var device = Substitute.For<IDevice>();
-            removeCallback(device);
+            removeCallback!(device);
 
             Assert.Same(device, removed);
         }

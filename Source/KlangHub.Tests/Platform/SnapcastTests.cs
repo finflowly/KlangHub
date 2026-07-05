@@ -17,7 +17,7 @@ namespace KlangHub.Tests.Platform
         {
             var d = SnapcastDiscovery.ToDescriptor(Service("Snapserver", "pi.local", "192.168.0.5", 1704));
 
-            Assert.Equal("192.168.0.5:1704", d.Id);
+            Assert.Equal("192.168.0.5:1704", d!.Id);
             Assert.Equal("Snapserver", d.Name);
             Assert.Equal(ProviderId.Snapcast, d.Provider);
             Assert.False(d.IsGroup);
@@ -26,8 +26,8 @@ namespace KlangHub.Tests.Platform
         [Fact]
         public void ToDescriptor_falls_back_to_hostname_then_id_for_the_name()
         {
-            Assert.Equal("pi.local", SnapcastDiscovery.ToDescriptor(Service("", "pi.local", "192.168.0.5", 1704)).Name);
-            Assert.Equal("192.168.0.5:1704", SnapcastDiscovery.ToDescriptor(Service("", "", "192.168.0.5", 1704)).Name);
+            Assert.Equal("pi.local", SnapcastDiscovery.ToDescriptor(Service("", "pi.local", "192.168.0.5", 1704))!.Name);
+            Assert.Equal("192.168.0.5:1704", SnapcastDiscovery.ToDescriptor(Service("", "", "192.168.0.5", 1704))!.Name);
         }
 
         [Fact]

@@ -13,7 +13,7 @@ namespace KlangHub.Tests.Application
         [InlineData("00:00:00:00:00:00", false)]  // all-zeros placeholder (Google TV / TCL TV / Enchant)
         [InlineData("", false)]
         [InlineData(null, false)]
-        public void HasRealMac_rejects_the_all_zeros_placeholder(string mac, bool expected)
+        public void HasRealMac_rejects_the_all_zeros_placeholder(string? mac, bool expected)
         {
             Assert.Equal(expected, Devices.HasRealMac(mac));
         }

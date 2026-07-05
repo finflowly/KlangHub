@@ -7,8 +7,8 @@ namespace KlangHub.Tests.Core
 {
     public class CompositeCastProviderTests
     {
-        private static ICastProvider FakeProvider(ProviderId id, CastProviderCapabilities caps = null,
-            IDeviceDiscovery discovery = null)
+        private static ICastProvider FakeProvider(ProviderId id, CastProviderCapabilities? caps = null,
+            IDeviceDiscovery? discovery = null)
         {
             var provider = Substitute.For<ICastProvider>();
             provider.Id.Returns(id);
@@ -63,7 +63,7 @@ namespace KlangHub.Tests.Core
             var d1 = Substitute.For<IDeviceDiscovery>();
             var composite = new CompositeCastProvider(new[] { FakeProvider(ProviderId.Chromecast, discovery: d1) });
 
-            CastDeviceDescriptor received = null;
+            CastDeviceDescriptor? received = null;
             composite.Discovery.DeviceDiscovered += (s, d) => received = d;
 
             var descriptor = new CastDeviceDescriptor("id", "Speaker", ProviderId.Chromecast, false);
