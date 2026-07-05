@@ -3,6 +3,14 @@
 KlangHub ships the following third-party components. Each is distributed as its own assembly (the
 framework-dependent build keeps them as separate, replaceable DLLs); none are statically merged into KlangHub.
 
+## Foundational codebase
+
+KlangHub's discovery, casting and streaming core began as a fork of an open-source Chromecast desktop
+audio streamer by **SamDel**, released under the MIT License (see [LICENSE](../LICENSE) for the full
+text and required copyright notice). Since then the app has been substantially rewritten and extended
+(module boundaries, .NET 10, FLAC, multi-provider discovery, the "hi-fi console" UI and more), but the
+original authorship and license terms are gratefully acknowledged here.
+
 ## CUETools.Codecs.FLAKE / CUETools.Codecs
 
 - **Purpose:** managed FLAC (FLAKE) live-encoder used for lossless audio streaming.

@@ -456,6 +456,14 @@ namespace KlangHub.UserControls
         private void ApplyVolumeFromX(int x)
         {
             float t = (x - sliderRect.X) / (float)sliderRect.Width;
+            ApplyVolumeAbsolute(Math.Clamp(t, 0, 1));
+        }
+
+        /// <summary>Sets this card's volume to an absolute 0..1 level, honouring its own hard cap. Used both by
+        /// the card's own slider drag and by the header's master-volume fader (which applies the same level to
+        /// every card).</summary>
+        public void ApplyVolumeAbsolute(float t)
+        {
             int pct = (int)Math.Round(Math.Clamp(t, 0, 1) * 100);
             pct = Math.Min(pct, maxVolume);   // hard cap
             if (pct == volume) return;

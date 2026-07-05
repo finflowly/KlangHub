@@ -44,8 +44,22 @@ namespace KlangHub.Classes
         public static readonly Font Data = new Font("Consolas", 9f, FontStyle.Regular);
 
         /// <summary>The currently selected stream format, shown on playing cards (e.g. "FLAC · 24-bit").
-        /// One HTTP stream serves all devices, so this is app-global; MainForm updates it on format change.</summary>
-        public static string CurrentFormatLabel = "FLAC · 24-bit";
+        /// One HTTP stream serves all devices, so this is app-global; MainForm updates it on format change
+        /// via <see cref="FormatPillText"/>.</summary>
+        public static string CurrentFormatLabel = "WAV · 24-bit";
+
+        /// <summary>Short pill text for a stream format, e.g. "FLAC · 24-bit" / "WAV · 16-bit" / "MP3 · 320".</summary>
+        public static string FormatPillText(KlangHub.Core.Models.SupportedStreamFormat format) => format switch
+        {
+            KlangHub.Core.Models.SupportedStreamFormat.Flac => "FLAC · 24-bit",
+            KlangHub.Core.Models.SupportedStreamFormat.Wav_16bit => "WAV · 16-bit",
+            KlangHub.Core.Models.SupportedStreamFormat.Wav_24bit => "WAV · 24-bit",
+            KlangHub.Core.Models.SupportedStreamFormat.Wav_32bit => "WAV · 32-bit",
+            KlangHub.Core.Models.SupportedStreamFormat.Wav => "WAV · 16-bit",
+            KlangHub.Core.Models.SupportedStreamFormat.Mp3_320 => "MP3 · 320",
+            KlangHub.Core.Models.SupportedStreamFormat.Mp3_128 => "MP3 · 128",
+            _ => "HiFi",
+        };
 
         /// <summary>The amber-ring app icon (the brand mark) from the embedded KlangHub.ico — used for the
         /// window title bar and the tray icon so the running app matches the taskbar/exe icon.</summary>

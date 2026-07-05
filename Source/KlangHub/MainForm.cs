@@ -81,7 +81,10 @@ namespace KlangHub
 
             Assembly assembly = Assembly.GetExecutingAssembly();
             // Assembly.Location is empty in single-file/published builds; read the version from metadata instead.
-            var appVersion = assembly.GetName().Version?.ToString() ?? string.Empty;
+            // Displayed as three parts (Major.Minor.Build) - the compiler always pads AssemblyVersion's omitted
+            // Revision to 0, which Version.ToString() would otherwise print as a trailing ".0" (e.g. "0.0.1.0").
+            var av = assembly.GetName().Version;
+            var appVersion = av != null ? $"{av.Major}.{av.Minor}.{av.Build}" : string.Empty;
             FillStreamFormats();
             FillFilterDevices();
             lblVersion.Text = $"{Properties.Strings.Version} {appVersion}";
@@ -103,7 +106,7 @@ namespace KlangHub
         private void ApplyLocalization()
         {
             Text = Properties.Strings.MainForm_Text;
-            grpVolume.Text = Properties.Strings.Group_VolumeAllDevices_Text;
+            grpVolume.Text = string.Empty; // no group caption - replaced by the live room-summary text (SetupRoomSummary)
             btnVolumeUp.Text = Properties.Strings.Button_Up_Text;
             btnVolumeDown.Text = Properties.Strings.Button_Down_Text;
             btnVolumeMute.Text = Properties.Strings.Button_Mute_Text;
@@ -172,17 +175,17 @@ namespace KlangHub
 
             if (cmbStreamFormat.Items.Count == 0)
             {
-                // FLAC first: lossless HiFi out-of-box default that plays on ALL devices (compressed -> no
-                // small-speaker OOM, unlike 32-bit uncompressed LPCM). WAV 24/16/32-bit follow as uncompressed
-                // alternatives; MP3 last for legacy compatibility only.
-                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Flac));
+                // WAV 24-bit first: uncompressed HiFi out-of-box default (the maintainer's setup runs it problem-free).
+                // FLAC follows, still labelled "recommended" - it's the robust pick for small/weak speakers that
+                // struggled with high-bitrate uncompressed LPCM (ERROR 102). MP3 last for legacy compatibility.
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_24bit));
+                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Flac));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_16bit));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_32bit));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Mp3_320));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Mp3_128));
-                cmbStreamFormat.SelectedIndex = 0; // FLAC
+                cmbStreamFormat.SelectedIndex = 0; // WAV 24-bit
                 SetStreamFormat();
             }
         }
@@ -895,9 +898,22 @@ namespace KlangHub
 
             if (cmbStreamFormat.SelectedItem != null)
             {
-                applicationLogic.SetStreamFormat((SupportedStreamFormat)((ComboboxItem)cmbStreamFormat.SelectedItem).Value);
+                var format = (SupportedStreamFormat)((ComboboxItem)cmbStreamFormat.SelectedItem).Value;
+                applicationLogic.SetStreamFormat(format);
                 captureEngine.Apply(BuildCaptureSettings());
+                Classes.Theme.CurrentFormatLabel = Classes.Theme.FormatPillText(format);
+                RefreshDeviceCards();
             }
+        }
+
+        // Format-pill text is app-global (one HTTP stream serves all devices) but each card only re-paints on
+        // its own state/volume events - force a repaint so a format change is reflected immediately, even on
+        // an already-playing card.
+        private void RefreshDeviceCards()
+        {
+            if (pnlDevices == null) return;
+            foreach (Control c in pnlDevices.Controls)
+                if (c is UserControls.DeviceControl dc) dc.Invalidate();
         }
 
         private void CmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
@@ -1423,6 +1439,8 @@ namespace KlangHub
                 item = this;
                 BackColor = darkmode ? Classes.Theme.Ink : SystemColors.Control;
                 ForeColor = darkmode ? Classes.Theme.Ivory : Color.Black;
+                if (IsHandleCreated) Classes.DwmChrome.Apply(this, darkmode);
+                else HandleCreated += (s, e) => Classes.DwmChrome.Apply(this, darkmode);
             }
 
             foreach (var control in item.Controls)
@@ -1483,7 +1501,7 @@ namespace KlangHub
                     btn.FlatAppearance.MouseOverBackColor = darkmode ? Classes.Theme.Raised : SystemColors.ControlLight;
                     btn.UseVisualStyleBackColor = false;
                     break;
-                case Label lbl when lbl.Parent is not DeviceControl:
+                case Label lbl when lbl.Parent is not DeviceControl && lbl.Name != "lblSectionSound" && lbl.Name != "lblSectionBehavior":
                     lbl.BackColor = Color.Transparent; lbl.ForeColor = subtle;
                     break;
             }
@@ -1500,7 +1518,7 @@ namespace KlangHub
             if (tabPageMain == null || headerControl != null)
                 return;
 
-            headerControl = new UserControls.AppHeaderControl(CountDevices);
+            headerControl = new UserControls.AppHeaderControl();
             tabPageMain.Controls.Add(headerControl);  // last-added => top-most Dock=Top, sits above grpVolume
 
             ThemeGroupBoxBorder(grpVolume);
@@ -1508,12 +1526,234 @@ namespace KlangHub
             ThemeGroupBoxBorder(grpLag);
             ThemeGroupBoxBorder(grpOptions);
             pnlDevices.BackColor = Classes.Theme.Ink;
+            pnlDevices.Paint += PnlDevices_PaintRingWatermark;
             SetupComboBoxDarkDraw(this);
 
             var icon = Classes.Theme.LoadAppIcon();
             if (icon != null) Icon = icon;   // amber-ring brand mark on the title bar + taskbar
 
             if (volumeMeter != null) { volumeMeter.BackColor = Classes.Theme.Ink2; volumeMeter.ForeColor = Classes.Theme.Amber; }
+
+            SetupMasterVolumeFader();
+            SetupRoomSummary();
+            SetupBrandCredit();
+            SetupTabStrip();
+            SetupOptionsSections();
+        }
+
+        private System.Windows.Forms.Timer? roomSummaryTimer;
+        private Label? lblRoomSummaryTitle, lblRoomSummarySubtitle;
+
+        // The concept places a live "N Geräte · M spielen" / "format · verlustfrei ans ganze Haus" summary
+        // to the LEFT of the master-volume fader, replacing the generic "ALLE RÄUME" group caption. Two
+        // stacked labels (different weights match the concept's title/subtitle) inserted before the fader.
+        private void SetupRoomSummary()
+        {
+            if (pnlVolumeAllButtons == null || pnlVolumeAllButtons.Controls.ContainsKey("pnlRoomSummary"))
+                return;
+
+            grpVolume.Text = string.Empty; // no more generic uppercase caption on this row
+
+            lblRoomSummaryTitle = new Label
+            {
+                AutoSize = true,
+                Font = new Font(Classes.Theme.Name.FontFamily, 10f, FontStyle.Bold),
+                ForeColor = Classes.Theme.Ivory,
+                BackColor = Color.Transparent,
+                Margin = new Padding(0),
+            };
+            lblRoomSummarySubtitle = new Label
+            {
+                AutoSize = true,
+                Font = Classes.Theme.Small,
+                ForeColor = Classes.Theme.Slate,
+                BackColor = Color.Transparent,
+                Margin = new Padding(0),
+            };
+            var stack = new FlowLayoutPanel
+            {
+                Name = "pnlRoomSummary",
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                WrapContents = false,
+                Margin = new Padding(6, 6, 24, 4),
+                BackColor = Color.Transparent,
+            };
+            stack.Controls.Add(lblRoomSummaryTitle);
+            stack.Controls.Add(lblRoomSummarySubtitle);
+            pnlVolumeAllButtons.Controls.Add(stack);
+            pnlVolumeAllButtons.Controls.SetChildIndex(stack, 0);
+
+            RefreshRoomSummary();
+            roomSummaryTimer = new System.Windows.Forms.Timer { Interval = 1000 };
+            roomSummaryTimer.Tick += (s, e) => RefreshRoomSummary();
+            roomSummaryTimer.Start();
+        }
+
+        private void RefreshRoomSummary()
+        {
+            if (lblRoomSummaryTitle == null || lblRoomSummarySubtitle == null) return;
+            var (total, playing) = CountDevices();
+            string count = total == 1 ? "1 Gerät" : $"{total} Geräte";
+            lblRoomSummaryTitle.Text = playing > 0 ? $"{count} · {playing} spielen" : count;
+            lblRoomSummarySubtitle.Text = string.Format(Properties.Strings.Label_RoomSummarySubtitle_Text, Classes.Theme.CurrentFormatLabel);
+        }
+
+        // Groups the flat Einstellungen list into two labelled sections. Both panels are plain Dock=Top
+        // stacks, so a header appended at runtime (Controls.Add always adds to the END of the collection,
+        // and WinForms docks Top-siblings in REVERSE collection order - last added = outermost/topmost)
+        // lands exactly above the existing rows without touching any of their designer-computed layout.
+        private void SetupOptionsSections()
+        {
+            if (pnlOptions == null || pnlOptions.Controls.ContainsKey("lblSectionSound"))
+                return;
+
+            pnlOptions.Controls.Add(SectionDivider());
+            pnlOptions.Controls.Add(SectionHeader("lblSectionSound", Properties.Strings.Label_Section_Sound_Text));
+
+            pnlOptionsCheckBoxes.Controls.Add(SectionDivider());
+            pnlOptionsCheckBoxes.Controls.Add(SectionHeader("lblSectionBehavior", Properties.Strings.Label_Section_Behavior_Text));
+        }
+
+        private static Label SectionHeader(string name, string text) => new Label
+        {
+            Name = name,
+            Text = text,
+            UseMnemonic = false, // otherwise "&" in the title (e.g. "Klangprofil & Verbindung") is eaten as an accelerator marker
+            Dock = DockStyle.Top,
+            Height = 30,
+            Padding = new Padding(0, 10, 0, 4),
+            Font = new Font(Classes.Theme.Label.FontFamily, 8.5f, FontStyle.Bold),
+            ForeColor = Classes.Theme.Amber,
+            BackColor = Color.Transparent,
+            TextAlign = ContentAlignment.BottomLeft,
+        };
+
+        private static Panel SectionDivider() => new Panel
+        {
+            Dock = DockStyle.Top,
+            Height = 1,
+            Margin = new Padding(0),
+            BackColor = Classes.Theme.Line,
+        };
+
+        // The native TabControl header ignores BackColor/ForeColor (OS visual-styles draw it), which is why the
+        // tab strip kept its light chrome even after the rest of the app went dark. Owner-draw it as flat,
+        // borderless pills with an amber underline on the active tab, per the approved UI concept.
+        private void SetupTabStrip()
+        {
+            if (tabControl == null || tabControl.DrawMode == TabDrawMode.OwnerDrawFixed)
+                return;
+            tabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
+            tabControl.SizeMode = TabSizeMode.Fixed;
+            tabControl.Padding = new Point(18, 6);
+            tabControl.ItemSize = new Size(128, 34);
+            tabControl.DrawItem += TabControl_DrawItem;
+            Classes.DwmChrome.DisableVisualStyles(tabControl); // stop the native tab-row chrome bleeding through
+            if (txtLog != null) Classes.DwmChrome.DisableVisualStyles(txtLog); // dark scrollbar instead of a light native one
+        }
+
+        private void TabControl_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            bool dark = GetDarkMode();
+            var tab = tabControl.TabPages[e.Index];
+            bool active = e.Index == tabControl.SelectedIndex;
+            var g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            var bg = dark ? (active ? Classes.Theme.Ink : Classes.Theme.Ink2) : (active ? SystemColors.Control : SystemColors.ControlLight);
+            var fg = dark ? (active ? Classes.Theme.Ivory : Classes.Theme.Slate) : (active ? Color.Black : SystemColors.GrayText);
+            using (var b = new SolidBrush(bg)) g.FillRectangle(b, e.Bounds);
+
+            using var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center, FormatFlags = StringFormatFlags.NoWrap };
+            using var tabFont = new Font(Classes.Theme.Name.FontFamily, 9.5f, FontStyle.Bold);
+            using (var fb = new SolidBrush(fg)) g.DrawString(tab.Text, tabFont, fb, e.Bounds, sf);
+
+            if (active)
+            {
+                var underline = dark ? Classes.Theme.Amber : SystemColors.Highlight;
+                using var pen = new Pen(underline, 2.4f);
+                g.DrawLine(pen, e.Bounds.Left + 6, e.Bounds.Bottom - 2, e.Bounds.Right - 6, e.Bounds.Bottom - 2);
+            }
+
+            // The fixed-width tab strip rarely fills the control's whole width - the leftover band to the right
+            // of the last tab isn't covered by any DrawItem call and would otherwise show the native light
+            // tab-row background. Paint over it once, right after the last tab.
+            if (e.Index == tabControl.TabCount - 1 && e.Bounds.Right < tabControl.Width)
+            {
+                var rest = new Rectangle(e.Bounds.Right, e.Bounds.Top, tabControl.Width - e.Bounds.Right, e.Bounds.Height);
+                using var rb = new SolidBrush(dark ? Classes.Theme.Ink : SystemColors.Control);
+                g.FillRectangle(rb, rest);
+            }
+        }
+
+        // A small, discreet brand credit - not legally required (see docs/THIRD-PARTY-LICENSES.md and
+        // README.md for the formal MIT attribution to the original author), just a quiet personal signature.
+        private void SetupBrandCredit()
+        {
+            if (grpOptions == null || grpOptions.Controls.ContainsKey("lblCredit"))
+                return;
+
+            var credit = new Label
+            {
+                Name = "lblCredit",
+                Text = Properties.Strings.Label_Credit_Text,
+                Dock = DockStyle.Bottom,
+                AutoSize = true,
+                Padding = new Padding(10, 2, 3, 6),
+                Font = new Font(Classes.Theme.Small.FontFamily, 8f, FontStyle.Italic),
+                ForeColor = Classes.Theme.Slate2,
+                BackColor = Color.Transparent,
+            };
+            grpOptions.Controls.Add(credit);
+
+            if (headerControl != null)
+            {
+                toolTipGroup2 ??= new ToolTip();
+                toolTipGroup2.SetToolTip(headerControl, Properties.Strings.Label_Credit_Text);
+            }
+        }
+
+        private ToolTip? toolTipGroup2;
+
+        // Replaces the old Lauter/Leiser/Alle-stumm buttons with a single master-volume fader (per the approved
+        // UI concept): dragging it sets every visible card to that absolute level (each card still enforces its
+        // own per-speaker maximum-volume cap); the mute icon replays the existing all-devices mute toggle.
+        private void SetupMasterVolumeFader()
+        {
+            if (pnlVolumeAllButtons == null || pnlVolumeAllButtons.Controls.ContainsKey("masterVolume"))
+                return;
+
+            btnVolumeUp.Visible = false;
+            btnVolumeDown.Visible = false;
+            btnVolumeMute.Visible = false;
+
+            var master = new UserControls.MasterVolumeControl { Name = "masterVolume", Margin = new Padding(3, 10, 12, 4) };
+            master.VolumeDragged += t => { foreach (Control c in pnlDevices.Controls) if (c is UserControls.DeviceControl dc) dc.ApplyVolumeAbsolute(t); };
+            master.MuteClicked += () => devices?.VolumeMute();
+            pnlVolumeAllButtons.Controls.Add(master);
+            pnlVolumeAllButtons.Controls.SetChildIndex(master, 0);
+        }
+
+        // A faint concentric-ring watermark bleeding off the top-right corner - echoes the brand's amber "sound
+        // rings" (the TV artwork / app logo) behind the device grid, per the approved UI concept. Child cards
+        // paint over it since they're separate child windows, so it only shows through the gaps.
+        private void PnlDevices_PaintRingWatermark(object? sender, PaintEventArgs e)
+        {
+            if (!GetDarkMode()) return;
+            var g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            float cx = pnlDevices.ClientSize.Width - 20, cy = -60;
+            DrawRing(g, cx, cy, 90, 26);
+            DrawRing(g, cx, cy, 160, 16);
+            DrawRing(g, cx, cy, 230, 9);
+        }
+
+        private static void DrawRing(Graphics g, float cx, float cy, float r, int alpha)
+        {
+            using var pen = new Pen(Color.FromArgb(alpha, Classes.Theme.Amber), 1.4f);
+            g.DrawEllipse(pen, cx - r, cy - r, r * 2, r * 2);
         }
 
         // WinForms DropDownList combos ignore BackColor, so owner-draw them for the dark theme.

@@ -260,7 +260,7 @@ namespace KlangHub.Application
                 mainForm.SetWindowVisibility(settings.ShowWindowOnStart ?? true);
                 mainForm.SetKeyboardHooks(settings.UseKeyboardShortCuts ?? false);
                 mainForm.SetIP4AddressUsed(settings.Ip4AddressUsed ?? string.Empty);
-                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Flac);
+                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_24bit);
                 mainForm.SetCulture(settings.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 mainForm.SetLogDeviceCommunication(settings.LogDeviceCommunication ?? false);
                 mainForm.SetLagValue(settings.LagControlValue ?? 1000);
@@ -342,12 +342,11 @@ namespace KlangHub.Application
             settings.StartLastUsedDevices = false;
             settings.ShowWindowOnStart = true;
             settings.AutoRestart = false;
-            // Out-of-box: FLAC (the maintainer's choice after HW test #2). Lossless HiFi like WAV, but COMPRESSED, so it
-            // plays cleanly on ALL devices incl. small speakers - 32-bit uncompressed LPCM OOM'd the Enchant
-            // (ERROR 102). Capture is 24-bit -> lossless 24-bit FLAC. WAV 24/16-bit remain in the picker as
-            // uncompressed alternatives.
+            // Out-of-box: WAV 24-bit (the maintainer's choice, confirmed problem-free on his setup). Uncompressed HiFi
+            // LPCM at the soundcard's own bit depth - no lossy compression, no FLAC encode step. FLAC remains
+            // in the picker (recommended) for weaker/small speakers that struggled with 32-bit LPCM (ERROR 102).
             settings.Ip4AddressUsed = string.Empty;
-            settings.StreamFormat = SupportedStreamFormat.Flac;
+            settings.StreamFormat = SupportedStreamFormat.Wav_24bit;
             settings.Culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             settings.LogDeviceCommunication = false;
             settings.ShowLagControl = false;

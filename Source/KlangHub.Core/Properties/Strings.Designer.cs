@@ -782,5 +782,49 @@ namespace KlangHub.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Made with ♥ by Neo & Trinity — 2026.
+        /// </summary>
+        public static string Label_Credit_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_Credit_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to SOUND PROFILE &amp; CONNECTION.
+        /// </summary>
+        public static string Label_Section_Sound_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_Section_Sound_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to BEHAVIOR &amp; COMFORT.
+        /// </summary>
+        public static string Label_Section_Behavior_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_Section_Behavior_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} · streaming to your whole home.
+        /// </summary>
+        public static string Label_RoomSummarySubtitle_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummarySubtitle_Text", resourceCulture);
+            }
+        }
+
     }
 }

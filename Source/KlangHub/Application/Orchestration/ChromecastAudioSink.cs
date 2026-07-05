@@ -22,7 +22,7 @@ namespace KlangHub.Application.Orchestration
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
         private IAudioEncoder? encoder = null;
-        private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Flac; // lossless HiFi out-of-box (compressed -> no small-speaker OOM); settings override on load
+        private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Wav_24bit; // uncompressed HiFi out-of-box (the maintainer's setup); settings override on load
 
         public ChromecastAudioSink(IDevices devicesIn, ILogger loggerIn)
         {

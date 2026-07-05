@@ -297,13 +297,13 @@
     <value>WAV · 16-Bit (unkomprimiert)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-Bit HiFi (unkomprimiert)</value>
+    <value>WAV · 24-Bit HiFi (unkomprimiert, Standard)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
     <value>WAV · 32-Bit (unkomprimiert, LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC · verlustfrei HiFi (empfohlen)</value>
+    <value>FLAC · verlustfrei, ideal für schwache/kleine Lautsprecher</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
     <value>Live-Klang von deinem PC</value>
@@ -316,5 +316,17 @@
   </data>
   <data name="Label_StreamTitle_Text" xml:space="preserve">
     <value>Anzeigename auf dem Empfänger</value>
+  </data>
+  <data name="Label_Credit_Text" xml:space="preserve">
+    <value>Mit ♥ gemacht von Neo & Trinity — 2026</value>
+  </data>
+  <data name="Label_Section_Sound_Text" xml:space="preserve">
+    <value>KLANGPROFIL &amp; VERBINDUNG</value>
+  </data>
+  <data name="Label_Section_Behavior_Text" xml:space="preserve">
+    <value>VERHALTEN &amp; KOMFORT</value>
+  </data>
+  <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
+    <value>{0} · streamt ins ganze Haus</value>
   </data>
 </root>

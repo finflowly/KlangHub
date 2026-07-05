@@ -9,24 +9,24 @@ Multiroom-Sound aus einer einzigen Anwendung.
 
 ## Status
 
-KlangHub **6.0.0** befindet sich in aktiver Weiterentwicklung. Das Projekt ging aus einem
-Fork von [SamDel/ChromeCast-Desktop-Audio-Streamer](https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer)
-(v5.5.0.0) hervor und wird schrittweise zu einer eigenständigen, modularen Premium-Anwendung
-ausgebaut: saubere Schichtentrennung, Erweiterbarkeit für weitere Streaming-Protokolle
-(u. a. Spotify Connect) und ein Weg zu einer modernen UI.
+KlangHub befindet sich in aktiver Weiterentwicklung: eigenständige, modulare
+Premium-Anwendung mit sauberer Schichtentrennung, Erweiterbarkeit für weitere
+Streaming-Protokolle (u. a. Spotify Connect) und einer modernen, markeneigenen
+"Hi-Fi-Konsolen"-Oberfläche.
 
 ## Funktionen
 
 - Desktop- oder Mikrofon-Audio erfassen und ins lokale Netzwerk streamen
 - Chromecast- / Google-Cast-fähige Geräte automatisch finden (mDNS)
 - Mehrere Geräte gleichzeitig sowie Gerätegruppen
-- Wählbare Streaming-Formate (WAV 16/24/32 Bit, MP3 128/320)
-- Lautstärke- und Wiedergabesteuerung, Systray-Betrieb, Autostart, optionale Tastenkürzel
+- Wählbare Streaming-Formate (WAV 16/24/32 Bit, FLAC verlustfrei, MP3 128/320)
+- Lautstärke- und Wiedergabesteuerung je Raum, inkl. individueller Lautstärke-Obergrenze
+- Systray-Betrieb, Autostart, optionale Tastenkürzel, Deutsch/Englisch
 
 ## Systemvoraussetzungen
 
 - Windows 10/11
-- .NET 8 Desktop Runtime
+- .NET 10 Desktop Runtime
 - Beim ersten Start muss die Windows-Firewall für dein Heimnetzwerk (privat/öffentlich)
   freigegeben werden, damit die Wiedergabe funktioniert.
 
@@ -35,28 +35,18 @@ ausgebaut: saubere Schichtentrennung, Erweiterbarkeit für weitere Streaming-Pro
 
 ## Build (Entwickler)
 
-Voraussetzung: **.NET 8 SDK**.
+Voraussetzung: **.NET 10 SDK**.
 
 ```
-dotnet build Source/ChromeCast.Desktop.AudioStreamer/KlangHub.csproj -c Release
+dotnet build Source/KlangHub.sln -c Release
 ```
-
-> Baue das **Projekt**, nicht die Solution – die `.sln` enthält noch ein veraltetes
-> Visual-Studio-Installer-Projekt (`Setup.vdproj`), das die .NET-CLI nicht bauen kann.
-> Es wird später durch MSIX oder WiX ersetzt.
 
 ### Abhängigkeiten
 
-- [NAudio](https://github.com/naudio/NAudio) & [NAudio.Lame](https://github.com/Corey-M/NAudio.Lame) – Audio-Aufnahme & MP3-Encoding
-- [Tmds.MDns](https://github.com/tmds/Tmds.MDns) – Geräteerkennung (mDNS)
-- [Protocol Buffers](https://github.com/google/protobuf) – Cast-Channel-Protokoll
-
-## Danksagung
-
-KlangHub basiert auf der hervorragenden Arbeit von [SamDel](https://github.com/SamDel) und dem
-Projekt [ChromeCast-Desktop-Audio-Streamer](https://github.com/SamDel/ChromeCast-Desktop-Audio-Streamer)
-sowie dessen Mitwirkenden.
+Siehe [docs/THIRD-PARTY-LICENSES.md](docs/THIRD-PARTY-LICENSES.md) für alle mitgelieferten
+Komponenten und deren Lizenzen.
 
 ## Lizenz
 
-Siehe [LICENSE](LICENSE).
+KlangHub steht unter der MIT-Lizenz, siehe [LICENSE](LICENSE) für den vollständigen Text
+und die Namensnennung.
