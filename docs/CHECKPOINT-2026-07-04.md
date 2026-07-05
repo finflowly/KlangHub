@@ -1,10 +1,10 @@
 # KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
-**HEAD:** `040da3f` · **Branch:** `master` · **Tests:** 139 green (`dotnet test`) · **Working tree:** clean
-**LATEST:** HW-test #1 came back GREEN (TV artwork great, 5 devices incl. Enchant via the bridge, WAV plays) —
-follow-up round §10 fixes the two log-found bugs (DHCP-move zombie tile; 48kHz cap for the "noise") + the maintainer's
-requests (32-bit-WAV default @ 10s buffer, version 0.0.0.1, German language). Ready build
-`dist/KlangHub-Release-040da3f.zip`. Earlier: Premium Chromecast 2026 sprint (G1–G6) + cross-service IPv4
+**HEAD:** `f4f9e6d` · **Branch:** `master` · **Tests:** 140 green (`dotnet test`) · **Working tree:** clean
+**LATEST:** HW-test #2 pinned the "noise"/interrupts to **32-bit uncompressed LPCM OOMing small speakers
+(ERROR 102)** → **FLAC is now the out-of-box default** (24-bit HiFi, lossless, COMPRESSED → no OOM; the maintainer's
+call). Plus the zombie-tile id-reconcile completed (id-preservation across re-fetch). §10/§11. Ready build
+`dist/KlangHub-Release-f4f9e6d.zip`. Earlier: Premium Chromecast 2026 sprint (G1–G6) + cross-service IPv4
 bridge, see §9.
 
 _(historical header below, pre-sprint HEAD was `2402f1d` / 79 tests)_
@@ -284,9 +284,27 @@ adversarially verified via a workflow (21 agents, verified vs the placeholder-MA
   German is the first-run default when the OS is German (this dev machine is `de-DE`; the version bump changes
   the `user.config` path → a fresh first-run picks German + Wav_32bit + buffer 10).
 
-**Still HW-pending (next run):** does the zombie stay gone across a real DHCP move (needs the Enchant to carry a
-distinct `id=` — confirm via the new `id=` log)? is the "noise" gone with 48 kHz + 10s buffer? German UI on the
-German OS? DEFER cure for BUG B = per-device Opus/FLAC codec milestone.
+## 11. HW-test #2 follow-up (2026-07-05, commits `a23a1b3`, `f4f9e6d`) — 140 tests green
+**HW test #2 (build `040da3f`, 32-bit WAV / 10s buffer) result:** the Enchant appeared cleanly via the id
+(`eureka: … id=b3f62d38…`; ids ARE present + distinct: Google TV `8d12b893`, TCL `46b3a763`, Soundbar
+`b66d62a4`, Enchant `b3f62d38`) — the discovery/zombie work holds. BUT after ~45–70s the Enchant threw
+`{"type":"ERROR","detailedErrorCode":102}` → IDLE(idleReason ERROR) → KlangHub reconnected + reloaded (the maintainer:
+"Unterbrechung, dann neu verbunden"); the Soundbar degraded to noise. **detailedErrorCode 102 = receiver
+media/OOM error** — the PDF's exact warning: **audio-only device + high-res UNCOMPRESSED LPCM → OOM.** With the
+Default Media Receiver the receiver buffer can't be tuned, so the only lever is the codec.
+- **FIX = FLAC as the out-of-box default (`f4f9e6d`, the maintainer's choice):** lossless HiFi like WAV but COMPRESSED
+  (~half the byte rate + block-based) → doesn't OOM small speakers. Capture Flac 16-bit → **24-bit** (verified:
+  FLAKE round-trips 24-bit byte-exact; +test). Picker: FLAC first (recommended); WAV 24/16/32-bit remain as
+  uncompressed alternatives. Fresh-first-run smoke: boots with FLAC + 24-bit capture, no crash.
+- **Zombie id-reconcile completed (`a23a1b3`):** the log showed the device's own eureka re-fetch (Flow 2) passes
+  `id=null`, which re-Initialized the tile with an empty id (alternating `id=b3f62d38…` / `id=` lines) → would
+  defeat the reconcile on a LATER move. Fix: preserve the tile's id when an incoming announcement carries none.
+
+**Still HW-pending (test #3):** does **live 24-bit FLAC actually play cleanly on all 5 devices** (incl. the
+Enchant — the whole point; WAV 24/16-bit is the fallback if a receiver rejects the endless FLAC stream)? German
+UI on the German OS? zombie stays gone across a real DHCP move? DEFER: Opus (even more packet-loss-resilient)
+per-device codec milestone; `WavGenerator.GetSilenceBytes` hardcodes 16-bit samples (wrong silence *duration*
+for 24/32-bit, but byte-aligned so not the noise — minor latent bug, fix opportunistically).
 
 > KlangHub (Windows/**.NET10** WinForms Chromecast audio caster). We're at commit `098a9d5` on master, 65 tests
 > green, working tree clean. The full state is in `docs/CHECKPOINT-2026-07-04.md` (read it — esp. §0 for the
