@@ -16,6 +16,9 @@ namespace KlangHub.Discover
         public const int MaxNumberOfTries = 15;
         private const string serviceType = "_googlecast._tcp";
         private const string serviceTypeEmbedded = "_googlezone._tcp";
+        // Co-located services browsed ONLY to feed Ipv4Recovery (the cross-service IPv4 bridge) - never to make tiles.
+        private const string serviceTypeAirplay = "_airplay._tcp";
+        private const string serviceTypeRaop = "_raop._tcp";
         private Action<DiscoveredDevice> onDiscovered = null!;
         private List<DiscoveredDevice>? discoveredDevices;
         private Timer? timer;
@@ -70,6 +73,44 @@ namespace KlangHub.Discover
             serviceBrowserEmbedded.ServiceRemoved += OnServiceRemoved;
             serviceBrowserEmbedded.ServiceChanged += OnServiceChanged;
             serviceBrowserEmbedded.StartBrowse(serviceTypeEmbedded);
+
+            // Cross-service IPv4 bridge. A Chromecast-built-in speaker that flaps its _googlecast IPv6-only (the
+            // Harman Kardon Enchant) usually still advertises an IPv4 on its CO-LOCATED _airplay/_raop service
+            // under the SAME IPv6 host. Browse those services purely to record the IPv4<->IPv6-host correlation
+            // in Ipv4Recovery, so an IPv6-only _googlecast announcement can recover a usable IPv4. These browsers
+            // create NO tiles (only _googlecast/_googlezone announcements enqueue devices - see the protocol
+            // guard in ProcessAnnouncement); they are correlation sources only. Strictly additive + recover-or-
+            // skip: a device that announces IPv4 on _googlecast never consults recovery, so this cannot regress
+            // the hardware-confirmed IPv4 discovery. (Efficacy is HW-confirmable: it helps iff the co-located
+            // service carries an IPv4 with the shared host; if it too is IPv6-only, the bridge is simply inert.)
+            foreach (var coLocated in new[] { serviceTypeAirplay, serviceTypeRaop })
+            {
+                var correlationBrowser = new ServiceBrowser();
+                correlationBrowser.ServiceAdded += OnCorrelationService;
+                correlationBrowser.ServiceChanged += OnCorrelationService;
+                correlationBrowser.StartBrowse(coLocated);
+            }
+        }
+
+        /// <summary>Record an IPv4↔IPv6-host correlation from a co-located non-Cast service (AirPlay/RAOP)
+        /// WITHOUT enqueueing a device. Feeds the cross-service IPv4 bridge in <see cref="Ipv4Recovery"/>.</summary>
+        private void OnCorrelationService(object? sender, ServiceAnnouncementEventArgs e)
+        {
+            if (e?.Announcement?.Addresses == null || e.Announcement.Addresses.Count == 0)
+                return;
+
+            var ipv4 = e.Announcement.Addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            if (ipv4 == null)
+                return; // co-located service is IPv6-only too - nothing to bridge
+
+            // id=null: the AirPlay/RAOP id space differs from the Cast id=, so only the shared-IPv6-host mapping
+            // is meaningful here (and it can never collide with a real Cast id).
+            ipv4Recovery.Record(null, ipv4, e.Announcement.Addresses);
+
+            var hosts = e.Announcement.Addresses
+                .Where(a => a.AddressFamily == AddressFamily.InterNetworkV6)
+                .Select(a => a.ToString());
+            logger?.Log($"mDNS-bridge [{e.Announcement.Type}] learned IPv4 {ipv4} for hosts=[{string.Join(", ", hosts)}]");
         }
 
         /// <summary>

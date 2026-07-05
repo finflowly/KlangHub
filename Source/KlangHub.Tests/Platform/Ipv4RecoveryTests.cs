@@ -48,6 +48,22 @@ namespace KlangHub.Tests.Platform
         }
 
         [Fact]
+        public void Recovers_ipv4_from_a_co_located_airplay_service_via_shared_ipv6_host()
+        {
+            var r = new Ipv4Recovery();
+            // The cross-service bridge: the Enchant's co-located _airplay/_raop service (a different id space, so
+            // recorded with id=null) advertises its IPv4 together with the same IPv6 host. DiscoverDevices browses
+            // those services purely to feed this correlation.
+            r.Record(null, "192.168.1.154", Addrs("192.168.1.154", EnchantIpv6));
+
+            // The Enchant's own _googlecast announcement is IPv6-only -> recover the IPv4 by the shared host.
+            var ip = r.Recover("enchant-cast-id", EnchantIpv6 + "%8", out var source);
+
+            Assert.Equal("192.168.1.154", ip);
+            Assert.Equal("group", source);
+        }
+
+        [Fact]
         public void Zone_id_is_ignored_when_matching_the_ipv6_host()
         {
             var r = new Ipv4Recovery();
