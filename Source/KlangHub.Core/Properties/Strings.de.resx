@@ -174,7 +174,7 @@
     <value>Eine neue Version ist auf GitHub verfügbar</value>
   </data>
   <data name="Label_RecordingDevice_Text" xml:space="preserve">
-    <value>Klangquelle</value>
+    <value>Audioquelle</value>
   </data>
   <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
     <value>MP3 komprimiert stärker und bringt mehr Latenz — für echtes HiFi FLAC wählen.</value>
@@ -216,7 +216,7 @@
     <value>Keine Adresse im Heimnetz gefunden.</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
-    <value>Keine Klangquelle gefunden.</value>
+    <value>Keine Audioquelle gefunden.</value>
   </data>
   <data name="Mp3_128" xml:space="preserve">
     <value>MP3 · 128 kbps (komprimiert)</value>
@@ -318,7 +318,7 @@
     <value>Anzeigename auf dem Empfänger</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Mit ♥ gemacht von Neo & Trinity — 2026</value>
+    <value>Entworfen und entwickelt von Neo & Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>KLANGPROFIL &amp; VERBINDUNG</value>

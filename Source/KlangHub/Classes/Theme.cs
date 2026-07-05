@@ -19,18 +19,18 @@ namespace KlangHub.Classes
         public static readonly Color Line = Color.FromArgb(0x2A, 0x32, 0x3D);    // border / divider
         public static readonly Color LineHi = Color.FromArgb(0x3A, 0x45, 0x52);  // hover border
 
-        public static readonly Color Amber = Color.FromArgb(0xEB, 0xB6, 0x5A);   // the brand accent
+        public static readonly Color Amber = Color.FromArgb(0xE8, 0xB6, 0x5A);   // the brand accent (exact concept Bernstein)
         public static readonly Color AmberDim = Color.FromArgb(0xB9, 0x8B, 0x3E);
         public static readonly Color Ivory = Color.FromArgb(0xF3, 0xEC, 0xDD);   // primary text
-        public static readonly Color Slate = Color.FromArgb(0x8A, 0x94, 0xA6);   // secondary text
+        public static readonly Color Slate = Color.FromArgb(0x8A, 0x9A, 0xA6);   // secondary text
         public static readonly Color Slate2 = Color.FromArgb(0x5E, 0x68, 0x78);
 
-        public static readonly Color Blue = Color.FromArgb(0x6C, 0x89, 0xB8);    // connected
-        public static readonly Color Ember = Color.FromArgb(0xE5, 0x73, 0x4B);   // error
+        public static readonly Color Blue = Color.FromArgb(0x4C, 0x9E, 0xBB);    // connected (concept cyan-teal)
+        public static readonly Color Ember = Color.FromArgb(0xE5, 0x73, 0x4D);   // error
 
         // amber at low alpha for pill fills / playing tint
-        public static readonly Color AmberSoft = Color.FromArgb(36, 0xEB, 0xB6, 0x5A);
-        public static readonly Color AmberTint = Color.FromArgb(16, 0xEB, 0xB6, 0x5A);
+        public static readonly Color AmberSoft = Color.FromArgb(36, 0xE8, 0xB6, 0x5A);
+        public static readonly Color AmberTint = Color.FromArgb(16, 0xE8, 0xB6, 0x5A);
 
         // ---- fonts (the app's real Segoe UI Variable, falling back to Segoe UI) ----
         private static readonly string DisplayFamily = HasFamily("Segoe UI Variable Display") ? "Segoe UI Variable Display" : "Segoe UI";

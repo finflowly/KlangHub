@@ -40,7 +40,7 @@ namespace KlangHub.Classes
             {
                 int caption = ToColorRef(Theme.Ink);
                 int text = ToColorRef(Theme.Ivory);
-                int border = ToColorRef(Theme.AmberDim);
+                int border = ToColorRef(Theme.Ink); // border == caption == client → one seamless dark shell, no light hairline
                 DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, ref caption, sizeof(int));
                 DwmSetWindowAttribute(hwnd, DWMWA_TEXT_COLOR, ref text, sizeof(int));
                 DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ref border, sizeof(int));

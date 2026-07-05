@@ -1391,19 +1391,16 @@ namespace KlangHub
 
         public void SetDarkMode(bool darkmode)
         {
-            if (chkDarkMode == null)
-                return;
-
-            chkDarkMode.Checked = darkmode;
-            ApplyTheme(null, darkmode);
+            // Warm-dark is KlangHub's fixed identity (2026-07-05). The light path is retired, so a persisted
+            // or requested "false" is ignored — the app always renders the dark HiFi console.
+            if (chkDarkMode != null)
+                chkDarkMode.Checked = true;
+            ApplyTheme(null, true);
         }
 
         public bool GetDarkMode()
         {
-            if (chkDarkMode == null)
-                return false;
-
-            return chkDarkMode.Checked;
+            return true; // fixed identity: always the warm-dark console (see SetDarkMode)
         }
 
         public void SetIP4AddressUsed(string ip4Address)

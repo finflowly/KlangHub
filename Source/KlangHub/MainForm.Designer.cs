@@ -358,7 +358,6 @@
             grpOptions.Controls.Add(linkHelp);
             grpOptions.Controls.Add(lblVersion);
             grpOptions.Dock = System.Windows.Forms.DockStyle.Fill;
-            grpOptions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             grpOptions.Location = new System.Drawing.Point(20, 25);
             grpOptions.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             grpOptions.Name = "grpOptions";
@@ -450,6 +449,7 @@
             chkDarkMode.TabIndex = 47;
             chkDarkMode.Text = "Dark mode";
             chkDarkMode.UseVisualStyleBackColor = true;
+            chkDarkMode.Visible = false; // warm-dark is the fixed identity (2026-07-05); no user toggle
             chkDarkMode.CheckedChanged += chkDarkMode_CheckedChanged;
             // 
             // chkConvertMultiChannelToStereo
@@ -602,7 +602,6 @@
             pnlOptionsComboBoxes.Controls.Add(pnlOptionsComboBoxesLabels);
             pnlOptionsComboBoxes.Controls.Add(pnlOptionsComboBoxesRight);
             pnlOptionsComboBoxes.Dock = System.Windows.Forms.DockStyle.Top;
-            pnlOptionsComboBoxes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             pnlOptionsComboBoxes.Location = new System.Drawing.Point(0, 0);
             pnlOptionsComboBoxes.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             pnlOptionsComboBoxes.Name = "pnlOptionsComboBoxes";
@@ -796,8 +795,7 @@
             // linkHelp
             // 
             linkHelp.AutoSize = true;
-            linkHelp.BackColor = System.Drawing.Color.White;
-            linkHelp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            linkHelp.BackColor = System.Drawing.Color.Transparent;
             linkHelp.Location = new System.Drawing.Point(22, 28);
             linkHelp.Name = "linkHelp";
             linkHelp.Size = new System.Drawing.Size(244, 18);
@@ -922,7 +920,7 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1151, 821);
             Controls.Add(tabControl);
-            HelpButton = true;
+            HelpButton = false;
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             Name = "MainForm";
