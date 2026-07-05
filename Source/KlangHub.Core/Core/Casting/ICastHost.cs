@@ -13,8 +13,8 @@ namespace KlangHub.Core.Casting
     {
         string GetStreamingUrl();
         string GetStreamTitle();
-        /// <summary>The MIME type for the currently selected stream format (codec-aware; see StreamCodec).</summary>
-        string GetStreamContentType();
+        /// <summary>Full media metadata for the LOAD: title/subtitle/album + artwork URL + codec MIME type.</summary>
+        CastMediaMetadata GetStreamMediaInfo();
         bool GetAutoRestart();
         void StartTask(Action action, CancellationTokenSource? cancellationTokenSource = null);
     }

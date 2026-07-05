@@ -363,6 +363,9 @@
   <data name="Flac" xml:space="preserve">
     <value>FLAC (lossless — recommended)</value>
   </data>
+  <data name="Media_Subtitle" xml:space="preserve">
+    <value>Live from your PC</value>
+  </data>
   <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
     <value>Convert multi-channel audio to stereo output</value>
   </data>

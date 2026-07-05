@@ -66,8 +66,12 @@ namespace KlangHub.Communication
             return GetCastMessage(message, namespaceReceiver);
         }
 
-        public CastMessage GetLoadMessage(string streamingUrl, string sourceId, string destinationId, int requestId, string streamTitle, string contentType)
+        public CastMessage GetLoadMessage(string streamingUrl, string sourceId, string destinationId, int requestId, CastMediaMetadata meta)
         {
+            var images = new List<Image>();
+            if (!string.IsNullOrWhiteSpace(meta.ImageUrl))
+                images.Add(new Image { url = meta.ImageUrl, width = 1280, height = 1280 });
+
             var message = new MessageLoad
             {
                 type = "LOAD",
@@ -78,14 +82,19 @@ namespace KlangHub.Communication
                 media = new Media
                 {
                     contentId = streamingUrl,
-                    contentType = contentType,
+                    contentType = meta.ContentType,
                     streamType = "BUFFERED", // BUFFERED or LIVE
                     metadata = new Metadata
                     {
+                        // metadataType 3 = MusicTrackMediaMetadata: the Default Media Receiver renders the
+                        // artwork full-screen and overlays title/artist/album — a premium screen, not the
+                        // generic "Default Media Receiver" placeholder.
                         type = 0,
-                        metadataType = 0,
-                        title = streamTitle,
-                        images = new List<Image>()
+                        metadataType = 3,
+                        title = meta.Title,
+                        artist = meta.Subtitle,
+                        albumName = meta.Album,
+                        images = images
                     },
                 },
                 requestId = requestId

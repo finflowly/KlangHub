@@ -202,6 +202,17 @@ namespace KlangHub.Application.Orchestration
 
         public string GetStreamTitle() => streamTitle;
 
+        /// <summary>The artwork URL on our own streaming server (same host/port as the audio stream), which the
+        /// receiver fetches for the full-bleed now-playing image.</summary>
+        public string GetArtworkUrl()
+        {
+            var baseUrl = GetStreamingUrl();
+            if (string.IsNullOrEmpty(baseUrl))
+                return string.Empty;
+
+            return baseUrl.EndsWith("/") ? baseUrl + "artwork.png" : baseUrl + "/artwork.png";
+        }
+
         public void SetStreamTitle(string title) => streamTitle = title;
 
         public bool GetAutoRestart() => autoRestart;

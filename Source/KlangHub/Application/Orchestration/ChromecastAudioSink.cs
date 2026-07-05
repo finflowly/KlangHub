@@ -1,7 +1,10 @@
+using System;
 using System.Linq;
 using System.Net.Sockets;
 using KlangHub.Application.Interfaces;
+using KlangHub.Classes;
 using KlangHub.Platform.Audio;
+using KlangHub.Streaming;
 
 namespace KlangHub.Application.Orchestration
 {
@@ -64,14 +67,38 @@ namespace KlangHub.Application.Orchestration
                 : new Mp3Encoder(formatIn, format, logger);
         }
 
-        /// <summary>A device opened its HTTP streaming connection (Chromecast pulls the stream).</summary>
+        /// <summary>A device opened an HTTP connection: either it pulls the audio stream, or it fetches the
+        /// branded now-playing artwork the receiver shows on screen.</summary>
         public void AcceptStreamingConnection(Socket socketIn, string httpRequestIn)
         {
             if (devices == null)
                 return;
 
+            if (ArtworkHttp.IsArtworkRequest(httpRequestIn))
+            {
+                ServeArtwork(socketIn);
+                return;
+            }
+
             logger.Log(string.Format("Connection added from {0}", socketIn.RemoteEndPoint));
             devices.AddStreamingConnection(socketIn, httpRequestIn, streamFormatSelected);
+        }
+
+        private void ServeArtwork(Socket socketIn)
+        {
+            try
+            {
+                socketIn.Send(ArtworkHttp.BuildImageResponse(ArtworkImage.Bytes));
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex, "ChromecastAudioSink.ServeArtwork");
+            }
+            finally
+            {
+                try { socketIn.Shutdown(SocketShutdown.Both); } catch (Exception) { }
+                try { socketIn.Close(); } catch (Exception) { }
+            }
         }
 
         public void SetStreamFormat(SupportedStreamFormat formatIn)

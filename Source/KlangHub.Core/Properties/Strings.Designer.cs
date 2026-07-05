@@ -581,7 +581,16 @@ namespace KlangHub.Properties {
                 return ResourceManager.GetString("Log_Out", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Live from your PC.
+        /// </summary>
+        public static string Media_Subtitle {
+            get {
+                return ResourceManager.GetString("Media_Subtitle", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Desktop Audio Streamer.
         /// </summary>

@@ -440,8 +440,23 @@ namespace KlangHub.Application
 
         public string GetStreamTitle() => orchestrator.GetStreamTitle();
 
-        /// <summary>Codec-aware MIME type for the selected stream format (kept in sync with the HTTP header).</summary>
-        public string GetStreamContentType() => StreamCodec.ContentType(orchestrator.GetStreamFormat());
+        /// <summary>Full media metadata for the LOAD: a premium receiver screen (title/subtitle/album + branded
+        /// full-bleed artwork served from our own HTTP server) plus the codec-aware MIME type.</summary>
+        public CastMediaMetadata GetStreamMediaInfo()
+        {
+            var title = orchestrator.GetStreamTitle();
+            if (string.IsNullOrWhiteSpace(title))
+                title = "KlangHub";
+
+            return new CastMediaMetadata
+            {
+                Title = title,
+                Subtitle = Properties.Strings.Media_Subtitle ?? string.Empty,
+                Album = "KlangHub",
+                ImageUrl = orchestrator.GetArtworkUrl(),
+                ContentType = StreamCodec.ContentType(orchestrator.GetStreamFormat())
+            };
+        }
 
         #region private helpers
 

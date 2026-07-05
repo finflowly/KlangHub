@@ -30,6 +30,12 @@
     <EmbeddedResource Include="UserControls\Play.png" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Branded full-screen now-playing artwork served to the Chromecast (LOAD metadata image url). -->
+    <EmbeddedResource Include="Resources\artwork.png">
+      <LogicalName>KlangHub.Resources.artwork.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="UserControls\Unmute.png" />
   </ItemGroup>
   <ItemGroup>

@@ -73,12 +73,16 @@ namespace KlangHub.Communication.Classes
         public int type { get; set; }
         public int metadataType { get; set; }
         public string title { get; set; } = null!;
+        public string? artist { get; set; }
+        public string? albumName { get; set; }
         public List<Image> images { get; set; } = null!;
     }
 
     public class Image
     {
         public string url { get; set; } = null!;
+        public int width { get; set; }
+        public int height { get; set; }
     }
 
     /// <summary>
