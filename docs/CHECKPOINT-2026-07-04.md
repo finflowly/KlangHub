@@ -1,10 +1,11 @@
 # KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
-**HEAD:** `9ade996` · **Branch:** `master` · **Tests:** 126 green (`dotnet test`) · **Working tree:** clean
-**LATEST:** Premium Chromecast 2026 sprint (G1–G6) DONE — see §9. Codec-aware pipeline, managed FLAC live-encoder
-(lossless round-trip proven, ~440× real-time), premium TV artwork, reconnect backoff, RST-on-stop, lossless
-out-of-box default. **PLUS the cross-service IPv4 bridge for the Enchant/IPv6 thread** (`9ade996`, §9). Ready
-HW-test build `dist/KlangHub-Release-9ade996.zip`. **HW-test pending** (§9).
+**HEAD:** `040da3f` · **Branch:** `master` · **Tests:** 139 green (`dotnet test`) · **Working tree:** clean
+**LATEST:** HW-test #1 came back GREEN (TV artwork great, 5 devices incl. Enchant via the bridge, WAV plays) —
+follow-up round §10 fixes the two log-found bugs (DHCP-move zombie tile; 48kHz cap for the "noise") + the maintainer's
+requests (32-bit-WAV default @ 10s buffer, version 0.0.0.1, German language). Ready build
+`dist/KlangHub-Release-040da3f.zip`. Earlier: Premium Chromecast 2026 sprint (G1–G6) + cross-service IPv4
+bridge, see §9.
 
 _(historical header below, pre-sprint HEAD was `2402f1d` / 79 tests)_
 **HEAD:** `2402f1d` · **Branch:** `master` · **Tests:** 79 green (`dotnet test`) · **Working tree:** clean
@@ -251,9 +252,41 @@ the generic screen; (e) reconnect recovers after a Wi-Fi drop; (f) stop leaves n
 (needs Cast app-id + hosting) · true IPv6-only audio path (dual-stack listener + `[v6]` URL) · `ca`-bitmask
 device typing · full reconnect state-machine · 24-bit FLAC.
 
----
+## 10. HW-test #1 follow-up (2026-07-05, commits `311241d`..`040da3f`) — 139 tests green
+**HW-test #1 (build `9ade996`) result — mostly GREEN:** TV artwork looked great; 4 devices appeared immediately;
+the Enchant appeared ~60s later on its own (**the cross-service IPv4 bridge worked** — `mDNS-bridge …learned
+IPv4 192.168.1.156 …` in the log); all cast high-bitrate WAV. Two real problems surfaced in the log, analyzed +
+adversarially verified via a workflow (21 agents, verified vs the placeholder-MAC saga) before fixing.
 
-## Quick-start for a new chat (paste this)
+- **BUG A — DHCP-move zombie tile (`02862a9`):** the Enchant power-cycled and DHCP moved it `.154 → .156` (IPv4
+  AND its `fd1a` IPv6 host both changed). A 2nd tile spawned for `.156` (streamed fine) while the old `.154`
+  tile became a permanent zombie, hammering `ConnectError → ResumePlaying → two 5s blocking timeouts` every 15s
+  for 8+ minutes. **Fix 1 (cure):** reconcile placeholder-MAC devices by the stable mDNS `id=` BEFORE the
+  IP:port fallback — `SetDeviceInformation` DROPPED the id at the eureka boundary (root cause) → now plumbed
+  through; `Devices.GetDevice` adds a guarded `SameStableId` match (only when incoming `id=` non-empty, scoped
+  `!IsGroup`) so a moved device updates its tile instead of orphaning it. **Guarded so it cannot regress the
+  HW-confirmed 5-device dedup** (distinct devices have distinct ids; no id= → today's IP:port; `SamePlaceholder
+  Endpoint` + `ChromecastDeviceId.From` untouched). Eureka log now prints `id=` (instrument for next run —
+  confirm Google TV/TCL each carry a distinct id). **Fix 2 (bounds the spam):** ConnectError circuit-breaker in
+  `Device.OnGetStatus` — pure/tested `ShouldRunPoll` gate backs the ConnectError poll off 15→30→60s; healthy
+  devices unaffected; control-plane only.
+- **BUG B — "noise" on the Enchant after ~60s (`2c0bb54`):** high-bitrate LPCM (96 kHz) over flaky Wi-Fi →
+  receiver-side underrun (adversarially verified: NOT a sender byte-bug — TCP delivers correctly or disconnects).
+  **Mitigations shipped:** cap capture at **48 kHz** (Cast receivers force a 48 kHz mixer → 96 kHz is resampled
+  away anyway; halves the on-wire bitrate 6→3 Mbit/s, no audible loss) + out-of-box **buffer 10s** (more receiver
+  cushion). True codec resilience (Opus/FLAC per-device) remains the deferred real cure.
+- **32-bit WAV verified correct (`2c0bb54`):** probe on this HW proved WASAPI shared-mode genuinely CONVERTS the
+  32-bit-float mix to the requested int rate/depth (byte counts scale with bit depth) → the 32-bit-int WAV
+  default is right; the analysis' "garbage-by-construction" concern did not hold. **Instrument-first paid off.**
+- **the maintainer's requests:** **32-bit WAV** is the recommended out-of-box default (picker reordered, HW-confirmed the
+  TVs+Soundbar play it — old "TVs LOAD_FAILED on WAV" did NOT reproduce); **buffer 10s**; **version 0.0.0.1**;
+  **German language** (`040da3f`) — `Strings.de.resx` (86 strings), picker 3rd item, `SetCulture("de")`, and
+  German is the first-run default when the OS is German (this dev machine is `de-DE`; the version bump changes
+  the `user.config` path → a fresh first-run picks German + Wav_32bit + buffer 10).
+
+**Still HW-pending (next run):** does the zombie stay gone across a real DHCP move (needs the Enchant to carry a
+distinct `id=` — confirm via the new `id=` log)? is the "noise" gone with 48 kHz + 10s buffer? German UI on the
+German OS? DEFER cure for BUG B = per-device Opus/FLAC codec milestone.
 
 > KlangHub (Windows/**.NET10** WinForms Chromecast audio caster). We're at commit `098a9d5` on master, 65 tests
 > green, working tree clean. The full state is in `docs/CHECKPOINT-2026-07-04.md` (read it — esp. §0 for the

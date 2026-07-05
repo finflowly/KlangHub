@@ -1,17 +1,26 @@
 # KlangHub — Hardware-Abnahme (Premium Chromecast 2026 Sprint)
 
-**Build:** `dist/KlangHub-Release-9ade996.zip` (framework-abhängig, läuft auf dem maschinenweiten .NET-10-Runtime).
+**Build:** `dist/KlangHub-Release-040da3f.zip` (framework-abhängig, läuft auf dem maschinenweiten .NET-10-Runtime).
 **Zweck:** die eine Sache abnehmen, die ich ohne Geräte nicht selbst testen kann. Alles Code-seitige ist grün
-(126 Tests, App bootet, Artwork-Endpunkt über echten Socket verifiziert, FLAC verlustfrei + ~440× Echtzeit).
+(139 Tests, App bootet, Artwork-Endpunkt über echten Socket verifiziert, FLAC verlustfrei + ~440× Echtzeit).
 
 Bei Problemen: **Optionen → „Log device communication" AN** (blendet den versteckten **Log**-Tab ein; Logs im
 `txtLog`-Textfeld, nicht auf Platte). Danach „Scan again for devices" bzw. Cast starten und die Zeilen ablesen.
 
 ---
 
+> **Neu in diesem Build (`040da3f`, nach HW-Test #1):** DHCP-Move-Zombie-Fix (id=-Reconcile) · ConnectError-
+> Circuit-Breaker · 48-kHz-Cap + 10 s Puffer (gegen das „Rauschen") · **32-bit WAV als Default** · Version
+> 0.0.0.1 · **Deutsch** (Default bei deutschem OS — dieser Build startet als frischer Erststart, da der
+> Versions-Bump den `user.config`-Pfad ändert; die UI ist auf deutschem Windows deutsch).
+
 ## A. Discovery — 5 Geräte, egal ob IPv4 oder IPv6
 1. App starten, ~30 s warten.
 2. **Erwartung:** 5 Kacheln — Enchant, Google TV, TCL TV, Soundbar, the multi-room group (Gruppe).
+   **DHCP-Move-Test (BUG A, neu):** Enchant im Betrieb stromlos machen + wieder einstecken (bekommt ggf. eine
+   neue IP). **Erwartung jetzt:** die alte Kachel migriert auf die neue IP — **keine 6. „Error"-Kachel** mehr,
+   kein Dauer-Reconnect-Spam. Falls doch ein Zombie bleibt: Log-Tab an → die `eureka: … id=`-Zeile des Enchant
+   kopieren (zeigt, ob er eine stabile mDNS-`id=` trägt — davon hängt der Reconcile ab).
 3. **Cross-Service-IPv4-Bridge ist jetzt aktiv** (`9ade996`): die App browst zusätzlich `_airplay`/`_raop` und
    recovert die Enchant-IPv4 aus seinem AirPlay-Dienst (geteilter `fd1a…`-Host). **Der Enchant sollte damit
    auch dann erscheinen, wenn sein `_googlecast` gerade IPv6-only annonciert.**
