@@ -214,6 +214,18 @@ namespace KlangHub.Streaming
 
         public void Dispose()
         {
+            // Force a TCP RST (not a graceful FIN) so any bytes still queued in the stream socket are discarded
+            // instead of lingering — otherwise a keep-alive receiver can misread leftover audio as the HTTP
+            // headers of the next song ("socket junk"), per the 2026 robust-sender guidance.
+            try
+            {
+                if (Socket != null)
+                    Socket.LingerState = new LingerOption(true, 0);
+            }
+            catch (Exception)
+            {
+            }
+
             Socket?.Close();
             Socket?.Dispose();
             Socket = null;

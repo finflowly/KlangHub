@@ -38,7 +38,8 @@ namespace KlangHub.Tests.Orchestration
         [Fact]
         public void Mp3_format_output_is_byte_identical_to_a_reference_encoder()
         {
-            var (sink, devices) = NewSink();   // default = Mp3_320
+            var (sink, devices) = NewSink();
+            sink.SetStreamFormat(SupportedStreamFormat.Mp3_320);
             byte[]? forwarded = null;
             devices.When(d => d.OnRecordingDataAvailable(Arg.Any<byte[]>(), Arg.Any<AudioFormat>(), Arg.Any<int>(), Arg.Any<SupportedStreamFormat>()))
                    .Do(ci => forwarded = ci.Arg<byte[]>());

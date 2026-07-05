@@ -260,7 +260,7 @@ namespace KlangHub.Application
                 mainForm.SetWindowVisibility(settings.ShowWindowOnStart ?? true);
                 mainForm.SetKeyboardHooks(settings.UseKeyboardShortCuts ?? false);
                 mainForm.SetIP4AddressUsed(settings.Ip4AddressUsed ?? string.Empty);
-                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Mp3_320);
+                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_16bit);
                 mainForm.SetCulture(settings.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 mainForm.SetLogDeviceCommunication(settings.LogDeviceCommunication ?? false);
                 mainForm.SetLagValue(settings.LagControlValue ?? 1000);
@@ -343,7 +343,9 @@ namespace KlangHub.Application
             settings.ShowWindowOnStart = true;
             settings.AutoRestart = false;
             settings.Ip4AddressUsed = string.Empty;
-            settings.StreamFormat = SupportedStreamFormat.Mp3_320;
+            // Out-of-box lossless for home casting (was Mp3_320). WAV-16-bit is guaranteed-working lossless;
+            // FLAC is offered as the recommended premium option and becomes the default once HW-confirmed.
+            settings.StreamFormat = SupportedStreamFormat.Wav_16bit;
             settings.Culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             settings.LogDeviceCommunication = false;
             settings.ShowLagControl = false;

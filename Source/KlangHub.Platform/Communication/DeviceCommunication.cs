@@ -31,6 +31,10 @@ namespace KlangHub.Communication
         private bool pendingStatusMessage = false;
         private DateTime lastReceivedMessage = DateTime.MinValue;
         private string? statusText;
+        // Reconnect backoff (PDF §3): grows the "still stuck launching" wait 5s -> 10 -> 20 -> 30 (+jitter) so a
+        // device that won't come up isn't re-launched every poll. base=5s so it is never faster than the old
+        // flat 5s wait. Reset when the device reaches Playing.
+        private readonly BackoffPolicy reconnectBackoff = new BackoffPolicy(baseSeconds: 5.0, maxSeconds: 30.0);
 
         public DeviceCommunication(ICastHost applicationLogicIn, ILogger loggerIn)
         {
@@ -270,7 +274,7 @@ namespace KlangHub.Communication
                     case DeviceState.LaunchedApplication:
                     case DeviceState.Idle:
                         var deviceStateBefore = deviceState;
-                        Task.Delay(5000).Wait();
+                        Task.Delay(reconnectBackoff.NextDelay()).Wait();
                         if (device.GetDeviceState() == deviceStateBefore)
                             ResumePlaying();
                         break;
@@ -550,6 +554,7 @@ namespace KlangHub.Communication
                         break;
                     case "PLAYING":
                         device.SetDeviceState(DeviceState.Playing, GetPlayingTime(mediaStatusMessage));
+                        reconnectBackoff.Reset(); // recovered — next stall starts from the base wait again
                         break;
                     default:
                         break;
