@@ -178,13 +178,27 @@ namespace KlangHub.Application
                     var dmac = d.GetDiscoveredDevice()?.Eureka?.GetMacAddress();
                     return HasRealMac(dmac) && dmac == mac;
                 });
-            return deviceList.FirstOrDefault(d => d.GetDiscoveredDevice()?.IPAddress == discoveredDevice.IPAddress);
+            // No real MAC: dedup by IP:port, not IP alone. A speaker and the multizone group it HOSTS share an
+            // IP - e.g. the Enchant at .154:8009 fronts the "the multi-room group" group at .154:32223. IP-only dedup
+            // collapsed the speaker into the group (update branch, no onAddDeviceCallback) so it never got a
+            // tile. IP:port keeps them distinct and matches ChromecastDeviceId.From, which already keys
+            // placeholder-MAC devices on IP:port (so list-dedup and session-id agree).
+            return deviceList.FirstOrDefault(d => SamePlaceholderEndpoint(d.GetDiscoveredDevice(), discoveredDevice));
         }
 
         /// <summary>A real, usable MAC identity - not empty and not the all-zeros placeholder some Cast
         /// devices (Google TV / Android TV) report in eureka_info.</summary>
         internal static bool HasRealMac(string? mac) =>
             !string.IsNullOrEmpty(mac) && mac != "00:00:00:00:00:00";
+
+        /// <summary>Two placeholder-MAC (no real identity) discovered devices are the same tile only when BOTH
+        /// IP and port match. A receiver at :8009 and the multizone group it hosts at :32223 share an IP but
+        /// are distinct cast endpoints - IP alone wrongly merged them. Mirrors ChromecastDeviceId.From's
+        /// IP:port fallthrough for placeholder MACs.</summary>
+        internal static bool SamePlaceholderEndpoint(DiscoveredDevice? existing, DiscoveredDevice? incoming) =>
+            existing != null && incoming != null
+            && existing.IPAddress == incoming.IPAddress
+            && existing.Port == incoming.Port;
 
         /// <summary>
         /// Callback for when the device information is collected.
