@@ -43,6 +43,12 @@ namespace KlangHub.Application
         private DateTime? lastLoadMessageTime;
         private DateTime? addStreamingConnectionTime;
 
+        // ConnectError circuit-breaker: a device stuck unreachable (powered off / moved to a new IP) otherwise
+        // hammers two 5s blocking timeouts (TLS GET_STATUS + eureka fetch) on every 15s poll forever. Back the
+        // ConnectError poll off 15 -> 30 -> 60s; healthy devices poll at the normal cadence (see ShouldRunPoll).
+        private readonly BackoffPolicy reconnectBackoff = new BackoffPolicy(baseSeconds: 15.0, maxSeconds: 60.0);
+        private DateTime nextReconnectAttempt = DateTime.MinValue;
+
         private bool isDisposed;
 
         delegate void SetDeviceStateCallback(DeviceState state, string? text = null);
@@ -203,10 +209,34 @@ namespace KlangHub.Application
 
             if (GetDeviceState() != DeviceState.Disposed && (DateTime.Now - lastGetStatus).TotalSeconds > 5)
             {
+                // Throttle only the ConnectError case (dead/moved device) so it doesn't spam two 5s timeouts
+                // every poll; a device on any other state polls exactly as before.
+                if (!ShouldRunPoll(GetDeviceState() == DeviceState.ConnectError, DateTime.Now, ref nextReconnectAttempt, reconnectBackoff))
+                    return;
+
                 deviceCommunication.GetStatus();
                 GetDeviceInformation();
                 lastGetStatus = DateTime.Now;
             }
+        }
+
+        /// <summary>Poll gate for the ConnectError circuit-breaker (pure + testable). A device NOT in ConnectError
+        /// always polls and resets the backoff. A ConnectError device polls at most once per backoff window
+        /// (15 -> 30 -> 60s), skipping in between - so a dead/moved device stops hammering blocking timeouts.</summary>
+        internal static bool ShouldRunPoll(bool isConnectError, DateTime now, ref DateTime nextAttempt, BackoffPolicy backoff)
+        {
+            if (!isConnectError)
+            {
+                backoff.Reset();
+                nextAttempt = DateTime.MinValue;
+                return true;
+            }
+
+            if (now < nextAttempt)
+                return false;
+
+            nextAttempt = now + backoff.NextDelay();
+            return true;
         }
 
         /// <summary>

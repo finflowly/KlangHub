@@ -56,8 +56,9 @@ namespace KlangHub.Application
             if (!discoveredDevice.AddedByDeviceInfo && !discoveredDevice.IsGroup)
             {
                 logger?.Log($"Discovery: '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) - fetching eureka_info.");
+                var mdnsId = discoveredDevice.Id;
                 applicationLogic.StartTask(DeviceInformation.GetDeviceInformation(
-                    discoveredDevice, SetDeviceInformation, () => AddFromMdnsFallback(discoveredDevice), logger!));
+                    discoveredDevice, e => SetDeviceInformation(e, mdnsId), () => AddFromMdnsFallback(discoveredDevice), logger!));
             }
             else
             {
@@ -67,7 +68,7 @@ namespace KlangHub.Application
                     if (existingDevice == null)
                     {
                         var newDevice = new Device(logger, applicationLogic);
-                        newDevice.Initialize(discoveredDevice, SetDeviceInformation, StopGroup, applicationLogic.StartTask, IsGroupStatusBlank, AutoMute);
+                        newDevice.Initialize(discoveredDevice, e => SetDeviceInformation(e), StopGroup, applicationLogic.StartTask, IsGroupStatusBlank, AutoMute);
                         deviceList.Add(newDevice);
                         logger?.Log($"Device added: '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}:{discoveredDevice.Port}){(discoveredDevice.IsGroup ? " [group]" : string.Empty)}.");
                         onAddDeviceCallback?.Invoke(newDevice);
@@ -78,7 +79,7 @@ namespace KlangHub.Application
                     }
                     else
                     {
-                        existingDevice.Initialize(discoveredDevice, SetDeviceInformation, StopGroup, applicationLogic.StartTask, IsGroupStatusBlank, AutoMute);
+                        existingDevice.Initialize(discoveredDevice, e => SetDeviceInformation(e), StopGroup, applicationLogic.StartTask, IsGroupStatusBlank, AutoMute);
                     }
                 }
             }
@@ -178,7 +179,22 @@ namespace KlangHub.Application
                     var dmac = d.GetDiscoveredDevice()?.Eureka?.GetMacAddress();
                     return HasRealMac(dmac) && dmac == mac;
                 });
-            // No real MAC: dedup by IP:port, not IP alone. A speaker and the multizone group it HOSTS share an
+            // A device that changes IP (DHCP renew / power-cycle) keeps its stable mDNS id= but changes IP:port
+            // (and even its IPv6 host) - so reconcile by that id FIRST, so the move updates the existing tile
+            // instead of spawning a duplicate + orphaning the old (the old one then hammers reconnect forever =
+            // the "6 tiles, one on Error" zombie). Guarded so it can NOT regress the placeholder-MAC 5-device
+            // saga: only when the incoming carries an id= (else fall through to IP:port exactly as before), and
+            // scoped to non-group tiles (a co-located group carries its own distinct id). Distinct devices have
+            // distinct ids, so this never re-collapses Google TV / TCL / Enchant.
+            if (!string.IsNullOrEmpty(discoveredDevice.Id))
+            {
+                var byId = deviceList.FirstOrDefault(d => !d.IsGroup()
+                    && SameStableId(d.GetDiscoveredDevice(), discoveredDevice));
+                if (byId != null)
+                    return byId;
+            }
+
+            // No id match: dedup by IP:port, not IP alone. A speaker and the multizone group it HOSTS share an
             // IP - e.g. the Enchant at .154:8009 fronts the "the multi-room group" group at .154:32223. IP-only dedup
             // collapsed the speaker into the group (update branch, no onAddDeviceCallback) so it never got a
             // tile. IP:port keeps them distinct and matches ChromecastDeviceId.From, which already keys
@@ -200,13 +216,23 @@ namespace KlangHub.Application
             && existing.IPAddress == incoming.IPAddress
             && existing.Port == incoming.Port;
 
+        /// <summary>Two discovered devices are the same tile when they carry the same stable mDNS id= - the only
+        /// identity that survives a DHCP IP change (the placeholder MAC is shared, the IP + IPv6 host both move).
+        /// Only matches when the INCOMING advertises a non-empty id (a device without one falls back to IP:port).</summary>
+        internal static bool SameStableId(DiscoveredDevice? existing, DiscoveredDevice? incoming) =>
+            existing != null && incoming != null
+            && !string.IsNullOrEmpty(incoming.Id)
+            && existing.Id == incoming.Id;
+
         /// <summary>
         /// Callback for when the device information is collected.
         /// </summary>
         /// <param name="eurekaIn"></param>
-        private void SetDeviceInformation(DeviceEureka eurekaIn)
+        private void SetDeviceInformation(DeviceEureka eurekaIn, string? mdnsId = null)
         {
-            logger?.Log($"eureka: name='{eurekaIn?.GetName()}' ip={eurekaIn?.GetIpAddress()} mac={eurekaIn?.GetMacAddress()}");
+            // Log the mDNS id= too - it is the only stable identity across a DHCP move, and this line confirms
+            // (on a HW run) that each placeholder-MAC device advertises a distinct, stable id for the reconcile.
+            logger?.Log($"eureka: name='{eurekaIn?.GetName()}' ip={eurekaIn?.GetIpAddress()} mac={eurekaIn?.GetMacAddress()} id={mdnsId}");
             var discoveredDevice = new DiscoveredDevice
             {
                 IPAddress = eurekaIn!.GetIpAddress(),
@@ -217,6 +243,9 @@ namespace KlangHub.Application
                 Usn = null!,
                 IsGroup = false,
                 AddedByDeviceInfo = true,
+                // Carry the mDNS id= through the eureka boundary (it was dropped here before - the root cause of
+                // the DHCP-move zombie tile) so GetDevice can reconcile a moved device to its existing tile.
+                Id = mdnsId!,
                 Eureka = eurekaIn
             };
             OnDeviceAvailable(discoveredDevice);
@@ -234,7 +263,7 @@ namespace KlangHub.Application
                 return;
 
             logger?.Log($"Adding '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) from mDNS - no eureka_info.");
-            SetDeviceInformation(new DeviceEureka { Name = discoveredDevice.Name, Ip_address = discoveredDevice.IPAddress });
+            SetDeviceInformation(new DeviceEureka { Name = discoveredDevice.Name, Ip_address = discoveredDevice.IPAddress }, discoveredDevice.Id);
         }
 
         /// <summary>
@@ -400,7 +429,7 @@ namespace KlangHub.Application
 
             AutoStart = settingsIn.AutoStartDevices ?? false;
             StartLastUsedDevices = settingsIn.StartLastUsedDevices ?? false;
-            applicationBuffer.SetExtraBufferInSeconds(settingsIn.ExtraBufferInSeconds ?? 4);
+            applicationBuffer.SetExtraBufferInSeconds(settingsIn.ExtraBufferInSeconds ?? 10);
         }
 
         /// <summary>

@@ -61,5 +61,50 @@ namespace KlangHub.Tests.Application
             Assert.False(Devices.SamePlaceholderEndpoint(a, null));
             Assert.False(Devices.SamePlaceholderEndpoint(null, null));
         }
+
+        // Locks the fix for the DHCP-move zombie tile: the Enchant moved 192.168.1.154 -> .156 (its IPv4 AND its
+        // fd1a IPv6 host both changed); only the mDNS id= is stable. Reconcile a placeholder-MAC device to its
+        // existing tile by that stable id BEFORE the IP:port fallback, so the move updates the tile instead of
+        // spawning a second one + orphaning the old (which then hammers reconnect forever).
+        [Fact]
+        public void Same_stable_id_at_a_new_endpoint_is_the_same_device()
+        {
+            var oldEntry = new DiscoveredDevice { IPAddress = "192.168.1.154", Port = 8009, Id = "enchant-uuid" };
+            var moved = new DiscoveredDevice { IPAddress = "192.168.1.156", Port = 8009, Id = "enchant-uuid" };
+
+            Assert.True(Devices.SameStableId(oldEntry, moved));
+        }
+
+        [Fact]
+        public void Different_stable_ids_are_different_devices()
+        {
+            // Google TV vs TCL TV: both placeholder MAC, distinct mDNS ids -> must never merge.
+            var googleTv = new DiscoveredDevice { IPAddress = "192.168.1.112", Port = 8009, Id = "googletv-uuid" };
+            var tclTv = new DiscoveredDevice { IPAddress = "192.168.1.57", Port = 8009, Id = "tcltv-uuid" };
+
+            Assert.False(Devices.SameStableId(googleTv, tclTv));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void No_incoming_id_never_matches_by_id_so_it_falls_back_to_ip_port(string? incomingId)
+        {
+            // A device that advertises no id= must not id-match anything - GetDevice then uses IP:port as today.
+            var existing = new DiscoveredDevice { IPAddress = "192.168.1.154", Port = 8009, Id = "some-uuid" };
+            var incoming = new DiscoveredDevice { IPAddress = "192.168.1.154", Port = 8009, Id = incomingId! };
+
+            Assert.False(Devices.SameStableId(existing, incoming));
+        }
+
+        [Fact]
+        public void SameStableId_is_false_for_null()
+        {
+            var a = new DiscoveredDevice { IPAddress = "192.168.1.154", Port = 8009, Id = "x" };
+
+            Assert.False(Devices.SameStableId(null, a));
+            Assert.False(Devices.SameStableId(a, null));
+            Assert.False(Devices.SameStableId(null, null));
+        }
     }
 }
