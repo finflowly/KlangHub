@@ -1,6 +1,6 @@
 # KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
-**HEAD:** `486f4f0` · **Branch:** `master` · **Tests:** 65 green (`dotnet test`) · **Working tree:** clean
+**HEAD:** `6dba09f` · **Branch:** `master` · **Tests:** 70 green (`dotnet test`) · **Working tree:** clean
 **Runtime:** **.NET 10** (LTS). Framework-dependent build → needs the **.NET 10 Desktop Runtime** discoverable
 by the app host (installed machine-wide at `C:\Program Files\dotnet`, 10.0.9 — HW-confirmed by the maintainer).
 
@@ -101,6 +101,27 @@ disk).
 **Session lesson:** on this fragile discovery path, *instrument first, then fix* — several rounds were lost to
 guessing before the full log made the placeholder-MAC root cause obvious. Don't bundle speculative hardening
 with a targeted fix here.
+
+**NEW CHAPTER 2026-07-05 (commit `6dba09f`, HW-test PENDING): the group-hosting speaker — dedup by IP:port.**
+the maintainer's network regrouped: the Enchant now *hosts* the "the multi-room group" multizone group, so its IPv4 (`.154`)
+serves BOTH its own `:8009` receiver AND the group's `:32223` leader. `Devices.GetDevice` deduped placeholder-MAC
+devices by **IP alone**, so the Enchant `.154:8009` matched the co-located group at `.154` → OnDeviceAvailable took
+the *update* branch → `onAddDeviceCallback` never fired → no tile (log: `Discovered device: Enchant …:8009` present
+but no `Device added:`). **NOT a Tier-2/net10 regression** — the discovery code is byte-identical since net8 (nullable
+annotations only, verified); this is a latent edge case triggered by the new topology. **Fix:** dedup placeholder-MAC
+devices by **IP:port** (`SamePlaceholderEndpoint`), matching `ChromecastDeviceId.From` which already keyed placeholder
+MACs on IP:port — so list-dedup and session-id finally agree. Receivers are always stamped `Port=8009` (eureka
+`SetDeviceInformation`), so receiver-vs-receiver dedup is unchanged; only the receiver-vs-group false-match is removed;
+groups still dedup by Id. Adversarially verified (root cause traced end-to-end; `breaksSaga=false`,
+`duplicateTileRisk=false`). **70 tests green (5 new in `DevicesTests`).** KEY INSIGHT extends the saga: the placeholder
+MAC must be keyed on **IP:port in BOTH** `Devices.GetDevice` AND `ChromecastDeviceId.From` (previously GetDevice used
+IP-only, which was coarser). **Known follow-ups, NOT bundled:** (a) `AddStreamingConnection` matches the send-socket by
+IP only → if the Enchant + its group cast simultaneously at `.154`, the socket could bind to the wrong Device (pre-
+existing; now reachable). (b) **True IPv6-only discovery is still unsupported** (`DiscoverDevices.OnServiceAdded` skips
+no-IPv4 announcements) — the maintainer asked for "IPv6 as an alternative", but this session's Enchant HAS IPv4 so the dedup
+fix suffices; real IPv6-only support = bracket the eureka URL `http://[addr]:8008` + IPv6 `:8009` TLS + preserve the
+ULA scope-id `%8` + IPv6 remote-matching in the streaming listener — a separate, larger spike (raw IPv6 is what
+originally broke the whole saga).
 
 ## 5. Roadmap (next)
 - **M4 — Snapcast control-plane** (recommended next feature): `SnapcastProvider.CreateSession` → a real
