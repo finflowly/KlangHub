@@ -32,6 +32,9 @@ namespace KlangHub.UserControls
             BackColor = Theme.Surface;
             ClientSize = new Size(236, 150);
             KeyPreview = true;
+            // clip the borderless form to a rounded card so it floats (no dark square corners behind the card)
+            using (var rp = Theme.RoundedRect(new RectangleF(0, 0, ClientSize.Width, ClientSize.Height), Theme.RadCard))
+                Region = new Region(rp);
         }
 
         public DialogResult ShowAt(Point screenLocation)
@@ -50,9 +53,9 @@ namespace KlangHub.UserControls
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             g.Clear(Theme.Ink);
 
-            var card = new RectangleF(1, 1, Width - 3, Height - 3);
-            Theme.FillRounded(g, card, 12, Theme.Surface);
-            Theme.DrawRounded(g, card, 12, Color.FromArgb(120, Theme.Amber), 1.2f);
+            var card = new RectangleF(0.5f, 0.5f, Width - 1.5f, Height - 1.5f);
+            Theme.FillRounded(g, card, Theme.RadCard, Theme.Surface);
+            Theme.DrawRounded(g, card, Theme.RadCard, Theme.LineHi, 1.2f);
 
             using (var b = new SolidBrush(Theme.Slate))
                 g.DrawString("SPEAKER-OPTIONEN", Theme.Label, b, 18, 16);
@@ -66,32 +69,13 @@ namespace KlangHub.UserControls
                 g.DrawString(maxVolume + "%", Theme.Name, b, Width - 62, 60);
 
             sliderRect = new Rectangle(18, 92, Width - 36, 12);
-            DrawSlider(g, sliderRect);
+            Theme.DrawAmberSlider(g, sliderRect, maxVolume / 100f, 14f);
 
             doneRect = new Rectangle(Width - 92, 116, 74, 24);
-            Theme.FillRounded(g, doneRect, 7, Theme.Amber);
-            using (var b = new SolidBrush(Color.FromArgb(0x19, 0x13, 0x08)))
+            Theme.FillRounded(g, doneRect, Theme.RadControl, Theme.Amber);
+            using (var b = new SolidBrush(Theme.OnAmber))
             using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
                 g.DrawString("Fertig", Theme.Label, b, doneRect, sf);
-        }
-
-        private void DrawSlider(Graphics g, Rectangle r)
-        {
-            float cy = r.Y + r.Height / 2f;
-            var track = new RectangleF(r.X, cy - 2.5f, r.Width, 5);
-            Theme.FillRounded(g, track, 2.5f, Theme.Ink2);
-            Theme.DrawRounded(g, track, 2.5f, Theme.Line);
-            float fillW = r.Width * (maxVolume / 100f);
-            if (fillW > 3)
-            {
-                var fr = new RectangleF(r.X, cy - 2.5f, fillW, 5);
-                using var lg = new LinearGradientBrush(fr, Theme.AmberDim, Theme.Amber, LinearGradientMode.Horizontal);
-                using var fp = Theme.RoundedRect(fr, 2.5f);
-                g.FillPath(lg, fp);
-            }
-            float tx = r.X + fillW;
-            using (var tb = new SolidBrush(Theme.Ivory)) g.FillEllipse(tb, tx - 7, cy - 7, 14, 14);
-            using (var tp = new Pen(Color.FromArgb(80, Theme.Amber), 3f)) g.DrawEllipse(tp, tx - 7, cy - 7, 14, 14);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)

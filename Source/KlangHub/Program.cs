@@ -21,10 +21,10 @@ namespace KlangHub
         [STAThread]
         static void Main()
         {
-            if (Environment.OSVersion.Version.Major >= 6) SetProcessDPIAware();
+            // Per-Monitor-V2 DPI (available on .NET 10) keeps the owner-drawn cards, meters and faders crisp
+            // across mixed-DPI monitors. Must be the first UI call in Main.
+            System.Windows.Forms.Application.SetHighDpiMode(System.Windows.Forms.HighDpiMode.PerMonitorV2);
             System.Windows.Forms.Application.EnableVisualStyles();
-            //TODO: .Net 6.0 replacement necessary? (SetHighDpiMode is not available anymore)
-            //Application.SetHighDpiMode(HighDpiMode.SystemAware);
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
             try
             {
