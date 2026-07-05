@@ -300,10 +300,10 @@
     <value>Wav (Abtastrate der Soundkarte/24 Bit)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>Wav (Abtastrate der Soundkarte/32 Bit — empfohlen, max. Qualität)</value>
+    <value>Wav (Abtastrate der Soundkarte/32 Bit — unkomprimiertes LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC (verlustfrei, robust bei schwachem WLAN)</value>
+    <value>FLAC (verlustfrei HiFi — empfohlen)</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
     <value>Live vom PC</value>

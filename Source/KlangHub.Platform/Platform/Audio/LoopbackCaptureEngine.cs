@@ -160,10 +160,11 @@ namespace KlangHub.Platform.Audio
                         soundIn.WaveFormat = new WaveFormat(rate, 32, nrChannels);
                         break;
                     case SupportedStreamFormat.Flac:
-                        // FLAC needs INTEGER PCM (the WASAPI mix format is typically 32-bit float). Force
-                        // 16-bit int — universally decodable and losslessly FLAC-compressed. (24-bit HiFi is a
-                        // follow-up once hardware confirms the live-FLAC path.)
-                        soundIn.WaveFormat = new WaveFormat(rate, 16, nrChannels);
+                        // FLAC needs INTEGER PCM (the WASAPI mix format is typically 32-bit float). 24-bit int =
+                        // true HiFi, losslessly FLAC-compressed (verified: FLAKE round-trips 24-bit byte-exact).
+                        // FLAC is the out-of-box default: lossless like WAV but COMPRESSED, so it doesn't OOM
+                        // small speakers the way 32-bit uncompressed LPCM did on the Enchant (ERROR 102).
+                        soundIn.WaveFormat = new WaveFormat(rate, 24, nrChannels);
                         break;
                     default:
                         break;

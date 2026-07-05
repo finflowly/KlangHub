@@ -32,6 +32,23 @@ namespace KlangHub.Tests.Platform
             return bytes;
         }
 
+        private static byte[] Pcm24(int channels, int frames, Func<int, int> gen)
+        {
+            var bytes = new byte[frames * channels * 3];
+            int p = 0;
+            for (int i = 0; i < frames; i++)
+            {
+                int s = gen(i) & 0xFFFFFF;
+                for (int c = 0; c < channels; c++)
+                {
+                    bytes[p++] = (byte)(s & 0xFF);
+                    bytes[p++] = (byte)((s >> 8) & 0xFF);
+                    bytes[p++] = (byte)((s >> 16) & 0xFF);
+                }
+            }
+            return bytes;
+        }
+
         [Fact]
         public void Encode_emits_a_flac_stream_starting_with_the_fLaC_magic()
         {
@@ -105,6 +122,43 @@ namespace KlangHub.Tests.Platform
 
             Assert.Equal(pcm.Length, decoded.Count);
             Assert.Equal(pcm, decoded.ToArray()); // lossless: identical samples out
+        }
+
+        [Fact]
+        public void Encoded_24bit_flac_decodes_losslessly_back_to_the_original_pcm()
+        {
+            // 24-bit is the out-of-box default (lossless HiFi, compressed -> no small-speaker OOM). Lock that
+            // FLAKE round-trips 24-bit byte-exact.
+            var logger = Substitute.For<ILogger>();
+            var format = new AudioFormat(48000, 24, 2);
+            const int frames = 48000; // 1 s
+
+            var pcm = Pcm24(2, frames, i => ((i * 131) % 1600000) - 800000); // 24-bit sawtooth
+
+            byte[] flac;
+            using (var enc = new FlacEncoder(format, logger, compressionLevel: 5))
+            {
+                enc.Encode(pcm);
+                enc.Dispose();
+                flac = enc.Read();
+            }
+
+            flac[22] = (byte)((frames >> 24) & 0xFF);
+            flac[23] = (byte)((frames >> 16) & 0xFF);
+            flac[24] = (byte)((frames >> 8) & 0xFF);
+            flac[25] = (byte)(frames & 0xFF);
+
+            var decoded = new List<byte>(pcm.Length);
+            using (var ms = new MemoryStream(flac))
+            {
+                var reader = new FlakeReader(null, ms);
+                var buff = new AudioBuffer(new AudioPCMConfig(24, 2, 48000), 0x10000);
+                while (reader.Read(buff, -1) > 0)
+                    decoded.AddRange(buff.Bytes.Take(buff.ByteLength));
+            }
+
+            Assert.Equal(pcm.Length, decoded.Count);
+            Assert.Equal(pcm, decoded.ToArray());
         }
     }
 }

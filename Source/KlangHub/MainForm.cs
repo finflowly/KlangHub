@@ -171,17 +171,17 @@ namespace KlangHub
 
             if (cmbStreamFormat.Items.Count == 0)
             {
-                // Wav 32-bit first: the max-quality lossless out-of-box default (the maintainer's pick — beats 24-bit
-                // HDMI). FLAC follows as the lossless, error-resilient, ~half-bandwidth alternative for weak Wi-Fi
-                // speakers. MP3 last for legacy compatibility only.
-                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_32bit));
+                // FLAC first: lossless HiFi out-of-box default that plays on ALL devices (compressed -> no
+                // small-speaker OOM, unlike 32-bit uncompressed LPCM). WAV 24/16/32-bit follow as uncompressed
+                // alternatives; MP3 last for legacy compatibility only.
+                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Flac));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_24bit));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_16bit));
-                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Flac));
+                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_32bit));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Mp3_320));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Mp3_128));
-                cmbStreamFormat.SelectedIndex = 0; // Wav 32-bit
+                cmbStreamFormat.SelectedIndex = 0; // FLAC
                 SetStreamFormat();
             }
         }

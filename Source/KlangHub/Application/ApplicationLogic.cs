@@ -260,7 +260,7 @@ namespace KlangHub.Application
                 mainForm.SetWindowVisibility(settings.ShowWindowOnStart ?? true);
                 mainForm.SetKeyboardHooks(settings.UseKeyboardShortCuts ?? false);
                 mainForm.SetIP4AddressUsed(settings.Ip4AddressUsed ?? string.Empty);
-                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_32bit);
+                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Flac);
                 mainForm.SetCulture(settings.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 mainForm.SetLogDeviceCommunication(settings.LogDeviceCommunication ?? false);
                 mainForm.SetLagValue(settings.LagControlValue ?? 1000);
@@ -342,12 +342,12 @@ namespace KlangHub.Application
             settings.StartLastUsedDevices = false;
             settings.ShowWindowOnStart = true;
             settings.AutoRestart = false;
+            // Out-of-box: FLAC (the maintainer's choice after HW test #2). Lossless HiFi like WAV, but COMPRESSED, so it
+            // plays cleanly on ALL devices incl. small speakers - 32-bit uncompressed LPCM OOM'd the Enchant
+            // (ERROR 102). Capture is 24-bit -> lossless 24-bit FLAC. WAV 24/16-bit remain in the picker as
+            // uncompressed alternatives.
             settings.Ip4AddressUsed = string.Empty;
-            // Out-of-box max-quality lossless for home casting (the maintainer's choice: 32-bit WAV beats even 24-bit
-            // HDMI). HW-confirmed the TVs + Soundbar play high-bitrate WAV fine; a weak-Wi-Fi speaker (the
-            // Enchant) can underrun the ~6 Mbit/s stream -> for such devices FLAC (lossless, ~half the bandwidth,
-            // error-resilient) is offered in the picker as the robust alternative.
-            settings.StreamFormat = SupportedStreamFormat.Wav_32bit;
+            settings.StreamFormat = SupportedStreamFormat.Flac;
             settings.Culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             settings.LogDeviceCommunication = false;
             settings.ShowLagControl = false;
