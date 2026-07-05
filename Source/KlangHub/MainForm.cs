@@ -1530,6 +1530,9 @@ namespace KlangHub
             if (icon != null) Icon = icon;   // amber-ring brand mark on the title bar + taskbar
 
             if (volumeMeter != null) { volumeMeter.BackColor = Classes.Theme.Ink2; volumeMeter.ForeColor = Classes.Theme.Amber; }
+            // The concept has no global VU meter — the live level lives on each card (the card's signature).
+            // Retire the header meter + its "dB" label so the top row reads as one calm strip.
+            if (pnlVolumeMeter != null) pnlVolumeMeter.Visible = false;
 
             SetupMasterVolumeFader();
             SetupRoomSummary();
@@ -1554,7 +1557,7 @@ namespace KlangHub
             lblRoomSummaryTitle = new Label
             {
                 AutoSize = true,
-                Font = new Font(Classes.Theme.Name.FontFamily, 10f, FontStyle.Bold),
+                Font = new Font(Classes.Theme.Name.FontFamily, 11.5f, Classes.Theme.Name.Style),
                 ForeColor = Classes.Theme.Ivory,
                 BackColor = Color.Transparent,
                 Margin = new Padding(0),
@@ -1592,8 +1595,11 @@ namespace KlangHub
         {
             if (lblRoomSummaryTitle == null || lblRoomSummarySubtitle == null) return;
             var (total, playing) = CountDevices();
-            string count = total == 1 ? "1 Gerät" : $"{total} Geräte";
-            lblRoomSummaryTitle.Text = playing > 0 ? $"{count} · {playing} spielen" : count;
+            // Unified vocabulary: "Räume" everywhere (matches the tabs), with correct singular ("1 Raum",
+            // "1 spielt").
+            string count = total == 1 ? "1 Raum" : $"{total} Räume";
+            string verb = playing == 1 ? "spielt" : "spielen";
+            lblRoomSummaryTitle.Text = playing > 0 ? $"{count} · {playing} {verb}" : count;
             lblRoomSummarySubtitle.Text = string.Format(Properties.Strings.Label_RoomSummarySubtitle_Text, Classes.Theme.CurrentFormatLabel);
         }
 
