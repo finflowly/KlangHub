@@ -1,6 +1,8 @@
 # KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
-**HEAD:** `4a6b51d` · **Branch:** `master` · **Tests:** 79 green (`dotnet test`) · **Working tree:** clean
+**HEAD:** `2402f1d` · **Branch:** `master` · **Tests:** 79 green (`dotnet test`) · **Working tree:** clean
+**Enchant discovery is an ongoing saga** (IPv6-only-flapping); latest fix `2402f1d` = handle mDNS `ServiceChanged`
+(late-A capture) + instrument the AirPlay mDNS address log — **HW-test pending**, see §4 chapters.
 **Runtime:** **.NET 10** (LTS). Framework-dependent build → needs the **.NET 10 Desktop Runtime** discoverable
 by the app host (installed machine-wide at `C:\Program Files\dotnet`, 10.0.9 — HW-confirmed by the maintainer).
 
