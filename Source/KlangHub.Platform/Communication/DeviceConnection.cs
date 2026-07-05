@@ -1,8 +1,10 @@
 using KlangHub.Core.Models;
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using KlangHub.Discover;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -52,9 +54,7 @@ namespace KlangHub.Communication
                 var host = getHost();
                 var port = getPort();
 
-                tcpClient = new TcpClient();
-                tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-                currentAynchResult = tcpClient.BeginConnect(host, port, new AsyncCallback(ConnectCallback), tcpClient);
+                BeginConnectTo(host, port);
                 WaitHandle wh = currentAynchResult.AsyncWaitHandle;
                 try
                 {
@@ -83,6 +83,31 @@ namespace KlangHub.Communication
                 {
                     Console.WriteLine($"Connect:{innerEx.Message}");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Begin the TCP connect. For an IPv6 literal, use an address-family-specific client and connect via
+        /// the IPAddress overload so the scope survives correctly; clear the %zone for a ULA/global address
+        /// (the mDNS-supplied scope names the wrong local interface and caused the historical WSAEADDRNOTAVAIL),
+        /// while a link-local address keeps its scope. Real DNS names/IPv4 fall through to the string overload.
+        /// </summary>
+        private void BeginConnectTo(string host, int port)
+        {
+            if (IPAddress.TryParse(host, out var address))
+            {
+                if (address.AddressFamily == AddressFamily.InterNetworkV6 && address.ScopeId != 0 && !address.IsIPv6LinkLocal)
+                    address = new IPAddress(address.GetAddressBytes());
+
+                tcpClient = new TcpClient(address.AddressFamily);
+                tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                currentAynchResult = tcpClient.BeginConnect(address, port, new AsyncCallback(ConnectCallback), tcpClient);
+            }
+            else
+            {
+                tcpClient = new TcpClient();
+                tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                currentAynchResult = tcpClient.BeginConnect(host, port, new AsyncCallback(ConnectCallback), tcpClient);
             }
         }
 
@@ -123,7 +148,7 @@ namespace KlangHub.Communication
                     tcpClient.EndConnect(ar);
                     sslStream = new SslStream(tcpClient.GetStream(), false, new RemoteCertificateValidationCallback(DontValidateServerCertificate), null);
                     var host = getHost?.Invoke();
-                    sslStream.AuthenticateAsClient(host!, new X509CertificateCollection(), SslProtocols.Tls12, true);
+                    sslStream.AuthenticateAsClient(Ipv4Recovery.Normalize(host), new X509CertificateCollection(), SslProtocols.Tls12, true);
                     StartReceive();
                     DoSendMessage();
                     state = DeviceConnectionState.Connected;

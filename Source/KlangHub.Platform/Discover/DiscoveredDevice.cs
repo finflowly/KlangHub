@@ -1,5 +1,6 @@
 ﻿using KlangHub.Application;
 using KlangHub.Communication;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace KlangHub.Discover
@@ -10,6 +11,12 @@ namespace KlangHub.Discover
 
         public string Name { get; set; } = null!;
         public string IPAddress { get; set; } = null!;
+
+        /// <summary>All addresses (IPv4 + IPv6) seen for this device across mDNS announcements + eureka, so a
+        /// device discovered over IPv6 can still be matched to its IPv4 stream-connect-back socket. Runtime-only
+        /// (not persisted). <see cref="IPAddress"/> stays the "primary" used for eureka/:8009.</summary>
+        [XmlIgnore]
+        public List<string> Addresses { get; set; } = new List<string>();
         public int Port { get; set; }
         public string Protocol { get; set; } = null!;
         public string Usn { get; set; } = null!;

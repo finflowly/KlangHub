@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using NAudio.Wave;
 using KlangHub.Communication;
@@ -107,6 +108,13 @@ namespace KlangHub.Application
             discoveredDevice.AddedByDeviceInfo = discoveredDeviceIn.AddedByDeviceInfo;
             if (discoveredDeviceIn.Eureka != null) discoveredDevice.Eureka = discoveredDeviceIn.Eureka;
             if (discoveredDeviceIn.Group != null) discoveredDevice.Group = discoveredDeviceIn.Group;
+
+            // Accumulate every address this device has been keyed at (mDNS per-family + eureka self-report) so a
+            // stream socket connecting back from any of them attaches (see MatchesAddress).
+            MergeAddress(discoveredDevice.IPAddress);
+            if (discoveredDeviceIn.Addresses != null)
+                foreach (var a in discoveredDeviceIn.Addresses)
+                    MergeAddress(a);
 
             deviceCommunication.SetCallback(this, deviceConnection.SendMessage, deviceConnection.IsConnected);
             if (ipChanged && GetDeviceState() == DeviceState.Playing)
@@ -332,7 +340,7 @@ namespace KlangHub.Application
                 GetDeviceState() == DeviceState.LoadingMediaCheckFirewall ||
                 GetDeviceState() == DeviceState.Buffering ||
                 GetDeviceState() == DeviceState.Idle) &&
-                discoveredDevice.IPAddress == remoteAddress)
+                MatchesAddress(remoteAddress))
             {
                 streamingConnection = new StreamingConnection();
                 streamingConnection.SetDependencies(socket, this, logger);
@@ -341,6 +349,35 @@ namespace KlangHub.Application
             }
 
             return false;
+        }
+
+        /// <summary>True if the streaming socket's remote address is one this device is known at. The stream is
+        /// pulled back over IPv4, but a device discovered over IPv6 is keyed on an IPv6 literal; matching the
+        /// accumulated address set (scope-normalized) lets the IPv4 return-socket still attach. Falls back to
+        /// the primary IPAddress so today's IPv4-only devices are unaffected.</summary>
+        private bool MatchesAddress(string remoteAddress)
+        {
+            if (discoveredDevice == null)
+                return false;
+
+            var normalized = Ipv4Recovery.Normalize(remoteAddress);
+            if (Ipv4Recovery.Normalize(discoveredDevice.IPAddress) == normalized)
+                return true;
+
+            return discoveredDevice.Addresses != null
+                && discoveredDevice.Addresses.Any(a => Ipv4Recovery.Normalize(a) == normalized);
+        }
+
+        /// <summary>Accumulate an address this device has been seen at (scope-normalized dedup), so the streaming
+        /// set-match knows every family/interface the device may connect back from.</summary>
+        private void MergeAddress(string? address)
+        {
+            if (discoveredDevice == null || string.IsNullOrEmpty(address))
+                return;
+
+            var normalized = Ipv4Recovery.Normalize(address);
+            if (!discoveredDevice.Addresses.Any(a => Ipv4Recovery.Normalize(a) == normalized))
+                discoveredDevice.Addresses.Add(address!);
         }
 
         /// <summary>

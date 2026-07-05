@@ -25,7 +25,7 @@ namespace KlangHub.Application
                     {
                         Timeout = new TimeSpan(0, 0, 5)
                     };
-                    var response = await http.GetAsync($"http://{discoveredDevice.IPAddress}:8008/setup/eureka_info?params=version,audio,name,build_info,detail,device_info,net,wifi,setup,settings,opt_in,opencast,multizone,proxy,night_mode_params,user_eq,room_equalizer&options=detail");
+                    var response = await http.GetAsync($"http://{UrlHost(discoveredDevice.IPAddress)}:8008/setup/eureka_info?params=version,audio,name,build_info,detail,device_info,net,wifi,setup,settings,opt_in,opencast,multizone,proxy,night_mode_params,user_eq,room_equalizer&options=detail");
                     var receiveStream = await response.Content.ReadAsStreamAsync();
                     var readStream = new StreamReader(receiveStream, Encoding.UTF8);
                     var eurekaInfo = readStream.ReadToEnd();
@@ -68,7 +68,7 @@ namespace KlangHub.Application
                     {
                         Timeout = new TimeSpan(0, 0, 5)
                     };
-                    var response = await http.GetAsync($"http://{ipAddress}:8008/setup/eureka_info?params=version,audio,name,build_info,detail,device_info,net,wifi,setup,settings,opt_in,opencast,multizone,proxy,night_mode_params,user_eq,room_equalizer&options=detail");
+                    var response = await http.GetAsync($"http://{UrlHost(ipAddress)}:8008/setup/eureka_info?params=version,audio,name,build_info,detail,device_info,net,wifi,setup,settings,opt_in,opencast,multizone,proxy,night_mode_params,user_eq,room_equalizer&options=detail");
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
                         discoveredDevice.AddedByDeviceInfo = false;
@@ -80,6 +80,15 @@ namespace KlangHub.Application
                     logger?.Log(ex, $"DeviceInformation.CheckDeviceIsOn [{ipAddress}]");
                 }
             });
+        }
+
+        /// <summary>Build a URL host from an IP: bracket an IPv6 literal and strip its %zone (a raw IPv6 gave
+        /// the historical "Invalid URI", and a ULA/global scope id makes the HTTP GET fail like the :8009
+        /// connect did). IPv4 is returned unchanged.</summary>
+        private static string UrlHost(string? ip)
+        {
+            var host = Ipv4Recovery.Normalize(ip);
+            return host.Contains(':') ? $"[{host}]" : host;
         }
     }
 

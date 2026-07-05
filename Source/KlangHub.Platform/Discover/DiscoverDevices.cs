@@ -5,6 +5,7 @@ using System.Linq;
 using System.Timers;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 using System.Text.Json;
 
 namespace KlangHub.Discover
@@ -20,6 +21,9 @@ namespace KlangHub.Discover
         private Timer? timer;
         private List<MsdnIps>? msdnIps;
         private readonly ILogger? logger;
+
+        // IPv4 recovery for a device that announces its _googlecast IPv6-only in a scan (see Ipv4Recovery).
+        private readonly Ipv4Recovery ipv4Recovery = new Ipv4Recovery();
 
         public DiscoverDevices(ILogger? loggerIn = null)
         {
@@ -94,30 +98,49 @@ namespace KlangHub.Discover
                 return;
 
             // KlangHub reaches devices over IPv4 (the http://<ip>:8008 eureka_info URL and the :8009 cast
-            // connection). A device often sends separate mDNS announcements per address family; an IPv6-only
-            // one would produce a broken duplicate ("Invalid URI" on eureka + "address is invalid in this
-            // context" on connect), so skip announcements that carry no IPv4 address.
-            var ipv4 = e.Announcement.Addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+            // connection). A device often sends separate mDNS announcements per address family. We prefer IPv4,
+            // but if an announcement is IPv6-only we no longer drop it: first try to RECOVER a usable IPv4 (the
+            // device self-advertised IPv4 earlier, keyed by id=, or the dual-stack group it hosts donates it via
+            // a shared IPv6 host); otherwise keep the IPv6 literal so a truly-IPv6-only device is still reachable.
+            var addresses = e.Announcement.Addresses.Select(a => a.ToString()).ToList();
+            var ipv4 = e.Announcement.Addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            var ipv6 = e.Announcement.Addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetworkV6)?.ToString();
+            var id = e.Announcement.Txt.Where(x => x.ToString().StartsWith("id=")).FirstOrDefault()?.Replace("id=", "");
+
+            ipv4Recovery.Record(id, ipv4, e.Announcement.Addresses);
+
+            var recoverySource = string.Empty;
+            var recovered = ipv4 == null ? ipv4Recovery.Recover(id, ipv6, out recoverySource) : null;
+            var primary = ipv4 ?? recovered ?? ipv6;
+
             var fnDbg = e.Announcement.Txt.FirstOrDefault(x => x.ToString().StartsWith("fn="))?.Replace("fn=", "");
-            logger?.Log($"mDNS [{e.Announcement.Type}] fn='{fnDbg}' addrs=[{string.Join(", ", e.Announcement.Addresses)}] -> {(ipv4 == null ? "SKIPPED (no IPv4)" : ipv4.ToString())}");
-            if (ipv4 == null)
+            var how = primary == null ? "SKIPPED (no address)"
+                : ipv4 != null ? primary!
+                : recovered != null ? $"{primary} (IPv4 recovered from {recoverySource})"
+                : $"{primary} (IPv6)";
+            logger?.Log($"mDNS [{e.Announcement.Type}] fn='{fnDbg}' addrs=[{string.Join(", ", addresses)}] -> {how}");
+            if (primary == null)
                 return;
+
+            if (!addresses.Contains(primary))
+                addresses.Add(primary);
 
             var discoveredDevice = new DiscoveredDevice
             {
-                IPAddress = ipv4.ToString(),
+                IPAddress = primary,
+                Addresses = addresses,
                 Protocol = e.Announcement.Type,
                 Port = e.Announcement.Port,
                 Name = (e.Announcement.Txt.Where(x => x.ToString().StartsWith("fn=")).FirstOrDefault()?.Replace("fn=", ""))!,
                 Headers = JsonSerializer.Serialize(e.Announcement.Txt),
                 Usn = e.Announcement.Hostname,
-                Id = (e.Announcement.Txt.Where(x => x.ToString().StartsWith("id=")).FirstOrDefault()?.Replace("id=", ""))!,
+                Id = id!,
             };
 
-            if (discoveredDevice.Name != null 
-                && discoveredDevice.Usn != null 
+            if (discoveredDevice.Name != null
+                && discoveredDevice.Usn != null
                 && discoveredDevice.Headers != null
-                && (discoveredDevice.Protocol.IndexOf(serviceType) >= 0 
+                && (discoveredDevice.Protocol.IndexOf(serviceType) >= 0
                     || discoveredDevice.Protocol.IndexOf(serviceTypeEmbedded) >= 0))
             {
                 discoveredDevices.Add(discoveredDevice);
