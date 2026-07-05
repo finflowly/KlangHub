@@ -135,6 +135,12 @@ namespace KlangHub.Platform.Audio
                 var selectedFormat = settings.StreamFormat;
                 var convertMultiChannelToStereo = settings.ConvertMultiChannelToStereo;
                 var nrChannels = convertMultiChannelToStereo ? soundIn.WaveFormat.Channels : 2;
+                // Cap the capture rate at 48 kHz. Cast receivers force a 48 kHz internal mixer, so a 96 kHz
+                // stream is resampled away on-device anyway - capping it here halves the on-wire bitrate (e.g.
+                // 32-bit stereo 6 -> 3 Mbit/s) with no audible loss, cutting the underrun/"noise" risk on
+                // weak-Wi-Fi speakers. (48 kHz is also the max LAME accepts for MP3.) VERIFIED on this hardware:
+                // WASAPI shared-mode genuinely converts the 32-bit-float mix to the requested rate/depth.
+                var rate = System.Math.Min(soundIn.WaveFormat.SampleRate, 48000);
                 switch (selectedFormat)
                 {
                     case SupportedStreamFormat.Wav:
@@ -142,22 +148,22 @@ namespace KlangHub.Platform.Audio
                         break;
                     case SupportedStreamFormat.Mp3_320:
                     case SupportedStreamFormat.Mp3_128:
-                        soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 16, 2);
+                        soundIn.WaveFormat = new WaveFormat(rate, 16, 2);
                         break;
                     case SupportedStreamFormat.Wav_16bit:
-                        soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 16, nrChannels);
+                        soundIn.WaveFormat = new WaveFormat(rate, 16, nrChannels);
                         break;
                     case SupportedStreamFormat.Wav_24bit:
-                        soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 24, nrChannels);
+                        soundIn.WaveFormat = new WaveFormat(rate, 24, nrChannels);
                         break;
                     case SupportedStreamFormat.Wav_32bit:
-                        soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 32, nrChannels);
+                        soundIn.WaveFormat = new WaveFormat(rate, 32, nrChannels);
                         break;
                     case SupportedStreamFormat.Flac:
                         // FLAC needs INTEGER PCM (the WASAPI mix format is typically 32-bit float). Force
                         // 16-bit int — universally decodable and losslessly FLAC-compressed. (24-bit HiFi is a
                         // follow-up once hardware confirms the live-FLAC path.)
-                        soundIn.WaveFormat = new WaveFormat(soundIn.WaveFormat.SampleRate, 16, nrChannels);
+                        soundIn.WaveFormat = new WaveFormat(rate, 16, nrChannels);
                         break;
                     default:
                         break;

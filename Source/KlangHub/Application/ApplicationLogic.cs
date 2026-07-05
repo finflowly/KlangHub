@@ -273,7 +273,7 @@ namespace KlangHub.Application
                         Math.Min(Math.Max(settings.Left!.Value, 0), Screen.PrimaryScreen!.Bounds.Width),
                         Math.Min(Math.Max(settings.Top!.Value, 0), Screen.PrimaryScreen.Bounds.Height)
                     );
-                mainForm.SetExtraBufferInSeconds(settings.ExtraBufferInSeconds ?? 4);
+                mainForm.SetExtraBufferInSeconds(settings.ExtraBufferInSeconds ?? 10);
                 mainForm.SetRecordingDeviceID(settings.RecordingDeviceID ?? null);
                 mainForm.SetAutoMute(settings.AutoMute ?? false);
                 mainForm.SetMinimizeToTray(settings.MinimizeToTray ?? false);
@@ -357,7 +357,9 @@ namespace KlangHub.Application
             settings.Size = defaultSize;
             settings.Left = Screen.PrimaryScreen!.Bounds.Width / 2 - settings.Size.Value.Width / 2;
             settings.Top = Screen.PrimaryScreen.Bounds.Height / 2 - settings.Size.Value.Height / 2;
-            settings.ExtraBufferInSeconds = 4;
+            // Out-of-box buffer recommended at 10s (the maintainer): more receiver-side cushion against jitter/underrun
+            // on the high-bitrate 32-bit WAV default (mitigates the weak-Wi-Fi "noise" seen on the Enchant).
+            settings.ExtraBufferInSeconds = 10;
             settings.RecordingDeviceID = null!;
             settings.AutoMute = false;
             settings.MinimizeToTray = false;
