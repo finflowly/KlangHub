@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using KlangHub.Discover;
@@ -83,6 +84,23 @@ namespace KlangHub.Tests.Platform
         public void Normalize_strips_the_zone_id(string input, string expected)
         {
             Assert.Equal(expected, Ipv4Recovery.Normalize(input));
+        }
+
+        [Fact]
+        public void A_learned_mapping_expires_after_the_ttl_so_a_dhcp_move_cannot_misroute()
+        {
+            var clock = new[] { new DateTime(2026, 7, 5, 10, 0, 0, DateTimeKind.Utc) };
+            var r = new Ipv4Recovery(TimeSpan.FromSeconds(120), () => clock[0]);
+            r.Record("enchant-id", "192.168.1.154", Addrs("fd1a::1"));
+
+            Assert.Equal("192.168.1.154", r.Recover("enchant-id", "fd1a::1%8", out _));   // fresh
+            Assert.Equal("192.168.1.154", r.Recover(null, "fd1a::1%8", out _));           // fresh (host path)
+
+            clock[0] = clock[0].AddSeconds(121);                                          // past the TTL
+
+            Assert.Null(r.Recover("enchant-id", "fd1a::1%8", out var s1));                // id path expired
+            Assert.Equal(string.Empty, s1);
+            Assert.Null(r.Recover(null, "fd1a::1%8", out _));                             // host path expired
         }
     }
 }

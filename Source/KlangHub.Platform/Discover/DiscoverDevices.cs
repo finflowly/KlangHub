@@ -109,15 +109,21 @@ namespace KlangHub.Discover
 
             ipv4Recovery.Record(id, ipv4, e.Announcement.Addresses);
 
+            // Reach devices over IPv4 only: prefer the announced IPv4, else recover it (by id=, then via the
+            // dual-stack group the device hosts). We do NOT enqueue a raw IPv6 literal - keying a tile on it
+            // would create an ordering-dependent duplicate that never dedups against the device's IPv4 tile
+            // (and a truly-IPv6-only Cast target can't be streamed to anyway; the audio return path is IPv4).
+            // The correlation cache persists and mDNS re-announces (~2s), so an IPv6-only-first device is
+            // recovered on a later scan; until then it is skipped exactly as before (self-healing).
             var recoverySource = string.Empty;
             var recovered = ipv4 == null ? ipv4Recovery.Recover(id, ipv6, out recoverySource) : null;
-            var primary = ipv4 ?? recovered ?? ipv6;
+            var primary = ipv4 ?? recovered;
 
             var fnDbg = e.Announcement.Txt.FirstOrDefault(x => x.ToString().StartsWith("fn="))?.Replace("fn=", "");
-            var how = primary == null ? "SKIPPED (no address)"
-                : ipv4 != null ? primary!
-                : recovered != null ? $"{primary} (IPv4 recovered from {recoverySource})"
-                : $"{primary} (IPv6)";
+            var how = primary == null
+                ? (ipv6 != null ? "SKIPPED (IPv6-only, IPv4 not yet recovered)" : "SKIPPED (no address)")
+                : ipv4 != null ? primary
+                : $"{primary} (IPv4 recovered from {recoverySource})";
             logger?.Log($"mDNS [{e.Announcement.Type}] fn='{fnDbg}' addrs=[{string.Join(", ", addresses)}] -> {how}");
             if (primary == null)
                 return;
