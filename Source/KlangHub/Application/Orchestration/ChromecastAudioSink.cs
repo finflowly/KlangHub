@@ -18,7 +18,7 @@ namespace KlangHub.Application.Orchestration
 
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
-        private IAudioEncoder mp3Encoder = null;
+        private IAudioEncoder? mp3Encoder = null;
         private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Mp3_320;
 
         public ChromecastAudioSink(IDevices devicesIn, ILogger loggerIn)

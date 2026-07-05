@@ -19,7 +19,7 @@ namespace KlangHub.Classes
     /// </summary>
     public static class CastDeviceCapabilitiesHelper
     {
-        public static CastDeviceCapabilities GetCastDeviceCapabilities(string content)
+        public static CastDeviceCapabilities? GetCastDeviceCapabilities(string content)
         {
             if (content != null)
             {

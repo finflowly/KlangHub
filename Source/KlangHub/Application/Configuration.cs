@@ -14,10 +14,10 @@ namespace KlangHub.Application
         {
             try
             {
-                string showLagControl = ConfigurationManager.AppSettings["ShowLagControl"];
+                string? showLagControl = ConfigurationManager.AppSettings["ShowLagControl"];
                 bool.TryParse(showLagControl, out bool showLag);
-                configurationCallback(ConfigurationManager.AppSettings["IpAddressesDevices"],
-                    ConfigurationManager.AppSettings["IgnoreIpAddressesDevices"],
+                configurationCallback(ConfigurationManager.AppSettings["IpAddressesDevices"]!,
+                    ConfigurationManager.AppSettings["IgnoreIpAddressesDevices"]!,
                     showLag);
             }
             catch (Exception ex)

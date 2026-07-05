@@ -5,7 +5,7 @@ namespace KlangHub.Application
 {
     public class Logger : ILogger
     {
-        private Action<string> logCallback;
+        private Action<string>? logCallback;
 
         /// <summary>
         /// Log a message.
@@ -20,7 +20,7 @@ namespace KlangHub.Application
         /// Log an exception.
         /// </summary>
         /// <param name="ex">the exception to log</param>
-        public void Log(Exception ex, string message = null)
+        public void Log(Exception ex, string? message = null)
         {
             logCallback?.Invoke($"ex : [{message}] {ex.Message}");
         }

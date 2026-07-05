@@ -12,13 +12,13 @@ namespace KlangHub.Rest
     public class RestApi : IDisposable
     {
         public ManualResetEvent allDone = new ManualResetEvent(false);
-        private Action<Socket, string, IDevices, ILogger, Action> onConnectCallback;
-        private Socket listener;
-        private string ip;
+        private Action<Socket, string, IDevices, ILogger, Action>? onConnectCallback;
+        private Socket listener = null!;
+        private string? ip;
         private int port;
-        private ILogger logger;
-        private IDevices devices;
-        private Action restartRecording;
+        private ILogger logger = null!;
+        private IDevices devices = null!;
+        private Action restartRecording = null!;
 
         /// <summary>
         /// Start listening for new API request.
@@ -42,7 +42,7 @@ namespace KlangHub.Rest
 
                 listener.Bind(localEndPoint);
                 listener.Listen(100);
-                var endPoint = (IPEndPoint)listener.LocalEndPoint;
+                var endPoint = (IPEndPoint?)listener.LocalEndPoint;
                 if (endPoint != null)
                 {
                     ip = endPoint.Address?.ToString();
@@ -114,7 +114,7 @@ namespace KlangHub.Rest
             try
             {
                 var state = (StateObject)asyncResult.AsyncState;
-                var handlerSocket = state.workSocket;
+                var handlerSocket = state.workSocket!;
 
                 var bytesRead = handlerSocket.EndReceive(asyncResult);
                 if (bytesRead > 0)

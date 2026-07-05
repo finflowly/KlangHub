@@ -12,8 +12,8 @@ namespace KlangHub.UserControls
     public partial class DeviceControl : UserControl
     {
         private readonly Func<IPlaybackSession> sessionAccessor;
-        private readonly IPlaybackSession session;
-        private readonly CastDeviceDescriptor descriptor;
+        private readonly IPlaybackSession? session;
+        private readonly CastDeviceDescriptor? descriptor;
 
         public DeviceControl(Func<IPlaybackSession> sessionAccessorIn)
         {
@@ -35,7 +35,7 @@ namespace KlangHub.UserControls
                     session.StateChanged -= OnSessionStateChanged;
                     session.VolumeChanged -= OnSessionVolumeChanged;
                 };
-                SetDeviceName(descriptor.Name);                    // initial name + group
+                SetDeviceName(descriptor!.Name);                    // initial name + group
                 RenderStatus(session.State, session.StatusText);   // initial status (volume on first event)
             }
 
@@ -66,10 +66,10 @@ namespace KlangHub.UserControls
 
         // 2.2b-4.7: neutral identity exposed for MainForm-owned filtering and removal.
         public bool IsGroup => descriptor?.IsGroup ?? false;
-        public string Id => descriptor?.Id;
+        public string? Id => descriptor?.Id;
 
         // 2.2b-4.5: neutral status observation, fed by the session's StateChanged event.
-        private void OnSessionStateChanged(object sender, PlaybackState state)
+        private void OnSessionStateChanged(object? sender, PlaybackState state)
             => RenderStatus(state, session?.StatusText ?? string.Empty);
 
         // Renders from the neutral PlaybackState (+ StatusText). Documented fidelity loss vs the old
@@ -122,7 +122,7 @@ namespace KlangHub.UserControls
         }
 
         // 2.2b-4.5: neutral volume observation, fed by the session's VolumeChanged event.
-        private void OnSessionVolumeChanged(object sender, VolumeStatus volume) => RenderVolume(volume);
+        private void OnSessionVolumeChanged(object? sender, VolumeStatus volume) => RenderVolume(volume);
 
         private void RenderVolume(VolumeStatus volume)
         {
@@ -172,13 +172,13 @@ namespace KlangHub.UserControls
         private void DeviceControl_MouseDown(object sender, MouseEventArgs e)
         {
             var control = sender as Control;
-            control.DoDragDrop(control, DragDropEffects.Move);
+            control!.DoDragDrop(control, DragDropEffects.Move);
         }
 
         private void DeviceChildControl_MouseDown(object sender, MouseEventArgs e)
         {
             var control = sender as Control;
-            control.DoDragDrop(control.Parent, DragDropEffects.Move);
+            control!.DoDragDrop(control.Parent!, DragDropEffects.Move);
         }
 
         private void DeviceControl_DragOver(object sender, DragEventArgs e)
@@ -194,7 +194,7 @@ namespace KlangHub.UserControls
             if (sender == null || !(sender is DeviceControl))
                 return;
 
-            ((IMainForm)((DeviceControl)sender).ParentForm).DoDragDrop(sender, e);
+            ((IMainForm)((DeviceControl)sender).ParentForm!).DoDragDrop(sender, e);
         }
 
         private void BtnDevicePlay_Click(object sender, EventArgs e)

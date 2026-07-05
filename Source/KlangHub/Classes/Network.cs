@@ -77,7 +77,7 @@ namespace KlangHub.Classes
         /// If there are multiple IP addresses the first ethernet address is returned.
         /// </summary>
         /// <returns>the IP address, or null if there aren't any</returns>
-        public static IPAddress GetIp4Address()
+        public static IPAddress? GetIp4Address()
         {
             var addressesInUse = GetIp4ddresses(false);
             var ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
@@ -88,7 +88,7 @@ namespace KlangHub.Classes
             var addressFound = false;
             foreach (var address in ipHostInfo.AddressList)
             {
-                var adapter = addressesInUse.Where(x => x.IPAddress.ToString() == address.ToString()).FirstOrDefault();
+                var adapter = addressesInUse.Where(x => x.IPAddress!.ToString() == address.ToString()).FirstOrDefault();
                 if (adapter != null && 
                     !address.IsIPv4MappedToIPv6 && 
                     !address.IsIPv6LinkLocal && 

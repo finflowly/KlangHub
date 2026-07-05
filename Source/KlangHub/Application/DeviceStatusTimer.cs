@@ -7,8 +7,8 @@ namespace KlangHub.Application
     public class DeviceStatusTimer : IDeviceStatusTimer
     {
         public const int Interval = 15000;
-        private Action onGetStatus;
-        private Timer timer;
+        private Action? onGetStatus;
+        private Timer timer = null!;
 
         /// <summary>
         /// Start a timer to get the device status periodically.
@@ -30,7 +30,7 @@ namespace KlangHub.Application
         /// <summary>
         /// Invoke the get status callback.
         /// </summary>
-        private void OnGetStatus(object sender, ElapsedEventArgs e)
+        private void OnGetStatus(object? sender, ElapsedEventArgs e)
         {
             onGetStatus?.Invoke();
         }

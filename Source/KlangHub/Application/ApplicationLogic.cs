@@ -25,7 +25,7 @@ namespace KlangHub.Application
     public class ApplicationLogic : IApplicationLogic, IDisposable
     {
         private readonly IDevices devices;
-        private IMainForm mainForm;
+        private IMainForm mainForm = null!;
         private readonly IConfiguration configuration;
         private readonly IStreamingRequestsListener streamingRequestListener;
         private readonly IDiscoverDevices discoverDevices;
@@ -34,13 +34,13 @@ namespace KlangHub.Application
         // 2.2b-H4b: the WinForms-free orchestration (streaming pipeline, listener lifecycle, discovery
         // start, task runner, ICastHost). ApplicationLogic is now a thin tray shell that delegates here.
         private readonly Orchestration.Orchestrator orchestrator;
-        private NotifyIcon notifyIcon;
+        private NotifyIcon notifyIcon = null!;
         // 2.2b-H3a: ApplicationLogic owns the per-device tray menu items (moved off IDevice/Device so
         // IDevice becomes WinForms-free). Keyed by device id; add/remove run on different threads.
         private readonly System.Collections.Concurrent.ConcurrentDictionary<string, ToolStripMenuItem> deviceMenuItems = new();
         // 2.2b-H4b-3: neutral settings persistence/merge (owns the UserSettings); the shell keeps the UI mapping.
         private readonly Orchestration.SettingsService settingsService;
-        private string Culture;
+        private string Culture = null!;
         private readonly ILogger logger;
         private Size defaultSize = new Size(850, 550);
 
@@ -123,7 +123,7 @@ namespace KlangHub.Application
                 }
                 else
                 {
-                    menuItem.Click += deviceIn.OnClickPlayPause;
+                    menuItem.Click += (s, e) => deviceIn.OnClickPlayPause(s!, e);
                 }
 
                 notifyIcon?.ContextMenuStrip?.Items?.Insert(0, menuItem);
@@ -270,8 +270,8 @@ namespace KlangHub.Application
                     settings.Size = defaultSize;
                 mainForm.SetSize(settings.Size.Value);
                 mainForm.SetPosition(
-                        Math.Min(Math.Max(settings.Left.Value, 0), Screen.PrimaryScreen.Bounds.Width),
-                        Math.Min(Math.Max(settings.Top.Value, 0), Screen.PrimaryScreen.Bounds.Height)
+                        Math.Min(Math.Max(settings.Left!.Value, 0), Screen.PrimaryScreen!.Bounds.Width),
+                        Math.Min(Math.Max(settings.Top!.Value, 0), Screen.PrimaryScreen.Bounds.Height)
                     );
                 mainForm.SetExtraBufferInSeconds(settings.ExtraBufferInSeconds ?? 4);
                 mainForm.SetRecordingDeviceID(settings.RecordingDeviceID ?? null);
@@ -285,7 +285,7 @@ namespace KlangHub.Application
             catch (ConfigurationErrorsException ex)
             {
                 // Corrupted config file, remove the config file.
-                File.Delete(((ConfigurationErrorsException)ex.InnerException).Filename);
+                File.Delete(((ConfigurationErrorsException)ex.InnerException!).Filename);
                 Process.GetCurrentProcess().Kill();
             }
         }
@@ -351,10 +351,10 @@ namespace KlangHub.Application
             settings.StartApplicationWhenWindowsStarts = false;
             settings.FilterDevices = FilterDevicesEnum.ShowAll;
             settings.Size = defaultSize;
-            settings.Left = Screen.PrimaryScreen.Bounds.Width / 2 - settings.Size.Value.Width / 2;
+            settings.Left = Screen.PrimaryScreen!.Bounds.Width / 2 - settings.Size.Value.Width / 2;
             settings.Top = Screen.PrimaryScreen.Bounds.Height / 2 - settings.Size.Value.Height / 2;
             settings.ExtraBufferInSeconds = 4;
-            settings.RecordingDeviceID = null;
+            settings.RecordingDeviceID = null!;
             settings.AutoMute = false;
             settings.MinimizeToTray = false;
             settings.ConvertMultiChannelToStereo = false;
@@ -377,7 +377,7 @@ namespace KlangHub.Application
             mainForm.SetAutoMute(settings.AutoMute.Value);
             mainForm.SetMinimizeToTray(settings.MinimizeToTray.Value);
             mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo.Value);
-            mainForm.SetDarkMode(settings.DarkMode.Value);
+            mainForm.SetDarkMode(settings.DarkMode!.Value);
             mainForm.SetStreamTitle(Properties.Strings.ChromeCast_StreamTitle);
             settingsService.Save();
             devices?.Dispose();
@@ -460,7 +460,7 @@ namespace KlangHub.Application
 
                 notifyIcon = new NotifyIcon();
                 System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-                notifyIcon.Icon = (Icon)resources.GetObject("$this.Icon");
+                notifyIcon.Icon = (Icon?)resources.GetObject("$this.Icon");
                 notifyIcon.Visible = true;
                 notifyIcon.Text = Properties.Strings.MainForm_Text;
                 notifyIcon.ContextMenuStrip = contextMenuStrip;
@@ -510,7 +510,7 @@ namespace KlangHub.Application
         /// <summary>
         /// Callback for the systray icon to close the application.
         /// </summary>
-        private void CloseApplication(object sender, EventArgs e)
+        private void CloseApplication(object? sender, EventArgs e)
         {
             CloseApplication();
         }
@@ -518,13 +518,13 @@ namespace KlangHub.Application
         /// <summary>
         /// Start an action in a new task.
         /// </summary>
-        public void StartTask(Action action, CancellationTokenSource cancellationTokenSource = null)
+        public void StartTask(Action action, CancellationTokenSource? cancellationTokenSource = null)
             => orchestrator.StartTask(action, cancellationTokenSource);
 
         /// <summary>
         /// 
         /// </summary>
-        public void SetRecordingDevice(AudioCaptureDevice recordingDevice)
+        public void SetRecordingDevice(AudioCaptureDevice? recordingDevice)
         {
             if(recordingDevice == null)
             {

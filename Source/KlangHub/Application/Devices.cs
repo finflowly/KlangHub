@@ -14,16 +14,16 @@ namespace KlangHub.Application
     public class Devices : IDevices
     {
         private readonly List<IDevice> deviceList = new List<IDevice>();
-        private Action<Device> onAddDeviceCallback;
-        private Action<IDevice> onRemoveDeviceCallback;
+        private Action<Device>? onAddDeviceCallback;
+        private Action<IDevice>? onRemoveDeviceCallback;
         private bool AutoStart;
         private bool StartLastUsedDevices;
-        private IMainForm mainForm;
-        private IApplicationLogic applicationLogic;
+        private IMainForm mainForm = null!;
+        private IApplicationLogic applicationLogic = null!;
         private readonly ApplicationBuffer applicationBuffer = new ApplicationBuffer();
-        private readonly ILogger logger;
+        private readonly ILogger logger = null!;
         private bool isMuted;
-        private List<string> ignoreIpAddresses;
+        private List<string> ignoreIpAddresses = null!;
 
         public Devices()
         {
@@ -57,7 +57,7 @@ namespace KlangHub.Application
             {
                 logger?.Log($"Discovery: '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) - fetching eureka_info.");
                 applicationLogic.StartTask(DeviceInformation.GetDeviceInformation(
-                    discoveredDevice, SetDeviceInformation, () => AddFromMdnsFallback(discoveredDevice), logger));
+                    discoveredDevice, SetDeviceInformation, () => AddFromMdnsFallback(discoveredDevice), logger!));
             }
             else
             {
@@ -158,7 +158,7 @@ namespace KlangHub.Application
         /// Get the device with the IP and port.
         /// </summary>
         /// <returns></returns>
-        private IDevice GetDevice(DiscoveredDevice discoveredDevice)
+        private IDevice? GetDevice(DiscoveredDevice discoveredDevice)
         {
             if (discoveredDevice == null)
                 return null;
@@ -183,7 +183,7 @@ namespace KlangHub.Application
 
         /// <summary>A real, usable MAC identity - not empty and not the all-zeros placeholder some Cast
         /// devices (Google TV / Android TV) report in eureka_info.</summary>
-        internal static bool HasRealMac(string mac) =>
+        internal static bool HasRealMac(string? mac) =>
             !string.IsNullOrEmpty(mac) && mac != "00:00:00:00:00:00";
 
         /// <summary>
@@ -195,12 +195,12 @@ namespace KlangHub.Application
             logger?.Log($"eureka: name='{eurekaIn?.GetName()}' ip={eurekaIn?.GetIpAddress()} mac={eurekaIn?.GetMacAddress()}");
             var discoveredDevice = new DiscoveredDevice
             {
-                IPAddress = eurekaIn.GetIpAddress(),
+                IPAddress = eurekaIn!.GetIpAddress(),
                 MACAddress = eurekaIn.GetMacAddress(),
                 Name = eurekaIn.GetName(),
                 Port = 8009,
                 Protocol = "",
-                Usn = null,
+                Usn = null!,
                 IsGroup = false,
                 AddedByDeviceInfo = true,
                 Eureka = eurekaIn
@@ -305,7 +305,7 @@ namespace KlangHub.Application
             if (deviceList == null || socket == null || applicationBuffer == null)
                 return;
 
-            var remoteAddress = ((IPEndPoint)socket.RemoteEndPoint).Address.ToString();
+            var remoteAddress = ((IPEndPoint)socket.RemoteEndPoint!).Address.ToString();
             foreach (var device in deviceList)
             {
                 if (device.AddStreamingConnection(remoteAddress, socket))

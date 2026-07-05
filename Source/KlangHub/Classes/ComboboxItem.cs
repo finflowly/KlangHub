@@ -19,9 +19,9 @@
         public override string ToString()
         {
             if (Value is SupportedStreamFormat || Value is FilterDevicesEnum)
-                return Resource.Get(Value.ToString());
+                return Resource.Get(Value.ToString()!);
 
-            return Value.ToString();
+            return Value.ToString()!;
         }
     }
 }

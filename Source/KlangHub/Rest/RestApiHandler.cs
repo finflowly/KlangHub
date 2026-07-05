@@ -190,7 +190,7 @@ namespace KlangHub.Rest
             if (session != null) _ = viaSession(session);   // 2.2b-M2: fire-and-forget (Chromecast completes synchronously)
         }
 
-        private static IDevice GetDevice(IDevices devices, string action)
+        private static IDevice? GetDevice(IDevices devices, string action)
         {
             if (action.IndexOf("/") != 0)
                 return null;

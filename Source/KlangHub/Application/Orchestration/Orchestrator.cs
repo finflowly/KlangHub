@@ -31,8 +31,8 @@ namespace KlangHub.Application.Orchestration
 
         /// <summary>Raised when a device is added/removed; the tray shell reacts with WinForms (menu items).
         /// Raised on the discovery / status-timer thread - subscribers must marshal their UI work.</summary>
-        public event Action<IDevice> DeviceAdded;
-        public event Action<IDevice> DeviceRemoved;
+        public event Action<IDevice>? DeviceAdded;
+        public event Action<IDevice>? DeviceRemoved;
 
         // 2.2b-M2: Chromecast audio delivery behind the neutral IAudioSink seam. OnRecordingDataAvailable
         // fans raw PCM to every sink; today there is one (Chromecast). AirPlay/Snapcast sinks join here later.
@@ -90,9 +90,9 @@ namespace KlangHub.Application.Orchestration
         public IPlaybackSession ResolveSession(IDevice device)
         {
             if (castProvider == null || !(device is IPlaybackSession playbackSession))
-                return null;
+                return null!;
             try { return castProvider.CreateSession(playbackSession.Device); }
-            catch (InvalidOperationException) { return null; }
+            catch (InvalidOperationException) { return null!; }
         }
 
         public void StartStatusPolling()
@@ -195,7 +195,7 @@ namespace KlangHub.Application.Orchestration
         public string GetStreamingUrl()
         {
             if (streamingRequestListener == null)
-                return null;
+                return null!;
 
             return streamingRequestListener.GetStreamimgUrl();
         }
@@ -208,7 +208,7 @@ namespace KlangHub.Application.Orchestration
 
         public void SetAutoRestart(bool autoRestartIn) => autoRestart = autoRestartIn;
 
-        public void StartTask(Action action, CancellationTokenSource cancellationTokenSource = null)
+        public void StartTask(Action action, CancellationTokenSource? cancellationTokenSource = null)
         {
             taskList.Add(action, cancellationTokenSource);
         }

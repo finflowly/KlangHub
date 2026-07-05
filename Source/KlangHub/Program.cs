@@ -41,7 +41,7 @@ namespace KlangHub
                     chromecastDiscovery,
                     descriptor => devices.GetDeviceList()
                         .OfType<IPlaybackSession>()
-                        .FirstOrDefault(s => s.Device.Id == descriptor.Id));
+                        .FirstOrDefault(s => s.Device.Id == descriptor.Id)!);
                 // 2.2b-H4a-4 / M3-4: front the providers with a CompositeCastProvider so the app still sees
                 // one ICastProvider. Chromecast keeps its direct wiring above; AirPlay + Snapcast join as
                 // discovery-only providers (CreateSession throws until their sessions land in M4+).
@@ -101,7 +101,7 @@ namespace KlangHub
             void MainFormStartupNextInstance(object sender, StartupNextInstanceEventArgs e)
             {
                 var form = MainForm as MainForm;
-                if (!form.IsDisposed)
+                if (!form!.IsDisposed)
                 {
                     form.Show();
                     form.TopMost = true;
@@ -123,7 +123,7 @@ namespace KlangHub
                     chromecastDiscovery,
                     descriptor => devices.GetDeviceList()
                         .OfType<IPlaybackSession>()
-                        .FirstOrDefault(s => s.Device.Id == descriptor.Id));
+                        .FirstOrDefault(s => s.Device.Id == descriptor.Id)!);
                 // 2.2b-H4a-4 / M3-4: front the providers with a CompositeCastProvider so the app still sees
                 // one ICastProvider. Chromecast keeps its direct wiring above; AirPlay + Snapcast join as
                 // discovery-only providers (CreateSession throws until their sessions land in M4+).

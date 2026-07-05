@@ -27,6 +27,6 @@ namespace KlangHub.Application.Interfaces
         bool WasPlaying(DiscoveredDevice discoveredDevice);
         void ClearMp3Buffer();
         void SaveSettings();
-        void SetRecordingDevice(AudioCaptureDevice recordingDevice);
+        void SetRecordingDevice(AudioCaptureDevice? recordingDevice);
     }
 }

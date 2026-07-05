@@ -8,16 +8,16 @@ namespace KlangHub.Application
 {
     public class TaskToCancel
     {
-        public Task Task { get; set; }
-        public CancellationTokenSource TokenSource { get; set; }
+        public Task Task { get; set; } = null!;
+        public CancellationTokenSource TokenSource { get; set; } = null!;
     }
 
     public class TasksToCancel
     {
-        private List<TaskToCancel> taskList = new List<TaskToCancel>();
+        private List<TaskToCancel>? taskList = new List<TaskToCancel>();
         private bool IsDisposed = false;
 
-        public void Add(Action action, CancellationTokenSource cancellationTokenSource = null)
+        public void Add(Action action, CancellationTokenSource? cancellationTokenSource = null)
         {
             if (action == null || taskList == null || IsDisposed)
                 return;

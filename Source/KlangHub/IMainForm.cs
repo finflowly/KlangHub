@@ -11,7 +11,7 @@ namespace KlangHub
     public interface IMainForm
     {
         void Log(string message);
-        void ToggleFormVisibility(object sender, EventArgs e);
+        void ToggleFormVisibility(object? sender, EventArgs e);
         void SetKeyboardHooks(bool useShortCuts);
         void ShowLagControl(bool showLag);
         void SetLagValue(int lagValue);
@@ -47,7 +47,7 @@ namespace KlangHub
         int GetTop();
         void SetExtraBufferInSeconds(int extraBufferInSeconds);
         int? GetExtraBufferInSeconds();
-        void SetRecordingDeviceID(string recordingDeviceID);
+        void SetRecordingDeviceID(string? recordingDeviceID);
         string GetRecordingDeviceID();
         void SetAutoMute(bool autoMute);
         bool GetAutoMute();

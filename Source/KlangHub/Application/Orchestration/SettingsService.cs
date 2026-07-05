@@ -88,7 +88,7 @@ namespace KlangHub.Application.Orchestration
         }
 
         /// <summary>Kick off the "is this saved device on?" checks (the LoadSettings loop).</summary>
-        public void StartDeviceChecks(IDevices devices, Action<Action, CancellationTokenSource> startTask)
+        public void StartDeviceChecks(IDevices devices, Action<Action, CancellationTokenSource?> startTask)
         {
             if (settings.ChromecastDiscoveredDevices == null)
                 return;

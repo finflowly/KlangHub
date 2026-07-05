@@ -26,21 +26,21 @@ namespace KlangHub
 {
     public partial class MainForm : Form, IMainForm
     {
-        private readonly IApplicationLogic applicationLogic;
-        private readonly IDevices devices;
-        private readonly ILogger logger;
-        private IPAddress previousIpAddress;
-        private readonly IAudioCaptureEngine captureEngine;
-        private readonly ICastProvider castProvider;
+        private readonly IApplicationLogic applicationLogic = null!;
+        private readonly IDevices devices = null!;
+        private readonly ILogger logger = null!;
+        private IPAddress? previousIpAddress;
+        private readonly IAudioCaptureEngine captureEngine = null!;
+        private readonly ICastProvider castProvider = null!;
         private Size windowSize;
         private readonly StringBuilder log = new StringBuilder();
-        private string previousRecordingDeviceID = null;
+        private string? previousRecordingDeviceID = null;
         private bool isSetRecordingDeviceID = false;
         private bool previousRecordingDeviceExists;
         private bool eventHandlerAdded;
         private bool isRecordingDeviceSelected;
-        private AudioCaptureDevice previousDefaultDevice;
-        private readonly WavGenerator wavGenerator;
+        private AudioCaptureDevice? previousDefaultDevice;
+        private readonly WavGenerator wavGenerator = null!;
 
         public MainForm(IApplicationLogic applicationLogicIn, IDevices devicesIn, IAudioCaptureEngine captureEngineIn, ILogger loggerIn, ICastProvider castProviderIn)
         {
@@ -150,9 +150,9 @@ namespace KlangHub
             }
             else
             {
-                if (cmbLanguage.Items[0].ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("en")))
+                if (cmbLanguage.Items[0]!.ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("en")))
                     cmbLanguage.Items[0] = Resource.Get("Language", CultureInfo.GetCultureInfo("en"));
-                if (cmbLanguage.Items[1].ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("fr")))
+                if (cmbLanguage.Items[1]!.ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("fr")))
                     cmbLanguage.Items[1] = Resource.Get("Language", CultureInfo.GetCultureInfo("fr"));
             }
             if (Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName == "fr")
@@ -185,7 +185,7 @@ namespace KlangHub
             }
         }
 
-        private void AddressChangedCallback(object sender, EventArgs e)
+        private void AddressChangedCallback(object? sender, EventArgs e)
         {
             AddIP4Addresses();
         }
@@ -212,7 +212,7 @@ namespace KlangHub
         private Func<IPlaybackSession> BuildSessionAccessor(IDevice device)
         {
             if (castProvider == null || !(device is IPlaybackSession playbackSession))
-                return null;
+                return null!;
             var descriptor = playbackSession.Device;                 // stable Id, captured now
             return () => castProvider.CreateSession(descriptor);     // re-resolved per volume action
         }
@@ -322,7 +322,7 @@ namespace KlangHub
             chkHook.Checked = useShortCuts;
         }
 
-        public void ToggleFormVisibility(object sender, EventArgs e)
+        public void ToggleFormVisibility(object? sender, EventArgs e)
         {
             if (e.GetType().Equals(typeof(MouseEventArgs)))
             {
@@ -462,7 +462,7 @@ namespace KlangHub
                 var remove = true;
                 foreach (var device in devices)
                 {
-                    if (((AudioCaptureDevice)cmbRecordingDevice.Items[i]).Id == device.Id)
+                    if (((AudioCaptureDevice)cmbRecordingDevice.Items[i]!).Id == device.Id)
                     {
                         remove = false;
                     }
@@ -479,7 +479,7 @@ namespace KlangHub
                 var exists = false;
                 for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                 {
-                    if (((AudioCaptureDevice)cmbRecordingDevice.Items[i]).Id == device.Id)
+                    if (((AudioCaptureDevice)cmbRecordingDevice.Items[i]!).Id == device.Id)
                     {
                         exists = true;
                     }
@@ -493,11 +493,11 @@ namespace KlangHub
             // Select the new default device when the default device has changed.
             if (previousDefaultDevice != null)
             {
-                var selectedDevice = (AudioCaptureDevice)cmbRecordingDevice.SelectedItem;
+                var selectedDevice = (AudioCaptureDevice?)cmbRecordingDevice.SelectedItem;
                 var nrSameDataflowItems = 0;
                 for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                 {
-                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i];
+                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i]!;
                     if (device.Flow == selectedDevice?.Flow) nrSameDataflowItems++;
                 }
                 if (defaultdevice.Id != previousDefaultDevice.Id 
@@ -505,7 +505,7 @@ namespace KlangHub
                 {
                     for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                     {
-                        var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i];
+                        var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i]!;
                         if (device.Id == defaultdevice.Id)
                         {
                             if (cmbRecordingDevice.SelectedIndex != i)
@@ -522,7 +522,7 @@ namespace KlangHub
             {
                 for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                 {
-                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i];
+                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i]!;
                     if (!isSetRecordingDeviceID && device.Id == defaultdevice.Id)
                     {
                         // Nothing previously selected, select the default device.
@@ -537,7 +537,7 @@ namespace KlangHub
                 }
                 for (int i = 0; i < cmbRecordingDevice.Items.Count; i++)
                 {
-                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i];
+                    var device = (AudioCaptureDevice)cmbRecordingDevice.Items[i]!;
                     if (!isSetRecordingDeviceID && device.Id == previousRecordingDeviceID)
                     {
                         // Select the previously selected device (only once).
@@ -553,10 +553,10 @@ namespace KlangHub
             isSetRecordingDeviceID = true;
 
             // Show recording device in the UI
-            var selected = (AudioCaptureDevice)cmbRecordingDevice.SelectedItem;
+            var selected = (AudioCaptureDevice?)cmbRecordingDevice.SelectedItem;
             if (selected?.Id != defaultdevice.Id)
             {
-                Text = $"{Properties.Strings.MainForm_Text} - {selected.Name}";
+                Text = $"{Properties.Strings.MainForm_Text} - {selected!.Name}";
                 applicationLogic.SetRecordingDevice(selected);
             }
             else
@@ -578,7 +578,7 @@ namespace KlangHub
 
 
 
-        private void CmbRecordingDevice_SelectedIndexChanged(object sender, EventArgs e)
+        private void CmbRecordingDevice_SelectedIndexChanged(object? sender, EventArgs e)
         {
             isRecordingDeviceSelected = true;
             captureEngine.Apply(BuildCaptureSettings());
@@ -588,7 +588,7 @@ namespace KlangHub
         private AudioCaptureSettings BuildCaptureSettings()
         {
             var selected = cmbRecordingDevice?.SelectedItem as AudioCaptureDevice;
-            return new AudioCaptureSettings(selected?.Id, GetSelectedStreamFormat(), GetConvertMultiChannelToStereo());
+            return new AudioCaptureSettings((selected?.Id)!, GetSelectedStreamFormat(), GetConvertMultiChannelToStereo());
         }
 
         private void PlaySilence()
@@ -624,7 +624,7 @@ namespace KlangHub
 
             if (!InvokeRequired)
             {
-                var oldAddressUsed = (IPAddress)cmbIP4AddressUsed.SelectedItem;
+                var oldAddressUsed = (IPAddress?)cmbIP4AddressUsed.SelectedItem;
                 //LogNetworkInformation();
                 var ip4Adresses = Network.GetIp4ddresses();
 
@@ -634,7 +634,7 @@ namespace KlangHub
                 {
                     foreach (var adapter in ip4Adresses)
                     {
-                        cmbIP4AddressUsed.Items.Add(adapter.IPAddress);
+                        cmbIP4AddressUsed.Items.Add(adapter.IPAddress!);
                     }
 
                     if (ip4Adresses.Any(x => x.IPAddress?.ToString() == oldAddressUsed?.ToString()))
@@ -701,14 +701,14 @@ namespace KlangHub
             }
         }
 
-        private void CmbIP4AddressUsed_SelectedIndexChanged(object sender, EventArgs e)
+        private void CmbIP4AddressUsed_SelectedIndexChanged(object? sender, EventArgs e)
         {
             if (cmbIP4AddressUsed == null)
                 return;
 
-            var ipAddress = (IPAddress)cmbIP4AddressUsed.SelectedItem;
+            var ipAddress = (IPAddress?)cmbIP4AddressUsed.SelectedItem;
             if (ipAddress?.ToString() != previousIpAddress?.ToString())
-                applicationLogic.ChangeIPAddressUsed(ipAddress);
+                applicationLogic.ChangeIPAddressUsed(ipAddress!);
             previousIpAddress = ipAddress;
         }
 
@@ -792,11 +792,11 @@ namespace KlangHub
             if (e == null || pnlDevices == null)
                 return;
 
-            if (e.Data.GetFormats().Length >= 1 &&
+            if (e.Data!.GetFormats().Length >= 1 &&
                 e.Data.GetData(format: e.Data.GetFormats()[0]) is DeviceControl &&
                 sender is DeviceControl deviceControl)
             {
-                var draggingControl = (DeviceControl)e.Data.GetData(e.Data.GetFormats()[0]);
+                var draggingControl = (DeviceControl)e.Data.GetData(e.Data.GetFormats()[0])!;
                 var droppingOnControl = deviceControl;
                 var indexDrop = pnlDevices.Controls.GetChildIndex(droppingOnControl);
 
@@ -843,7 +843,7 @@ namespace KlangHub
             FillStreamFormats();
             for (int i = 0; i < cmbStreamFormat.Items.Count; i++)
             {
-                if ((SupportedStreamFormat)((ComboboxItem)cmbStreamFormat.Items[i]).Value == format)
+                if ((SupportedStreamFormat)((ComboboxItem)cmbStreamFormat.Items[i]!).Value == format)
                     cmbStreamFormat.SelectedIndex = i;
             }
             SetStreamFormat();
@@ -872,7 +872,7 @@ namespace KlangHub
 
             try
             {
-                return (SupportedStreamFormat)((ComboboxItem)cmbStreamFormat.SelectedItem).Value;
+                return (SupportedStreamFormat)((ComboboxItem)cmbStreamFormat.SelectedItem!).Value;
             }
             catch (Exception)
             {
@@ -902,7 +902,7 @@ namespace KlangHub
             if (cmbLanguage == null)
                 return;
 
-            if (cmbLanguage.SelectedItem.ToString() == Resource.Get("Language", CultureInfo.GetCultureInfo("en")))
+            if (cmbLanguage.SelectedItem!.ToString() == Resource.Get("Language", CultureInfo.GetCultureInfo("en")))
                 SetCulture("en");
             else if (cmbLanguage.SelectedItem.ToString() == Resource.Get("Language", CultureInfo.GetCultureInfo("fr")))
                 SetCulture("fr");
@@ -998,10 +998,10 @@ namespace KlangHub
                                 var responseBody = response.Content.ReadAsStringAsync();
 
                                 var doc = JsonDocument.Parse(responseBody.Result);
-                                var latestRelease = doc.RootElement.GetProperty("tag_name").GetString().Replace("v", "");
+                                var latestRelease = doc.RootElement.GetProperty("tag_name").GetString()!.Replace("v", "");
                                 if (latestRelease.CompareTo(currentVersion) > 0)
                                 {
-                                    var latestReleaseUrl = doc.RootElement.GetProperty("html_url").GetString();
+                                    var latestReleaseUrl = doc.RootElement.GetProperty("html_url").GetString()!;
                                     ShowLatestRelease(latestRelease, latestReleaseUrl);
                                 }
                             }
@@ -1045,7 +1045,7 @@ namespace KlangHub
             if (e == null)
                 return;
 
-            OpenUrl(e.Link.LinkData as string);
+            OpenUrl((e.Link!.LinkData as string)!);
         }
 
         private void ChkStartApplicationWhenWindowsStarts_CheckedChanged(object sender, EventArgs e)
@@ -1083,7 +1083,7 @@ namespace KlangHub
             FillFilterDevices();
             for (int i = 0; i < cmbFilterDevices.Items.Count; i++)
             {
-                if ((FilterDevicesEnum)((ComboboxItem)cmbFilterDevices.Items[i]).Value == value)
+                if ((FilterDevicesEnum)((ComboboxItem)cmbFilterDevices.Items[i]!).Value == value)
                     cmbFilterDevices.SelectedIndex = i;
             }
             ApplyFilter(value);
@@ -1094,7 +1094,7 @@ namespace KlangHub
             if (cmbFilterDevices == null)
                 return null;
 
-            return (FilterDevicesEnum)((ComboboxItem)cmbFilterDevices.SelectedItem).Value;
+            return (FilterDevicesEnum)((ComboboxItem)cmbFilterDevices.SelectedItem!).Value;
         }
 
         private void CmbFilterDevices_SelectedIndexChanged(object sender, EventArgs e)
@@ -1241,7 +1241,7 @@ namespace KlangHub
 
             for (int i = 0; i < cmbBufferInSeconds.Items.Count; i++)
             {
-                if (int.Parse((string)cmbBufferInSeconds.Items[i]) == extraBufferInSecondsIn)
+                if (int.Parse((string)cmbBufferInSeconds.Items[i]!) == extraBufferInSecondsIn)
                     cmbBufferInSeconds.SelectedIndex = i;
             }
         }
@@ -1255,22 +1255,22 @@ namespace KlangHub
             if (devices == null)
                 return 0;
 
-            return int.Parse((string)cmbBufferInSeconds.SelectedItem);
+            return int.Parse((string)cmbBufferInSeconds.SelectedItem!);
         }
 
         /// <summary>
         /// Change the buffer on the devices.
         /// </summary>
-        private void CmbBufferInSeconds_SelectedIndexChanged(object sender, EventArgs e)
+        private void CmbBufferInSeconds_SelectedIndexChanged(object? sender, EventArgs e)
         {
             if (cmbBufferInSeconds == null || devices == null)
                 return;
 
-            var bufferInSeconds = int.Parse((string)cmbBufferInSeconds.SelectedItem);
+            var bufferInSeconds = int.Parse((string)cmbBufferInSeconds.SelectedItem!);
             devices.SetExtraBufferInSeconds(bufferInSeconds);
         }
 
-        public void SetRecordingDeviceID(string recordingDeviceIDIn)
+        public void SetRecordingDeviceID(string? recordingDeviceIDIn)
         {
             previousRecordingDeviceID = recordingDeviceIDIn;
             isRecordingDeviceSelected = false;
@@ -1281,7 +1281,7 @@ namespace KlangHub
             try
             {
                 if (cmbRecordingDevice.Items.Count == 0 || cmbRecordingDevice.SelectedItem == null)
-                    return null;
+                    return null!;
 
                 return ((AudioCaptureDevice)cmbRecordingDevice.SelectedItem).Id;
             }
@@ -1289,7 +1289,7 @@ namespace KlangHub
             {
             }
 
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -1392,7 +1392,7 @@ namespace KlangHub
 
             for (int i = 0; i < cmbIP4AddressUsed.Items.Count; i++)
             {
-                var ipAddress = cmbIP4AddressUsed.Items[i].ToString();
+                var ipAddress = cmbIP4AddressUsed.Items[i]!.ToString();
                 if (ip4Address == ipAddress)
                 {
                     if (cmbIP4AddressUsed.SelectedIndex != i)
@@ -1408,10 +1408,10 @@ namespace KlangHub
             if (cmbIP4AddressUsed.Items.Count == 0 || cmbIP4AddressUsed.SelectedItem == null)
                 return string.Empty;
 
-            return cmbIP4AddressUsed.SelectedItem.ToString();
+            return cmbIP4AddressUsed.SelectedItem.ToString()!;
         }
 
-        public void ApplyTheme(Control item, bool darkmode)
+        public void ApplyTheme(Control? item, bool darkmode)
         {
             if (item == null) 
             { 
