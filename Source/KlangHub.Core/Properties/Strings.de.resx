@@ -1,0 +1,320 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Buffering" xml:space="preserve">
+    <value>Puffern</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>Verbinden…</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Getrennt</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Lädt…</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="Button_ClearLog_Text" xml:space="preserve">
+    <value>Protokoll leeren</value>
+  </data>
+  <data name="Button_ClipboardCopy_Text" xml:space="preserve">
+    <value>In Zwischenablage kopieren</value>
+  </data>
+  <data name="Button_Down_Text" xml:space="preserve">
+    <value>Leiser</value>
+  </data>
+  <data name="Button_Mute_Text" xml:space="preserve">
+    <value>Stumm</value>
+  </data>
+  <data name="Button_ResetSetting_Text" xml:space="preserve">
+    <value>Einstellungen zurücksetzen</value>
+  </data>
+  <data name="Button_ScanAgain_Text" xml:space="preserve">
+    <value>Erneut nach Geräten suchen</value>
+  </data>
+  <data name="Button_SyncDevices_Text" xml:space="preserve">
+    <value>Geräte synchronisieren</value>
+  </data>
+  <data name="Button_Up_Text" xml:space="preserve">
+    <value>Lauter</value>
+  </data>
+  <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
+    <value>Automatisch neu starten, wenn der Stream geschlossen wird</value>
+  </data>
+  <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
+    <value>Geräte beim Start automatisch starten</value>
+  </data>
+  <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
+    <value>Tastenkürzel verwenden: Lauter = Strg+Alt+U; Leiser = Strg+Alt+D; Stumm (an/aus) = Strg+Alt+M</value>
+  </data>
+  <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
+    <value>Gerätekommunikation protokollieren</value>
+  </data>
+  <data name="Check_ShowLagControl_Text" xml:space="preserve">
+    <value>Lag-Regler anzeigen (experimentell)</value>
+  </data>
+  <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
+    <value>Fenster beim Start anzeigen</value>
+  </data>
+  <data name="ChromeCast_StreamTitle" xml:space="preserve">
+    <value>KlangHub</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Geschlossen</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Verbunden</value>
+  </data>
+  <data name="ConnectError" xml:space="preserve">
+    <value>Verbindungsfehler</value>
+  </data>
+  <data name="Disposed" xml:space="preserve">
+    <value>Verworfen</value>
+  </data>
+  <data name="Group_Devices_Text" xml:space="preserve">
+    <value>Geräte (Namen anklicken, um das Streaming zu starten)</value>
+  </data>
+  <data name="Group_Lag_Text" xml:space="preserve">
+    <value>Lag-Regelung</value>
+  </data>
+  <data name="Group_Options_Text" xml:space="preserve">
+    <value>Optionen</value>
+  </data>
+  <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
+    <value>Lautstärke aller Geräte:</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Bereit</value>
+  </data>
+  <data name="InvalidRequest" xml:space="preserve">
+    <value>Ungültige Anfrage</value>
+  </data>
+  <data name="Label_IPAddressUsed_Text" xml:space="preserve">
+    <value>Verwendete IPv4-Adresse:</value>
+  </data>
+  <data name="Label_KeepAlive_Text" xml:space="preserve">
+    <value>Letzte Keep-Alive-Nachricht:</value>
+  </data>
+  <data name="Label_LagExperimental_Text" xml:space="preserve">
+    <value>Experimentelle Funktion: Den Puffer auf dem Gerät so klein wie möglich halten, ohne Aussetzer zu hören.</value>
+  </data>
+  <data name="Label_Language_Text" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="Label_MaximumLag_Text" xml:space="preserve">
+    <value>maximaler Lag / beste Qualität</value>
+  </data>
+  <data name="Label_MinimumLag_Text" xml:space="preserve">
+    <value>minimaler Lag / geringere Qualität</value>
+  </data>
+  <data name="Label_NewVersionAvailable" xml:space="preserve">
+    <value>Auf GitHub ist eine neue Version verfügbar</value>
+  </data>
+  <data name="Label_RecordingDevice_Text" xml:space="preserve">
+    <value>Aufnahmegerät:</value>
+  </data>
+  <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
+    <value>Die MP3-Formate haben eine lange Verzögerung und Pufferzeit.</value>
+  </data>
+  <data name="Label_StreamFormat_Text" xml:space="preserve">
+    <value>Stream-Format</value>
+  </data>
+  <data name="Language_English" xml:space="preserve">
+    <value>Englisch</value>
+  </data>
+  <data name="Language_French" xml:space="preserve">
+    <value>Französisch</value>
+  </data>
+  <data name="LaunchedApplication" xml:space="preserve">
+    <value>Anwendung gestartet</value>
+  </data>
+  <data name="LaunchingApplication" xml:space="preserve">
+    <value>Anwendung wird gestartet</value>
+  </data>
+  <data name="LoadCancelled" xml:space="preserve">
+    <value>Laden abgebrochen</value>
+  </data>
+  <data name="LoadFailed" xml:space="preserve">
+    <value>Laden fehlgeschlagen</value>
+  </data>
+  <data name="LoadingMedia" xml:space="preserve">
+    <value>Medien werden geladen</value>
+  </data>
+  <data name="Log_In" xml:space="preserve">
+    <value>in</value>
+  </data>
+  <data name="Log_Out" xml:space="preserve">
+    <value>out</value>
+  </data>
+  <data name="MainForm_Text" xml:space="preserve">
+    <value>KlangHub</value>
+  </data>
+  <data name="MessageBox_NoIPAddress" xml:space="preserve">
+    <value>Auf deinem Gerät wurden keine IP-Adressen gefunden.</value>
+  </data>
+  <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
+    <value>Keine Aufnahmegeräte gefunden.</value>
+  </data>
+  <data name="Mp3_128" xml:space="preserve">
+    <value>Mp3 (128 kbps)</value>
+  </data>
+  <data name="Mp3_320" xml:space="preserve">
+    <value>Mp3 (320 kbps)</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>Nicht verbunden</value>
+  </data>
+  <data name="Paused" xml:space="preserve">
+    <value>Pausiert</value>
+  </data>
+  <data name="Playing" xml:space="preserve">
+    <value>Wiedergabe</value>
+  </data>
+  <data name="Tab_Log_Text" xml:space="preserve">
+    <value>Protokoll</value>
+  </data>
+  <data name="Tab_Options_Text" xml:space="preserve">
+    <value>Optionen</value>
+  </data>
+  <data name="TrayIcon_Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Wav" xml:space="preserve">
+    <value>Wav (44100 Hz/16 Bit)</value>
+  </data>
+  <data name="Tab_Main_Text" xml:space="preserve">
+    <value>Geräte</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
+  <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
+    <value>Anwendung beim Windows-Start starten</value>
+  </data>
+  <data name="DevicesOnly" xml:space="preserve">
+    <value>Nur Geräte</value>
+  </data>
+  <data name="GroupsOnly" xml:space="preserve">
+    <value>Nur Gruppen</value>
+  </data>
+  <data name="ShowAll" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
+    <value>Zuletzt verwendete Geräte und Gruppen beim Start automatisch starten</value>
+  </data>
+  <data name="Label_LinkHelp_Text" xml:space="preserve">
+    <value>Informationen zu den Optionen auf GitHub</value>
+  </data>
+  <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
+    <value>Aufnahmepegel</value>
+  </data>
+  <data name="Label_FilterDevices_Text" xml:space="preserve">
+    <value>Geräte filtern</value>
+  </data>
+  <data name="Tooltip_Group_Text" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="Label_BufferInSeconds_Text" xml:space="preserve">
+    <value>Gerätepuffer (in Sekunden)</value>
+  </data>
+  <data name="Check_AutoMute_Text" xml:space="preserve">
+    <value>Desktop-Audio automatisch stummschalten/aktivieren</value>
+  </data>
+  <data name="LoadingMediaCheckFirewall" xml:space="preserve">
+    <value>Firewall- &amp; WLAN-Datenschutzstatus prüfen</value>
+  </data>
+  <data name="Check_MinimizeToTray_Text" xml:space="preserve">
+    <value>Beim Schließen in den Infobereich minimieren</value>
+  </data>
+  <data name="Wav_16bit" xml:space="preserve">
+    <value>Wav (Abtastrate der Soundkarte/16 Bit)</value>
+  </data>
+  <data name="Wav_24bit" xml:space="preserve">
+    <value>Wav (Abtastrate der Soundkarte/24 Bit)</value>
+  </data>
+  <data name="Wav_32bit" xml:space="preserve">
+    <value>Wav (Abtastrate der Soundkarte/32 Bit — empfohlen, max. Qualität)</value>
+  </data>
+  <data name="Flac" xml:space="preserve">
+    <value>FLAC (verlustfrei, robust bei schwachem WLAN)</value>
+  </data>
+  <data name="Media_Subtitle" xml:space="preserve">
+    <value>Live vom PC</value>
+  </data>
+  <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
+    <value>Mehrkanal-Audio in Stereo umwandeln</value>
+  </data>
+  <data name="Check_DarkMode_Text" xml:space="preserve">
+    <value>Dunkler Modus</value>
+  </data>
+  <data name="Label_StreamTitle_Text" xml:space="preserve">
+    <value>Stream-Titel</value>
+  </data>
+</root>

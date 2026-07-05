@@ -147,6 +147,7 @@ namespace KlangHub
             {
                 cmbLanguage.Items.Add(Resource.Get("Language", CultureInfo.GetCultureInfo("en")));
                 cmbLanguage.Items.Add(Resource.Get("Language", CultureInfo.GetCultureInfo("fr")));
+                cmbLanguage.Items.Add(Resource.Get("Language", CultureInfo.GetCultureInfo("de")));
             }
             else
             {
@@ -154,17 +155,13 @@ namespace KlangHub
                     cmbLanguage.Items[0] = Resource.Get("Language", CultureInfo.GetCultureInfo("en"));
                 if (cmbLanguage.Items[1]!.ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("fr")))
                     cmbLanguage.Items[1] = Resource.Get("Language", CultureInfo.GetCultureInfo("fr"));
+                if (cmbLanguage.Items.Count > 2 && cmbLanguage.Items[2]!.ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("de")))
+                    cmbLanguage.Items[2] = Resource.Get("Language", CultureInfo.GetCultureInfo("de"));
             }
-            if (Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName == "fr")
-            {
-                if (cmbLanguage.SelectedIndex != 1)
-                    cmbLanguage.SelectedIndex = 1;
-            }
-            else
-            {
-                if (cmbLanguage.SelectedIndex != 0)
-                    cmbLanguage.SelectedIndex = 0;
-            }
+            var lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
+            var langIndex = lang == "fr" ? 1 : lang == "de" ? 2 : 0;
+            if (cmbLanguage.SelectedIndex != langIndex)
+                cmbLanguage.SelectedIndex = langIndex;
         }
 
         private void FillStreamFormats()
@@ -910,6 +907,8 @@ namespace KlangHub
                 SetCulture("en");
             else if (cmbLanguage.SelectedItem.ToString() == Resource.Get("Language", CultureInfo.GetCultureInfo("fr")))
                 SetCulture("fr");
+            else if (cmbLanguage.SelectedItem.ToString() == Resource.Get("Language", CultureInfo.GetCultureInfo("de")))
+                SetCulture("de");
         }
 
         public void SetCulture(string culture)
