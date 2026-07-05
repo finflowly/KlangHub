@@ -1,6 +1,6 @@
 # KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
-**HEAD:** `098a9d5` · **Branch:** `master` · **Tests:** 65 green (`dotnet test`) · **Working tree:** clean
+**HEAD:** `486f4f0` · **Branch:** `master` · **Tests:** 65 green (`dotnet test`) · **Working tree:** clean
 **Runtime:** **.NET 10** (LTS). Framework-dependent build → needs the **.NET 10 Desktop Runtime** discoverable
 by the app host (installed machine-wide at `C:\Program Files\dotnet`, 10.0.9 — HW-confirmed by the maintainer).
 
@@ -18,8 +18,25 @@ fragile mDNS discovery path unchanged). **Removed 7 now-redundant packages** (al
 Microsoft.CSharp, Microsoft.VisualBasic (WindowsFormsApplicationBase ships via Microsoft.VisualBasic.Forms),
 System.Memory, System.Numerics.Vectors, System.Runtime.CompilerServices.Unsafe,
 System.Threading.Tasks.Extensions, System.Text.Json (×2, per SDK NU1510). Build 0 errors, 65/65 green,
-app smoke-tested on the net10 runtime. `Nullable` deliberately **not** enabled (large non-behaviour-preserving
-churn — separate future task). Deeper audio hot-path optimizations also deferred (Tier B).
+app smoke-tested on the net10 runtime.
+
+## 0.1 Update 2026-07-05 — Tier 2 optimizations (commits `05f60a6`..`486f4f0`, spec `docs/superpowers/specs/2026-07-05-tier2-optimization-design.md`)
+All behaviour-preserving; build 0 errors, **0 source warnings**, 65 tests green, app smoke-tested on net10.
+- **A/E audio allocations** (`955270d`): removed 2 redundant per-frame MP3 copies (`ChromecastAudioSink` +
+  `Mp3Stream.Encode`), swapped the 1000 Hz capture-thread LINQ `Take().ToArray()` for `AsSpan().ToArray()`,
+  and made the streaming send **zero-allocation** (`StreamingConnection` now `Socket.Send(buffer,0,count)` instead
+  of `Take().ToArray()→List→ToArray()`). Byte-identical (guarded by `ChromecastAudioSinkTests`). NOTE: real
+  ArrayPool pooling was **rejected as unsafe** — `ApplicationBuffer.KeepABuffer` retains the frame reference, so
+  frame buffers must stay fresh-per-frame.
+- **B Directory.Build.props** (`660e85b`): `Source/Directory.Build.props` hoists `ImplicitUsings=disable`,
+  `LangVersion=latest`, `Deterministic=true`, **`Nullable=enable`**; per-project dupes removed.
+- **C Nullable enabled project-wide** (`ceb25f9`/`99ddb67`/`486f4f0`): **966 → 0** nullable warnings via
+  behaviour-preserving annotations only (`?`, `= null!` for set-after-ctor/DTO fields, `!` at guarded
+  use-sites, `object? sender`, `event …?`). Generated protobuf `ChromeCastAudioStream.cs` got `#nullable
+  disable`. Verified pure-annotation: **0 added `??`/`?.`** in the whole nullable diff. `<Nullable>enable` is
+  now the baseline (in Directory.Build.props) — **keep new code warning-free.**
+- **HW-TEST DEBT unchanged/added:** the audio A/E rewrites live in the largely-untested capture/streaming
+  runtime path → still need the maintainer's hardware test (desktop audio → real Chromecast, WAV+MP3, over time).
 
 ---
 
