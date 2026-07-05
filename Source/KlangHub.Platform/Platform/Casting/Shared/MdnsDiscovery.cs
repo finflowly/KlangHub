@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tmds.MDns;
 
 namespace KlangHub.Platform.Casting.Shared
@@ -21,10 +22,16 @@ namespace KlangHub.Platform.Casting.Shared
     public sealed class MdnsDiscovery : IDisposable
     {
         private readonly List<ServiceBrowser> browsers = new();
+        private readonly ILogger? logger;
         private bool started;
 
         /// <summary>Raised for each discovered service (on Tmds.MDns's callback thread).</summary>
         public event Action<MdnsService>? ServiceFound;
+
+        public MdnsDiscovery(ILogger? loggerIn = null)
+        {
+            logger = loggerIn;
+        }
 
         /// <summary>Begin browsing the given service types. Idempotent: only the first call browses
         /// (mDNS discovery is continuous), so repeated ScanForDevices calls do not stack browsers.</summary>
@@ -40,6 +47,7 @@ namespace KlangHub.Platform.Casting.Shared
                 {
                     var browser = new ServiceBrowser();
                     browser.ServiceAdded += OnServiceAdded;
+                    browser.ServiceChanged += OnServiceChanged;   // a late A (IPv4) record arrives as a change
                     browser.StartBrowse(type);
                     browsers.Add(browser);
                 }
@@ -55,11 +63,21 @@ namespace KlangHub.Platform.Casting.Shared
 
         public void Dispose() { }
 
-        private void OnServiceAdded(object? sender, ServiceAnnouncementEventArgs e)
+        private void OnServiceAdded(object? sender, ServiceAnnouncementEventArgs e) => Handle(e, "add");
+
+        private void OnServiceChanged(object? sender, ServiceAnnouncementEventArgs e) => Handle(e, "chg");
+
+        private void Handle(ServiceAnnouncementEventArgs? e, string source)
         {
             var a = e?.Announcement;
             if (a == null || a.Addresses == null || a.Addresses.Count == 0)
                 return;
+
+            // Instrumentation: log EVERY address with its family. The Chromecast side already logs addrs=[...],
+            // so an _airplay/_raop/_snapcast address set can be diffed against a device's _googlecast set - this
+            // is how we learn whether an IPv6-only-on-Cast device (the Enchant) carries an IPv4 on another
+            // service (the shared-IPv6-host bridge hinges on that), and whether a late A arrives via a change.
+            logger?.Log($"mDNS-svc [{source}][{a.Type}] '{a.Instance}' host={a.Hostname} port={a.Port} addrs=[{string.Join(", ", a.Addresses.Select(x => $"{x}({x.AddressFamily})"))}]");
 
             ServiceFound?.Invoke(new MdnsService(
                 Instance: a.Instance,

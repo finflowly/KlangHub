@@ -48,8 +48,8 @@ namespace KlangHub
                 var castProvider = new CompositeCastProvider(new ICastProvider[]
                 {
                     chromecastProvider,
-                    new SnapcastProvider(new SnapcastDiscovery(new MdnsDiscovery())),
-                    new AirPlayProvider(new AirPlayDiscovery(new MdnsDiscovery(), logger)),
+                    new SnapcastProvider(new SnapcastDiscovery(new MdnsDiscovery(logger))),
+                    new AirPlayProvider(new AirPlayDiscovery(new MdnsDiscovery(logger), logger)),
                 });
                 // 2.2b-M3-4: surface discovered non-Chromecast endpoints in the log (the tray device list is
                 // still Chromecast-Device-based; a neutral-descriptor UI comes later).
@@ -130,8 +130,8 @@ namespace KlangHub
                 var castProvider = new CompositeCastProvider(new ICastProvider[]
                 {
                     chromecastProvider,
-                    new SnapcastProvider(new SnapcastDiscovery(new MdnsDiscovery())),
-                    new AirPlayProvider(new AirPlayDiscovery(new MdnsDiscovery(), logger)),
+                    new SnapcastProvider(new SnapcastDiscovery(new MdnsDiscovery(logger))),
+                    new AirPlayProvider(new AirPlayDiscovery(new MdnsDiscovery(logger), logger)),
                 });
                 // 2.2b-M3-4: surface discovered non-Chromecast endpoints in the log (the tray device list is
                 // still Chromecast-Device-based; a neutral-descriptor UI comes later).

@@ -73,11 +73,14 @@ namespace KlangHub.Discover
         }
 
         /// <summary>
-        /// Callback for when a device is changed.
+        /// Callback for when a device announcement changes. A device often sends its A (IPv4) record AFTER an
+        /// initial AAAA-only announcement; that late IPv4 arrives here as a CHANGE, not an add. Process it the
+        /// same way so the IPv4 is captured - previously this was a no-op, which left an IPv6-only-flapping
+        /// device (the Enchant) without a tile whenever its A record arrived late.
         /// </summary>
         private void OnServiceChanged(object? sender, ServiceAnnouncementEventArgs e)
         {
-            //TODO
+            ProcessAnnouncement(e, "chg");
         }
 
         /// <summary>
@@ -92,6 +95,14 @@ namespace KlangHub.Discover
         /// Callback for when a device is added.
         /// </summary>
         private void OnServiceAdded(object? sender, ServiceAnnouncementEventArgs e)
+        {
+            ProcessAnnouncement(e, "add");
+        }
+
+        /// <summary>Process one mDNS announcement (add or change): record IPv4 correlations, pick/recover a
+        /// usable IPv4, and enqueue the device. Runs for both ServiceAdded and ServiceChanged so a late A record
+        /// is not missed.</summary>
+        private void ProcessAnnouncement(ServiceAnnouncementEventArgs e, string source)
         {
             if (e == null || e.Announcement == null || e.Announcement.Addresses == null || e.Announcement.Addresses.Count == 0
                 || e.Announcement.Txt == null || discoveredDevices == null)
@@ -124,7 +135,7 @@ namespace KlangHub.Discover
                 ? (ipv6 != null ? "SKIPPED (IPv6-only, IPv4 not yet recovered)" : "SKIPPED (no address)")
                 : ipv4 != null ? primary
                 : $"{primary} (IPv4 recovered from {recoverySource})";
-            logger?.Log($"mDNS [{e.Announcement.Type}] fn='{fnDbg}' addrs=[{string.Join(", ", addresses)}] -> {how}");
+            logger?.Log($"mDNS [{source}][{e.Announcement.Type}] fn='{fnDbg}' addrs=[{string.Join(", ", addresses)}] -> {how}");
             if (primary == null)
                 return;
 
