@@ -1,9 +1,10 @@
 # KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
-**HEAD:** `af409bc` · **Branch:** `master` · **Tests:** 125 green (`dotnet test`) · **Working tree:** clean
+**HEAD:** `9ade996` · **Branch:** `master` · **Tests:** 126 green (`dotnet test`) · **Working tree:** clean
 **LATEST:** Premium Chromecast 2026 sprint (G1–G6) DONE — see §9. Codec-aware pipeline, managed FLAC live-encoder
 (lossless round-trip proven, ~440× real-time), premium TV artwork, reconnect backoff, RST-on-stop, lossless
-out-of-box default. Ready HW-test build `dist/KlangHub-Release-af409bc.zip`. **HW-test pending** (§9).
+out-of-box default. **PLUS the cross-service IPv4 bridge for the Enchant/IPv6 thread** (`9ade996`, §9). Ready
+HW-test build `dist/KlangHub-Release-9ade996.zip`. **HW-test pending** (§9).
 
 _(historical header below, pre-sprint HEAD was `2402f1d` / 79 tests)_
 **HEAD:** `2402f1d` · **Branch:** `master` · **Tests:** 79 green (`dotnet test`) · **Working tree:** clean
@@ -231,11 +232,21 @@ measured **~440× real-time** encode at level 5 (never bottlenecks the capture t
 `dist/KlangHub-Release-af409bc.zip` (framework-dependent, ~7 MB, ships the FLAKE DLLs; runs on the machine-wide
 net10 runtime).
 
-**HW-TEST asks (the maintainer's acceptance — I have no devices):** (a) 5 devices appear (IPv4+IPv6); (b) cast to a
-speaker over WAV-16-bit lossless AND FLAC; (c) **live progressive FLAC actually plays** on a real receiver (the
-one unproven-on-hardware piece — WAV-16-bit is the fallback if a device rejects the endless FLAC stream; then
-revisit 24-bit or libFLAC); (d) TV shows the branded artwork + title, not the generic screen; (e) reconnect
-recovers after a Wi-Fi drop; (f) stop leaves no socket junk on the next play.
+**Enchant/IPv6 thread — cross-service IPv4 bridge (`9ade996`).** The safe, additive step the checkpoint §4
+named and `2402f1d` instrumented for: `DiscoverDevices` now also browses `_airplay._tcp`/`_raop._tcp` PURELY to
+feed `Ipv4Recovery` (id=null, host-keyed) — so when the Enchant flaps its `_googlecast` IPv6-only, its IPv4 is
+recovered from the co-located AirPlay/RAOP service under the shared `fd1a…` host, and it gets a tile + streams
+over IPv4. Makes NO tiles itself; recover-or-skip unchanged ⇒ cannot regress the working IPv4 path (inherits
+R1/R2). **Efficacy HW-confirmable:** helps iff the AirPlay service carries an IPv4 with the shared host (common
+for dual-stack AirPlay speakers); if it too is IPv6-only, the bridge is inert and the remaining path is the
+truly-IPv6-only-everywhere milestone (dual-stack listener + `[v6]` URL), decided by the `mDNS-svc` logs. Look
+for a `mDNS-bridge [_airplay/_raop] learned IPv4 … for hosts=[fd1a…]` line + the Enchant getting a tile.
+
+**HW-TEST asks (the maintainer's acceptance — I have no devices):** (a) 5 devices appear (IPv4+IPv6) — incl. the Enchant
+via the bridge above; (b) cast to a speaker over WAV-16-bit lossless AND FLAC; (c) **live progressive FLAC
+actually plays** on a real receiver (the one unproven-on-hardware piece — WAV-16-bit is the fallback if a device
+rejects the endless FLAC stream; then revisit 24-bit or libFLAC); (d) TV shows the branded artwork + title, not
+the generic screen; (e) reconnect recovers after a Wi-Fi drop; (f) stop leaves no socket junk on the next play.
 **DEFERRED (Sprint 2+):** Opus · adaptive buffer-monitoring (react to BUFFERING) · custom animated web receiver
 (needs Cast app-id + hosting) · true IPv6-only audio path (dual-stack listener + `[v6]` URL) · `ca`-bitmask
 device typing · full reconnect state-machine · 24-bit FLAC.

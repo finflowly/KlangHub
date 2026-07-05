@@ -1,8 +1,8 @@
 # KlangHub — Hardware-Abnahme (Premium Chromecast 2026 Sprint)
 
-**Build:** `dist/KlangHub-Release-af409bc.zip` (framework-abhängig, läuft auf dem maschinenweiten .NET-10-Runtime).
+**Build:** `dist/KlangHub-Release-9ade996.zip` (framework-abhängig, läuft auf dem maschinenweiten .NET-10-Runtime).
 **Zweck:** die eine Sache abnehmen, die ich ohne Geräte nicht selbst testen kann. Alles Code-seitige ist grün
-(125 Tests, App bootet, Artwork-Endpunkt über echten Socket verifiziert, FLAC verlustfrei + ~440× Echtzeit).
+(126 Tests, App bootet, Artwork-Endpunkt über echten Socket verifiziert, FLAC verlustfrei + ~440× Echtzeit).
 
 Bei Problemen: **Optionen → „Log device communication" AN** (blendet den versteckten **Log**-Tab ein; Logs im
 `txtLog`-Textfeld, nicht auf Platte). Danach „Scan again for devices" bzw. Cast starten und die Zeilen ablesen.
@@ -12,13 +12,17 @@ Bei Problemen: **Optionen → „Log device communication" AN** (blendet den ver
 ## A. Discovery — 5 Geräte, egal ob IPv4 oder IPv6
 1. App starten, ~30 s warten.
 2. **Erwartung:** 5 Kacheln — Enchant, Google TV, TCL TV, Soundbar, the multi-room group (Gruppe).
-3. **Falls der Enchant fehlt** (bekannter, HW-gated Faden — er annonciert `_googlecast` zeitweise IPv6-only):
-   Log-Tab an → „Scan again" → **die neuen `mDNS-svc [src][type] … addrs=[ip(family),…]`-Zeilen für den Enchant
-   kopieren**, sowohl `_googlecast` als auch `_airplay`/`_raop`. Diese entscheiden den nächsten Schritt:
-   - Trägt eine **`_airplay`/`_raop`**-Zeile des Enchant eine **IPv4** mit demselben `fd1a…`-Host → **Cross-Service-
-     IPv4-Bridge** (klein, sicher).
-   - Nur IPv6 überall → **echtes IPv6-Audio** (großer Milestone: Dual-Stack-Listener + `[v6]`-Stream-URL +
-     pro-Gerät-URL). Details: Checkpoint §4.
+3. **Cross-Service-IPv4-Bridge ist jetzt aktiv** (`9ade996`): die App browst zusätzlich `_airplay`/`_raop` und
+   recovert die Enchant-IPv4 aus seinem AirPlay-Dienst (geteilter `fd1a…`-Host). **Der Enchant sollte damit
+   auch dann erscheinen, wenn sein `_googlecast` gerade IPv6-only annonciert.**
+4. **Falls der Enchant TROTZDEM fehlt:** Log-Tab an → „Scan again" → prüfen:
+   - Gibt es eine **`mDNS-bridge [_airplay/_raop] learned IPv4 … for hosts=[fd1a…]`**-Zeile? Wenn ja, aber der
+     Enchant kommt nicht → sein `_googlecast`-`fd1a…`-Host weicht vom AirPlay-Host ab (die `mDNS-svc`-Zeilen
+     beider Dienste kopieren, damit ich das Matching anpasse).
+   - Gibt es KEINE `mDNS-bridge …learned IPv4…`-Zeile (nur IPv6 auch bei AirPlay) → dann ist es **wirklich
+     IPv6-only überall** → nächster Schritt = **echtes IPv6-Audio** (großer Milestone: Dual-Stack-Listener +
+     `[v6]`-Stream-URL + pro-Gerät-URL). In beiden Fällen: die `mDNS-svc [src][type] … addrs=[ip(family),…]`-
+     Zeilen für den Enchant (`_googlecast` vs. `_airplay`/`_raop`) kopieren. Details: Checkpoint §4/§9.
 
 ## B. Codec — lossless out-of-box + „alles muss funktionieren"
 Default nach Erststart = **WAV 16-bit (lossless)**. Auswahl bietet zusätzlich **„FLAC (lossless — recommended)"**.
@@ -49,7 +53,7 @@ Default nach Erststart = **WAV 16-bit (lossless)**. Auswahl bietet zusätzlich *
 ---
 
 ## Ergebnis-Rückmeldung (das brauche ich)
-- **A:** Erscheinen 5 Geräte? Falls Enchant fehlt → die `mDNS-svc`-Zeilen (§A.3).
+- **A:** Erscheinen 5 Geräte? Falls Enchant fehlt → die `mDNS-svc`-Zeilen (§A.4).
 - **B:** Spielt **FLAC** auf einem Speaker? Spielt **WAV-16 auf dem TV** — oder braucht der TV FLAC/MP3? (§B2, §B3)
 - **C:** Erscheint das gebrandete TV-Bild?
 - **D:** Reconnect + sauberer Stop ok?
