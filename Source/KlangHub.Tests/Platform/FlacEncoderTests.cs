@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using CUETools.Codecs;
+using CUETools.Codecs.FLAKE;
 using KlangHub.Core.Audio;
 using KlangHub.Core.Diagnostics;
 using KlangHub.Platform.Audio;
@@ -60,6 +64,47 @@ namespace KlangHub.Tests.Platform
             // Silence must FLAC-compress to a small fraction of the raw PCM — proves real framing, not passthrough.
             Assert.True(flac.Length > 0 && flac.Length < pcm.Length / 4,
                 $"expected real FLAC compression, got {flac.Length} bytes from {pcm.Length} PCM bytes");
+        }
+
+        [Fact]
+        public void Encoded_flac_decodes_losslessly_back_to_the_original_pcm()
+        {
+            var logger = Substitute.For<ILogger>();
+            var format = new AudioFormat(44100, 16, 2);
+            const int frames = 44100; // 1 s
+
+            // deterministic sawtooth so the check is meaningful (non-silent, non-constant)
+            var pcm = Pcm16(2, frames, i => (short)(((i * 7) % 4000) - 2000));
+
+            byte[] flac;
+            using (var enc = new FlacEncoder(format, logger, compressionLevel: 5))
+            {
+                enc.Encode(pcm);
+                enc.Dispose();       // flush the trailing block
+                flac = enc.Read();
+            }
+
+            // The live stream carries STREAMINFO total_samples = 0 (unknown length) — correct for an endless
+            // stream, and how a streaming decoder (Chromecast's Shaka/CAF, which decodes frames as they arrive)
+            // consumes it. FLAKE's *file* reader instead trusts that count and would stop at 0, so we patch in
+            // the real sample count (the 32-bit field at byte offset 22 — exactly where FlakeWriter itself
+            // back-patches it) before decoding, to prove the encoded FRAME DATA is genuinely lossless.
+            flac[22] = (byte)((frames >> 24) & 0xFF);
+            flac[23] = (byte)((frames >> 16) & 0xFF);
+            flac[24] = (byte)((frames >> 8) & 0xFF);
+            flac[25] = (byte)(frames & 0xFF);
+
+            var decoded = new List<byte>(pcm.Length);
+            using (var ms = new MemoryStream(flac))
+            {
+                var reader = new FlakeReader(null, ms);
+                var buff = new AudioBuffer(new AudioPCMConfig(16, 2, 44100), 0x10000);
+                while (reader.Read(buff, -1) > 0)
+                    decoded.AddRange(buff.Bytes.Take(buff.ByteLength));
+            }
+
+            Assert.Equal(pcm.Length, decoded.Count);
+            Assert.Equal(pcm, decoded.ToArray()); // lossless: identical samples out
         }
     }
 }
