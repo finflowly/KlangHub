@@ -1,6 +1,6 @@
 # KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
-**HEAD:** `6dba09f` · **Branch:** `master` · **Tests:** 70 green (`dotnet test`) · **Working tree:** clean
+**HEAD:** `4a6b51d` · **Branch:** `master` · **Tests:** 79 green (`dotnet test`) · **Working tree:** clean
 **Runtime:** **.NET 10** (LTS). Framework-dependent build → needs the **.NET 10 Desktop Runtime** discoverable
 by the app host (installed machine-wide at `C:\Program Files\dotnet`, 10.0.9 — HW-confirmed by the maintainer).
 
@@ -122,6 +122,27 @@ no-IPv4 announcements) — the maintainer asked for "IPv6 as an alternative", bu
 fix suffices; real IPv6-only support = bracket the eureka URL `http://[addr]:8008` + IPv6 `:8009` TLS + preserve the
 ULA scope-id `%8` + IPv6 remote-matching in the streaming listener — a separate, larger spike (raw IPv6 is what
 originally broke the whole saga).
+
+**NEXT CHAPTER 2026-07-05 (commits `ef3ac32`+`4a6b51d`, HW-test PENDING): the Enchant goes IPv6-only-flapping —
+IPv4 RECOVERY.** In later logs the Enchant advertised its own `_googlecast` **IPv6-only** (`fd1a:…%8`) in some scans
+(no IPv4 at all) → the IPv6-skip dropped it → no tile, and the IP:port dedup fix couldn't help (it never reached
+discovery). BUT the Enchant is **dual-stack**: its `.154` IPv4 is *donated* by the "the multi-room group" group it hosts
+(same `fd1a` IPv6 host, announced WITH `.154`). **Fix = `Ipv4Recovery`** (`Discover/Ipv4Recovery.cs`): learn each
+device's IPv4 keyed by its mDNS `id=` AND by every IPv6 host announced alongside it (scope-normalized, 120s TTL);
+an IPv6-only announcement then recovers a usable IPv4 → discovered + controlled + streamed **over IPv4**, no risky
+IPv6 path. `DiscoverDevices` now does `primary = ipv4 ?? recovered` (never enqueues a raw IPv6 literal). Also added
+(dormant foundation, IPv6-ready but not reached while every device is keyed on IPv4): bracketed+zone-stripped eureka
+URL (`DeviceInformation.UrlHost`), scoped `:8009` connect (`DeviceConnection.BeginConnectTo` — the `WSAEADDRNOTAVAIL`
+fix: clear the ULA `%zone`, keep link-local), and a scope-normalized streaming address-set match
+(`DiscoveredDevice.Addresses` + `Device.MatchesAddress`/`MergeAddress`). **Adversarially verified — the review CAUGHT
+TWO real risks, both fixed in `4a6b51d`:** R1 duplicate tile (raw IPv6 literal kept → a `[ipv6]:8009` tile that never
+dedups; deterministic for the eureka-less TVs) → fixed by recover-or-skip; R2 stale-cache misroute under DHCP churn
+→ fixed by the 120s TTL. `net8` gestern fand ihn zufällig (er hatte damals IPv4). **KEY: this did NOT regress the
+net10/Tier-2 discovery** (byte-identical there); it's a NEW device-topology case (IPv6-only-flapping). 79 tests green
+(9 new `Ipv4RecoveryTests` + `DevicesTests`). **True-IPv6-only (a device with NO IPv4 ever) remains unsupported** —
+it's intentionally skipped (no audio return path over IPv6; the dormant plumbing above is the head-start for that
+separate milestone). **HW-test focus:** Enchant tile appears + casts on itself over the recovered `.154`; the 2 TVs
+never spawn a `[ipv6]` duplicate; the multi-room group still casts separately.
 
 ## 5. Roadmap (next)
 - **M4 — Snapcast control-plane** (recommended next feature): `SnapcastProvider.CreateSession` → a real
