@@ -358,10 +358,10 @@
     <value>Wav (Soundcard's sample rate/24bit)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>Wav (Soundcard's sample rate/32bit)</value>
+    <value>Wav (Soundcard's sample rate/32bit — recommended, max quality)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC (lossless — recommended)</value>
+    <value>FLAC (lossless, robust on weak Wi-Fi)</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
     <value>Live from your PC</value>

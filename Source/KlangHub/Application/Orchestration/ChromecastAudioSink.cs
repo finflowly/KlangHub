@@ -22,7 +22,7 @@ namespace KlangHub.Application.Orchestration
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
         private IAudioEncoder? encoder = null;
-        private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Wav_16bit; // lossless out-of-box; settings override on load
+        private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Wav_32bit; // max-quality lossless out-of-box; settings override on load
 
         public ChromecastAudioSink(IDevices devicesIn, ILogger loggerIn)
         {

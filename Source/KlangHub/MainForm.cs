@@ -174,17 +174,17 @@ namespace KlangHub
 
             if (cmbStreamFormat.Items.Count == 0)
             {
-                // FLAC first: the premium, lossless, bandwidth-friendly default recommended for home casting.
-                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Flac));
-                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_16bit));
-                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_24bit));
+                // Wav 32-bit first: the max-quality lossless out-of-box default (the maintainer's pick — beats 24-bit
+                // HDMI). FLAC follows as the lossless, error-resilient, ~half-bandwidth alternative for weak Wi-Fi
+                // speakers. MP3 last for legacy compatibility only.
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_32bit));
+                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_24bit));
+                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_16bit));
+                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Flac));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Mp3_320));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Mp3_128));
-                // Default selection: Wav_16bit — guaranteed-working lossless out of the box. (Flipped to Flac
-                // once hardware confirms the live-FLAC path; see the 2026-07-05 premium-chromecast spec.)
-                cmbStreamFormat.SelectedIndex = 1;
+                cmbStreamFormat.SelectedIndex = 0; // Wav 32-bit
                 SetStreamFormat();
             }
         }

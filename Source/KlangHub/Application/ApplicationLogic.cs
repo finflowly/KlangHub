@@ -260,7 +260,7 @@ namespace KlangHub.Application
                 mainForm.SetWindowVisibility(settings.ShowWindowOnStart ?? true);
                 mainForm.SetKeyboardHooks(settings.UseKeyboardShortCuts ?? false);
                 mainForm.SetIP4AddressUsed(settings.Ip4AddressUsed ?? string.Empty);
-                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_16bit);
+                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_32bit);
                 mainForm.SetCulture(settings.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 mainForm.SetLogDeviceCommunication(settings.LogDeviceCommunication ?? false);
                 mainForm.SetLagValue(settings.LagControlValue ?? 1000);
@@ -343,9 +343,11 @@ namespace KlangHub.Application
             settings.ShowWindowOnStart = true;
             settings.AutoRestart = false;
             settings.Ip4AddressUsed = string.Empty;
-            // Out-of-box lossless for home casting (was Mp3_320). WAV-16-bit is guaranteed-working lossless;
-            // FLAC is offered as the recommended premium option and becomes the default once HW-confirmed.
-            settings.StreamFormat = SupportedStreamFormat.Wav_16bit;
+            // Out-of-box max-quality lossless for home casting (the maintainer's choice: 32-bit WAV beats even 24-bit
+            // HDMI). HW-confirmed the TVs + Soundbar play high-bitrate WAV fine; a weak-Wi-Fi speaker (the
+            // Enchant) can underrun the ~6 Mbit/s stream -> for such devices FLAC (lossless, ~half the bandwidth,
+            // error-resilient) is offered in the picker as the robust alternative.
+            settings.StreamFormat = SupportedStreamFormat.Wav_32bit;
             settings.Culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             settings.LogDeviceCommunication = false;
             settings.ShowLagControl = false;
