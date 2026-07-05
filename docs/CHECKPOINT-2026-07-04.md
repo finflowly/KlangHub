@@ -1,5 +1,10 @@
 # KlangHub — Project Checkpoint (2026-07-04, updated 2026-07-05)
 
+**HEAD:** `e186d7c` · **Branch:** `master` · **Tests:** 124 green (`dotnet test`) · **Working tree:** clean
+**LATEST:** Premium Chromecast 2026 sprint (G1–G6) DONE — see §9. Codec-aware pipeline, managed FLAC live-encoder,
+premium TV artwork, reconnect backoff, RST-on-stop, lossless out-of-box default. **HW-test pending** (§9).
+
+_(historical header below, pre-sprint HEAD was `2402f1d` / 79 tests)_
 **HEAD:** `2402f1d` · **Branch:** `master` · **Tests:** 79 green (`dotnet test`) · **Working tree:** clean
 **Enchant discovery is an ongoing saga** (IPv6-only-flapping); latest fix `2402f1d` = handle mDNS `ServiceChanged`
 (late-A capture) + instrument the AirPlay mDNS address log — **HW-test pending**, see §4 chapters.
@@ -187,6 +192,45 @@ surface honest risks/caveats.
   don't exist in PowerShell). The Bash tool's `Remove-Item` with a wildcard can be sandbox-blocked — delete
   zips by exact `-LiteralPath`.
 - git core.autocrlf=true → "LF will be replaced by CRLF" warnings are harmless.
+
+## 9. Premium Chromecast 2026 sprint (2026-07-05, commits `82ebb89`..`e186d7c`) — HW-TEST PENDING
+Spec: `docs/superpowers/specs/2026-07-05-premium-chromecast-2026-design.md`. Derived from the two root PDFs
+("Chromecast Audio Entwicklung 2026", "Robuste Chromecast-Sender-Implementierung … Stand 2026"; text extracted
+via pdftotext/PyMuPDF — the "Robuste" PDF is image-only, rendered to PNGs and read visually). Scope locked with
+the maintainer: **codec = both parallel** (WAV-16-bit lossless default now + real FLAC live-encoder), **TV = branded
+full-screen artwork via the Default Media Receiver** (no custom animated receiver). 124 tests green, 0 source
+warnings, app boot-smoke-tested on net10, artwork endpoint curl-verified over a real socket.
+
+- **G1 — StreamCodec (Core) single source of truth** (`630f7f5`): `ContentType/IsWav/IsMp3/IsFlac/IsLossless`;
+  `SupportedStreamFormat.Flac` appended last (stable ordinals). HTTP header AND Cast LOAD `contentType` now both
+  route through it (was hardcoded `audio/wav` in BOTH places, even for MP3). New `ICastHost.GetStreamMediaInfo`;
+  threaded via IDevice/Devices/DeviceCommunication. WAV byte-identical; MP3 now correctly `audio/mpeg`.
+- **G3 — FLAC live-encoder** (`630f7f5`): pkg `CUETools.Codecs.FLAKE` (managed, **LGPL-3.0** → separate DLL +
+  `docs/THIRD-PARTY-LICENSES.md`). `FlacEncoder : IAudioEncoder` → `FlakeWriter` into a
+  `NonSeekableForwardingStream` (**CanSeek=false**, verified: FlakeWriter only patches STREAMINFO if seekable →
+  `total_samples=0` endless progressive FLAC). `LoopbackCaptureEngine` forces **16-bit INT** for Flac (FLAC needs
+  integer, not the float mix format). Combobox lists FLAC (recommended); resx `Flac`.
+- **G4 — premium TV screen** (`c877a47`): LOAD sends **metadataType:3** (MusicTrackMediaMetadata) title/artist/
+  albumName + artwork image URL, via neutral Core `CastMediaMetadata`. Streaming server routes `GET /artwork.png`
+  (`ArtworkHttp`) to a **1280×1280 branded PNG** (embedded resource `KlangHub.Resources.artwork.png`, designed
+  with frontend-design: warm-dark vignette + radiating amber sound-rings from a glowing hub node + tracked
+  wordmark). resx `Media_Subtitle` (en+fr).
+- **G5 — reconnect backoff** (`e186d7c`): pure/tested `BackoffPolicy` (Core; 1→2→4..cap, jitter, Reset-on-success).
+  Wired **conservatively** into DeviceCommunication's "stuck launching" retry (base=5s → 5/10/20/30, never faster
+  than the old flat 5s; Reset on PLAYING). Full ConnectionManager state-machine + error-state circuit-breaker
+  DEFERRED (fragile comm path).
+- **G6 + G2** (`e186d7c`): **RST-on-stop** (`StreamingConnection.Dispose` sets `LingerState(true,0)` → TCP RST,
+  no keep-alive socket-junk). **Lossless out-of-box**: first-run + fallback default `Mp3_320` → **`Wav_16bit`**
+  (guaranteed-working lossless; FLAC is the recommended premium option, flip default to Flac once HW-confirmed).
+
+**HW-TEST asks (the maintainer's acceptance — I have no devices):** (a) 5 devices appear (IPv4+IPv6); (b) cast to a
+speaker over WAV-16-bit lossless AND FLAC; (c) **live progressive FLAC actually plays** on a real receiver (the
+one unproven piece — WAV-16-bit is the fallback if a device rejects the endless FLAC stream; then revisit 24-bit
+or libFLAC); (d) TV shows the branded artwork + title, not the generic screen; (e) reconnect recovers after a
+Wi-Fi drop; (f) stop leaves no socket junk on the next play.
+**DEFERRED (Sprint 2+):** Opus · adaptive buffer-monitoring (react to BUFFERING) · custom animated web receiver
+(needs Cast app-id + hosting) · true IPv6-only audio path (dual-stack listener + `[v6]` URL) · `ca`-bitmask
+device typing · full reconnect state-machine · 24-bit FLAC.
 
 ---
 
