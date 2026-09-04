@@ -471,4 +471,34 @@
   <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
     <value>Laisser vide pour le récepteur standard de Google. Un ID propre affiche le nom et les couleurs de KlangHub.</value>
   </data>
+  <data name="Card_Status_Playing_Text" xml:space="preserve">
+    <value>Lecture</value>
+  </data>
+  <data name="Card_Status_Connected_Text" xml:space="preserve">
+    <value>Connecté</value>
+  </data>
+  <data name="Card_Status_Connecting_Text" xml:space="preserve">
+    <value>Connexion…</value>
+  </data>
+  <data name="Card_Status_Buffering_Text" xml:space="preserve">
+    <value>Mise en mémoire</value>
+  </data>
+  <data name="Card_Status_Paused_Text" xml:space="preserve">
+    <value>En pause</value>
+  </data>
+  <data name="Card_Status_Error_Text" xml:space="preserve">
+    <value>Injoignable</value>
+  </data>
+  <data name="Card_Pill_Ready_Text" xml:space="preserve">
+    <value>prêt</value>
+  </data>
+  <data name="Card_Pill_Connecting_Text" xml:space="preserve">
+    <value>connexion</value>
+  </data>
+  <data name="Card_Pill_Reconnect_Text" xml:space="preserve">
+    <value>reconnecter</value>
+  </data>
+  <data name="Card_Pill_Group_Text" xml:space="preserve">
+    <value>Groupe</value>
+  </data>
 </root>

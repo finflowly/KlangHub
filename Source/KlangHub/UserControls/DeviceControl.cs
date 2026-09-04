@@ -249,19 +249,24 @@ namespace KlangHub.UserControls
             int cardTop = cardRect.Top, cardBottom = cardRect.Bottom;
 
             // ---- status row: dot + word (left) ----
-            Color dotColor = playing ? Theme.Amber : error ? Theme.Ember : Theme.Blue;
-            Color labelColor = playing ? Theme.Amber : error ? Theme.Ember : Theme.Blend(Theme.Slate, Theme.Ivory, 0.35f);
+            // "Connecting" is the moment between picking a speaker and hearing it - it used to fall through
+            // to "Connected", so the card claimed to be ready while nothing was playing yet.
+            bool connecting = state is PlaybackState.Connecting or PlaybackState.Loading;
+            Color dotColor = playing || connecting ? Theme.Amber : error ? Theme.Ember : Theme.Blue;
+            Color labelColor = playing || connecting ? Theme.Amber : error ? Theme.Ember : Theme.Blend(Theme.Slate, Theme.Ivory, 0.35f);
             string statusLabel = StatusWord(state);
             int dotY = cardTop + 18;
             using (var db = new SolidBrush(dotColor)) g.FillEllipse(db, padL, dotY - 4, 8, 8);
-            if (playing) DrawGlowDot(g, padL + 4, dotY, Theme.Amber);
+            if (playing || connecting) DrawGlowDot(g, padL + 4, dotY, Theme.Amber);
             DrawText(g, statusLabel, Theme.Label, labelColor, padL + 15, dotY - 8);
 
             // ---- pill (right): format while playing, else the status/action (ember for error) ----
-            string pillText = group ? "Gruppe"
+            string pillText = group ? KlangHub.Properties.Strings.Card_Pill_Group_Text
                 : playing ? Theme.CurrentFormatLabel
-                : error ? "erneut verbinden" : "bereit";
-            Color pillFg = playing ? Theme.Amber : error ? Theme.Ember
+                : connecting ? KlangHub.Properties.Strings.Card_Pill_Connecting_Text
+                : error ? KlangHub.Properties.Strings.Card_Pill_Reconnect_Text
+                : KlangHub.Properties.Strings.Card_Pill_Ready_Text;
+            Color pillFg = playing || connecting ? Theme.Amber : error ? Theme.Ember
                 : group ? Theme.Blend(Theme.Slate, Theme.Ivory, 0.35f) : Theme.Slate;
             Color? pillTint = playing ? Theme.Amber : error ? Theme.Ember : (Color?)null;
             DrawPill(g, pillText, pillFg, pillTint, padR, dotY);
@@ -335,7 +340,10 @@ namespace KlangHub.UserControls
             DrawOverflow(g, overflowRect);
 
             // ---- keyboard focus ring ----
-            if (Focused) Theme.DrawFocusRing(g, cardF, Theme.RadCard);
+            // ShowFocusCues, not just Focused: clicking a tile focuses it too, and a fully opaque amber ring
+            // around one card while its neighbours have only the soft playing edge looks like a bug, not like
+            // focus. Windows raises this flag once the keyboard has been used to navigate.
+            if (Focused && ShowFocusCues) Theme.DrawFocusRing(g, cardF, Theme.RadCard);
         }
 
         // The model name only exists once mDNS has announced the device - a card built from the persisted
@@ -396,12 +404,19 @@ namespace KlangHub.UserControls
             return a.Length > 0 && b.Length > 0 && (a == b || a.Contains(b) || b.Contains(a));
         }
 
+        /// <summary>
+        /// The word on the status row. Every state a listener can tell apart gets its own - in particular
+        /// the connecting moment, which used to be indistinguishable from "connected" even though nothing
+        /// was playing yet.
+        /// </summary>
         private static string StatusWord(PlaybackState s) => s switch
         {
-            PlaybackState.Playing => "Wiedergabe",
-            PlaybackState.Buffering => "Puffert",
-            PlaybackState.Error => "Nicht erreichbar",
-            _ => "Verbunden",
+            PlaybackState.Playing => KlangHub.Properties.Strings.Card_Status_Playing_Text,
+            PlaybackState.Buffering => KlangHub.Properties.Strings.Card_Status_Buffering_Text,
+            PlaybackState.Connecting or PlaybackState.Loading => KlangHub.Properties.Strings.Card_Status_Connecting_Text,
+            PlaybackState.Paused => KlangHub.Properties.Strings.Card_Status_Paused_Text,
+            PlaybackState.Error => KlangHub.Properties.Strings.Card_Status_Error_Text,
+            _ => KlangHub.Properties.Strings.Card_Status_Connected_Text,
         };
 
         // ---------- drawing helpers ----------

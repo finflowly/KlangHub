@@ -1050,5 +1050,85 @@ namespace KlangHub.Properties {
             }
         }
 
+        public static string Card_Status_Playing_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Status_Playing_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Status_Connected_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Status_Connected_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Status_Connecting_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Status_Connecting_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Status_Buffering_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Status_Buffering_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Status_Paused_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Status_Paused_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Status_Error_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Status_Error_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Pill_Ready_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Pill_Ready_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Pill_Connecting_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Pill_Connecting_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Pill_Reconnect_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Pill_Reconnect_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Pill_Group_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Pill_Group_Text", resourceCulture);
+            }
+        }
+
     }
 }
