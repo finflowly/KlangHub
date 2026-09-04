@@ -285,3 +285,17 @@ das ab.
 Byte-pro-Sekunde-Schätzungen, die nur für MP3 stimmen (WAV läuft real mit 192 000 B/s statt der
 angenommenen 40 000). Das ist Altbestand, WAV spielt damit einwandfrei — und zwei Dinge gleichzeitig zu
 ändern würde verschleiern, welche Änderung gewirkt hat.
+
+## Zwei Anzeigefehler (2026-09-04, spät)
+
+**Leere Auswahlfelder.** Beim Verselbständigen der `DarkComboBox` (damit sie auch im Lautsprecher-Popup
+funktioniert) wurde der Zeichen-Handler in `MainForm` abgeschaltet — der Ersatz im Control fehlte jedoch.
+Mit `DrawMode.OwnerDrawFixed` zeichnet Windows nichts von selbst, also blieben die Felder leer. Der Ersatz
+ist jetzt da, und er liest den Text des geschlossenen Feldes aus `ComboBox.Text` statt aus `Items[e.Index]`:
+Der Index ist −1, solange nichts ausgewählt ist — während die Liste neu befüllt wird oder wenn jemand in ein
+editierbares Feld etwas tippt, das nicht in der Liste steht. Genau das ließ die Felder sporadisch leer
+erscheinen.
+
+**Abgeschnittene Kopfzeile.** Die Zusammenfassung wich der Werkzeugleiste zwar aus, aber mit einer Ellipse
+mitten im Wort („verlustfrei a…"). Jetzt fällt bei Platzmangel eine ganze Aussage weg statt eines
+Wortendes — erst die Qualitätsformel, dann das Format, notfalls bleibt die Anzahl allein stehen.

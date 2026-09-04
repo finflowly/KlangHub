@@ -1705,7 +1705,34 @@ namespace KlangHub
             string quality = IsLosslessFormat()
                 ? Properties.Strings.Label_RoomSummaryLossless_Text
                 : Properties.Strings.Label_RoomSummaryCompressed_Text;
-            lblRoomSummarySubtitle.Text = $"{rooms} · {Classes.Theme.CurrentFormatLabel} · {quality}";
+
+            // Drop whole clauses rather than letting an ellipsis cut a word in half: the quality phrase is
+            // the poetry, the format is the fact, the count is the point - so they go in that order.
+            lblRoomSummarySubtitle.Text = FirstThatFits(lblRoomSummarySubtitle, new[]
+            {
+                $"{rooms} · {Classes.Theme.CurrentFormatLabel} · {quality}",
+                $"{rooms} · {Classes.Theme.CurrentFormatLabel}",
+                rooms,
+            });
+        }
+
+        /// <summary>Picks the first line that fits the label's width, so a narrow window loses a clause
+        /// instead of ending mid-word.</summary>
+        private static string FirstThatFits(Label label, string[] candidates)
+        {
+            int available = label.Width - 4;
+            if (available <= 0)
+                return candidates[^1];
+
+            using var g = label.CreateGraphics();
+            foreach (var candidate in candidates)
+            {
+                var size = TextRenderer.MeasureText(g, candidate, label.Font, new Size(int.MaxValue, int.MaxValue),
+                                                    TextFormatFlags.NoPadding);
+                if (size.Width <= available)
+                    return candidate;
+            }
+            return candidates[^1];
         }
 
         /// <summary>True while the selected stream format carries the original samples (WAV / FLAC).</summary>
@@ -2190,6 +2217,7 @@ namespace KlangHub
                 int free = Math.Max(140, grpVolume.ClientSize.Width - taken - 30);
                 if (lblRoomSummaryTitle != null) lblRoomSummaryTitle.Width = free;
                 if (lblRoomSummarySubtitle != null) lblRoomSummarySubtitle.Width = free;
+                RefreshRoomSummary();   // the line is chosen for the width it now has
             }
             grpVolume.Resize += (s, e) => FitToolbar();
             FitToolbar();
