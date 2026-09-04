@@ -29,7 +29,6 @@ UninstallDisplayName={#AppName} {#AppVersion}
 OutputDir=..\dist
 OutputBaseFilename=KlangHub-{#AppVersion}-Setup
 SetupIconFile=..\Source\KlangHub\KlangHub.ico
-LicenseFile=..\LICENSE
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
@@ -85,8 +84,12 @@ Name: "sv"; MessagesFile: "compiler:Languages\Swedish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-; The whole self-contained publish tree, including every satellite assembly (one folder per language).
+; The whole publish tree, including every satellite assembly (one folder per language).
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; MIT requires the licence to travel with the software - it is installed as a readable text file rather
+; than shown as a click-through nobody reads.
+Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
+Source: "..\docs\THIRD-PARTY-LICENSES.md"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExe}"
@@ -270,6 +273,16 @@ begin
   end;
 end;
 
+{ Turns visual styles off for one control: a themed check box or radio button paints its own caption and
+  ignores Font.Color, which left the licence choices grey-on-ink. }
+procedure PlainTheme(C: TWinControl);
+begin
+  try
+    SetWindowTheme(C.Handle, '', '');
+  except
+  end;
+end;
+
 procedure DarkenTitleBar(H: HWND);
 var
   V: Integer;
@@ -325,19 +338,23 @@ begin
   end
   else if C is TRichEditViewer then
   begin
+    { Only the background here: assigning Font.Color re-formats the whole document and wipes out the
+      colours the RTF brought with it (see installer/make-license-rtf.ps1), which left the licence
+      near-black on ink. The text colour comes from the RTF's own colour table. }
     TRichEditViewer(C).Color := clInk2;
-    TRichEditViewer(C).Font.Color := clIvory;
     DarkScrollbars(TRichEditViewer(C));
   end
   else if C is TCheckBox then
   begin
     TCheckBox(C).Color := clInk;
     TCheckBox(C).Font.Color := clIvory;
+    PlainTheme(TCheckBox(C));
   end
   else if C is TRadioButton then
   begin
     TRadioButton(C).Color := clInk;
     TRadioButton(C).Font.Color := clIvory;
+    PlainTheme(TRadioButton(C));
   end
   else if C is TLabel then
   begin

@@ -204,6 +204,10 @@ Fallback.
 - Trägt die App-Optik: ink-dunkler Wizard, elfenbeinfarbene Schrift, ein Bernstein-Akzent, das vollständige
   Logo (gezeichnet, nicht beschnitten), dunkle Titelleiste über dieselben DWM-Attribute wie das App-Fenster,
   dunkle Scrollbars — auch im Deinstallationsfenster.
+- **Keine Lizenz-Zustimmungsseite.** Inno zeigt die Lizenz in einem RichEdit, das die Textfarbe pro Zeichen
+  führt — weder `Font.Color` noch eine RTF-Farbtabelle überlebten dort das Laden, der Text blieb fast schwarz
+  auf Tinte. MIT verlangt ohnehin keine Zustimmung, sondern dass die Lizenz *mitgeliefert* wird: `LICENSE.txt`
+  und `THIRD-PARTY-LICENSES.md` werden jetzt neben der App installiert, wo man sie auch lesen kann.
 - **Prüft die .NET Desktop Runtime** und lädt sie bei Bedarf automatisch von Microsoft (`aka.ms`), bevor
   installiert wird; Microsofts Installer holt sich die Rechte selbst, weshalb das Setup ohne Adminrechte
   auskommt (Installation pro Benutzer, kein UAC, kein grauer Modus-Dialog).
