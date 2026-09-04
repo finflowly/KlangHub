@@ -376,7 +376,7 @@
     <value>Name shown on the receiver</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Designed and built by Neo & Trinity · 2026</value>
+    <value>Designed and built by Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>SOUND PROFILE &amp; CONNECTION</value>
@@ -425,5 +425,26 @@
   </data>
   <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
     <value>Multi-room group</value>
+  </data>
+  <data name="Card_Muted_Text" xml:space="preserve">
+    <value>muted</value>
+  </data>
+  <data name="Popup_SpeakerOptions_Text" xml:space="preserve">
+    <value>SPEAKER OPTIONS</value>
+  </data>
+  <data name="Popup_Room_Text" xml:space="preserve">
+    <value>Room</value>
+  </data>
+  <data name="Popup_RoomHint_Text" xml:space="preserve">
+    <value>e.g. Living room</value>
+  </data>
+  <data name="Popup_MaxVolume_Text" xml:space="preserve">
+    <value>Maximum volume (hard cap)</value>
+  </data>
+  <data name="Popup_Done_Text" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Artwork_Tagline_Text" xml:space="preserve">
+    <value>LOSSLESS · WHOLE-HOME AUDIO</value>
   </data>
 </root>

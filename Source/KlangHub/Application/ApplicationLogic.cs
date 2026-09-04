@@ -260,8 +260,9 @@ namespace KlangHub.Application
                 mainForm.SetWindowVisibility(settings.ShowWindowOnStart ?? true);
                 mainForm.SetKeyboardHooks(settings.UseKeyboardShortCuts ?? false);
                 mainForm.SetIP4AddressUsed(settings.Ip4AddressUsed ?? string.Empty);
-                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_24bit);
-                mainForm.SetCulture(settings.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_16bit);
+                // a --lang= from the installer wins for this first start, then the stored choice takes over
+                mainForm.SetCulture(Classes.StartupOptions.Culture ?? settings.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 mainForm.SetLogDeviceCommunication(settings.LogDeviceCommunication ?? false);
                 mainForm.SetLagValue(settings.LagControlValue ?? 1000);
                 mainForm.SetStartApplicationWhenWindowsStarts(settings.StartApplicationWhenWindowsStarts ?? false);
@@ -342,12 +343,15 @@ namespace KlangHub.Application
             settings.StartLastUsedDevices = false;
             settings.ShowWindowOnStart = true;
             settings.AutoRestart = false;
-            // Out-of-box: WAV 24-bit (the maintainer's choice, confirmed problem-free on his setup). Uncompressed HiFi
-            // LPCM at the soundcard's own bit depth - no lossy compression, no FLAC encode step. FLAC remains
-            // in the picker (recommended) for weaker/small speakers that struggled with 32-bit LPCM (ERROR 102).
+            // Out-of-box: WAV 16-bit - CD quality, uncompressed, and the format every Cast receiver handles
+            // without complaint. It is the safe floor, not the ceiling: 24-bit and FLAC sit one pick away for
+            // anyone who wants more, and the weakest speakers (which choked on 32-bit LPCM with ERROR 102)
+            // stay happy by default.
             settings.Ip4AddressUsed = string.Empty;
-            settings.StreamFormat = SupportedStreamFormat.Wav_24bit;
-            settings.Culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            settings.StreamFormat = SupportedStreamFormat.Wav_16bit;
+            settings.Culture = MainForm.SupportedCultures.Contains(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
+                ? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
+                : "en";   // the app ships 24 EU languages; anything else reads English
             settings.LogDeviceCommunication = false;
             settings.ShowLagControl = false;
             settings.LagControlValue = 1000;
@@ -356,8 +360,8 @@ namespace KlangHub.Application
             settings.Size = defaultSize;
             settings.Left = Screen.PrimaryScreen!.Bounds.Width / 2 - settings.Size.Value.Width / 2;
             settings.Top = Screen.PrimaryScreen.Bounds.Height / 2 - settings.Size.Value.Height / 2;
-            // Out-of-box buffer recommended at 10s (the maintainer): more receiver-side cushion against jitter/underrun
-            // on the high-bitrate 32-bit WAV default (mitigates the weak-Wi-Fi "noise" seen on the Enchant).
+            // 10 s of receiver-side cushion out of the box: enough to ride out Wi-Fi jitter and underruns
+            // (the "noise" seen on the Enchant over a weak link) without a latency anyone notices for music.
             settings.ExtraBufferInSeconds = 10;
             settings.RecordingDeviceID = null!;
             settings.AutoMute = false;

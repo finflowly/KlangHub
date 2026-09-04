@@ -89,7 +89,7 @@ namespace KlangHub.Classes
 
         /// <summary>The currently selected stream format, shown on cards (e.g. "FLAC · 24-bit"). One HTTP
         /// stream serves all devices, so this is app-global; MainForm updates it on format change.</summary>
-        public static string CurrentFormatLabel = "WAV · 24-bit";
+        public static string CurrentFormatLabel = "WAV · 16-bit";
 
         /// <summary>Short pill text for a stream format, e.g. "FLAC · 24-bit" / "WAV · 16-bit" / "MP3 · 320".</summary>
         public static string FormatPillText(KlangHub.Core.Models.SupportedStreamFormat format) => format switch

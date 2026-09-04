@@ -60,148 +60,148 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Buffering" xml:space="preserve">
-    <value>Puffert</value>
+    <value>En búfer</value>
   </data>
   <data name="Connecting" xml:space="preserve">
-    <value>Verbindet</value>
+    <value>Conectando</value>
   </data>
   <data name="Disconnected" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Desconectado</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>Fehler</value>
+    <value>Error</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Lädt</value>
+    <value>Cargando</value>
   </data>
   <data name="Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
+    <value>Desconocido</value>
   </data>
   <data name="Button_ClearLog_Text" xml:space="preserve">
-    <value>Protokoll leeren</value>
+    <value>Vaciar registro</value>
   </data>
   <data name="Button_ClipboardCopy_Text" xml:space="preserve">
-    <value>In Zwischenablage kopieren</value>
+    <value>Copiar al portapapeles</value>
   </data>
   <data name="Button_Down_Text" xml:space="preserve">
-    <value>Leiser</value>
+    <value>Más bajo</value>
   </data>
   <data name="Button_Mute_Text" xml:space="preserve">
-    <value>Alle stumm</value>
+    <value>Silenciar todo</value>
   </data>
   <data name="Button_ResetSetting_Text" xml:space="preserve">
-    <value>Auf Standard zurücksetzen</value>
+    <value>Restaurar valores</value>
   </data>
   <data name="Button_ScanAgain_Text" xml:space="preserve">
-    <value>Räume neu suchen</value>
+    <value>Volver a buscar</value>
   </data>
   <data name="Button_SyncDevices_Text" xml:space="preserve">
-    <value>Räume abgleichen</value>
+    <value>Sincronizar salas</value>
   </data>
   <data name="Button_Up_Text" xml:space="preserve">
-    <value>Lauter</value>
+    <value>Más alto</value>
   </data>
   <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
-    <value>Nach Abbruch automatisch weiterspielen</value>
+    <value>Recuperar la reproducción sola</value>
   </data>
   <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
-    <value>Beim Start automatisch losspielen</value>
+    <value>Sonar al iniciar</value>
   </data>
   <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
-    <value>Tastenkürzel: Lauter = Strg+Alt+U · Leiser = Strg+Alt+D · Stumm = Strg+Alt+M</value>
+    <value>Atajos: Más alto = Ctrl+Alt+U · Más bajo = Ctrl+Alt+D · Silencio = Ctrl+Alt+M</value>
   </data>
   <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
-    <value>Geräte-Protokoll aufzeichnen</value>
+    <value>Registrar los dispositivos</value>
   </data>
   <data name="Check_ShowLagControl_Text" xml:space="preserve">
-    <value>Feinabstimmung anzeigen (experimentell)</value>
+    <value>Mostrar ajuste fino (experimental)</value>
   </data>
   <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
-    <value>Fenster beim Start zeigen</value>
+    <value>Abrir la ventana al iniciar</value>
   </data>
   <data name="ChromeCast_StreamTitle" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="Closed" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Desconectado</value>
   </data>
   <data name="Connected" xml:space="preserve">
-    <value>Verbunden</value>
+    <value>Conectado</value>
   </data>
   <data name="ConnectError" xml:space="preserve">
-    <value>Verbindungsfehler</value>
+    <value>Error de conexión</value>
   </data>
   <data name="Disposed" xml:space="preserve">
-    <value>Beendet</value>
+    <value>Detenido</value>
   </data>
   <data name="Group_Devices_Text" xml:space="preserve">
-    <value>Deine Räume</value>
+    <value>Tus salas</value>
   </data>
   <data name="Group_Lag_Text" xml:space="preserve">
-    <value>Feinabstimmung</value>
+    <value>Ajuste fino</value>
   </data>
   <data name="Group_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Ajustes</value>
   </data>
   <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
-    <value>Alle Räume</value>
+    <value>Todas las salas</value>
   </data>
   <data name="Idle" xml:space="preserve">
-    <value>Bereit</value>
+    <value>Listo</value>
   </data>
   <data name="InvalidRequest" xml:space="preserve">
-    <value>Ungültige Anfrage</value>
+    <value>Petición no válida</value>
   </data>
   <data name="Label_IPAddressUsed_Text" xml:space="preserve">
-    <value>Heimnetz-Adresse (IPv4)</value>
+    <value>Dirección de red local (IPv4)</value>
   </data>
   <data name="Label_KeepAlive_Text" xml:space="preserve">
-    <value>Letztes Lebenszeichen:</value>
+    <value>Última señal:</value>
   </data>
   <data name="Label_LagExperimental_Text" xml:space="preserve">
-    <value>Experimentell: den Puffer am Gerät so klein wie möglich halten, ohne Aussetzer zu hören.</value>
+    <value>Experimental: mantén el búfer del dispositivo lo más pequeño posible sin oír cortes.</value>
   </data>
   <data name="Label_Language_Text" xml:space="preserve">
-    <value>Sprache</value>
+    <value>Idioma</value>
   </data>
   <data name="Label_MaximumLag_Text" xml:space="preserve">
-    <value>größerer Puffer / beste Qualität</value>
+    <value>más búfer / máxima calidad</value>
   </data>
   <data name="Label_MinimumLag_Text" xml:space="preserve">
-    <value>kleinerer Puffer / geringste Latenz</value>
+    <value>menos búfer / mínima latencia</value>
   </data>
   <data name="Label_NewVersionAvailable" xml:space="preserve">
-    <value>Eine neue Version ist auf GitHub verfügbar</value>
+    <value>Hay una nueva versión en GitHub</value>
   </data>
   <data name="Label_RecordingDevice_Text" xml:space="preserve">
-    <value>Audioquelle</value>
+    <value>Fuente de audio</value>
   </data>
   <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
-    <value>MP3 komprimiert stärker und bringt mehr Latenz — für echtes HiFi FLAC wählen.</value>
+    <value>MP3 comprime más y añade latencia — elige FLAC para HiFi de verdad.</value>
   </data>
   <data name="Label_StreamFormat_Text" xml:space="preserve">
-    <value>Klangqualität</value>
+    <value>Calidad de sonido</value>
   </data>
   <data name="Language_English" xml:space="preserve">
-    <value>Englisch</value>
+    <value>Inglés</value>
   </data>
   <data name="Language_French" xml:space="preserve">
-    <value>Französisch</value>
+    <value>Francés</value>
   </data>
   <data name="LaunchedApplication" xml:space="preserve">
-    <value>Empfänger gestartet</value>
+    <value>Receptor iniciado</value>
   </data>
   <data name="LaunchingApplication" xml:space="preserve">
-    <value>Empfänger wird gestartet</value>
+    <value>Iniciando receptor</value>
   </data>
   <data name="LoadCancelled" xml:space="preserve">
-    <value>Abgebrochen</value>
+    <value>Cancelado</value>
   </data>
   <data name="LoadFailed" xml:space="preserve">
-    <value>Laden fehlgeschlagen</value>
+    <value>Error al cargar</value>
   </data>
   <data name="LoadingMedia" xml:space="preserve">
-    <value>Lädt Klang</value>
+    <value>Cargando sonido</value>
   </data>
   <data name="Log_In" xml:space="preserve">
     <value>in</value>
@@ -213,180 +213,180 @@
     <value>KlangHub</value>
   </data>
   <data name="MessageBox_NoIPAddress" xml:space="preserve">
-    <value>Keine Adresse im Heimnetz gefunden.</value>
+    <value>No se encontró ninguna dirección de red.</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
-    <value>Keine Audioquelle gefunden.</value>
+    <value>No se encontró ninguna fuente de audio.</value>
   </data>
   <data name="Mp3_128" xml:space="preserve">
-    <value>MP3 · 128 kbps (komprimiert)</value>
+    <value>MP3 · 128 kbps (comprimido)</value>
   </data>
   <data name="Mp3_320" xml:space="preserve">
-    <value>MP3 · 320 kbps (komprimiert)</value>
+    <value>MP3 · 320 kbps (comprimido)</value>
   </data>
   <data name="NotConnected" xml:space="preserve">
-    <value>Nicht verbunden</value>
+    <value>Sin conexión</value>
   </data>
   <data name="Paused" xml:space="preserve">
-    <value>Pausiert</value>
+    <value>En pausa</value>
   </data>
   <data name="Playing" xml:space="preserve">
-    <value>Wiedergabe</value>
+    <value>Sonando</value>
   </data>
   <data name="Tab_Log_Text" xml:space="preserve">
-    <value>Protokoll</value>
+    <value>Registro</value>
   </data>
   <data name="Tab_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Ajustes</value>
   </data>
   <data name="TrayIcon_Close" xml:space="preserve">
-    <value>Beenden</value>
+    <value>Salir</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version</value>
+    <value>Versión</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · CD-Qualität (44,1 kHz / 16-Bit)</value>
+    <value>WAV · calidad CD (44,1 kHz / 16-bit)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
-    <value>Räume</value>
+    <value>Salas</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Deutsch</value>
+    <value>Español</value>
   </data>
   <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
-    <value>Mit Windows starten</value>
+    <value>Iniciar con Windows</value>
   </data>
   <data name="DevicesOnly" xml:space="preserve">
-    <value>Nur Lautsprecher</value>
+    <value>Solo altavoces</value>
   </data>
   <data name="GroupsOnly" xml:space="preserve">
-    <value>Nur Gruppen</value>
+    <value>Solo grupos</value>
   </data>
   <data name="ShowAll" xml:space="preserve">
-    <value>Alle</value>
+    <value>Todo</value>
   </data>
   <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
-    <value>Zuletzt gespielte Räume beim Start fortsetzen</value>
+    <value>Retomar las últimas salas al iniciar</value>
   </data>
   <data name="Label_LinkHelp_Text" xml:space="preserve">
-    <value>Hilfe und Dokumentation</value>
+    <value>Ayuda y documentación</value>
   </data>
   <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
-    <value>Eingangspegel</value>
+    <value>Nivel de entrada</value>
   </data>
   <data name="Label_FilterDevices_Text" xml:space="preserve">
-    <value>Anzeige</value>
+    <value>Ver</value>
   </data>
   <data name="Tooltip_Group_Text" xml:space="preserve">
-    <value>Gruppe</value>
+    <value>Grupo</value>
   </data>
   <data name="Label_BufferInSeconds_Text" xml:space="preserve">
-    <value>Klangpuffer (Sekunden)</value>
+    <value>Búfer de sonido (segundos)</value>
   </data>
   <data name="Check_AutoMute_Text" xml:space="preserve">
-    <value>Desktop-Ton automatisch stummschalten</value>
+    <value>Silenciar los altavoces del PC</value>
   </data>
   <data name="LoadingMediaCheckFirewall" xml:space="preserve">
-    <value>Firewall und WLAN-Freigabe prüfen</value>
+    <value>Revisa el firewall y el Wi-Fi</value>
   </data>
   <data name="Check_MinimizeToTray_Text" xml:space="preserve">
-    <value>Beim Schließen in den Infobereich legen</value>
+    <value>Seguir en la bandeja al cerrar</value>
   </data>
   <data name="Wav_16bit" xml:space="preserve">
-    <value>WAV · 16-Bit (unkomprimiert)</value>
+    <value>WAV · 16-bit (sin comprimir)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-Bit HiFi (unkomprimiert, Standard)</value>
+    <value>WAV · 24-bit HiFi (sin comprimir, por defecto)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-Bit (unkomprimiert, LPCM)</value>
+    <value>WAV · 32-bit (sin comprimir, LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC · verlustfrei, ideal für schwache/kleine Lautsprecher</value>
+    <value>FLAC · sin pérdidas, ideal para altavoces pequeños</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
-    <value>Live-Klang von deinem PC</value>
+    <value>Sonido en directo de tu PC</value>
   </data>
   <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
-    <value>Mehrkanal-Ton auf Stereo mischen</value>
+    <value>Mezclar multicanal a estéreo</value>
   </data>
   <data name="Check_DarkMode_Text" xml:space="preserve">
-    <value>Dunkles Design</value>
+    <value>Tema oscuro</value>
   </data>
   <data name="Label_StreamTitle_Text" xml:space="preserve">
-    <value>Anzeigename auf dem Empfänger</value>
+    <value>Nombre en el receptor</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Entworfen und entwickelt von Neo &amp; Trinity · 2026</value>
+    <value>Diseñado y creado por Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
-    <value>KLANGPROFIL &amp; VERBINDUNG</value>
+    <value>PERFIL DE SONIDO &amp; CONEXIÓN</value>
   </data>
   <data name="Label_Section_Behavior_Text" xml:space="preserve">
-    <value>VERHALTEN &amp; KOMFORT</value>
+    <value>USO &amp; COMODIDAD</value>
   </data>
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
-    <value>{0} · streamt ins ganze Haus</value>
+    <value>{0} · a toda la casa</value>
   </data>
   <data name="Label_RoomSummaryTitle_Text" xml:space="preserve">
-    <value>Geräte im Heimnetz</value>
+    <value>Dispositivos en tu red</value>
   </data>
   <data name="Label_RoomSummaryPlayingOne_Text" xml:space="preserve">
-    <value>1 spielt</value>
+    <value>1 sonando</value>
   </data>
   <data name="Label_RoomSummaryPlayingMany_Text" xml:space="preserve">
-    <value>{0} spielen</value>
+    <value>{0} sonando</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 Raum</value>
+    <value>1 sala</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} Räume</value>
+    <value>{0} salas</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
-    <value>1 Gruppe</value>
+    <value>1 grupo</value>
   </data>
   <data name="Label_RoomSummaryGroupsMany_Text" xml:space="preserve">
-    <value>{0} Gruppen</value>
+    <value>{0} grupos</value>
   </data>
   <data name="Label_RoomSummaryLossless_Text" xml:space="preserve">
-    <value>verlustfrei ans ganze Haus</value>
+    <value>sin pérdidas a toda la casa</value>
   </data>
   <data name="Label_RoomSummaryCompressed_Text" xml:space="preserve">
-    <value>komprimiert ans ganze Haus</value>
+    <value>comprimido a toda la casa</value>
   </data>
   <data name="Label_RoomSummaryEmpty_Text" xml:space="preserve">
-    <value>Suche nach Geräten…</value>
+    <value>Buscando dispositivos…</value>
   </data>
   <data name="Card_Subtitle_Group_Text" xml:space="preserve">
     <value>Multiroom · {0}</value>
   </data>
   <data name="Card_Subtitle_Device_Text" xml:space="preserve">
-    <value>Cast-Gerät</value>
+    <value>Dispositivo Cast</value>
   </data>
   <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
-    <value>Multiroom-Gruppe</value>
+    <value>Grupo multiroom</value>
   </data>
   <data name="Card_Muted_Text" xml:space="preserve">
-    <value>stumm</value>
+    <value>silenciado</value>
   </data>
   <data name="Popup_SpeakerOptions_Text" xml:space="preserve">
-    <value>LAUTSPRECHER-OPTIONEN</value>
+    <value>OPCIONES DEL ALTAVOZ</value>
   </data>
   <data name="Popup_Room_Text" xml:space="preserve">
-    <value>Raum</value>
+    <value>Sala</value>
   </data>
   <data name="Popup_RoomHint_Text" xml:space="preserve">
-    <value>z. B. Wohnzimmer</value>
+    <value>p. ej. Salón</value>
   </data>
   <data name="Popup_MaxVolume_Text" xml:space="preserve">
-    <value>Max. Lautstärke (Hart-Cut)</value>
+    <value>Volumen máximo (tope)</value>
   </data>
   <data name="Popup_Done_Text" xml:space="preserve">
-    <value>Fertig</value>
+    <value>Hecho</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>VERLUSTFREI · KLANG IM GANZEN HAUS</value>
+    <value>SIN PÉRDIDA · AUDIO EN TODA LA CASA</value>
   </data>
 </root>

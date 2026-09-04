@@ -1,4 +1,4 @@
-namespace KlangHub.UserControls
+﻿namespace KlangHub.UserControls
 {
     partial class DeviceControl
     {
@@ -25,7 +25,7 @@ namespace KlangHub.UserControls
             this.BackColor = KlangHub.Classes.Theme.Ink;
             this.Margin = new System.Windows.Forms.Padding(7);
             this.Name = "DeviceControl";
-            this.Size = new System.Drawing.Size(322, 152);
+            this.Size = new System.Drawing.Size(322, 172);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.DeviceControl_DragDrop);
             this.DragOver += new System.Windows.Forms.DragEventHandler(this.DeviceControl_DragOver);
             this.ResumeLayout(false);

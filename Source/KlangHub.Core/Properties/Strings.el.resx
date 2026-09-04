@@ -60,333 +60,333 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Buffering" xml:space="preserve">
-    <value>Puffert</value>
+    <value>Προετοιμασία</value>
   </data>
   <data name="Connecting" xml:space="preserve">
-    <value>Verbindet</value>
+    <value>Σύνδεση</value>
   </data>
   <data name="Disconnected" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Αποσυνδέθηκε</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>Fehler</value>
+    <value>Σφάλμα</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Lädt</value>
+    <value>Φόρτωση</value>
   </data>
   <data name="Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
+    <value>Άγνωστο</value>
   </data>
   <data name="Button_ClearLog_Text" xml:space="preserve">
-    <value>Protokoll leeren</value>
+    <value>Καθαρισμός καταγραφής</value>
   </data>
   <data name="Button_ClipboardCopy_Text" xml:space="preserve">
-    <value>In Zwischenablage kopieren</value>
+    <value>Αντιγραφή στο πρόχειρο</value>
   </data>
   <data name="Button_Down_Text" xml:space="preserve">
-    <value>Leiser</value>
+    <value>Πιο σιγά</value>
   </data>
   <data name="Button_Mute_Text" xml:space="preserve">
-    <value>Alle stumm</value>
+    <value>Σίγαση όλων</value>
   </data>
   <data name="Button_ResetSetting_Text" xml:space="preserve">
-    <value>Auf Standard zurücksetzen</value>
+    <value>Επαναφορά προεπιλογών</value>
   </data>
   <data name="Button_ScanAgain_Text" xml:space="preserve">
-    <value>Räume neu suchen</value>
+    <value>Νέα αναζήτηση</value>
   </data>
   <data name="Button_SyncDevices_Text" xml:space="preserve">
-    <value>Räume abgleichen</value>
+    <value>Συγχρονισμός δωματίων</value>
   </data>
   <data name="Button_Up_Text" xml:space="preserve">
-    <value>Lauter</value>
+    <value>Πιο δυνατά</value>
   </data>
   <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
-    <value>Nach Abbruch automatisch weiterspielen</value>
+    <value>Αυτόματη επαναφορά αναπαραγωγής</value>
   </data>
   <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
-    <value>Beim Start automatisch losspielen</value>
+    <value>Αναπαραγωγή στην εκκίνηση</value>
   </data>
   <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
-    <value>Tastenkürzel: Lauter = Strg+Alt+U · Leiser = Strg+Alt+D · Stumm = Strg+Alt+M</value>
+    <value>Συντομεύσεις: Πιο δυνατά = Ctrl+Alt+U · Πιο σιγά = Ctrl+Alt+D · Σίγαση = Ctrl+Alt+M</value>
   </data>
   <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
-    <value>Geräte-Protokoll aufzeichnen</value>
+    <value>Καταγραφή συσκευών</value>
   </data>
   <data name="Check_ShowLagControl_Text" xml:space="preserve">
-    <value>Feinabstimmung anzeigen (experimentell)</value>
+    <value>Εμφάνιση μικρορύθμισης (πειραματικό)</value>
   </data>
   <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
-    <value>Fenster beim Start zeigen</value>
+    <value>Άνοιγμα παραθύρου στην εκκίνηση</value>
   </data>
   <data name="ChromeCast_StreamTitle" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="Closed" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Αποσυνδέθηκε</value>
   </data>
   <data name="Connected" xml:space="preserve">
-    <value>Verbunden</value>
+    <value>Συνδέθηκε</value>
   </data>
   <data name="ConnectError" xml:space="preserve">
-    <value>Verbindungsfehler</value>
+    <value>Σφάλμα σύνδεσης</value>
   </data>
   <data name="Disposed" xml:space="preserve">
-    <value>Beendet</value>
+    <value>Σταμάτησε</value>
   </data>
   <data name="Group_Devices_Text" xml:space="preserve">
-    <value>Deine Räume</value>
+    <value>Τα δωμάτιά σου</value>
   </data>
   <data name="Group_Lag_Text" xml:space="preserve">
-    <value>Feinabstimmung</value>
+    <value>Μικρορύθμιση</value>
   </data>
   <data name="Group_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Ρυθμίσεις</value>
   </data>
   <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
-    <value>Alle Räume</value>
+    <value>Όλα τα δωμάτια</value>
   </data>
   <data name="Idle" xml:space="preserve">
-    <value>Bereit</value>
+    <value>Έτοιμο</value>
   </data>
   <data name="InvalidRequest" xml:space="preserve">
-    <value>Ungültige Anfrage</value>
+    <value>Μη έγκυρο αίτημα</value>
   </data>
   <data name="Label_IPAddressUsed_Text" xml:space="preserve">
-    <value>Heimnetz-Adresse (IPv4)</value>
+    <value>Διεύθυνση δικτύου (IPv4)</value>
   </data>
   <data name="Label_KeepAlive_Text" xml:space="preserve">
-    <value>Letztes Lebenszeichen:</value>
+    <value>Τελευταίο σήμα ζωής:</value>
   </data>
   <data name="Label_LagExperimental_Text" xml:space="preserve">
-    <value>Experimentell: den Puffer am Gerät so klein wie möglich halten, ohne Aussetzer zu hören.</value>
+    <value>Πειραματικό: κράτα την προσωρινή μνήμη της συσκευής όσο πιο μικρή γίνεται, χωρίς διακοπές.</value>
   </data>
   <data name="Label_Language_Text" xml:space="preserve">
-    <value>Sprache</value>
+    <value>Γλώσσα</value>
   </data>
   <data name="Label_MaximumLag_Text" xml:space="preserve">
-    <value>größerer Puffer / beste Qualität</value>
+    <value>μεγαλύτερη μνήμη / άριστη ποιότητα</value>
   </data>
   <data name="Label_MinimumLag_Text" xml:space="preserve">
-    <value>kleinerer Puffer / geringste Latenz</value>
+    <value>μικρότερη μνήμη / ελάχιστη καθυστέρηση</value>
   </data>
   <data name="Label_NewVersionAvailable" xml:space="preserve">
-    <value>Eine neue Version ist auf GitHub verfügbar</value>
+    <value>Νέα έκδοση διαθέσιμη στο GitHub</value>
   </data>
   <data name="Label_RecordingDevice_Text" xml:space="preserve">
-    <value>Audioquelle</value>
+    <value>Πηγή ήχου</value>
   </data>
   <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
-    <value>MP3 komprimiert stärker und bringt mehr Latenz — für echtes HiFi FLAC wählen.</value>
+    <value>Το MP3 συμπιέζει πιο πολύ και προσθέτει καθυστέρηση — για αληθινό HiFi διάλεξε FLAC.</value>
   </data>
   <data name="Label_StreamFormat_Text" xml:space="preserve">
-    <value>Klangqualität</value>
+    <value>Ποιότητα ήχου</value>
   </data>
   <data name="Language_English" xml:space="preserve">
-    <value>Englisch</value>
+    <value>Αγγλικά</value>
   </data>
   <data name="Language_French" xml:space="preserve">
-    <value>Französisch</value>
+    <value>Γαλλικά</value>
   </data>
   <data name="LaunchedApplication" xml:space="preserve">
-    <value>Empfänger gestartet</value>
+    <value>Ο δέκτης ξεκίνησε</value>
   </data>
   <data name="LaunchingApplication" xml:space="preserve">
-    <value>Empfänger wird gestartet</value>
+    <value>Εκκίνηση δέκτη</value>
   </data>
   <data name="LoadCancelled" xml:space="preserve">
-    <value>Abgebrochen</value>
+    <value>Ακυρώθηκε</value>
   </data>
   <data name="LoadFailed" xml:space="preserve">
-    <value>Laden fehlgeschlagen</value>
+    <value>Η φόρτωση απέτυχε</value>
   </data>
   <data name="LoadingMedia" xml:space="preserve">
-    <value>Lädt Klang</value>
+    <value>Φόρτωση ήχου</value>
   </data>
   <data name="Log_In" xml:space="preserve">
-    <value>in</value>
+    <value>εισ.</value>
   </data>
   <data name="Log_Out" xml:space="preserve">
-    <value>out</value>
+    <value>εξ.</value>
   </data>
   <data name="MainForm_Text" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="MessageBox_NoIPAddress" xml:space="preserve">
-    <value>Keine Adresse im Heimnetz gefunden.</value>
+    <value>Δεν βρέθηκε διεύθυνση δικτύου.</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
-    <value>Keine Audioquelle gefunden.</value>
+    <value>Δεν βρέθηκε πηγή ήχου.</value>
   </data>
   <data name="Mp3_128" xml:space="preserve">
-    <value>MP3 · 128 kbps (komprimiert)</value>
+    <value>MP3 · 128 kbps (συμπιεσμένο)</value>
   </data>
   <data name="Mp3_320" xml:space="preserve">
-    <value>MP3 · 320 kbps (komprimiert)</value>
+    <value>MP3 · 320 kbps (συμπιεσμένο)</value>
   </data>
   <data name="NotConnected" xml:space="preserve">
-    <value>Nicht verbunden</value>
+    <value>Χωρίς σύνδεση</value>
   </data>
   <data name="Paused" xml:space="preserve">
-    <value>Pausiert</value>
+    <value>Σε παύση</value>
   </data>
   <data name="Playing" xml:space="preserve">
-    <value>Wiedergabe</value>
+    <value>Αναπαραγωγή</value>
   </data>
   <data name="Tab_Log_Text" xml:space="preserve">
-    <value>Protokoll</value>
+    <value>Καταγραφή</value>
   </data>
   <data name="Tab_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Ρυθμίσεις</value>
   </data>
   <data name="TrayIcon_Close" xml:space="preserve">
-    <value>Beenden</value>
+    <value>Έξοδος</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version</value>
+    <value>Έκδοση</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · CD-Qualität (44,1 kHz / 16-Bit)</value>
+    <value>WAV · ποιότητα CD (44,1 kHz / 16-bit)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
-    <value>Räume</value>
+    <value>Δωμάτια</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Deutsch</value>
+    <value>Ελληνικά</value>
   </data>
   <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
-    <value>Mit Windows starten</value>
+    <value>Εκκίνηση με τα Windows</value>
   </data>
   <data name="DevicesOnly" xml:space="preserve">
-    <value>Nur Lautsprecher</value>
+    <value>Μόνο ηχεία</value>
   </data>
   <data name="GroupsOnly" xml:space="preserve">
-    <value>Nur Gruppen</value>
+    <value>Μόνο ομάδες</value>
   </data>
   <data name="ShowAll" xml:space="preserve">
-    <value>Alle</value>
+    <value>Όλα</value>
   </data>
   <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
-    <value>Zuletzt gespielte Räume beim Start fortsetzen</value>
+    <value>Συνέχεια στα τελευταία δωμάτια</value>
   </data>
   <data name="Label_LinkHelp_Text" xml:space="preserve">
-    <value>Hilfe und Dokumentation</value>
+    <value>Βοήθεια και τεκμηρίωση</value>
   </data>
   <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
-    <value>Eingangspegel</value>
+    <value>Στάθμη εισόδου</value>
   </data>
   <data name="Label_FilterDevices_Text" xml:space="preserve">
-    <value>Anzeige</value>
+    <value>Εμφάνιση</value>
   </data>
   <data name="Tooltip_Group_Text" xml:space="preserve">
-    <value>Gruppe</value>
+    <value>Ομάδα</value>
   </data>
   <data name="Label_BufferInSeconds_Text" xml:space="preserve">
-    <value>Klangpuffer (Sekunden)</value>
+    <value>Προσωρινή μνήμη ήχου (δευτ.)</value>
   </data>
   <data name="Check_AutoMute_Text" xml:space="preserve">
-    <value>Desktop-Ton automatisch stummschalten</value>
+    <value>Αυτόματη σίγαση των ηχείων του PC</value>
   </data>
   <data name="LoadingMediaCheckFirewall" xml:space="preserve">
-    <value>Firewall und WLAN-Freigabe prüfen</value>
+    <value>Έλεγξε το τείχος προστασίας και το Wi-Fi</value>
   </data>
   <data name="Check_MinimizeToTray_Text" xml:space="preserve">
-    <value>Beim Schließen in den Infobereich legen</value>
+    <value>Παραμονή στη γραμμή εργασιών</value>
   </data>
   <data name="Wav_16bit" xml:space="preserve">
-    <value>WAV · 16-Bit (unkomprimiert)</value>
+    <value>WAV · 16-bit (ασυμπίεστο)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-Bit HiFi (unkomprimiert, Standard)</value>
+    <value>WAV · 24-bit HiFi (ασυμπίεστο, προεπιλογή)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-Bit (unkomprimiert, LPCM)</value>
+    <value>WAV · 32-bit (ασυμπίεστο, LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC · verlustfrei, ideal für schwache/kleine Lautsprecher</value>
+    <value>FLAC · χωρίς απώλειες, ιδανικό για μικρά ηχεία</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
-    <value>Live-Klang von deinem PC</value>
+    <value>Ζωντανός ήχος από το PC σου</value>
   </data>
   <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
-    <value>Mehrkanal-Ton auf Stereo mischen</value>
+    <value>Μίξη πολυκάναλου ήχου σε στέρεο</value>
   </data>
   <data name="Check_DarkMode_Text" xml:space="preserve">
-    <value>Dunkles Design</value>
+    <value>Σκούρο θέμα</value>
   </data>
   <data name="Label_StreamTitle_Text" xml:space="preserve">
-    <value>Anzeigename auf dem Empfänger</value>
+    <value>Όνομα που φαίνεται στον δέκτη</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Entworfen und entwickelt von Neo &amp; Trinity · 2026</value>
+    <value>Σχεδιάστηκε και φτιάχτηκε από Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
-    <value>KLANGPROFIL &amp; VERBINDUNG</value>
+    <value>ΠΡΟΦΙΛ ΗΧΟΥ &amp; ΣΥΝΔΕΣΗ</value>
   </data>
   <data name="Label_Section_Behavior_Text" xml:space="preserve">
-    <value>VERHALTEN &amp; KOMFORT</value>
+    <value>ΣΥΜΠΕΡΙΦΟΡΑ &amp; ΑΝΕΣΗ</value>
   </data>
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
-    <value>{0} · streamt ins ganze Haus</value>
+    <value>{0} · σε όλο το σπίτι</value>
   </data>
   <data name="Label_RoomSummaryTitle_Text" xml:space="preserve">
-    <value>Geräte im Heimnetz</value>
+    <value>Συσκευές στο δίκτυό σου</value>
   </data>
   <data name="Label_RoomSummaryPlayingOne_Text" xml:space="preserve">
-    <value>1 spielt</value>
+    <value>1 παίζει</value>
   </data>
   <data name="Label_RoomSummaryPlayingMany_Text" xml:space="preserve">
-    <value>{0} spielen</value>
+    <value>{0} παίζουν</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 Raum</value>
+    <value>1 δωμάτιο</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} Räume</value>
+    <value>{0} δωμάτια</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
-    <value>1 Gruppe</value>
+    <value>1 ομάδα</value>
   </data>
   <data name="Label_RoomSummaryGroupsMany_Text" xml:space="preserve">
-    <value>{0} Gruppen</value>
+    <value>{0} ομάδες</value>
   </data>
   <data name="Label_RoomSummaryLossless_Text" xml:space="preserve">
-    <value>verlustfrei ans ganze Haus</value>
+    <value>χωρίς απώλειες σε όλο το σπίτι</value>
   </data>
   <data name="Label_RoomSummaryCompressed_Text" xml:space="preserve">
-    <value>komprimiert ans ganze Haus</value>
+    <value>συμπιεσμένα σε όλο το σπίτι</value>
   </data>
   <data name="Label_RoomSummaryEmpty_Text" xml:space="preserve">
-    <value>Suche nach Geräten…</value>
+    <value>Αναζήτηση συσκευών…</value>
   </data>
   <data name="Card_Subtitle_Group_Text" xml:space="preserve">
     <value>Multiroom · {0}</value>
   </data>
   <data name="Card_Subtitle_Device_Text" xml:space="preserve">
-    <value>Cast-Gerät</value>
+    <value>Συσκευή Cast</value>
   </data>
   <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
-    <value>Multiroom-Gruppe</value>
+    <value>Ομάδα Multiroom</value>
   </data>
   <data name="Card_Muted_Text" xml:space="preserve">
-    <value>stumm</value>
+    <value>σε σίγαση</value>
   </data>
   <data name="Popup_SpeakerOptions_Text" xml:space="preserve">
-    <value>LAUTSPRECHER-OPTIONEN</value>
+    <value>ΕΠΙΛΟΓΕΣ ΗΧΕΙΟΥ</value>
   </data>
   <data name="Popup_Room_Text" xml:space="preserve">
-    <value>Raum</value>
+    <value>Δωμάτιο</value>
   </data>
   <data name="Popup_RoomHint_Text" xml:space="preserve">
-    <value>z. B. Wohnzimmer</value>
+    <value>π.χ. Σαλόνι</value>
   </data>
   <data name="Popup_MaxVolume_Text" xml:space="preserve">
-    <value>Max. Lautstärke (Hart-Cut)</value>
+    <value>Μέγιστη ένταση (σταθερό όριο)</value>
   </data>
   <data name="Popup_Done_Text" xml:space="preserve">
-    <value>Fertig</value>
+    <value>Έτοιμο</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>VERLUSTFREI · KLANG IM GANZEN HAUS</value>
+    <value>ΧΩΡΙΣ ΑΠΩΛΕΙΕΣ · ΗΧΟΣ ΣΕ ΟΛΟ ΤΟ ΣΠΙΤΙ</value>
   </data>
 </root>

@@ -19,8 +19,13 @@ namespace KlangHub
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            // "--lang=xx": the installer starts the app once in the language chosen during setup.
+            var lang = args?.FirstOrDefault(a => a.StartsWith("--lang=", StringComparison.OrdinalIgnoreCase))?[7..];
+            if (!string.IsNullOrWhiteSpace(lang) && MainForm.SupportedCultures.Contains(lang!.ToLowerInvariant()))
+                Classes.StartupOptions.Culture = lang!.ToLowerInvariant();
+
             // Per-Monitor-V2 DPI (available on .NET 10) keeps the owner-drawn cards, meters and faders crisp
             // across mixed-DPI monitors. Must be the first UI call in Main.
             System.Windows.Forms.Application.SetHighDpiMode(System.Windows.Forms.HighDpiMode.PerMonitorV2);

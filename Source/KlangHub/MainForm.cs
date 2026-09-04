@@ -81,10 +81,12 @@ namespace KlangHub
 
             Assembly assembly = Assembly.GetExecutingAssembly();
             // Assembly.Location is empty in single-file/published builds; read the version from metadata instead.
-            // Displayed as three parts (Major.Minor.Build) - the compiler always pads AssemblyVersion's omitted
-            // Revision to 0, which Version.ToString() would otherwise print as a trailing ".0" (e.g. "0.0.1.0").
+            // Shown as Major.Minor on a release ("1.0"), with the patch digit appended only when there is one
+            // ("1.0.3") - the trailing ".0" the compiler pads in is noise on the about line.
             var av = assembly.GetName().Version;
-            var appVersion = av != null ? $"{av.Major}.{av.Minor}.{av.Build}" : string.Empty;
+            var appVersion = av == null ? string.Empty
+                : av.Build > 0 ? $"{av.Major}.{av.Minor}.{av.Build}"
+                : $"{av.Major}.{av.Minor}";
             FillStreamFormats();
             FillFilterDevices();
             lblVersion.Text = $"{Properties.Strings.Version} {appVersion}";
@@ -148,25 +150,77 @@ namespace KlangHub
             lblStreamTitle.Text = Properties.Strings.Label_StreamTitle_Text;
             chkDarkMode.Text = Properties.Strings.Check_DarkMode_Text;
 
+            FillLanguages();
+        }
+
+        /// <summary>
+        /// The 24 official languages of the European Union. Each has its own Strings.&lt;code&gt;.resx, which the
+        /// build turns into a satellite assembly; anything the translation misses falls back to English.
+        /// </summary>
+        internal static readonly string[] SupportedCultures =
+        {
+            "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "ga", "hr",
+            "hu", "it", "lt", "lv", "mt", "nl", "pl", "pt", "ro", "sk", "sl", "sv",
+        };
+
+        /// <summary>One row of the language picker: the culture code plus the language's own name.</summary>
+        private sealed class LanguageItem
+        {
+            public required string Code { get; init; }
+            public required string Display { get; init; }
+            public override string ToString() => Display;
+        }
+
+        /// <summary>
+        /// Fills the language picker once. The entries are endonyms - a language is always listed under its
+        /// own name ("Deutsch", "Español"), so the list never changes with the UI language and someone who
+        /// picked the wrong one can still find their way back. The name comes from the translation when it
+        /// carries one, otherwise from the OS culture data, so a language works the moment its file exists.
+        /// </summary>
+        private void FillLanguages()
+        {
+            if (cmbLanguage == null) return;
+
             if (cmbLanguage.Items.Count == 0)
             {
-                cmbLanguage.Items.Add(Resource.Get("Language", CultureInfo.GetCultureInfo("en")));
-                cmbLanguage.Items.Add(Resource.Get("Language", CultureInfo.GetCultureInfo("fr")));
-                cmbLanguage.Items.Add(Resource.Get("Language", CultureInfo.GetCultureInfo("de")));
+                var items = new List<LanguageItem>();
+                foreach (var code in SupportedCultures)
+                {
+                    var ci = CultureInfo.GetCultureInfo(code);
+                    items.Add(new LanguageItem { Code = code, Display = LanguageName(ci) });
+                }
+                items.Sort((a, b) => string.Compare(a.Display, b.Display, StringComparison.CurrentCultureIgnoreCase));
+                cmbLanguage.Items.AddRange(items.ToArray());
             }
-            else
-            {
-                if (cmbLanguage.Items[0]!.ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("en")))
-                    cmbLanguage.Items[0] = Resource.Get("Language", CultureInfo.GetCultureInfo("en"));
-                if (cmbLanguage.Items[1]!.ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("fr")))
-                    cmbLanguage.Items[1] = Resource.Get("Language", CultureInfo.GetCultureInfo("fr"));
-                if (cmbLanguage.Items.Count > 2 && cmbLanguage.Items[2]!.ToString() != Resource.Get("Language", CultureInfo.GetCultureInfo("de")))
-                    cmbLanguage.Items[2] = Resource.Get("Language", CultureInfo.GetCultureInfo("de"));
-            }
-            var lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
-            var langIndex = lang == "fr" ? 1 : lang == "de" ? 2 : 0;
-            if (cmbLanguage.SelectedIndex != langIndex)
-                cmbLanguage.SelectedIndex = langIndex;
+
+            var current = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+            int idx = IndexOfCulture(current);
+            if (idx >= 0 && cmbLanguage.SelectedIndex != idx)
+                cmbLanguage.SelectedIndex = idx;
+            else if (cmbLanguage.SelectedIndex < 0)
+                cmbLanguage.SelectedIndex = Math.Max(0, IndexOfCulture("en"));
+        }
+
+        private int IndexOfCulture(string code)
+        {
+            for (int i = 0; i < cmbLanguage.Items.Count; i++)
+                if (cmbLanguage.Items[i] is LanguageItem li && li.Code == code) return i;
+            return -1;
+        }
+
+        /// <summary>The language's own name: the translation's "Language" entry if it has one, else the OS
+        /// endonym with a capital first letter (Windows lowercases several of them, e.g. "français").</summary>
+        private static string LanguageName(CultureInfo ci)
+        {
+            var fromResx = Properties.Strings.ResourceManager.GetString("Language", ci);
+            var neutral = Properties.Strings.ResourceManager.GetString("Language", CultureInfo.InvariantCulture);
+            if (!string.IsNullOrWhiteSpace(fromResx) && (ci.TwoLetterISOLanguageName == "en" || fromResx != neutral))
+                return fromResx!;
+
+            var native = ci.NativeName;
+            int paren = native.IndexOf(" (", StringComparison.Ordinal);
+            if (paren > 0) native = native[..paren];
+            return native.Length > 0 ? char.ToUpper(native[0], ci) + native[1..] : ci.Name;
         }
 
         private void FillStreamFormats()
@@ -921,12 +975,9 @@ namespace KlangHub
             if (cmbLanguage == null)
                 return;
 
-            if (cmbLanguage.SelectedItem!.ToString() == Resource.Get("Language", CultureInfo.GetCultureInfo("en")))
-                SetCulture("en");
-            else if (cmbLanguage.SelectedItem.ToString() == Resource.Get("Language", CultureInfo.GetCultureInfo("fr")))
-                SetCulture("fr");
-            else if (cmbLanguage.SelectedItem.ToString() == Resource.Get("Language", CultureInfo.GetCultureInfo("de")))
-                SetCulture("de");
+            if (cmbLanguage.SelectedItem is LanguageItem item
+                && !string.Equals(item.Code, Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName, StringComparison.OrdinalIgnoreCase))
+                SetCulture(item.Code);
         }
 
         public void SetCulture(string culture)
@@ -937,6 +988,7 @@ namespace KlangHub
             CultureInfo ci = new CultureInfo(culture);
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
+            Classes.ArtworkRenderer.Invalidate();   // the TV screen is drawn in this language too
             ApplyLocalization();
             applicationLogic.SetCulture(culture);
         }
@@ -2133,7 +2185,7 @@ namespace KlangHub
 
             int cols = count <= 1 ? 1 : count > 6 ? 3 : 2;
             int rows = (count + cols - 1) / cols;
-            const int cellW = 322 + 14, cellH = 152 + 14;   // card + margins
+            const int cellW = 322 + 14, cellH = 172 + 14;   // card + margins
             int needPnlW = cols * cellW + 20;                // + scrollbar / inner padding
             int needPnlH = rows * cellH + 10;
 

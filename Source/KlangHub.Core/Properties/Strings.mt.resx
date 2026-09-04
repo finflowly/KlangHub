@@ -1,6 +1,6 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
+
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -60,333 +60,333 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Buffering" xml:space="preserve">
-    <value>Puffert</value>
+    <value>Qed jibbaffer</value>
   </data>
   <data name="Connecting" xml:space="preserve">
-    <value>Verbindet</value>
+    <value>Qed jikkonnettja</value>
   </data>
   <data name="Disconnected" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Skonnettjat</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>Fehler</value>
+    <value>Żball</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Lädt</value>
+    <value>Qed jgħabbi</value>
   </data>
   <data name="Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
+    <value>Mhux magħruf</value>
   </data>
   <data name="Button_ClearLog_Text" xml:space="preserve">
-    <value>Protokoll leeren</value>
+    <value>Naddaf ir-reġistru</value>
   </data>
   <data name="Button_ClipboardCopy_Text" xml:space="preserve">
-    <value>In Zwischenablage kopieren</value>
+    <value>Ikkopja fil-clipboard</value>
   </data>
   <data name="Button_Down_Text" xml:space="preserve">
-    <value>Leiser</value>
+    <value>Aktar baxx</value>
   </data>
   <data name="Button_Mute_Text" xml:space="preserve">
-    <value>Alle stumm</value>
+    <value>Silenzja kollox</value>
   </data>
   <data name="Button_ResetSetting_Text" xml:space="preserve">
-    <value>Auf Standard zurücksetzen</value>
+    <value>Erġa' għad-default</value>
   </data>
   <data name="Button_ScanAgain_Text" xml:space="preserve">
-    <value>Räume neu suchen</value>
+    <value>Erġa' fittex kmamar</value>
   </data>
   <data name="Button_SyncDevices_Text" xml:space="preserve">
-    <value>Räume abgleichen</value>
+    <value>Sinkronizza l-kmamar</value>
   </data>
   <data name="Button_Up_Text" xml:space="preserve">
-    <value>Lauter</value>
+    <value>Aktar għoli</value>
   </data>
   <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
-    <value>Nach Abbruch automatisch weiterspielen</value>
+    <value>Irkupra d-daqq awtomatikament</value>
   </data>
   <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
-    <value>Beim Start automatisch losspielen</value>
+    <value>Ibda ddoqq mal-ftuħ</value>
   </data>
   <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
-    <value>Tastenkürzel: Lauter = Strg+Alt+U · Leiser = Strg+Alt+D · Stumm = Strg+Alt+M</value>
+    <value>Tastiera: Aktar għoli = Ctrl+Alt+U · Aktar baxx = Ctrl+Alt+D · Silenzju = Ctrl+Alt+M</value>
   </data>
   <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
-    <value>Geräte-Protokoll aufzeichnen</value>
+    <value>Żomm reġistru tal-apparat</value>
   </data>
   <data name="Check_ShowLagControl_Text" xml:space="preserve">
-    <value>Feinabstimmung anzeigen (experimentell)</value>
+    <value>Uri l-irfinar (sperimentali)</value>
   </data>
   <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
-    <value>Fenster beim Start zeigen</value>
+    <value>Iftaħ it-tieqa mal-bidu</value>
   </data>
   <data name="ChromeCast_StreamTitle" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="Closed" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Skonnettjat</value>
   </data>
   <data name="Connected" xml:space="preserve">
-    <value>Verbunden</value>
+    <value>Konnettjat</value>
   </data>
   <data name="ConnectError" xml:space="preserve">
-    <value>Verbindungsfehler</value>
+    <value>Żball fil-konnessjoni</value>
   </data>
   <data name="Disposed" xml:space="preserve">
-    <value>Beendet</value>
+    <value>Imwaqqaf</value>
   </data>
   <data name="Group_Devices_Text" xml:space="preserve">
-    <value>Deine Räume</value>
+    <value>Il-kmamar tiegħek</value>
   </data>
   <data name="Group_Lag_Text" xml:space="preserve">
-    <value>Feinabstimmung</value>
+    <value>Irfinar</value>
   </data>
   <data name="Group_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Issettjar</value>
   </data>
   <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
-    <value>Alle Räume</value>
+    <value>Il-kmamar kollha</value>
   </data>
   <data name="Idle" xml:space="preserve">
-    <value>Bereit</value>
+    <value>Lest</value>
   </data>
   <data name="InvalidRequest" xml:space="preserve">
-    <value>Ungültige Anfrage</value>
+    <value>Talba invalida</value>
   </data>
   <data name="Label_IPAddressUsed_Text" xml:space="preserve">
-    <value>Heimnetz-Adresse (IPv4)</value>
+    <value>Indirizz tan-netwerk tad-dar (IPv4)</value>
   </data>
   <data name="Label_KeepAlive_Text" xml:space="preserve">
-    <value>Letztes Lebenszeichen:</value>
+    <value>L-aħħar sinjal:</value>
   </data>
   <data name="Label_LagExperimental_Text" xml:space="preserve">
-    <value>Experimentell: den Puffer am Gerät so klein wie möglich halten, ohne Aussetzer zu hören.</value>
+    <value>Sperimentali: żomm il-buffer tal-apparat kemm jista' jkun żgħir mingħajr qtugħ fil-ħoss.</value>
   </data>
   <data name="Label_Language_Text" xml:space="preserve">
-    <value>Sprache</value>
+    <value>Lingwa</value>
   </data>
   <data name="Label_MaximumLag_Text" xml:space="preserve">
-    <value>größerer Puffer / beste Qualität</value>
+    <value>buffer akbar / l-aqwa kwalità</value>
   </data>
   <data name="Label_MinimumLag_Text" xml:space="preserve">
-    <value>kleinerer Puffer / geringste Latenz</value>
+    <value>buffer iżgħar / l-inqas dewmien</value>
   </data>
   <data name="Label_NewVersionAvailable" xml:space="preserve">
-    <value>Eine neue Version ist auf GitHub verfügbar</value>
+    <value>Verżjoni ġdida disponibbli fuq GitHub</value>
   </data>
   <data name="Label_RecordingDevice_Text" xml:space="preserve">
-    <value>Audioquelle</value>
+    <value>Sors tal-ħoss</value>
   </data>
   <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
-    <value>MP3 komprimiert stärker und bringt mehr Latenz — für echtes HiFi FLAC wählen.</value>
+    <value>MP3 jikkompressa aktar u jżid dewmien — għal HiFi veru agħżel FLAC.</value>
   </data>
   <data name="Label_StreamFormat_Text" xml:space="preserve">
-    <value>Klangqualität</value>
+    <value>Kwalità tal-ħoss</value>
   </data>
   <data name="Language_English" xml:space="preserve">
-    <value>Englisch</value>
+    <value>Ingliż</value>
   </data>
   <data name="Language_French" xml:space="preserve">
-    <value>Französisch</value>
+    <value>Franċiż</value>
   </data>
   <data name="LaunchedApplication" xml:space="preserve">
-    <value>Empfänger gestartet</value>
+    <value>Ir-riċevitur beda</value>
   </data>
   <data name="LaunchingApplication" xml:space="preserve">
-    <value>Empfänger wird gestartet</value>
+    <value>Ir-riċevitur qed jibda</value>
   </data>
   <data name="LoadCancelled" xml:space="preserve">
-    <value>Abgebrochen</value>
+    <value>Ikkanċellat</value>
   </data>
   <data name="LoadFailed" xml:space="preserve">
-    <value>Laden fehlgeschlagen</value>
+    <value>It-tagħbija falliet</value>
   </data>
   <data name="LoadingMedia" xml:space="preserve">
-    <value>Lädt Klang</value>
+    <value>Qed jgħabbi l-ħoss</value>
   </data>
   <data name="Log_In" xml:space="preserve">
-    <value>in</value>
+    <value>dieħel</value>
   </data>
   <data name="Log_Out" xml:space="preserve">
-    <value>out</value>
+    <value>ħiereġ</value>
   </data>
   <data name="MainForm_Text" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="MessageBox_NoIPAddress" xml:space="preserve">
-    <value>Keine Adresse im Heimnetz gefunden.</value>
+    <value>Ma nstab l-ebda indirizz.</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
-    <value>Keine Audioquelle gefunden.</value>
+    <value>Ma nstab l-ebda sors tal-ħoss.</value>
   </data>
   <data name="Mp3_128" xml:space="preserve">
-    <value>MP3 · 128 kbps (komprimiert)</value>
+    <value>MP3 · 128 kbps (kompressat)</value>
   </data>
   <data name="Mp3_320" xml:space="preserve">
-    <value>MP3 · 320 kbps (komprimiert)</value>
+    <value>MP3 · 320 kbps (kompressat)</value>
   </data>
   <data name="NotConnected" xml:space="preserve">
-    <value>Nicht verbunden</value>
+    <value>Mhux konnettjat</value>
   </data>
   <data name="Paused" xml:space="preserve">
-    <value>Pausiert</value>
+    <value>Pawża</value>
   </data>
   <data name="Playing" xml:space="preserve">
-    <value>Wiedergabe</value>
+    <value>Qed idoqq</value>
   </data>
   <data name="Tab_Log_Text" xml:space="preserve">
-    <value>Protokoll</value>
+    <value>Reġistru</value>
   </data>
   <data name="Tab_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Issettjar</value>
   </data>
   <data name="TrayIcon_Close" xml:space="preserve">
-    <value>Beenden</value>
+    <value>Oħroġ</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version</value>
+    <value>Verżjoni</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · CD-Qualität (44,1 kHz / 16-Bit)</value>
+    <value>WAV · kwalità CD (44,1 kHz / 16-bit)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
-    <value>Räume</value>
+    <value>Kmamar</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Deutsch</value>
+    <value>Malti</value>
   </data>
   <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
-    <value>Mit Windows starten</value>
+    <value>Ibda ma' Windows</value>
   </data>
   <data name="DevicesOnly" xml:space="preserve">
-    <value>Nur Lautsprecher</value>
+    <value>Sperkers biss</value>
   </data>
   <data name="GroupsOnly" xml:space="preserve">
-    <value>Nur Gruppen</value>
+    <value>Gruppi biss</value>
   </data>
   <data name="ShowAll" xml:space="preserve">
-    <value>Alle</value>
+    <value>Kollha</value>
   </data>
   <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
-    <value>Zuletzt gespielte Räume beim Start fortsetzen</value>
+    <value>Kompli l-aħħar kmamar mal-bidu</value>
   </data>
   <data name="Label_LinkHelp_Text" xml:space="preserve">
-    <value>Hilfe und Dokumentation</value>
+    <value>Għajnuna u dokumentazzjoni</value>
   </data>
   <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
-    <value>Eingangspegel</value>
+    <value>Livell tad-dħul</value>
   </data>
   <data name="Label_FilterDevices_Text" xml:space="preserve">
-    <value>Anzeige</value>
+    <value>Uri</value>
   </data>
   <data name="Tooltip_Group_Text" xml:space="preserve">
-    <value>Gruppe</value>
+    <value>Grupp</value>
   </data>
   <data name="Label_BufferInSeconds_Text" xml:space="preserve">
-    <value>Klangpuffer (Sekunden)</value>
+    <value>Buffer tal-ħoss (sekondi)</value>
   </data>
   <data name="Check_AutoMute_Text" xml:space="preserve">
-    <value>Desktop-Ton automatisch stummschalten</value>
+    <value>Silenzja l-isperkers tal-PC</value>
   </data>
   <data name="LoadingMediaCheckFirewall" xml:space="preserve">
-    <value>Firewall und WLAN-Freigabe prüfen</value>
+    <value>Iċċekkja l-firewall u l-Wi-Fi</value>
   </data>
   <data name="Check_MinimizeToTray_Text" xml:space="preserve">
-    <value>Beim Schließen in den Infobereich legen</value>
+    <value>Żomm fit-tray meta tagħlaq</value>
   </data>
   <data name="Wav_16bit" xml:space="preserve">
-    <value>WAV · 16-Bit (unkomprimiert)</value>
+    <value>WAV · 16-bit (mhux kompressat)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-Bit HiFi (unkomprimiert, Standard)</value>
+    <value>WAV · 24-bit HiFi (mhux kompressat, default)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-Bit (unkomprimiert, LPCM)</value>
+    <value>WAV · 32-bit (mhux kompressat, LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC · verlustfrei, ideal für schwache/kleine Lautsprecher</value>
+    <value>FLAC · bla telf, ideali għal sperkers żgħar</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
-    <value>Live-Klang von deinem PC</value>
+    <value>Ħoss dirett mill-PC tiegħek</value>
   </data>
   <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
-    <value>Mehrkanal-Ton auf Stereo mischen</value>
+    <value>Ħawwad il-multi-channel għal stereo</value>
   </data>
   <data name="Check_DarkMode_Text" xml:space="preserve">
-    <value>Dunkles Design</value>
+    <value>Tema skura</value>
   </data>
   <data name="Label_StreamTitle_Text" xml:space="preserve">
-    <value>Anzeigename auf dem Empfänger</value>
+    <value>Isem li jidher fuq ir-riċevitur</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Entworfen und entwickelt von Neo &amp; Trinity · 2026</value>
+    <value>Iddisinjat u mibni minn Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
-    <value>KLANGPROFIL &amp; VERBINDUNG</value>
+    <value>PROFIL TAL-ĦOSS &amp; KONNESSJONI</value>
   </data>
   <data name="Label_Section_Behavior_Text" xml:space="preserve">
-    <value>VERHALTEN &amp; KOMFORT</value>
+    <value>IMĠIBA &amp; KOMDITÀ</value>
   </data>
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
-    <value>{0} · streamt ins ganze Haus</value>
+    <value>{0} · ħoss fid-dar kollha</value>
   </data>
   <data name="Label_RoomSummaryTitle_Text" xml:space="preserve">
-    <value>Geräte im Heimnetz</value>
+    <value>Apparati fin-netwerk tiegħek</value>
   </data>
   <data name="Label_RoomSummaryPlayingOne_Text" xml:space="preserve">
-    <value>1 spielt</value>
+    <value>1 idoqq</value>
   </data>
   <data name="Label_RoomSummaryPlayingMany_Text" xml:space="preserve">
-    <value>{0} spielen</value>
+    <value>{0} idoqqu</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 Raum</value>
+    <value>1 kamra</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} Räume</value>
+    <value>{0} kmamar</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
-    <value>1 Gruppe</value>
+    <value>1 grupp</value>
   </data>
   <data name="Label_RoomSummaryGroupsMany_Text" xml:space="preserve">
-    <value>{0} Gruppen</value>
+    <value>{0} gruppi</value>
   </data>
   <data name="Label_RoomSummaryLossless_Text" xml:space="preserve">
-    <value>verlustfrei ans ganze Haus</value>
+    <value>bla telf fid-dar kollha</value>
   </data>
   <data name="Label_RoomSummaryCompressed_Text" xml:space="preserve">
-    <value>komprimiert ans ganze Haus</value>
+    <value>kompressat fid-dar kollha</value>
   </data>
   <data name="Label_RoomSummaryEmpty_Text" xml:space="preserve">
-    <value>Suche nach Geräten…</value>
+    <value>Qed ifittex apparati…</value>
   </data>
   <data name="Card_Subtitle_Group_Text" xml:space="preserve">
     <value>Multiroom · {0}</value>
   </data>
   <data name="Card_Subtitle_Device_Text" xml:space="preserve">
-    <value>Cast-Gerät</value>
+    <value>Apparat Cast</value>
   </data>
   <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
-    <value>Multiroom-Gruppe</value>
+    <value>Grupp multi-kamra</value>
   </data>
   <data name="Card_Muted_Text" xml:space="preserve">
-    <value>stumm</value>
+    <value>silenzjat</value>
   </data>
   <data name="Popup_SpeakerOptions_Text" xml:space="preserve">
-    <value>LAUTSPRECHER-OPTIONEN</value>
+    <value>GĦAŻLIET TAL-ISPERKER</value>
   </data>
   <data name="Popup_Room_Text" xml:space="preserve">
-    <value>Raum</value>
+    <value>Kamra</value>
   </data>
   <data name="Popup_RoomHint_Text" xml:space="preserve">
-    <value>z. B. Wohnzimmer</value>
+    <value>eż. Salott</value>
   </data>
   <data name="Popup_MaxVolume_Text" xml:space="preserve">
-    <value>Max. Lautstärke (Hart-Cut)</value>
+    <value>Volum massimu (limitu fiss)</value>
   </data>
   <data name="Popup_Done_Text" xml:space="preserve">
-    <value>Fertig</value>
+    <value>Lest</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>VERLUSTFREI · KLANG IM GANZEN HAUS</value>
+    <value>BLA TELF · ĦOSS FID-DAR KOLLHA</value>
   </data>
 </root>

@@ -1,6 +1,6 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  
+
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xs:element name="root" ns1:IsDataSet="true">
@@ -60,148 +60,148 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Buffering" xml:space="preserve">
-    <value>Puffert</value>
+    <value>Plní buffer</value>
   </data>
   <data name="Connecting" xml:space="preserve">
-    <value>Verbindet</value>
+    <value>Pripája sa</value>
   </data>
   <data name="Disconnected" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Odpojené</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>Fehler</value>
+    <value>Chyba</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Lädt</value>
+    <value>Načítava sa</value>
   </data>
   <data name="Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
+    <value>Neznáme</value>
   </data>
   <data name="Button_ClearLog_Text" xml:space="preserve">
-    <value>Protokoll leeren</value>
+    <value>Vymazať protokol</value>
   </data>
   <data name="Button_ClipboardCopy_Text" xml:space="preserve">
-    <value>In Zwischenablage kopieren</value>
+    <value>Kopírovať do schránky</value>
   </data>
   <data name="Button_Down_Text" xml:space="preserve">
-    <value>Leiser</value>
+    <value>Tichšie</value>
   </data>
   <data name="Button_Mute_Text" xml:space="preserve">
-    <value>Alle stumm</value>
+    <value>Stlmiť všetko</value>
   </data>
   <data name="Button_ResetSetting_Text" xml:space="preserve">
-    <value>Auf Standard zurücksetzen</value>
+    <value>Obnoviť predvolené</value>
   </data>
   <data name="Button_ScanAgain_Text" xml:space="preserve">
-    <value>Räume neu suchen</value>
+    <value>Znovu nájsť miestnosti</value>
   </data>
   <data name="Button_SyncDevices_Text" xml:space="preserve">
-    <value>Räume abgleichen</value>
+    <value>Zladiť miestnosti</value>
   </data>
   <data name="Button_Up_Text" xml:space="preserve">
-    <value>Lauter</value>
+    <value>Hlasnejšie</value>
   </data>
   <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
-    <value>Nach Abbruch automatisch weiterspielen</value>
+    <value>Automaticky obnoviť prehrávanie</value>
   </data>
   <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
-    <value>Beim Start automatisch losspielen</value>
+    <value>Po spustení hneď hrať</value>
   </data>
   <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
-    <value>Tastenkürzel: Lauter = Strg+Alt+U · Leiser = Strg+Alt+D · Stumm = Strg+Alt+M</value>
+    <value>Skratky: Hlasnejšie = Ctrl+Alt+U · Tichšie = Ctrl+Alt+D · Ticho = Ctrl+Alt+M</value>
   </data>
   <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
-    <value>Geräte-Protokoll aufzeichnen</value>
+    <value>Zaznamenávať protokol</value>
   </data>
   <data name="Check_ShowLagControl_Text" xml:space="preserve">
-    <value>Feinabstimmung anzeigen (experimentell)</value>
+    <value>Zobraziť doladenie (experimentálne)</value>
   </data>
   <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
-    <value>Fenster beim Start zeigen</value>
+    <value>Po spustení otvoriť okno</value>
   </data>
   <data name="ChromeCast_StreamTitle" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="Closed" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Odpojené</value>
   </data>
   <data name="Connected" xml:space="preserve">
-    <value>Verbunden</value>
+    <value>Pripojené</value>
   </data>
   <data name="ConnectError" xml:space="preserve">
-    <value>Verbindungsfehler</value>
+    <value>Chyba pripojenia</value>
   </data>
   <data name="Disposed" xml:space="preserve">
-    <value>Beendet</value>
+    <value>Zastavené</value>
   </data>
   <data name="Group_Devices_Text" xml:space="preserve">
-    <value>Deine Räume</value>
+    <value>Tvoje miestnosti</value>
   </data>
   <data name="Group_Lag_Text" xml:space="preserve">
-    <value>Feinabstimmung</value>
+    <value>Doladenie</value>
   </data>
   <data name="Group_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Nastavenia</value>
   </data>
   <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
-    <value>Alle Räume</value>
+    <value>Všetky miestnosti</value>
   </data>
   <data name="Idle" xml:space="preserve">
-    <value>Bereit</value>
+    <value>Pripravené</value>
   </data>
   <data name="InvalidRequest" xml:space="preserve">
-    <value>Ungültige Anfrage</value>
+    <value>Neplatná požiadavka</value>
   </data>
   <data name="Label_IPAddressUsed_Text" xml:space="preserve">
-    <value>Heimnetz-Adresse (IPv4)</value>
+    <value>Adresa v domácej sieti (IPv4)</value>
   </data>
   <data name="Label_KeepAlive_Text" xml:space="preserve">
-    <value>Letztes Lebenszeichen:</value>
+    <value>Posledná odozva:</value>
   </data>
   <data name="Label_LagExperimental_Text" xml:space="preserve">
-    <value>Experimentell: den Puffer am Gerät so klein wie möglich halten, ohne Aussetzer zu hören.</value>
+    <value>Experimentálne: udrž buffer v zariadení čo najmenší, ale bez výpadkov zvuku.</value>
   </data>
   <data name="Label_Language_Text" xml:space="preserve">
-    <value>Sprache</value>
+    <value>Jazyk</value>
   </data>
   <data name="Label_MaximumLag_Text" xml:space="preserve">
-    <value>größerer Puffer / beste Qualität</value>
+    <value>väčší buffer / najlepšia kvalita</value>
   </data>
   <data name="Label_MinimumLag_Text" xml:space="preserve">
-    <value>kleinerer Puffer / geringste Latenz</value>
+    <value>menší buffer / najnižšia latencia</value>
   </data>
   <data name="Label_NewVersionAvailable" xml:space="preserve">
-    <value>Eine neue Version ist auf GitHub verfügbar</value>
+    <value>Na GitHube je dostupná nová verzia</value>
   </data>
   <data name="Label_RecordingDevice_Text" xml:space="preserve">
-    <value>Audioquelle</value>
+    <value>Zdroj zvuku</value>
   </data>
   <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
-    <value>MP3 komprimiert stärker und bringt mehr Latenz — für echtes HiFi FLAC wählen.</value>
+    <value>MP3 komprimuje viac a pridáva latenciu — pre pravé HiFi zvoľ FLAC.</value>
   </data>
   <data name="Label_StreamFormat_Text" xml:space="preserve">
-    <value>Klangqualität</value>
+    <value>Kvalita zvuku</value>
   </data>
   <data name="Language_English" xml:space="preserve">
-    <value>Englisch</value>
+    <value>Angličtina</value>
   </data>
   <data name="Language_French" xml:space="preserve">
-    <value>Französisch</value>
+    <value>Francúzština</value>
   </data>
   <data name="LaunchedApplication" xml:space="preserve">
-    <value>Empfänger gestartet</value>
+    <value>Prijímač spustený</value>
   </data>
   <data name="LaunchingApplication" xml:space="preserve">
-    <value>Empfänger wird gestartet</value>
+    <value>Spúšťa sa prijímač</value>
   </data>
   <data name="LoadCancelled" xml:space="preserve">
-    <value>Abgebrochen</value>
+    <value>Zrušené</value>
   </data>
   <data name="LoadFailed" xml:space="preserve">
-    <value>Laden fehlgeschlagen</value>
+    <value>Načítanie zlyhalo</value>
   </data>
   <data name="LoadingMedia" xml:space="preserve">
-    <value>Lädt Klang</value>
+    <value>Načítava zvuk</value>
   </data>
   <data name="Log_In" xml:space="preserve">
     <value>in</value>
@@ -213,180 +213,180 @@
     <value>KlangHub</value>
   </data>
   <data name="MessageBox_NoIPAddress" xml:space="preserve">
-    <value>Keine Adresse im Heimnetz gefunden.</value>
+    <value>Nenašla sa žiadna sieťová adresa.</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
-    <value>Keine Audioquelle gefunden.</value>
+    <value>Nenašiel sa žiadny zdroj zvuku.</value>
   </data>
   <data name="Mp3_128" xml:space="preserve">
-    <value>MP3 · 128 kbps (komprimiert)</value>
+    <value>MP3 · 128 kbps (komprimované)</value>
   </data>
   <data name="Mp3_320" xml:space="preserve">
-    <value>MP3 · 320 kbps (komprimiert)</value>
+    <value>MP3 · 320 kbps (komprimované)</value>
   </data>
   <data name="NotConnected" xml:space="preserve">
-    <value>Nicht verbunden</value>
+    <value>Nepripojené</value>
   </data>
   <data name="Paused" xml:space="preserve">
-    <value>Pausiert</value>
+    <value>Pozastavené</value>
   </data>
   <data name="Playing" xml:space="preserve">
-    <value>Wiedergabe</value>
+    <value>Prehráva</value>
   </data>
   <data name="Tab_Log_Text" xml:space="preserve">
-    <value>Protokoll</value>
+    <value>Protokol</value>
   </data>
   <data name="Tab_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Nastavenia</value>
   </data>
   <data name="TrayIcon_Close" xml:space="preserve">
-    <value>Beenden</value>
+    <value>Ukončiť</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version</value>
+    <value>Verzia</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · CD-Qualität (44,1 kHz / 16-Bit)</value>
+    <value>WAV · kvalita CD (44,1 kHz / 16-bit)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
-    <value>Räume</value>
+    <value>Miestnosti</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Deutsch</value>
+    <value>Slovenčina</value>
   </data>
   <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
-    <value>Mit Windows starten</value>
+    <value>Spúšťať s Windows</value>
   </data>
   <data name="DevicesOnly" xml:space="preserve">
-    <value>Nur Lautsprecher</value>
+    <value>Len reproduktory</value>
   </data>
   <data name="GroupsOnly" xml:space="preserve">
-    <value>Nur Gruppen</value>
+    <value>Len skupiny</value>
   </data>
   <data name="ShowAll" xml:space="preserve">
-    <value>Alle</value>
+    <value>Všetko</value>
   </data>
   <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
-    <value>Zuletzt gespielte Räume beim Start fortsetzen</value>
+    <value>Nadviazať na posledné miestnosti</value>
   </data>
   <data name="Label_LinkHelp_Text" xml:space="preserve">
-    <value>Hilfe und Dokumentation</value>
+    <value>Pomocník a dokumentácia</value>
   </data>
   <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
-    <value>Eingangspegel</value>
+    <value>Vstupná úroveň</value>
   </data>
   <data name="Label_FilterDevices_Text" xml:space="preserve">
-    <value>Anzeige</value>
+    <value>Zobraziť</value>
   </data>
   <data name="Tooltip_Group_Text" xml:space="preserve">
-    <value>Gruppe</value>
+    <value>Skupina</value>
   </data>
   <data name="Label_BufferInSeconds_Text" xml:space="preserve">
-    <value>Klangpuffer (Sekunden)</value>
+    <value>Zvukový buffer (sekundy)</value>
   </data>
   <data name="Check_AutoMute_Text" xml:space="preserve">
-    <value>Desktop-Ton automatisch stummschalten</value>
+    <value>Automaticky stlmiť zvuk PC</value>
   </data>
   <data name="LoadingMediaCheckFirewall" xml:space="preserve">
-    <value>Firewall und WLAN-Freigabe prüfen</value>
+    <value>Skontroluj firewall a zdieľanie Wi-Fi</value>
   </data>
   <data name="Check_MinimizeToTray_Text" xml:space="preserve">
-    <value>Beim Schließen in den Infobereich legen</value>
+    <value>Po zavretí nechať bežať v lište</value>
   </data>
   <data name="Wav_16bit" xml:space="preserve">
-    <value>WAV · 16-Bit (unkomprimiert)</value>
+    <value>WAV · 16-bit (bez kompresie)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-Bit HiFi (unkomprimiert, Standard)</value>
+    <value>WAV · 24-bit HiFi (bez kompresie, predvolené)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-Bit (unkomprimiert, LPCM)</value>
+    <value>WAV · 32-bit (bez kompresie, LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC · verlustfrei, ideal für schwache/kleine Lautsprecher</value>
+    <value>FLAC · bezstratovo, ideálne pre malé reproduktory</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
-    <value>Live-Klang von deinem PC</value>
+    <value>Živý zvuk z tvojho PC</value>
   </data>
   <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
-    <value>Mehrkanal-Ton auf Stereo mischen</value>
+    <value>Zmiešať viackanálový zvuk do sterea</value>
   </data>
   <data name="Check_DarkMode_Text" xml:space="preserve">
-    <value>Dunkles Design</value>
+    <value>Tmavý vzhľad</value>
   </data>
   <data name="Label_StreamTitle_Text" xml:space="preserve">
-    <value>Anzeigename auf dem Empfänger</value>
+    <value>Názov zobrazený na prijímači</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Entworfen und entwickelt von Neo &amp; Trinity · 2026</value>
+    <value>Navrhli a vytvorili Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
-    <value>KLANGPROFIL &amp; VERBINDUNG</value>
+    <value>ZVUKOVÝ PROFIL &amp; PRIPOJENIE</value>
   </data>
   <data name="Label_Section_Behavior_Text" xml:space="preserve">
-    <value>VERHALTEN &amp; KOMFORT</value>
+    <value>SPRÁVANIE &amp; POHODLIE</value>
   </data>
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
-    <value>{0} · streamt ins ganze Haus</value>
+    <value>{0} · streamuje do celého domu</value>
   </data>
   <data name="Label_RoomSummaryTitle_Text" xml:space="preserve">
-    <value>Geräte im Heimnetz</value>
+    <value>Zariadenia v tvojej sieti</value>
   </data>
   <data name="Label_RoomSummaryPlayingOne_Text" xml:space="preserve">
-    <value>1 spielt</value>
+    <value>1 hrá</value>
   </data>
   <data name="Label_RoomSummaryPlayingMany_Text" xml:space="preserve">
-    <value>{0} spielen</value>
+    <value>{0} hrá</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 Raum</value>
+    <value>1 miestnosť</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} Räume</value>
+    <value>{0} miestností</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
-    <value>1 Gruppe</value>
+    <value>1 skupina</value>
   </data>
   <data name="Label_RoomSummaryGroupsMany_Text" xml:space="preserve">
-    <value>{0} Gruppen</value>
+    <value>{0} skupín</value>
   </data>
   <data name="Label_RoomSummaryLossless_Text" xml:space="preserve">
-    <value>verlustfrei ans ganze Haus</value>
+    <value>bezstratovo do celého domu</value>
   </data>
   <data name="Label_RoomSummaryCompressed_Text" xml:space="preserve">
-    <value>komprimiert ans ganze Haus</value>
+    <value>komprimovane do celého domu</value>
   </data>
   <data name="Label_RoomSummaryEmpty_Text" xml:space="preserve">
-    <value>Suche nach Geräten…</value>
+    <value>Hľadám zariadenia…</value>
   </data>
   <data name="Card_Subtitle_Group_Text" xml:space="preserve">
     <value>Multiroom · {0}</value>
   </data>
   <data name="Card_Subtitle_Device_Text" xml:space="preserve">
-    <value>Cast-Gerät</value>
+    <value>Zariadenie Cast</value>
   </data>
   <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
-    <value>Multiroom-Gruppe</value>
+    <value>Multiroom skupina</value>
   </data>
   <data name="Card_Muted_Text" xml:space="preserve">
-    <value>stumm</value>
+    <value>stlmené</value>
   </data>
   <data name="Popup_SpeakerOptions_Text" xml:space="preserve">
-    <value>LAUTSPRECHER-OPTIONEN</value>
+    <value>MOŽNOSTI REPRODUKTORA</value>
   </data>
   <data name="Popup_Room_Text" xml:space="preserve">
-    <value>Raum</value>
+    <value>Miestnosť</value>
   </data>
   <data name="Popup_RoomHint_Text" xml:space="preserve">
-    <value>z. B. Wohnzimmer</value>
+    <value>napr. Obývačka</value>
   </data>
   <data name="Popup_MaxVolume_Text" xml:space="preserve">
-    <value>Max. Lautstärke (Hart-Cut)</value>
+    <value>Maximálna hlasitosť (tvrdý strop)</value>
   </data>
   <data name="Popup_Done_Text" xml:space="preserve">
-    <value>Fertig</value>
+    <value>Hotovo</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>VERLUSTFREI · KLANG IM GANZEN HAUS</value>
+    <value>BEZ STRÁT · ZVUK V CELOM DOME</value>
   </data>
 </root>

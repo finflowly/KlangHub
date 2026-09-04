@@ -162,3 +162,48 @@ schrumpfte beim Ziehen der Fensterkante gegen 0), toter Idempotenz-Guard in `Set
 überzählige Trennlinie über der ersten Toggle-Zeile, überschriebene Textfarben der Summary-Labels,
 Combo-Höhe im Feld-Well, Ctrl+Tab-Navigation (kam vorher vom `TabControl`), Karten-Captions bei Sprachwechsel,
 Font-Leak in `PillButton`.
+
+## Release 1.0 (2026-09-04) — 24 Sprachen, Installer, Raum & Modell
+
+**Version & Signatur.** `1.0.0`, Fußzeile „Version 1.0", Credit „Neo & Trinity · 2026". Die Anzeige kürzt
+`Major.Minor`, solange die Patch-Stelle 0 ist — das angehängte „.0" ist auf einer About-Zeile nur Rauschen.
+
+**Standard ab Werk: WAV 16-bit, 10 s Puffer.** CD-Qualität, unkomprimiert, und das Format, das *jeder*
+Cast-Empfänger anstandslos nimmt — der sichere Boden, nicht die Decke: 24-bit und FLAC sitzen einen Klick
+weiter. Die 10 Sekunden Empfänger-Polster überstehen WLAN-Jitter, ohne dass es bei Musik jemand merkt.
+
+**Raum und Modell auf der Kachel.** Recherche am lebenden Netz (eureka_info + DIAL auf allen vier Geräten):
+Ein Chromecast kennt seinen **Raum nicht** — `eureka_info` liefert Name, Build, Netz; das mDNS-TXT liefert das
+Modell (`md=`); der Raum liegt allein in Googles Home Graph in der Cloud, hinter einem Konto. Statt ihn zu
+erfinden, ist er jetzt **pro Gerät benennbar** (⋮ auf der Kachel → „Raum"), gespeichert in `speakers.json`
+neben der Max-Lautstärke. Die Kachel zeigt dann „Wohnzimmer · Q995GD"; fehlt eines von beidem, trägt das
+andere die Zeile allein. Wiederholt das Modell nur den Gerätenamen, tritt es zurück. Damit das Modell
+überhaupt ankommt, reicht `Devices.SetDeviceInformation` das TXT-Record jetzt über die eureka-Grenze — vorher
+ging es dort verloren, also genau bei Fernsehern und Soundbars, die kein `eureka_info` beantworten.
+
+**Kachel-Padding.** Jede Zeile misst jetzt gegen die **Karte**, nicht gegen das Control: die Karte ist für
+ihren Schwebeschatten eingerückt, weshalb der Play-Knopf vorher hart auf der unteren Linie saß. Die Kachel ist
+20 px höher, die Steuerzeile sitzt eine volle Karten-Einrückung über der Unterkante.
+
+**24 EU-Amtssprachen.** Je eine `Strings.<code>.resx` (109 Keys, per Satellite-Assembly), die Sprachwahl
+listet alle unter ihrem **Endonym** („Deutsch", „Ελληνικά") — eine Liste, die sich nicht mit der UI-Sprache
+ändert, damit man aus einer versehentlich gewählten Sprache wieder herausfindet. Eine Systemsprache außerhalb
+der 24 landet auf Englisch statt auf einem fehlenden Satelliten.
+
+**Das Fernsehbild spricht mit.** Das Now-Playing-Artwork war ein festes PNG mit englischem Claim — ein
+griechischer Nutzer bekam eine griechische App und einen englischen Fernseher. Es wird jetzt zur Laufzeit
+gezeichnet (`Classes/ArtworkRenderer`), aus denselben Tokens wie die App, mit der Tagline aus den Ressourcen,
+je Sprache einmal gerendert und gecacht; ein Sprachwechsel verwirft den Cache. Das eingebettete PNG bleibt
+Fallback.
+
+**Installer** (`installer/KlangHub.iss`, Inno Setup, Ausgabe `dist/KlangHub-1.0-Setup.exe`, ~6 MB).
+- Erkennt die Windows-Sprache und spricht sie (21 der 24 EU-Sprachen haben eine Inno-Übersetzung; für
+  Irisch und Maltesisch läuft das Setup englisch, die App selbst trotzdem in ihrer Sprache).
+- **Die Sprachfrage steht auf der ersten Wizard-Seite**, nicht im nackten System-Dialog davor — sie bestimmt,
+  womit KlangHub gestartet wird (`--lang=`), und ist im Markenlook.
+- Trägt die App-Optik: ink-dunkler Wizard, elfenbeinfarbene Schrift, ein Bernstein-Akzent, das vollständige
+  Logo (gezeichnet, nicht beschnitten), dunkle Titelleiste über dieselben DWM-Attribute wie das App-Fenster,
+  dunkle Scrollbars — auch im Deinstallationsfenster.
+- **Prüft die .NET Desktop Runtime** und lädt sie bei Bedarf automatisch von Microsoft (`aka.ms`), bevor
+  installiert wird; Microsofts Installer holt sich die Rechte selbst, weshalb das Setup ohne Adminrechte
+  auskommt (Installation pro Benutzer, kein UAC, kein grauer Modus-Dialog).

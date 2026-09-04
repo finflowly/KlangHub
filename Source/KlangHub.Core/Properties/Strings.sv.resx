@@ -60,148 +60,148 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Buffering" xml:space="preserve">
-    <value>Puffert</value>
+    <value>Buffrar</value>
   </data>
   <data name="Connecting" xml:space="preserve">
-    <value>Verbindet</value>
+    <value>Ansluter</value>
   </data>
   <data name="Disconnected" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Frånkopplad</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>Fehler</value>
+    <value>Fel</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Lädt</value>
+    <value>Laddar</value>
   </data>
   <data name="Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
+    <value>Okänd</value>
   </data>
   <data name="Button_ClearLog_Text" xml:space="preserve">
-    <value>Protokoll leeren</value>
+    <value>Rensa loggen</value>
   </data>
   <data name="Button_ClipboardCopy_Text" xml:space="preserve">
-    <value>In Zwischenablage kopieren</value>
+    <value>Kopiera till urklipp</value>
   </data>
   <data name="Button_Down_Text" xml:space="preserve">
-    <value>Leiser</value>
+    <value>Lägre</value>
   </data>
   <data name="Button_Mute_Text" xml:space="preserve">
-    <value>Alle stumm</value>
+    <value>Tysta alla</value>
   </data>
   <data name="Button_ResetSetting_Text" xml:space="preserve">
-    <value>Auf Standard zurücksetzen</value>
+    <value>Återställ standard</value>
   </data>
   <data name="Button_ScanAgain_Text" xml:space="preserve">
-    <value>Räume neu suchen</value>
+    <value>Sök rum igen</value>
   </data>
   <data name="Button_SyncDevices_Text" xml:space="preserve">
-    <value>Räume abgleichen</value>
+    <value>Synka rum</value>
   </data>
   <data name="Button_Up_Text" xml:space="preserve">
-    <value>Lauter</value>
+    <value>Högre</value>
   </data>
   <data name="Check_AutomaticallyRestart_Text" xml:space="preserve">
-    <value>Nach Abbruch automatisch weiterspielen</value>
+    <value>Återta uppspelningen automatiskt</value>
   </data>
   <data name="Check_AutomaticallyStart_Text" xml:space="preserve">
-    <value>Beim Start automatisch losspielen</value>
+    <value>Spela direkt vid start</value>
   </data>
   <data name="Check_KeyboardShortcuts_Text" xml:space="preserve">
-    <value>Tastenkürzel: Lauter = Strg+Alt+U · Leiser = Strg+Alt+D · Stumm = Strg+Alt+M</value>
+    <value>Kortkommandon: Högre = Ctrl+Alt+U · Lägre = Ctrl+Alt+D · Tyst = Ctrl+Alt+M</value>
   </data>
   <data name="Check_LogDeviceCommunication_Text" xml:space="preserve">
-    <value>Geräte-Protokoll aufzeichnen</value>
+    <value>Spela in en enhetslogg</value>
   </data>
   <data name="Check_ShowLagControl_Text" xml:space="preserve">
-    <value>Feinabstimmung anzeigen (experimentell)</value>
+    <value>Visa finjustering (experimentell)</value>
   </data>
   <data name="Check_ShowWindowOnStart_Text" xml:space="preserve">
-    <value>Fenster beim Start zeigen</value>
+    <value>Öppna fönstret vid start</value>
   </data>
   <data name="ChromeCast_StreamTitle" xml:space="preserve">
     <value>KlangHub</value>
   </data>
   <data name="Closed" xml:space="preserve">
-    <value>Getrennt</value>
+    <value>Frånkopplad</value>
   </data>
   <data name="Connected" xml:space="preserve">
-    <value>Verbunden</value>
+    <value>Ansluten</value>
   </data>
   <data name="ConnectError" xml:space="preserve">
-    <value>Verbindungsfehler</value>
+    <value>Anslutningsfel</value>
   </data>
   <data name="Disposed" xml:space="preserve">
-    <value>Beendet</value>
+    <value>Stoppad</value>
   </data>
   <data name="Group_Devices_Text" xml:space="preserve">
-    <value>Deine Räume</value>
+    <value>Dina rum</value>
   </data>
   <data name="Group_Lag_Text" xml:space="preserve">
-    <value>Feinabstimmung</value>
+    <value>Finjustering</value>
   </data>
   <data name="Group_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Inställningar</value>
   </data>
   <data name="Group_VolumeAllDevices_Text" xml:space="preserve">
-    <value>Alle Räume</value>
+    <value>Alla rum</value>
   </data>
   <data name="Idle" xml:space="preserve">
-    <value>Bereit</value>
+    <value>Redo</value>
   </data>
   <data name="InvalidRequest" xml:space="preserve">
-    <value>Ungültige Anfrage</value>
+    <value>Ogiltig begäran</value>
   </data>
   <data name="Label_IPAddressUsed_Text" xml:space="preserve">
-    <value>Heimnetz-Adresse (IPv4)</value>
+    <value>Adress i hemnätet (IPv4)</value>
   </data>
   <data name="Label_KeepAlive_Text" xml:space="preserve">
-    <value>Letztes Lebenszeichen:</value>
+    <value>Senaste livstecken:</value>
   </data>
   <data name="Label_LagExperimental_Text" xml:space="preserve">
-    <value>Experimentell: den Puffer am Gerät so klein wie möglich halten, ohne Aussetzer zu hören.</value>
+    <value>Experimentellt: håll enhetens buffert så liten som möjligt utan att höra avbrott.</value>
   </data>
   <data name="Label_Language_Text" xml:space="preserve">
-    <value>Sprache</value>
+    <value>Språk</value>
   </data>
   <data name="Label_MaximumLag_Text" xml:space="preserve">
-    <value>größerer Puffer / beste Qualität</value>
+    <value>större buffert / bästa ljud</value>
   </data>
   <data name="Label_MinimumLag_Text" xml:space="preserve">
-    <value>kleinerer Puffer / geringste Latenz</value>
+    <value>mindre buffert / lägst fördröjning</value>
   </data>
   <data name="Label_NewVersionAvailable" xml:space="preserve">
-    <value>Eine neue Version ist auf GitHub verfügbar</value>
+    <value>En ny version finns på GitHub</value>
   </data>
   <data name="Label_RecordingDevice_Text" xml:space="preserve">
-    <value>Audioquelle</value>
+    <value>Ljudkälla</value>
   </data>
   <data name="Label_StreamFormatExtra_Text" xml:space="preserve">
-    <value>MP3 komprimiert stärker und bringt mehr Latenz — für echtes HiFi FLAC wählen.</value>
+    <value>MP3 komprimerar hårdare och ger mer fördröjning — välj FLAC för äkta HiFi.</value>
   </data>
   <data name="Label_StreamFormat_Text" xml:space="preserve">
-    <value>Klangqualität</value>
+    <value>Ljudkvalitet</value>
   </data>
   <data name="Language_English" xml:space="preserve">
-    <value>Englisch</value>
+    <value>Engelska</value>
   </data>
   <data name="Language_French" xml:space="preserve">
-    <value>Französisch</value>
+    <value>Franska</value>
   </data>
   <data name="LaunchedApplication" xml:space="preserve">
-    <value>Empfänger gestartet</value>
+    <value>Mottagaren startad</value>
   </data>
   <data name="LaunchingApplication" xml:space="preserve">
-    <value>Empfänger wird gestartet</value>
+    <value>Startar mottagaren</value>
   </data>
   <data name="LoadCancelled" xml:space="preserve">
-    <value>Abgebrochen</value>
+    <value>Avbruten</value>
   </data>
   <data name="LoadFailed" xml:space="preserve">
-    <value>Laden fehlgeschlagen</value>
+    <value>Inläsning misslyckades</value>
   </data>
   <data name="LoadingMedia" xml:space="preserve">
-    <value>Lädt Klang</value>
+    <value>Laddar ljudet</value>
   </data>
   <data name="Log_In" xml:space="preserve">
     <value>in</value>
@@ -213,180 +213,180 @@
     <value>KlangHub</value>
   </data>
   <data name="MessageBox_NoIPAddress" xml:space="preserve">
-    <value>Keine Adresse im Heimnetz gefunden.</value>
+    <value>Ingen nätverksadress hittades.</value>
   </data>
   <data name="MessageBox_NoRecordingDevices" xml:space="preserve">
-    <value>Keine Audioquelle gefunden.</value>
+    <value>Ingen ljudkälla hittades.</value>
   </data>
   <data name="Mp3_128" xml:space="preserve">
-    <value>MP3 · 128 kbps (komprimiert)</value>
+    <value>MP3 · 128 kbps (komprimerad)</value>
   </data>
   <data name="Mp3_320" xml:space="preserve">
-    <value>MP3 · 320 kbps (komprimiert)</value>
+    <value>MP3 · 320 kbps (komprimerad)</value>
   </data>
   <data name="NotConnected" xml:space="preserve">
-    <value>Nicht verbunden</value>
+    <value>Inte ansluten</value>
   </data>
   <data name="Paused" xml:space="preserve">
-    <value>Pausiert</value>
+    <value>Pausad</value>
   </data>
   <data name="Playing" xml:space="preserve">
-    <value>Wiedergabe</value>
+    <value>Spelar</value>
   </data>
   <data name="Tab_Log_Text" xml:space="preserve">
-    <value>Protokoll</value>
+    <value>Logg</value>
   </data>
   <data name="Tab_Options_Text" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Inställningar</value>
   </data>
   <data name="TrayIcon_Close" xml:space="preserve">
-    <value>Beenden</value>
+    <value>Avsluta</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · CD-Qualität (44,1 kHz / 16-Bit)</value>
+    <value>WAV · cd-kvalitet (44,1 kHz / 16-bit)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
-    <value>Räume</value>
+    <value>Rum</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Deutsch</value>
+    <value>Svenska</value>
   </data>
   <data name="Check_StartApplicationWhenWindowsStarts_Text" xml:space="preserve">
-    <value>Mit Windows starten</value>
+    <value>Starta med Windows</value>
   </data>
   <data name="DevicesOnly" xml:space="preserve">
-    <value>Nur Lautsprecher</value>
+    <value>Bara högtalare</value>
   </data>
   <data name="GroupsOnly" xml:space="preserve">
-    <value>Nur Gruppen</value>
+    <value>Bara grupper</value>
   </data>
   <data name="ShowAll" xml:space="preserve">
-    <value>Alle</value>
+    <value>Alla</value>
   </data>
   <data name="Check_AutonaticallyStartLastUsed_Text" xml:space="preserve">
-    <value>Zuletzt gespielte Räume beim Start fortsetzen</value>
+    <value>Återuppta senaste rummen vid start</value>
   </data>
   <data name="Label_LinkHelp_Text" xml:space="preserve">
-    <value>Hilfe und Dokumentation</value>
+    <value>Hjälp och dokumentation</value>
   </data>
   <data name="Tooltip_RecordingLevel_Text" xml:space="preserve">
-    <value>Eingangspegel</value>
+    <value>Ingångsnivå</value>
   </data>
   <data name="Label_FilterDevices_Text" xml:space="preserve">
-    <value>Anzeige</value>
+    <value>Visa</value>
   </data>
   <data name="Tooltip_Group_Text" xml:space="preserve">
-    <value>Gruppe</value>
+    <value>Grupp</value>
   </data>
   <data name="Label_BufferInSeconds_Text" xml:space="preserve">
-    <value>Klangpuffer (Sekunden)</value>
+    <value>Ljudbuffert (sekunder)</value>
   </data>
   <data name="Check_AutoMute_Text" xml:space="preserve">
-    <value>Desktop-Ton automatisch stummschalten</value>
+    <value>Tysta datorns egna högtalare</value>
   </data>
   <data name="LoadingMediaCheckFirewall" xml:space="preserve">
-    <value>Firewall und WLAN-Freigabe prüfen</value>
+    <value>Kolla brandvägg och Wi-Fi</value>
   </data>
   <data name="Check_MinimizeToTray_Text" xml:space="preserve">
-    <value>Beim Schließen in den Infobereich legen</value>
+    <value>Ligg kvar i fältet vid stängning</value>
   </data>
   <data name="Wav_16bit" xml:space="preserve">
-    <value>WAV · 16-Bit (unkomprimiert)</value>
+    <value>WAV · 16-bit (okomprimerad)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-Bit HiFi (unkomprimiert, Standard)</value>
+    <value>WAV · 24-bit HiFi (okomprimerad, standard)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-Bit (unkomprimiert, LPCM)</value>
+    <value>WAV · 32-bit (okomprimerad, LPCM)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC · verlustfrei, ideal für schwache/kleine Lautsprecher</value>
+    <value>FLAC · förlustfri, bäst för små högtalare</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
-    <value>Live-Klang von deinem PC</value>
+    <value>Liveljud från din dator</value>
   </data>
   <data name="Check_ConvertMultiChannelToStereo_Text" xml:space="preserve">
-    <value>Mehrkanal-Ton auf Stereo mischen</value>
+    <value>Mixa flerkanal till stereo</value>
   </data>
   <data name="Check_DarkMode_Text" xml:space="preserve">
-    <value>Dunkles Design</value>
+    <value>Mörkt tema</value>
   </data>
   <data name="Label_StreamTitle_Text" xml:space="preserve">
-    <value>Anzeigename auf dem Empfänger</value>
+    <value>Namn på mottagaren</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Entworfen und entwickelt von Neo &amp; Trinity · 2026</value>
+    <value>Formgiven och byggd av Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
-    <value>KLANGPROFIL &amp; VERBINDUNG</value>
+    <value>LJUDPROFIL &amp; ANSLUTNING</value>
   </data>
   <data name="Label_Section_Behavior_Text" xml:space="preserve">
-    <value>VERHALTEN &amp; KOMFORT</value>
+    <value>BETEENDE &amp; BEKVÄMLIGHET</value>
   </data>
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
-    <value>{0} · streamt ins ganze Haus</value>
+    <value>{0} · till hela hemmet</value>
   </data>
   <data name="Label_RoomSummaryTitle_Text" xml:space="preserve">
-    <value>Geräte im Heimnetz</value>
+    <value>Enheter i ditt nätverk</value>
   </data>
   <data name="Label_RoomSummaryPlayingOne_Text" xml:space="preserve">
-    <value>1 spielt</value>
+    <value>1 spelar</value>
   </data>
   <data name="Label_RoomSummaryPlayingMany_Text" xml:space="preserve">
-    <value>{0} spielen</value>
+    <value>{0} spelar</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 Raum</value>
+    <value>1 rum</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} Räume</value>
+    <value>{0} rum</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
-    <value>1 Gruppe</value>
+    <value>1 grupp</value>
   </data>
   <data name="Label_RoomSummaryGroupsMany_Text" xml:space="preserve">
-    <value>{0} Gruppen</value>
+    <value>{0} grupper</value>
   </data>
   <data name="Label_RoomSummaryLossless_Text" xml:space="preserve">
-    <value>verlustfrei ans ganze Haus</value>
+    <value>förlustfritt till hela hemmet</value>
   </data>
   <data name="Label_RoomSummaryCompressed_Text" xml:space="preserve">
-    <value>komprimiert ans ganze Haus</value>
+    <value>komprimerat till hela hemmet</value>
   </data>
   <data name="Label_RoomSummaryEmpty_Text" xml:space="preserve">
-    <value>Suche nach Geräten…</value>
+    <value>Söker enheter…</value>
   </data>
   <data name="Card_Subtitle_Group_Text" xml:space="preserve">
     <value>Multiroom · {0}</value>
   </data>
   <data name="Card_Subtitle_Device_Text" xml:space="preserve">
-    <value>Cast-Gerät</value>
+    <value>Cast-enhet</value>
   </data>
   <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
-    <value>Multiroom-Gruppe</value>
+    <value>Multiroom-grupp</value>
   </data>
   <data name="Card_Muted_Text" xml:space="preserve">
-    <value>stumm</value>
+    <value>tystad</value>
   </data>
   <data name="Popup_SpeakerOptions_Text" xml:space="preserve">
-    <value>LAUTSPRECHER-OPTIONEN</value>
+    <value>HÖGTALARALTERNATIV</value>
   </data>
   <data name="Popup_Room_Text" xml:space="preserve">
-    <value>Raum</value>
+    <value>Rum</value>
   </data>
   <data name="Popup_RoomHint_Text" xml:space="preserve">
-    <value>z. B. Wohnzimmer</value>
+    <value>t.ex. Vardagsrum</value>
   </data>
   <data name="Popup_MaxVolume_Text" xml:space="preserve">
-    <value>Max. Lautstärke (Hart-Cut)</value>
+    <value>Maxvolym (hård gräns)</value>
   </data>
   <data name="Popup_Done_Text" xml:space="preserve">
-    <value>Fertig</value>
+    <value>Klar</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>VERLUSTFREI · KLANG IM GANZEN HAUS</value>
+    <value>FÖRLUSTFRITT · LJUD I HELA HEMMET</value>
   </data>
 </root>

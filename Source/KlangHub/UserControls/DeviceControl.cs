@@ -207,13 +207,17 @@ namespace KlangHub.UserControls
                 g.FillPath(ab, ap);
             }
 
-            int padL = Theme.PadCard, padR = Width - Theme.PadCard;
+            // Every row is placed against the CARD, not against the control: the card is inset for its float
+            // shadow, so measuring from the control's own edge is what pushed the play button hard against the
+            // bottom line. cardTop/cardBottom keep the same 16-px breathing room top and bottom.
+            int padL = cardRect.Left + Theme.PadCard, padR = cardRect.Right - Theme.PadCard;
+            int cardTop = cardRect.Top, cardBottom = cardRect.Bottom;
 
             // ---- status row: dot + word (left) ----
             Color dotColor = playing ? Theme.Amber : error ? Theme.Ember : Theme.Blue;
             Color labelColor = playing ? Theme.Amber : error ? Theme.Ember : Theme.Blend(Theme.Slate, Theme.Ivory, 0.35f);
             string statusLabel = StatusWord(state);
-            int dotY = 20;
+            int dotY = cardTop + 18;
             using (var db = new SolidBrush(dotColor)) g.FillEllipse(db, padL, dotY - 4, 8, 8);
             if (playing) DrawGlowDot(g, padL + 4, dotY, Theme.Amber);
             DrawText(g, statusLabel, Theme.Label, labelColor, padL + 15, dotY - 8);
@@ -228,7 +232,7 @@ namespace KlangHub.UserControls
             DrawPill(g, pillText, pillFg, pillTint, padR, dotY);
 
             // ---- identity row: icon + name + subtitle (+ live playing time) ----
-            int icoSize = 36, icoY = 44;
+            int icoSize = 36, icoY = cardTop + 40;
             DrawDeviceIcon(g, new Rectangle(padL, icoY, icoSize, icoSize), playing);
             int nameX = padL + icoSize + 12;
             if (playingSince.HasValue)
@@ -240,13 +244,13 @@ namespace KlangHub.UserControls
                 timeBand = new Rectangle((int)(padR - sz.Width) - 2, icoY, (int)sz.Width + 6, 24);
             }
             else timeBand = Rectangle.Empty;
-            DrawText(g, deviceName, Theme.Name, Theme.Ivory, nameX, icoY - 1);
+            DrawText(g, deviceName, Theme.Name, Theme.Ivory, nameX, icoY - 2);
             string sub = Subtitle();
             if (!string.IsNullOrEmpty(sub))
                 DrawText(g, sub, Theme.Small, Theme.Slate, nameX, icoY + 22);
 
             // ---- level meter (the signature) ----
-            int meterY = 92, meterH = 20, barW = 4, gap = 3, meterX = padL;
+            int meterY = cardTop + 90, meterH = 18, barW = 4, gap = 3, meterX = padL;
             for (int i = 0; i < meterHeights.Length; i++)
             {
                 float h = Math.Max(3, meterHeights[i] * meterH);
@@ -258,23 +262,29 @@ namespace KlangHub.UserControls
             meterBand = new Rectangle(meterX - 2, meterY - 2, meterHeights.Length * (barW + gap) + 4, meterH + 4);
 
             // ---- control row: play + speaker + slider + % + overflow ----
-            int ctlY = Height - 34;
-            playRect = new Rectangle(padL, ctlY, 32, 28);
+            // One row, vertically centred on itself, sitting a full card inset above the bottom edge.
+            const int ctlH = 30;
+            int ctlY = cardBottom - Theme.PadCard - ctlH;
+            int ctlMid = ctlY + ctlH / 2;
+
+            playRect = new Rectangle(padL, ctlY, 32, ctlH);
             DrawPlayButton(g, playRect, playing);
 
-            muteRect = new Rectangle(playRect.Right + 10, ctlY + 4, 22, 20);
+            muteRect = new Rectangle(playRect.Right + 10, ctlMid - 10, 22, 20);
             DrawSpeakerIcon(g, muteRect, muted);
 
             int sx = muteRect.Right + 12;
-            int pctW = 34, ovW = 22;
+            int pctW = 38, ovW = 22;
             int trackW = padR - sx - pctW - ovW - 12;
-            sliderRect = new Rectangle(sx, ctlY + 9, trackW, 10);
+            sliderRect = new Rectangle(sx, ctlMid - 5, trackW, 10);
             DrawVolumeSlider(g, sliderRect);
 
-            string pct = muted ? "stumm" : (volume + "%");
-            DrawText(g, pct, Theme.Data, muted ? Theme.Amber : Theme.Slate, sliderRect.Right + 8, ctlY + 5);
+            string pct = muted ? Properties.Strings.Card_Muted_Text : (volume + "%");
+            var pctSize = g.MeasureString(pct, Theme.Data);
+            DrawText(g, pct, Theme.Data, muted ? Theme.Amber : Theme.Slate,
+                     sliderRect.Right + 10, ctlMid - pctSize.Height / 2f);
 
-            overflowRect = new Rectangle(padR - ovW, ctlY, ovW, 28);
+            overflowRect = new Rectangle(padR - ovW, ctlY, ovW, ctlH);
             DrawOverflow(g, overflowRect);
 
             // ---- keyboard focus ring ----
@@ -314,10 +324,17 @@ namespace KlangHub.UserControls
                           string.Format(KlangHub.Properties.Strings.Label_RoomSummaryDevicesMany_Text, descriptor.MemberCount))
                     : KlangHub.Properties.Strings.Card_Subtitle_GroupPlain_Text;
 
+            // room · model is the concept's line. The room is whatever the user named (a Chromecast cannot
+            // tell us), the model is what the device announces - either half alone is a complete subtitle.
+            var room = SpeakerPrefs.GetRoom(descriptor?.Id);
+            var m = !string.IsNullOrWhiteSpace(model) ? model : descriptor?.Model;
+            if (!string.IsNullOrWhiteSpace(m) && SaysTheSame(m!, deviceName)) m = null;
+            if (!string.IsNullOrEmpty(room))
+                return string.IsNullOrWhiteSpace(m) ? room! : $"{room} · {m}";
+
             var sc = statusText?.Trim();
             if (!string.IsNullOrEmpty(sc)) return sc!;
-            var m = !string.IsNullOrWhiteSpace(model) ? model : descriptor?.Model;
-            if (!string.IsNullOrWhiteSpace(m) && !SaysTheSame(m!, deviceName)) return m!;
+            if (!string.IsNullOrWhiteSpace(m)) return m!;
             return descriptor?.Id != null ? KlangHub.Properties.Strings.Card_Subtitle_Device_Text : string.Empty;
         }
 
@@ -558,12 +575,13 @@ namespace KlangHub.UserControls
 
         private void ShowSpeakerOptions()
         {
-            using var popup = new SpeakerOptionsPopup(deviceName, maxVolume);
-            var loc = PointToScreen(new Point(overflowRect.Left - 210, overflowRect.Bottom + 4));
+            using var popup = new SpeakerOptionsPopup(deviceName, maxVolume, SpeakerPrefs.GetRoom(descriptor?.Id));
+            var loc = PointToScreen(new Point(overflowRect.Left - 230, overflowRect.Bottom + 4));
             if (popup.ShowAt(loc) == DialogResult.OK)
             {
                 maxVolume = popup.MaxVolume;
                 SpeakerPrefs.SetMaxVolume(descriptor?.Id, maxVolume);
+                SpeakerPrefs.SetRoom(descriptor?.Id, popup.Room);
                 if (volume > maxVolume) TryOnSession(s => s.SetVolume(maxVolume / 100f));
                 Invalidate();
             }

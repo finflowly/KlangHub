@@ -399,4 +399,52 @@
   <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
     <value>Groupe multi-pièces</value>
   </data>
+  <data name="Card_Muted_Text" xml:space="preserve">
+    <value>muet</value>
+  </data>
+  <data name="Popup_SpeakerOptions_Text" xml:space="preserve">
+    <value>OPTIONS DU HAUT-PARLEUR</value>
+  </data>
+  <data name="Popup_Room_Text" xml:space="preserve">
+    <value>Pièce</value>
+  </data>
+  <data name="Popup_RoomHint_Text" xml:space="preserve">
+    <value>p. ex. Salon</value>
+  </data>
+  <data name="Popup_MaxVolume_Text" xml:space="preserve">
+    <value>Volume maximal (limite stricte)</value>
+  </data>
+  <data name="Popup_Done_Text" xml:space="preserve">
+    <value>Terminé</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>Connexion…</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Déconnecté</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Chargement…</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Inconnu</value>
+  </data>
+  <data name="Label_Credit_Text" xml:space="preserve">
+    <value>Conçu et développé par Neo &amp; Trinity · 2026</value>
+  </data>
+  <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
+    <value>{0} · diffusion dans toute la maison</value>
+  </data>
+  <data name="Label_Section_Sound_Text" xml:space="preserve">
+    <value>PROFIL SONORE &amp; CONNEXION</value>
+  </data>
+  <data name="Label_Section_Behavior_Text" xml:space="preserve">
+    <value>COMPORTEMENT &amp; CONFORT</value>
+  </data>
+  <data name="Artwork_Tagline_Text" xml:space="preserve">
+    <value>SANS PERTE · AUDIO DANS TOUTE LA MAISON</value>
+  </data>
 </root>

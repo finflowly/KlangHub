@@ -930,5 +930,61 @@ namespace KlangHub.Properties {
             }
         }
 
+        public static string Card_Muted_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Muted_Text", resourceCulture);
+            }
+        }
+
+        public static string Popup_SpeakerOptions_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Popup_SpeakerOptions_Text", resourceCulture);
+            }
+        }
+
+        public static string Popup_Room_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Popup_Room_Text", resourceCulture);
+            }
+        }
+
+        public static string Popup_RoomHint_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Popup_RoomHint_Text", resourceCulture);
+            }
+        }
+
+        public static string Popup_MaxVolume_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Popup_MaxVolume_Text", resourceCulture);
+            }
+        }
+
+        public static string Popup_Done_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Popup_Done_Text", resourceCulture);
+            }
+        }
+
+        public static string Artwork_Tagline_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Artwork_Tagline_Text", resourceCulture);
+            }
+        }
+
     }
 }
