@@ -413,4 +413,34 @@
   <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
     <value>Tühi väli tähendab Google'i vaikevastuvõtjat. Oma ID näitab teleris KlangHubi nime ja värve.</value>
   </data>
+  <data name="Card_Status_Playing_Text" xml:space="preserve">
+    <value>Esitab</value>
+  </data>
+  <data name="Card_Status_Connected_Text" xml:space="preserve">
+    <value>Ühendatud</value>
+  </data>
+  <data name="Card_Status_Connecting_Text" xml:space="preserve">
+    <value>Ühendab…</value>
+  </data>
+  <data name="Card_Status_Buffering_Text" xml:space="preserve">
+    <value>Puhverdab</value>
+  </data>
+  <data name="Card_Status_Paused_Text" xml:space="preserve">
+    <value>Peatatud</value>
+  </data>
+  <data name="Card_Status_Error_Text" xml:space="preserve">
+    <value>Kättesaamatu</value>
+  </data>
+  <data name="Card_Pill_Ready_Text" xml:space="preserve">
+    <value>valmis</value>
+  </data>
+  <data name="Card_Pill_Connecting_Text" xml:space="preserve">
+    <value>ühendab</value>
+  </data>
+  <data name="Card_Pill_Reconnect_Text" xml:space="preserve">
+    <value>ühenda uuesti</value>
+  </data>
+  <data name="Card_Pill_Group_Text" xml:space="preserve">
+    <value>Rühm</value>
+  </data>
 </root>

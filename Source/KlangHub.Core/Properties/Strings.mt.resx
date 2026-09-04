@@ -413,4 +413,34 @@
   <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
     <value>Ħalli vojt għar-riċevitur standard ta' Google. ID tiegħek turi l-isem u l-kuluri ta' KlangHub fuq it-TV.</value>
   </data>
+  <data name="Card_Status_Playing_Text" xml:space="preserve">
+    <value>Qed idoqq</value>
+  </data>
+  <data name="Card_Status_Connected_Text" xml:space="preserve">
+    <value>Konnettjat</value>
+  </data>
+  <data name="Card_Status_Connecting_Text" xml:space="preserve">
+    <value>Jikkonnettja…</value>
+  </data>
+  <data name="Card_Status_Buffering_Text" xml:space="preserve">
+    <value>Jibbaffer</value>
+  </data>
+  <data name="Card_Status_Paused_Text" xml:space="preserve">
+    <value>Pawża</value>
+  </data>
+  <data name="Card_Status_Error_Text" xml:space="preserve">
+    <value>Mhux disponibbli</value>
+  </data>
+  <data name="Card_Pill_Ready_Text" xml:space="preserve">
+    <value>lest</value>
+  </data>
+  <data name="Card_Pill_Connecting_Text" xml:space="preserve">
+    <value>jikkonnettja</value>
+  </data>
+  <data name="Card_Pill_Reconnect_Text" xml:space="preserve">
+    <value>erġa' qabbad</value>
+  </data>
+  <data name="Card_Pill_Group_Text" xml:space="preserve">
+    <value>Grupp</value>
+  </data>
 </root>

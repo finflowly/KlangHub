@@ -413,4 +413,34 @@
   <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
     <value>Tyhjä kenttä tarkoittaa Googlen vakiovastaanotinta. Oma tunnus näyttää KlangHubin nimen ja värit.</value>
   </data>
+  <data name="Card_Status_Playing_Text" xml:space="preserve">
+    <value>Toistaa</value>
+  </data>
+  <data name="Card_Status_Connected_Text" xml:space="preserve">
+    <value>Yhdistetty</value>
+  </data>
+  <data name="Card_Status_Connecting_Text" xml:space="preserve">
+    <value>Yhdistää…</value>
+  </data>
+  <data name="Card_Status_Buffering_Text" xml:space="preserve">
+    <value>Puskuroi</value>
+  </data>
+  <data name="Card_Status_Paused_Text" xml:space="preserve">
+    <value>Tauolla</value>
+  </data>
+  <data name="Card_Status_Error_Text" xml:space="preserve">
+    <value>Ei tavoiteta</value>
+  </data>
+  <data name="Card_Pill_Ready_Text" xml:space="preserve">
+    <value>valmis</value>
+  </data>
+  <data name="Card_Pill_Connecting_Text" xml:space="preserve">
+    <value>yhdistää</value>
+  </data>
+  <data name="Card_Pill_Reconnect_Text" xml:space="preserve">
+    <value>yhdistä uudelleen</value>
+  </data>
+  <data name="Card_Pill_Group_Text" xml:space="preserve">
+    <value>Ryhmä</value>
+  </data>
 </root>

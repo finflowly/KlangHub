@@ -413,4 +413,34 @@
   <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
     <value>Fág folamh do ghlacadóir caighdeánach Google. Taispeánann d'aitheantas féin ainm agus dathanna KlangHub.</value>
   </data>
+  <data name="Card_Status_Playing_Text" xml:space="preserve">
+    <value>Ag seinm</value>
+  </data>
+  <data name="Card_Status_Connected_Text" xml:space="preserve">
+    <value>Nasctha</value>
+  </data>
+  <data name="Card_Status_Connecting_Text" xml:space="preserve">
+    <value>Ag nascadh…</value>
+  </data>
+  <data name="Card_Status_Buffering_Text" xml:space="preserve">
+    <value>Á mhaolánú</value>
+  </data>
+  <data name="Card_Status_Paused_Text" xml:space="preserve">
+    <value>Ar sos</value>
+  </data>
+  <data name="Card_Status_Error_Text" xml:space="preserve">
+    <value>Dorochtana</value>
+  </data>
+  <data name="Card_Pill_Ready_Text" xml:space="preserve">
+    <value>réidh</value>
+  </data>
+  <data name="Card_Pill_Connecting_Text" xml:space="preserve">
+    <value>ag nascadh</value>
+  </data>
+  <data name="Card_Pill_Reconnect_Text" xml:space="preserve">
+    <value>athnasc</value>
+  </data>
+  <data name="Card_Pill_Group_Text" xml:space="preserve">
+    <value>Grúpa</value>
+  </data>
 </root>

@@ -413,4 +413,34 @@
   <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
     <value>Puste pole oznacza standardowy odbiornik Google. Własne ID pokazuje nazwę i kolory KlangHub na TV.</value>
   </data>
+  <data name="Card_Status_Playing_Text" xml:space="preserve">
+    <value>Odtwarzanie</value>
+  </data>
+  <data name="Card_Status_Connected_Text" xml:space="preserve">
+    <value>Połączono</value>
+  </data>
+  <data name="Card_Status_Connecting_Text" xml:space="preserve">
+    <value>Łączenie…</value>
+  </data>
+  <data name="Card_Status_Buffering_Text" xml:space="preserve">
+    <value>Buforowanie</value>
+  </data>
+  <data name="Card_Status_Paused_Text" xml:space="preserve">
+    <value>Wstrzymano</value>
+  </data>
+  <data name="Card_Status_Error_Text" xml:space="preserve">
+    <value>Niedostępne</value>
+  </data>
+  <data name="Card_Pill_Ready_Text" xml:space="preserve">
+    <value>gotowe</value>
+  </data>
+  <data name="Card_Pill_Connecting_Text" xml:space="preserve">
+    <value>łączenie</value>
+  </data>
+  <data name="Card_Pill_Reconnect_Text" xml:space="preserve">
+    <value>połącz ponownie</value>
+  </data>
+  <data name="Card_Pill_Group_Text" xml:space="preserve">
+    <value>Grupa</value>
+  </data>
 </root>

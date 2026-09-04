@@ -259,6 +259,7 @@ namespace KlangHub.UserControls
             using (var db = new SolidBrush(dotColor)) g.FillEllipse(db, padL, dotY - 4, 8, 8);
             if (playing || connecting) DrawGlowDot(g, padL + 4, dotY, Theme.Amber);
             DrawText(g, statusLabel, Theme.Label, labelColor, padL + 15, dotY - 8);
+            float statusRight = padL + 15 + g.MeasureString(statusLabel, Theme.Label).Width;
 
             // ---- pill (right): format while playing, else the status/action (ember for error) ----
             string pillText = group ? KlangHub.Properties.Strings.Card_Pill_Group_Text
@@ -269,7 +270,11 @@ namespace KlangHub.UserControls
             Color pillFg = playing || connecting ? Theme.Amber : error ? Theme.Ember
                 : group ? Theme.Blend(Theme.Slate, Theme.Ivory, 0.35f) : Theme.Slate;
             Color? pillTint = playing ? Theme.Amber : error ? Theme.Ember : (Color?)null;
-            DrawPill(g, pillText, pillFg, pillTint, padR, dotY);
+            // The pill grows with its text and grows LEFTWARDS, straight towards the status word. Some
+            // languages need a lot more room than English for "reconnect" (nl "opnieuw verbinden",
+            // fi "yhdistä uudelleen"), so it is given whatever is left beside the status and trims itself
+            // rather than sliding underneath it.
+            DrawPill(g, pillText, pillFg, pillTint, padR, dotY, padR - statusRight - 10);
 
             // ---- identity row: icon + name + subtitle (+ live playing time) ----
             int icoSize = 36, icoY = cardTop + 40;
@@ -428,18 +433,30 @@ namespace KlangHub.UserControls
             g.DrawString(text, f, b, x, y, sf);
         }
 
-        private void DrawPill(Graphics g, string text, Color fg, Color? tint, int rightEdge, int centerY)
+        private void DrawPill(Graphics g, string text, Color fg, Color? tint, int rightEdge, int centerY,
+                              float maxWidth = float.MaxValue)
         {
+            if (string.IsNullOrEmpty(text)) return;
+
             var sz = g.MeasureString(text, Theme.Label);
-            float w = sz.Width + 18, h = 20f;
+            float h = 20f;
+            float w = Math.Min(sz.Width + 18, Math.Max(46f, maxWidth));
             var r = new RectangleF(rightEdge - w, centerY - h / 2f, w, h);
+
             if (tint.HasValue)
             {
                 Theme.FillRounded(g, r, h / 2f, Color.FromArgb(28, tint.Value));
                 Theme.DrawRounded(g, r, h / 2f, Color.FromArgb(120, tint.Value));
             }
             else Theme.DrawRounded(g, r, h / 2f, Theme.Line);
-            DrawText(g, text, Theme.Label, fg, r.X + 9, r.Y + 3f);
+
+            using var brush = new SolidBrush(fg);
+            using var sf = new StringFormat(StringFormatFlags.NoWrap)
+            {
+                Trimming = StringTrimming.EllipsisCharacter,
+                LineAlignment = StringAlignment.Center,
+            };
+            g.DrawString(text, Theme.Label, brush, new RectangleF(r.X + 9, r.Y, r.Width - 18, r.Height), sf);
         }
 
         private static void DrawGlowDot(Graphics g, int cx, int cy, Color c)
