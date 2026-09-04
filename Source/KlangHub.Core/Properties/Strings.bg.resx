@@ -533,4 +533,7 @@
   <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
     <value>{0} ч</value>
   </data>
+  <data name="Detail_VolumeStep_Text" xml:space="preserve">
+    <value>Стъпка на звука</value>
+  </data>
 </root>

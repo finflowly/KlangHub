@@ -57,9 +57,25 @@ ungenannten Bits werden bewusst nicht geraten.
 - **Das Gerätesymbol.** `ic=/setup/icon.png` leitet auf ein generisches Google-Bild um, auf jedem Gerät
   dasselbe.
 
-## Nebenbefund: die native Lautstärke-Schrittweite
+## Die native Lautstärke-Schrittweite
 
 Der Kontrollkanal (`GET_STATUS` im Empfänger-Namespace) liefert neben `level` und `muted` auch
-`stepInterval` — und der ist je Gerät verschieden: Fernseher 0,01 · Soundbar und Google Home 0,02 ·
-Enchant 0,04. Ein Feinregler, der in den Schritten des Geräts läuft statt in festen fünf Prozent,
-könnte diesen Wert benutzen. Noch nicht umgesetzt, aber notiert.
+`stepInterval` — und der ist je Gerät verschieden:
+
+| Gerät | Schrittweite |
+|---|---|
+| TCL-Fernseher | 1 % |
+| Soundbar, Google Home | 2 % |
+| Enchant | 4 % |
+
+Die **Kacheln** benutzen diesen Wert schon länger: Links/Rechts bewegt jeden Lautsprecher in seinem
+eigenen Raster. Die **Raumleiste** lief dagegen mit festen zwei Prozentpunkten — zu fein für den
+Enchant, dessen Vier-Prozent-Raster einen solchen Druck schlicht verschluckt hätte.
+
+Deshalb nimmt ein Raum jetzt die **gröbste** Schrittweite seiner Mitglieder. Nur so bewegt ein Druck
+auf + wirklich jeden Lautsprecher im Raum; mit der feinsten würde die Hälfte stehen bleiben. Die
+Verteilung bleibt proportional wie zuvor — die Schrittweite bestimmt nur, wie weit das Raumniveau je
+Druck wandert.
+
+Die Detailkarte zeigt die Schrittweite je Gerät als eigene Zeile. Sie ist die einzige Angabe dort, die
+nicht aus der Ankündigung oder dem Setup-Endpunkt stammt, sondern aus dem laufenden Kontrollkanal.

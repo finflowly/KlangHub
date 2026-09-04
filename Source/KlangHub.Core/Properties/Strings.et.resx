@@ -533,4 +533,7 @@
   <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
     <value>{0} t</value>
   </data>
+  <data name="Detail_VolumeStep_Text" xml:space="preserve">
+    <value>Helitugevuse samm</value>
+  </data>
 </root>

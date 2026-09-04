@@ -107,6 +107,11 @@ namespace KlangHub.UserControls
         /// <summary>The per-speaker hard cap - a room fader must never push a card past it.</summary>
         public int MaxVolumePercent => maxVolume;
 
+        /// <summary>The volume step this device itself works in, in percent. Cast endpoints report their
+        /// own ("stepInterval"): a television moves in 1 %, a Google Home in 2 %, the Enchant in 4 %. Until
+        /// the first status arrives this is the protocol's default of 5 %.</summary>
+        public int StepPercent => stepPercent;
+
         public bool IsMuted => muted;
 
         /// <summary>Sets this card to an absolute percentage, never past its own hard cap. The room fader
@@ -669,7 +674,15 @@ namespace KlangHub.UserControls
             try { details = (sessionAccessor?.Invoke() ?? session)?.Device?.Details; }
             catch (InvalidOperationException) { details = descriptor?.Details; }
 
-            using var card = new SpeakerDetailsPopup(deviceName, details ?? descriptor?.Details);
+            // The volume step is the one fact the provider cannot supply: it does not come from the
+            // announcement or the setup endpoint but from the live control channel, which only a running
+            // session has. So the card gets it from here, after everything the device announced.
+            var rows = new List<Core.Casting.DeviceFact>(details ?? descriptor?.Details
+                                                         ?? (IReadOnlyList<Core.Casting.DeviceFact>)Array.Empty<Core.Casting.DeviceFact>());
+            if (rows.Count > 0)
+                rows.Add(new Core.Casting.DeviceFact(Core.Casting.DeviceFactKind.VolumeStep, stepPercent + " %"));
+
+            using var card = new SpeakerDetailsPopup(deviceName, rows);
             card.ShowAt(PointToScreen(new Point(Math.Max(0, (Width - 460) / 2), 24)));
         }
 

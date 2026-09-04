@@ -13,6 +13,7 @@ namespace KlangHub.Core.Casting
         AudioFormats,
         HiResAudio,
         Multiroom,
+        VolumeStep,
         Network,
         Signal,
         Address,

@@ -533,4 +533,7 @@
   <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
     <value>{0} godz.</value>
   </data>
+  <data name="Detail_VolumeStep_Text" xml:space="preserve">
+    <value>Krok głośności</value>
+  </data>
 </root>

@@ -153,6 +153,7 @@ namespace KlangHub.UserControls
             DeviceFactKind.AudioFormats => KlangHub.Properties.Strings.Detail_AudioFormats_Text,
             DeviceFactKind.HiResAudio => KlangHub.Properties.Strings.Detail_HiResAudio_Text,
             DeviceFactKind.Multiroom => KlangHub.Properties.Strings.Detail_Multiroom_Text,
+            DeviceFactKind.VolumeStep => KlangHub.Properties.Strings.Detail_VolumeStep_Text,
             DeviceFactKind.Network => KlangHub.Properties.Strings.Detail_Network_Text,
             DeviceFactKind.Signal => KlangHub.Properties.Strings.Detail_Signal_Text,
             DeviceFactKind.Address => KlangHub.Properties.Strings.Detail_Address_Text,

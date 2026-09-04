@@ -1400,5 +1400,14 @@ namespace KlangHub.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Volume step.
+        /// </summary>
+        public static string Detail_VolumeStep_Text {
+            get {
+                return ResourceManager.GetString("Detail_VolumeStep_Text", resourceCulture);
+            }
+        }
+
 }
 }

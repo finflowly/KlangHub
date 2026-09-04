@@ -170,8 +170,8 @@ namespace KlangHub.UserControls
             if (e.Button != MouseButtons.Left) return;
 
             if (muteRect.Contains(e.Location)) { ToggleMute(); return; }
-            if (minusRect.Contains(e.Location)) { Shift(-2); return; }
-            if (plusRect.Contains(e.Location)) { Shift(+2); return; }
+            if (minusRect.Contains(e.Location)) { Shift(-1); return; }
+            if (plusRect.Contains(e.Location)) { Shift(+1); return; }
 
             if (e.Y >= trackRect.Y - 8 && e.Y <= trackRect.Bottom + 8)
             {
@@ -190,9 +190,9 @@ namespace KlangHub.UserControls
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                case Keys.Down: Shift(-2); e.Handled = true; break;
+                case Keys.Down: Shift(-1); e.Handled = true; break;
                 case Keys.Right:
-                case Keys.Up: Shift(+2); e.Handled = true; break;
+                case Keys.Up: Shift(+1); e.Handled = true; break;
                 case Keys.M: ToggleMute(); e.Handled = true; break;
             }
             base.OnKeyDown(e);
@@ -231,7 +231,26 @@ namespace KlangHub.UserControls
         }
 
         /// <summary>Trims the room by a couple of points - the same proportional move, just smaller.</summary>
-        private void Shift(int delta) => SetLevel(Level + delta);
+        /// <summary>
+        /// One press of + or -, in the step the room can actually feel.
+        ///
+        /// Every Cast device reports the step it works in and they differ (1 % on the television, 2 % on a
+        /// Google Home, 4 % on the Enchant), so a room takes the COARSEST of its members: with anything
+        /// finer, a press would be swallowed by the device with the largest step and only some of the room
+        /// would move. The level is proportional, so the step scales the whole room in ratio as before.
+        /// </summary>
+        private int StepPercent
+        {
+            get
+            {
+                int step = 0;
+                foreach (var member in Members)
+                    step = Math.Max(step, member.StepPercent);
+                return Math.Max(1, step);
+            }
+        }
+
+        private void Shift(int direction) => SetLevel(Level + direction * StepPercent);
 
         private void ApplyFromX(int x)
         {
