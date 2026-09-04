@@ -318,7 +318,7 @@
     <value>Nome sul ricevitore</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Ideato e realizzato da Neo &amp; Trinity · 2026</value>
+    <value>Sviluppato nella Matrix da Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>PROFILO SONORO &amp; CONNESSIONE</value>
@@ -387,6 +387,6 @@
     <value>Fatto</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>SENZA PERDITE · AUDIO IN TUTTA CASA</value>
+    <value>SENZA PERDITE · OGNI STANZA CANTA</value>
   </data>
 </root>

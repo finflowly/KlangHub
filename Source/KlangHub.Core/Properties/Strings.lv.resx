@@ -318,7 +318,7 @@
     <value>Uztvērējā rādāmais nosaukums</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Veidojuši un izstrādājuši Neo &amp; Trinity · 2026</value>
+    <value>Izstrādāts Matricā: Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>SKAŅAS PROFILS &amp; SAVIENOJUMS</value>
@@ -387,6 +387,6 @@
     <value>Gatavs</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>BEZ ZUDUMIEM · SKAŅA VISĀ MĀJĀ</value>
+    <value>BEZ ZUDUMIEM · KATRA ISTABA DZIED</value>
   </data>
 </root>

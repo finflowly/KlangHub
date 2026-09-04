@@ -318,7 +318,7 @@
     <value>Namn på mottagaren</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Formgiven och byggd av Neo &amp; Trinity · 2026</value>
+    <value>Utvecklad i Matrix av Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>LJUDPROFIL &amp; ANSLUTNING</value>
@@ -387,6 +387,6 @@
     <value>Klar</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>FÖRLUSTFRITT · LJUD I HELA HEMMET</value>
+    <value>FÖRLUSTFRITT · VARJE RUM SJUNGER</value>
   </data>
 </root>

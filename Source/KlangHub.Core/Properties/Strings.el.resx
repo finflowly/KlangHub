@@ -318,7 +318,7 @@
     <value>Όνομα που φαίνεται στον δέκτη</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Σχεδιάστηκε και φτιάχτηκε από Neo &amp; Trinity · 2026</value>
+    <value>Αναπτύχθηκε στο Matrix από τους Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>ΠΡΟΦΙΛ ΗΧΟΥ &amp; ΣΥΝΔΕΣΗ</value>
@@ -387,6 +387,6 @@
     <value>Έτοιμο</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>ΧΩΡΙΣ ΑΠΩΛΕΙΕΣ · ΗΧΟΣ ΣΕ ΟΛΟ ΤΟ ΣΠΙΤΙ</value>
+    <value>ΧΩΡΙΣ ΑΠΩΛΕΙΕΣ · ΚΑΘΕ ΔΩΜΑΤΙΟ ΤΡΑΓΟΥΔΑ</value>
   </data>
 </root>

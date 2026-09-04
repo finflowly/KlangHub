@@ -318,7 +318,7 @@
     <value>Ime prikazano na prijemniku</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Osmislili i izradili Neo &amp; Trinity · 2026</value>
+    <value>Razvijeno u Matrixu: Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>ZVUČNI PROFIL &amp; VEZA</value>
@@ -387,6 +387,6 @@
     <value>Gotovo</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>BEZ GUBITAKA · ZVUK U CIJELOM DOMU</value>
+    <value>BEZ GUBITAKA · SVAKA SOBA PJEVA</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -71,6 +71,44 @@ namespace KlangHub.Tests.Ui
             var greek = ArtworkRenderer.CurrentPng();
 
             Assert.NotEqual(german, greek);
+        }
+
+        [Fact]
+        public void Follows_the_app_language_even_on_a_background_thread()
+        {
+            // The regression this pins down: the streaming server answers on its own thread, which never saw
+            // the UI thread's culture - so the television kept showing the language of the first cast while
+            // the app itself had already switched. The app-wide default is what the renderer must read.
+            var previousDefault = CultureInfo.DefaultThreadCurrentUICulture;
+            try
+            {
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("de");
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("nl");
+                ArtworkRenderer.Invalidate();
+
+                string? seen = null;
+                byte[]? png = null;
+                var worker = new Thread(() =>
+                {
+                    seen = ArtworkRenderer.Culture.TwoLetterISOLanguageName;
+                    png = ArtworkRenderer.CurrentPng();
+                });
+                worker.Start();
+                worker.Join();
+
+                Assert.Equal("nl", seen);
+                Assert.NotNull(png);
+
+                // and it really is the Dutch picture, not the German one
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("de");
+                ArtworkRenderer.Invalidate();
+                Assert.NotEqual(png, ArtworkRenderer.CurrentPng());
+            }
+            finally
+            {
+                CultureInfo.DefaultThreadCurrentUICulture = previousDefault;
+                ArtworkRenderer.Invalidate();
+            }
         }
 
         [Fact]

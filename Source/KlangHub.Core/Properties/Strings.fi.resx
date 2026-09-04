@@ -318,7 +318,7 @@
     <value>Vastaanottimessa näkyvä nimi</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Suunnitellut ja rakentanut Neo &amp; Trinity · 2026</value>
+    <value>Kehitetty Matrixissa: Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>ÄÄNIPROFIILI &amp; YHTEYS</value>
@@ -387,6 +387,6 @@
     <value>Valmis</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>HÄVIÖTÖN · ÄÄNI KOKO KOTIIN</value>
+    <value>HÄVIÖTÖN · JOKA HUONE LAULAA</value>
   </data>
 </root>

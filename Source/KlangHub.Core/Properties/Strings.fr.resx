@@ -433,7 +433,7 @@
     <value>Inconnu</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Conçu et développé par Neo &amp; Trinity · 2026</value>
+    <value>Développé dans la Matrice par Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
     <value>{0} · diffusion dans toute la maison</value>
@@ -445,6 +445,6 @@
     <value>COMPORTEMENT &amp; CONFORT</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>SANS PERTE · AUDIO DANS TOUTE LA MAISON</value>
+    <value>SANS PERTE · CHAQUE PIÈCE CHANTE</value>
   </data>
 </root>

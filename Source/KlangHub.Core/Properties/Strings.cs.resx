@@ -318,7 +318,7 @@
     <value>Název zobrazený na přijímači</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Navrhli a vytvořili Neo &amp; Trinity · 2026</value>
+    <value>Vyvinuto v Matrixu: Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>ZVUKOVÝ PROFIL &amp; PŘIPOJENÍ</value>
@@ -387,6 +387,6 @@
     <value>Hotovo</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>BEZE ZTRÁT · ZVUK V CELÉM DOMĚ</value>
+    <value>BEZE ZTRÁT · KAŽDÝ POKOJ ZPÍVÁ</value>
   </data>
 </root>

@@ -318,7 +318,7 @@
     <value>Naam op de ontvanger</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Ontworpen en gebouwd door Neo &amp; Trinity · 2026</value>
+    <value>Ontwikkeld in de Matrix door Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>GELUIDSPROFIEL &amp; VERBINDING</value>
@@ -387,6 +387,6 @@
     <value>Klaar</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>VERLIESVRIJ · AUDIO IN HET HELE HUIS</value>
+    <value>VERLIESVRIJ · ELKE KAMER ZINGT</value>
   </data>
 </root>

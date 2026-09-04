@@ -26,10 +26,15 @@ namespace KlangHub.Classes
         private static string? cachedCulture;
         private static byte[]? cachedBytes;
 
-        /// <summary>PNG bytes of the artwork for the current UI culture (cached).</summary>
+        /// <summary>The language the picture is drawn in: the app-wide choice, not whatever culture the
+        /// thread serving the HTTP request happens to carry.</summary>
+        public static CultureInfo Culture =>
+            CultureInfo.DefaultThreadCurrentUICulture ?? CultureInfo.CurrentUICulture;
+
+        /// <summary>PNG bytes of the artwork for the app's current language (cached).</summary>
         public static byte[] CurrentPng()
         {
-            var culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            var culture = Culture.TwoLetterISOLanguageName;
             lock (gate)
             {
                 if (cachedBytes != null && cachedCulture == culture)
@@ -108,7 +113,7 @@ namespace KlangHub.Classes
             using (var nb = new SolidBrush(Theme.Ivory))
                 g.DrawString("KlangHub", nameFont, nb, new RectangleF(0, Size * 0.60f, Size, Size * 0.12f), sf);
 
-            var tagline = Properties.Strings.Artwork_Tagline_Text;
+            var tagline = Properties.Strings.ResourceManager.GetString("Artwork_Tagline_Text", Culture);
             if (string.IsNullOrWhiteSpace(tagline))
                 tagline = "LOSSLESS · WHOLE-HOME AUDIO";
 

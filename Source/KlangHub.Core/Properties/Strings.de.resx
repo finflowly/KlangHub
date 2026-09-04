@@ -318,7 +318,7 @@
     <value>Anzeigename auf dem Empfänger</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Entworfen und entwickelt von Neo &amp; Trinity · 2026</value>
+    <value>In der Matrix entwickelt von Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>KLANGPROFIL &amp; VERBINDUNG</value>
@@ -387,6 +387,6 @@
     <value>Fertig</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>VERLUSTFREI · KLANG IM GANZEN HAUS</value>
+    <value>VERLUSTFREI · JEDER RAUM SINGT</value>
   </data>
 </root>

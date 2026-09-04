@@ -318,7 +318,7 @@
     <value>Vardas, rodomas imtuve</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Sukūrė ir suprogramavo Neo &amp; Trinity · 2026</value>
+    <value>Sukurta Matricoje: Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>GARSO PROFILIS &amp; RYŠYS</value>
@@ -387,6 +387,6 @@
     <value>Atlikta</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>BE NUOSTOLIŲ · GARSAS VISUOSE NAMUOSE</value>
+    <value>BE NUOSTOLIŲ · KIEKVIENAS KAMBARYS DAINUOJA</value>
   </data>
 </root>

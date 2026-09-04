@@ -318,7 +318,7 @@
     <value>Nazwa na odbiorniku</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Zaprojektowane i zbudowane przez Neo &amp; Trinity · 2026</value>
+    <value>Stworzone w Matriksie przez Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>PROFIL DŹWIĘKU &amp; POŁĄCZENIE</value>
@@ -387,6 +387,6 @@
     <value>Gotowe</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>BEZSTRATNIE · DŹWIĘK W CAŁYM DOMU</value>
+    <value>BEZSTRATNIE · KAŻDY POKÓJ ŚPIEWA</value>
   </data>
 </root>

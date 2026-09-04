@@ -318,7 +318,7 @@
     <value>Vastuvõtjas kuvatav nimi</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Kujundanud ja ehitanud Neo &amp; Trinity · 2026</value>
+    <value>Arendatud Maatriksis: Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>HELIPROFIIL &amp; ÜHENDUS</value>
@@ -387,6 +387,6 @@
     <value>Valmis</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>KADUDETA · HELI KOGU KODUS</value>
+    <value>KADUDETA · IGA TUBA LAULAB</value>
   </data>
 </root>

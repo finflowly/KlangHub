@@ -376,7 +376,7 @@
     <value>Name shown on the receiver</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Designed and built by Neo &amp; Trinity · 2026</value>
+    <value>Developed in the Matrix by Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>SOUND PROFILE &amp; CONNECTION</value>
@@ -445,6 +445,6 @@
     <value>Done</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>LOSSLESS · WHOLE-HOME AUDIO</value>
+    <value>LOSSLESS · EVERY ROOM SINGS</value>
   </data>
 </root>

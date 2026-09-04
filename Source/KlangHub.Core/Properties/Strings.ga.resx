@@ -318,7 +318,7 @@
     <value>Ainm ar an nglacadóir</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Deartha agus tógtha ag Neo &amp; Trinity · 2026</value>
+    <value>Forbartha sa Mhaitrís ag Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>PRÓIFÍL FUAIME &amp; NASC</value>
@@ -387,6 +387,6 @@
     <value>Déanta</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>GAN CHAILLIÚINT · FUAIM AR FUD AN TÍ</value>
+    <value>GAN CHAILLIÚINT · CANANN GACH SEOMRA</value>
   </data>
 </root>

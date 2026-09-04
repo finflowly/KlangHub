@@ -318,7 +318,7 @@
     <value>Nome no recetor</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Concebido e criado por Neo &amp; Trinity · 2026</value>
+    <value>Desenvolvido na Matrix por Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>PERFIL DE SOM &amp; LIGAÇÃO</value>
@@ -387,6 +387,6 @@
     <value>Concluído</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>SEM PERDAS · ÁUDIO EM TODA A CASA</value>
+    <value>SEM PERDAS · CADA DIVISÃO CANTA</value>
   </data>
 </root>

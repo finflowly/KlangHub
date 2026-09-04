@@ -318,7 +318,7 @@
     <value>Име, показвано на приемника</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Замислено и създадено от Neo &amp; Trinity · 2026</value>
+    <value>Разработено в Матрицата от Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>ЗВУКОВ ПРОФИЛ &amp; ВРЪЗКА</value>
@@ -387,6 +387,6 @@
     <value>Готово</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>БЕЗ ЗАГУБИ · ЗВУК В ЦЕЛИЯ ДОМ</value>
+    <value>БЕЗ ЗАГУБИ · ВСЯКА СТАЯ ПЕЕ</value>
   </data>
 </root>

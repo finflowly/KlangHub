@@ -988,6 +988,11 @@ namespace KlangHub
             CultureInfo ci = new CultureInfo(culture);
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
+            // The artwork is rendered on whichever thread the streaming server answers on, and that thread
+            // never saw the UI thread's culture - which is why the TV kept its old language. These two make
+            // the choice the process-wide default, so every thread born after it agrees.
+            CultureInfo.DefaultThreadCurrentCulture = ci;
+            CultureInfo.DefaultThreadCurrentUICulture = ci;
             Classes.ArtworkRenderer.Invalidate();   // the TV screen is drawn in this language too
             ApplyLocalization();
             applicationLogic.SetCulture(culture);
@@ -1962,6 +1967,7 @@ namespace KlangHub
             {
                 Name = "lblCredit",
                 Text = Properties.Strings.Label_Credit_Text,
+                UseMnemonic = false,   // otherwise "Neo & Trinity" loses its ampersand to an accelerator
                 AutoSize = true,
                 Location = new Point(0, 96),
                 Font = new Font(Classes.Theme.Small.FontFamily, 8f, FontStyle.Italic),

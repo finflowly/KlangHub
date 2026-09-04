@@ -318,7 +318,7 @@
     <value>A vevőn megjelenő név</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Tervezte és készítette Neo &amp; Trinity · 2026</value>
+    <value>A Mátrixban fejlesztette Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>HANGPROFIL &amp; KAPCSOLAT</value>
@@ -387,6 +387,6 @@
     <value>Kész</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>VESZTESÉGMENTES · HANG AZ EGÉSZ OTTHONBAN</value>
+    <value>VESZTESÉGMENTES · MINDEN SZOBA ÉNEKEL</value>
   </data>
 </root>

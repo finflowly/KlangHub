@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -210,7 +210,11 @@ namespace KlangHub.Application.Orchestration
             if (string.IsNullOrEmpty(baseUrl))
                 return string.Empty;
 
-            return baseUrl.EndsWith("/") ? baseUrl + "artwork.png" : baseUrl + "/artwork.png";
+            // The language is part of the URL on purpose: a receiver caches the image per URL, so a plain
+            // /artwork.png would keep showing the language of the first cast for the rest of the session.
+            var lang = Classes.ArtworkRenderer.Culture.TwoLetterISOLanguageName;
+            var path = "artwork.png?lang=" + lang;
+            return baseUrl.EndsWith("/") ? baseUrl + path : baseUrl + "/" + path;
         }
 
         public void SetStreamTitle(string title) => streamTitle = title;

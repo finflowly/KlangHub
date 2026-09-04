@@ -318,7 +318,7 @@
     <value>Numele afișat pe receptor</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Conceput și realizat de Neo &amp; Trinity · 2026</value>
+    <value>Dezvoltat în Matrix de Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_Section_Sound_Text" xml:space="preserve">
     <value>PROFIL DE SUNET &amp; CONEXIUNE</value>
@@ -387,6 +387,6 @@
     <value>Gata</value>
   </data>
   <data name="Artwork_Tagline_Text" xml:space="preserve">
-    <value>FĂRĂ PIERDERI · SUNET ÎN TOATĂ CASA</value>
+    <value>FĂRĂ PIERDERI · FIECARE CAMERĂ CÂNTĂ</value>
   </data>
 </root>
