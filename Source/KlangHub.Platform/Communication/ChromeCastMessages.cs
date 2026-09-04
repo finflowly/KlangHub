@@ -137,6 +137,18 @@ namespace KlangHub.Communication
             return GetCastMessage(new MessagePause { type = "STOP", sessionId = sessionId, mediaSessionId = mediaSessionId, requestId = requestId }, namespaceMedia, sourceId, destinationId);
         }
 
+        /// <summary>
+        /// Ends the receiver APPLICATION (sender-0 -> receiver-0), which is what sends a television back to
+        /// whatever it was showing before - its menu, its input, its screensaver. The media STOP above only
+        /// ends playback: the Default Media Receiver stays loaded and the Cast logo sits on the screen until
+        /// the device times out on its own, which is minutes of a bright logo burnt into a dark living room.
+        /// </summary>
+        public CastMessage GetQuitApplicationMessage(string sessionId, int requestId)
+        {
+            var message = new MessageQuitApplication { type = "STOP", sessionId = sessionId, requestId = requestId };
+            return GetCastMessage(message, namespaceReceiver);
+        }
+
         public CastMessage GetCastMessage(PayloadMessageBase message, string msgNamespace, string? sourceId = null, string? destinationId = null)
         {
             if (string.IsNullOrWhiteSpace(sourceId)) sourceId = "sender-0";

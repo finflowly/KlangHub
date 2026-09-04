@@ -108,17 +108,19 @@ namespace KlangHub.UserControls
 
         public bool IsMuted => muted;
 
-        /// <summary>Moves this card's volume by <paramref name="delta"/> percentage points, keeping it inside
-        /// 0..cap. Used by the room fader, which shifts a whole room while preserving the balance the user
-        /// dialled in between its speakers.</summary>
-        public void NudgeVolume(int delta)
+        /// <summary>Sets this card to an absolute percentage, never past its own hard cap. The room fader
+        /// uses it to scale a whole room by one factor.</summary>
+        public void SetVolumePercent(int percent)
         {
-            int target = Math.Clamp(volume + delta, 0, maxVolume);
+            int target = Math.Clamp(percent, 0, maxVolume);
             if (target == volume) return;
             volume = target;
             Invalidate();
             TryOnSession(s => s.SetVolume(target / 100f));
         }
+
+        /// <summary>Moves this card's volume by <paramref name="delta"/> percentage points, inside 0..cap.</summary>
+        public void NudgeVolume(int delta) => SetVolumePercent(volume + delta);
 
         /// <summary>Mutes or unmutes this speaker (the room bar mutes a whole room at once).</summary>
         public void SetMuted(bool value)
@@ -280,7 +282,19 @@ namespace KlangHub.UserControls
             DrawText(g, deviceName, Theme.Name, Theme.Ivory, nameX, icoY - 2);
             string sub = Subtitle();
             if (!string.IsNullOrEmpty(sub))
-                DrawText(g, sub, Theme.Small, Theme.Slate, nameX, icoY + 22);
+            {
+                // A named room gets its symbol right in front of the subtitle, so the room is readable at a
+                // glance whether or not the grid is grouped.
+                var room = Room;
+                float subX = nameX;
+                if (!string.IsNullOrWhiteSpace(room))
+                {
+                    RoomPresets.DrawIcon(g, new RectangleF(nameX, icoY + 22, 14, 14),
+                                         room, playing ? Theme.Amber : Theme.Slate);
+                    subX += 19;
+                }
+                DrawText(g, sub, Theme.Small, Theme.Slate, subX, icoY + 22);
+            }
 
             // ---- level meter (the signature) ----
             int meterY = cardTop + 90, meterH = 18, barW = 4, gap = 3, meterX = padL;

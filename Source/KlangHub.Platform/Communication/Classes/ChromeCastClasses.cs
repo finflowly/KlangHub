@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace KlangHub.Communication.Classes
 {
@@ -51,6 +51,16 @@ namespace KlangHub.Communication.Classes
     public class MessagePause : PayloadMessageBase
     {
         public int mediaSessionId { get; set; }
+        public string sessionId { get; set; } = null!;
+        public int requestId { get; set; }
+    }
+
+    /// <summary>
+    /// STOP on the RECEIVER namespace: ends the receiver application itself, as opposed to the media STOP
+    /// which only ends playback. It carries the application session id and no media session.
+    /// </summary>
+    public class MessageQuitApplication : PayloadMessageBase
+    {
         public string sessionId { get; set; } = null!;
         public int requestId { get; set; }
     }

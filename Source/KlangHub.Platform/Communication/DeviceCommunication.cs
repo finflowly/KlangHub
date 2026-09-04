@@ -353,6 +353,13 @@ namespace KlangHub.Communication
                 device.SendSilence();
 
             SendMessage(chromeCastMessages.GetStopMessage(chromeCastApplicationSessionNr, chromeCastMediaSessionId, GetNextRequestId(), chromeCastSource, chromeCastDestination));
+
+            // When the user actually stops (rather than the app pausing or re-connecting internally), close
+            // the receiver application too. Without this the television keeps the Cast logo on screen for
+            // minutes instead of returning to its menu or screensaver: the media STOP ends the stream, not
+            // the receiver that is drawing that logo.
+            if (changeUserMode && !string.IsNullOrEmpty(chromeCastApplicationSessionNr))
+                SendMessage(chromeCastMessages.GetQuitApplicationMessage(chromeCastApplicationSessionNr, GetNextRequestId()));
         }
 
         /// <summary>

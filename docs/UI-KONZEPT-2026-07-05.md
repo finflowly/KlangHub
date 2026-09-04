@@ -238,3 +238,28 @@ der am Fenster auf 15 %. Ziehen verschiebt deshalb **jeden** Lautsprecher um die
 erhält damit die Balance, statt den Raum auf einen Wert einzuebnen. Die harte Obergrenze jeder Kachel gilt
 weiter: Ein Raum auf 100 % sprengt die Wohnung nicht, der auf 23 % gedeckelte Lautsprecher bleibt bei 23 %.
 Dazu Stummschaltung für den ganzen Raum und −/+ für zwei Punkte Feinschliff (Pfeiltasten und `M` ebenso).
+
+## Nachbesserungen (2026-09-04, Abend)
+
+**Der Fernseher kehrt zurück.** Beim Stoppen ging bisher nur ein `STOP` an den *media*-Namespace — das
+beendet die Wiedergabe, nicht den Receiver. Die Default-Media-Receiver-App blieb geladen und ließ das
+Cast-Logo minutenlang auf dem Bildschirm stehen. Jetzt folgt beim bewussten Stoppen (`changeUserMode`) ein
+`STOP` auf dem *receiver*-Namespace mit der Application-Session-ID (`sender-0` → `receiver-0`), das die App
+beendet; der Fernseher geht zurück in Menü, Eingang oder Bildschirmschoner. Bei Pause passiert das
+absichtlich nicht — pausiert heißt verbunden.
+
+**Der Raum-Fader ist jetzt proportional, nicht additiv.** the maintainer's Beispiel ist die Vorgabe: TV 13 %,
+Soundbar 11 %, Google Home 20 % müssen sich im *Verhältnis* bewegen. Der Fader skaliert deshalb mit einem
+Faktor (26/22/40 beim Verdoppeln) statt alle um dieselben Punkte zu verschieben. Zwei Fälle haben kein
+Verhältnis und sind ausdrücklich entschieden: Ein stummer Raum hat keinen Bezug — alle gehen auf den
+Zielwert; ein einzelner stummer Lautsprecher in einem spielenden Raum bliebe sonst für immer bei 0 und wird
+auf das Raumniveau gehoben. Die Rechnung liegt in `Classes/RoomVolume`, getrennt von der Oberfläche, und ist
+durch neun Tests abgedeckt — inklusive der harten Obergrenze: Der auf 23 % gedeckelte Lautsprecher bleibt bei
+23 %, auch wenn der Raum auf 100 % geht.
+
+**Das Raum-Symbol steht auf der Kachel**, direkt vor dem Raumnamen — sichtbar unabhängig davon, ob die
+Gruppierung an ist.
+
+**Der Umschalter war unsichtbar.** „Nach Räumen" verschwand unterhalb von 690 px Fensterbreite, also bei der
+Standardgröße — das Feature existierte, aber niemand konnte es finden. Die Schwelle liegt jetzt bei 560 px,
+und die Zusammenfassung links weicht der Werkzeugleiste mit einer Ellipse, statt unter ihr zu verschwinden.

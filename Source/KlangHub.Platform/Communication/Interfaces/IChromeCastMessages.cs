@@ -10,6 +10,7 @@ namespace KlangHub.Communication.Interfaces
         CastMessage GetLaunchMessage(int requestId);
         CastMessage GetLoadMessage(string streamUrl, string chromeCastSource, string chromeCastDestination, int requestId, CastMediaMetadata metadata);
         CastMessage GetStopMessage(string chromeCastSessionId, int chromeCastMediaSessionId, int requestId, string chromeCastSource, string chromeCastDestination);
+        CastMessage GetQuitApplicationMessage(string sessionId, int requestId);
         CastMessage GetPauseMessage(string chromeCastSessionId, int chromeCastMediaSessionId, int requestId, string chromeCastSource, string chromeCastDestination);
         CastMessage GetPlayMessage(string chromeCastApplicationSessionNr, int chromeCastMediaSessionId, int v, string chromeCastSource, string chromeCastDestination);
         CastMessage GetVolumeSetMessage(Volume volumeSetting, int requestId, string? sourceId = null, string? destinationId = null);

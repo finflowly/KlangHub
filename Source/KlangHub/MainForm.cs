@@ -1624,7 +1624,9 @@ namespace KlangHub
 
             lblRoomSummaryTitle = new Label
             {
-                AutoSize = true,
+                AutoSize = false,
+                AutoEllipsis = true,
+                Height = 22,
                 Font = new Font(Classes.Theme.Name.FontFamily, 11.5f, Classes.Theme.Name.Style),
                 ForeColor = Classes.Theme.Ivory,
                 BackColor = Color.Transparent,
@@ -1633,7 +1635,9 @@ namespace KlangHub
             };
             lblRoomSummarySubtitle = new Label
             {
-                AutoSize = true,
+                AutoSize = false,
+                AutoEllipsis = true,
+                Height = 18,
                 Font = Classes.Theme.Small,
                 ForeColor = Classes.Theme.Slate,
                 BackColor = Color.Transparent,
@@ -2153,8 +2157,8 @@ namespace KlangHub
                 Name = "btnGroupRooms",
                 Text = Properties.Strings.Button_GroupRooms_Text,
                 AutoSize = false,
-                Size = new Size(132, 36),
-                Margin = new Padding(10, 9, 2, 4),
+                Size = new Size(126, 36),
+                Margin = new Padding(8, 9, 2, 4),
                 Primary = groupByRoom,
             };
             btnGroupRooms.Click += (s, e) => SetGroupByRoom(!groupByRoom);
@@ -2174,8 +2178,18 @@ namespace KlangHub
             // the settings too, and hiding it beats letting the fader collide with the text.
             void FitToolbar()
             {
-                bool room = grpVolume.ClientSize.Width > 690;
+                // The toggle only steps back when the window is genuinely too narrow for the row; at the
+                // default size it has to be there, otherwise the feature is invisible.
+                bool room = grpVolume.ClientSize.Width > 560;
                 if (btnGroupRooms != null && btnGroupRooms.Visible != room) btnGroupRooms.Visible = room;
+
+                // The summary shares the line with the toolbar and must give way to it: measured against what
+                // the controls on the right actually take, and truncated with an ellipsis rather than sliding
+                // underneath them.
+                int taken = pnlVolumeAllButtons.PreferredSize.Width;
+                int free = Math.Max(140, grpVolume.ClientSize.Width - taken - 30);
+                if (lblRoomSummaryTitle != null) lblRoomSummaryTitle.Width = free;
+                if (lblRoomSummarySubtitle != null) lblRoomSummarySubtitle.Width = free;
             }
             grpVolume.Resize += (s, e) => FitToolbar();
             FitToolbar();

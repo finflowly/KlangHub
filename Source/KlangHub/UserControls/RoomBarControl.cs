@@ -13,11 +13,11 @@ namespace KlangHub.UserControls
     /// The header of one room in the grouped view: its glyph and name, what is playing in it, and a fader
     /// that moves the whole room at once.
     /// <para>
-    /// The fader is <b>relative</b> on purpose. A room rarely wants one level - the kitchen speaker sits at
-    /// 40 % while the one by the window sits at 15 % - so dragging the room shifts every speaker by the same
-    /// number of points and keeps that balance, instead of flattening the room to a single value. Each card
-    /// still enforces its own hard cap, so a room at 100 % cannot blow the flat apart: the speaker capped at
-    /// 23 % stops at 23 %.
+    /// The fader is <b>proportional</b>. A room rarely wants one level - the TV sits at 13 %, the soundbar at
+    /// 11 %, the speaker at 20 % - so the fader scales all of them by the same FACTOR: those three become
+    /// 26/22/40 at double, not one flat number. The mix the user dialled in survives; only its loudness moves.
+    /// Each card still enforces its own hard cap, so a room at 100 % cannot blow the flat apart - the speaker
+    /// capped at 23 % stops at 23 %.
     /// </para>
     /// </summary>
     public sealed class RoomBarControl : Control
@@ -27,7 +27,6 @@ namespace KlangHub.UserControls
         private readonly Func<IReadOnlyList<DeviceControl>> members;
         private Rectangle iconRect, muteRect, minusRect, plusRect, trackRect;
         private bool dragging;
-        private int dragAnchor;          // the level the drag started from, in percent
         private int hovered = -1;        // 0 = mute, 1 = minus, 2 = plus
 
         /// <summary>Raised after this bar changed volumes, so the page can refresh its summary.</summary>
@@ -54,11 +53,7 @@ namespace KlangHub.UserControls
         /// drag moves away from.</summary>
         public int Level
         {
-            get
-            {
-                var list = Members;
-                return list.Count == 0 ? 0 : (int)Math.Round(list.Average(d => d.VolumePercent));
-            }
+            get => RoomVolume.LevelOf(Members.Select(d => d.VolumePercent).ToArray());
         }
 
         private bool AllMuted => Members.Count > 0 && Members.All(d => d.IsMuted);
@@ -181,7 +176,6 @@ namespace KlangHub.UserControls
             if (e.Y >= trackRect.Y - 8 && e.Y <= trackRect.Bottom + 8)
             {
                 dragging = true;
-                dragAnchor = Level;
                 ApplyFromX(e.X);
             }
         }
@@ -212,24 +206,38 @@ namespace KlangHub.UserControls
             RoomChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        /// <summary>Moves every speaker in the room by the same number of points, so their balance survives.</summary>
-        private void Shift(int delta)
+        /// <summary>
+        /// Takes the room to <paramref name="target"/> percent by scaling every speaker with the same factor,
+        /// which is what keeps 13/11/20 reading as 13/11/20 one octave up rather than as three identical
+        /// numbers. Two cases cannot be scaled and are handled explicitly: a room that is silent has no ratio
+        /// to preserve (everyone goes to the target), and a speaker at 0 would stay at 0 forever, so it is
+        /// lifted along with the room.
+        /// </summary>
+        public void SetLevel(int target)
         {
-            if (delta == 0) return;
-            foreach (var d in Members) d.NudgeVolume(delta);
+            var list = Members;
+            if (list.Count == 0) return;
+
+            var scaled = RoomVolume.Scale(
+                list.Select(d => d.VolumePercent).ToArray(),
+                list.Select(d => d.MaxVolumePercent).ToArray(),
+                target);
+
+            for (int i = 0; i < list.Count; i++)
+                list[i].SetVolumePercent(scaled[i]);
+
             Invalidate();
             RoomChanged?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>Trims the room by a couple of points - the same proportional move, just smaller.</summary>
+        private void Shift(int delta) => SetLevel(Level + delta);
 
         private void ApplyFromX(int x)
         {
             if (trackRect.Width <= 0) return;
             float t = Math.Clamp((x - trackRect.X) / (float)trackRect.Width, 0f, 1f);
-            int target = (int)Math.Round(t * 100);
-            int delta = target - dragAnchor;
-            if (delta == 0) return;
-            dragAnchor = target;
-            Shift(delta);
+            SetLevel((int)Math.Round(t * 100));
         }
     }
 }
