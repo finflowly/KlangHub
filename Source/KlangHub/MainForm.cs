@@ -2314,13 +2314,33 @@ namespace KlangHub
             c.Invalidate();
         }
 
-        /// <summary>The backdrop is scaled to the WINDOW, so every surface has to repaint whenever the window
-        /// changes size - otherwise each panel keeps a slice of the old scale and the image tears at the seams.
-        /// Stock containers do not invalidate on resize, so drive it from the form.</summary>
+        /// <summary>
+        /// The backdrop is scaled to the WINDOW, so every surface that draws a slice of it has to repaint when
+        /// the window changes size - otherwise it keeps painting the old scale and the picture tears at the
+        /// seams. That is not only the opted-in containers: the device tiles, room bars, settings cards and
+        /// field wells each paint their own slice too, and none of them resizes when the WINDOW does, so
+        /// nothing would tell them to redraw. (Visible when maximising: the tiles kept rings from the small
+        /// window until some other repaint - a playing tile's timer, a hover - happened to refresh them.)
+        /// </summary>
         private void RepaintBackdrop()
         {
             foreach (var c in backdropSurfaces)
                 if (!c.IsDisposed) c.Invalidate();
+
+            InvalidateBackdropSurfaces(this);
+        }
+
+        private static void InvalidateBackdropSurfaces(Control parent)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c is DeviceControl or UserControls.CardPanel or UserControls.RoomBarControl
+                    or UserControls.FieldFrame or UserControls.ConsoleTabStrip)
+                    c.Invalidate();
+
+                if (c.HasChildren)
+                    InvalidateBackdropSurfaces(c);
+            }
         }
 
         /// <summary>Turns on double buffering for a stock container (the property is protected), so the
