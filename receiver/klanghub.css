@@ -1,0 +1,58 @@
+/*
+ * KlangHub — Styled Media Receiver skin
+ * ---------------------------------------------------------------------------------------------------
+ * This file is what a Chromecast loads to dress the standard media receiver in KlangHub's colours.
+ * Register its HTTPS URL in the Cast Developer Console (https://cast.google.com/publish) as the
+ * "Skin URL" of a Styled Media Receiver; Google then hands out an application ID which KlangHub
+ * launches instead of CC1AD845.
+ *
+ * The Styled Media Receiver exposes exactly five classes - background, splash, logo, progressBar and
+ * watermark. There is deliberately nothing else here: text layout, fonts and a live level meter are
+ * not stylable this way and need the custom receiver (see docs/PLAN-MULTIROOM-SYNC.md, stage 3).
+ *
+ * Colours are the app's own tokens (Source/KlangHub/Classes/Theme.cs):
+ *   ink #0E1014 · ink-2 #0B0D11 · amber #E8B65A · ivory #F3ECDD
+ */
+
+/* Behind the media while it plays. Deep ink with the ring band pushed to the right, so the receiver's
+   own title/artist text on the left keeps calm ground under it. */
+.background {
+    background-color: #0E1014;
+    background-image: url('assets/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* The idle screen - the same picture, but carrying the wordmark, since nothing else is on screen. */
+.splash {
+    background-color: #0E1014;
+    background-image: url('assets/splash.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Shown while the receiver starts up. Transparent PNG on the ink ground. */
+.logo {
+    background-color: #0E1014;
+    background-image: url('assets/logo.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* The one warm accent. (Invisible on a live stream, which has no position to show - but a stream
+   played from a file, or a future non-live mode, gets the amber bar rather than a grey one.) */
+.progressBar {
+    background-color: #E8B65A;
+}
+
+/* The mark, kept discreetly on screen during playback. */
+.watermark {
+    background-image: url('assets/watermark.png');
+    background-size: contain;
+    background-position: bottom right;
+    background-repeat: no-repeat;
+    opacity: 0.55;
+}

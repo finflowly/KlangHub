@@ -404,4 +404,13 @@
   <data name="Room_SpeakersMany_Text" xml:space="preserve">
     <value>{0} Lautsprecher</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>CAST-EMPFÄNGER</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>Anwendungs-ID</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Leer lassen für Googles Standard-Empfänger. Eine eigene ID zeigt Namen und Farben von KlangHub am TV.</value>
+  </data>
 </root>

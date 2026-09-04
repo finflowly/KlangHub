@@ -462,4 +462,13 @@
   <data name="Room_SpeakersMany_Text" xml:space="preserve">
     <value>{0} speakers</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>CAST RECEIVER</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>Application ID</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Leave empty for Google's standard receiver. Your own ID shows KlangHub's name and colours on the TV.</value>
+  </data>
 </root>

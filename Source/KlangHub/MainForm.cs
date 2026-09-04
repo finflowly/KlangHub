@@ -1846,7 +1846,8 @@ namespace KlangHub
         // This rebuild re-hosts the very same controls (every binding, event and Get/Set stays untouched) inside
         // the concept's surface cards, on one 8-px grid, with the field wells and pill buttons the rest of the
         // app already uses.
-        private UserControls.CardPanel? cardSound, cardBehavior;
+        private UserControls.CardPanel? cardSound, cardBehavior, cardReceiver;
+        private UserControls.DarkTextBox? txtReceiverAppId;
         private Panel? settingsScroll;
 
         private void SetupSettingsPage()
@@ -1871,10 +1872,13 @@ namespace KlangHub
 
             cardSound = BuildSoundCard();
             cardBehavior = BuildBehaviorCard();
+            cardReceiver = BuildReceiverCard();
             var footer = BuildSettingsFooter();
 
             // Dock=Top siblings stack in REVERSE collection order, so add bottom-up.
             settingsScroll.Controls.Add(footer);
+            settingsScroll.Controls.Add(Spacer(16));
+            settingsScroll.Controls.Add(cardReceiver);
             settingsScroll.Controls.Add(Spacer(16));
             settingsScroll.Controls.Add(cardBehavior);
             settingsScroll.Controls.Add(Spacer(16));
@@ -2002,6 +2006,75 @@ namespace KlangHub
 
             grid.Controls.Add(label, 0, row);
             grid.Controls.Add(field, 1, row);
+        }
+
+        /// <summary>
+        /// Card 3 - the Cast receiver. Empty means Google's Default Media Receiver, which is what a
+        /// television labels "Default Media Receiver". An id registered in the Cast Developer Console
+        /// launches KlangHub's own receiver instead. It belongs in the settings rather than in the code
+        /// because the id belongs to whoever registered it - anyone forking the project needs their own.
+        /// </summary>
+        private UserControls.CardPanel BuildReceiverCard()
+        {
+            var card = new UserControls.CardPanel
+            {
+                Name = "cardReceiver",
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(22, 46, 22, 20),
+                Caption = Properties.Strings.Label_Section_Receiver_Text,
+            };
+
+            var grid = new TableLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                ColumnCount = 2,
+                BackColor = Color.Transparent,
+                Margin = new Padding(0),
+            };
+            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 226));
+            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+
+            txtReceiverAppId = new UserControls.DarkTextBox { MaxLength = 32 };
+            txtReceiverAppId.TextChanged += (s, e) =>
+                Communication.CastReceiver.AppId = txtReceiverAppId.Text;
+            var label = new Label { Text = Properties.Strings.Label_ReceiverAppId_Text, UseMnemonic = false };
+            AddField(grid, label, WrapField(txtReceiverAppId));
+
+            var hint = new Label
+            {
+                Text = Properties.Strings.Label_ReceiverAppIdHint_Text,
+                UseMnemonic = false,
+                Dock = DockStyle.Top,
+                AutoSize = false,
+                Height = 34,
+                Padding = new Padding(0, 8, 0, 0),
+                Font = Classes.Theme.Small,
+                ForeColor = Classes.Theme.Slate2,
+                BackColor = Color.Transparent,
+                Tag = "keep-fg",
+            };
+
+            card.Controls.Add(hint);
+            card.Controls.Add(grid);
+            return card;
+        }
+
+        /// <summary>The receiver id currently entered (empty = Google's default receiver).</summary>
+        public string GetReceiverAppId() => txtReceiverAppId?.Text?.Trim() ?? string.Empty;
+
+        public void SetReceiverAppId(string appId)
+        {
+            appId = (appId ?? string.Empty).Trim();
+            if (txtReceiverAppId != null && txtReceiverAppId.Text != appId)
+                txtReceiverAppId.Text = appId;
+
+            // The platform layer reads it from here when a device connects, so a pasted id takes effect on
+            // the next cast without a restart.
+            Communication.CastReceiver.AppId = appId;
         }
 
         /// <summary>Card 2 - the behaviour toggles, one 38-px switch row each, hairline-separated.</summary>
@@ -2153,6 +2226,7 @@ namespace KlangHub
         {
             if (cardSound != null) { cardSound.Caption = Properties.Strings.Label_Section_Sound_Text; cardSound.Invalidate(); }
             if (cardBehavior != null) { cardBehavior.Caption = Properties.Strings.Label_Section_Behavior_Text; cardBehavior.Invalidate(); }
+            if (cardReceiver != null) { cardReceiver.Caption = Properties.Strings.Label_Section_Receiver_Text; cardReceiver.Invalidate(); }
             RefreshRoomSummary();
             if (tabStrip == null) return;
             tabStrip.SetTabText(tabPageMain, Properties.Strings.Tab_Main_Text);

@@ -279,6 +279,7 @@ namespace KlangHub.Application
                 mainForm.SetAutoMute(settings.AutoMute ?? false);
                 mainForm.SetMinimizeToTray(settings.MinimizeToTray ?? false);
                 mainForm.SetGroupByRoom(settings.GroupByRoom ?? false);
+                mainForm.SetReceiverAppId(settings.ReceiverAppId ?? string.Empty);
                 mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo ?? false);
                 mainForm.SetDarkMode(settings.DarkMode ?? true);
                 mainForm.SetStreamTitle(settings.StreamTitle ?? Properties.Strings.ChromeCast_StreamTitle);
@@ -323,6 +324,7 @@ namespace KlangHub.Application
             settings.AutoMute = mainForm.GetAutoMute();
             settings.MinimizeToTray = mainForm.GetMinimizeToTray();
             settings.GroupByRoom = mainForm.GetGroupByRoom();
+            settings.ReceiverAppId = mainForm.GetReceiverAppId();
             settings.ConvertMultiChannelToStereo = mainForm.GetConvertMultiChannelToStereo();
             settings.DarkMode = mainForm.GetDarkMode();
             settings.StreamTitle = mainForm.GetStreamTitle();
@@ -369,6 +371,7 @@ namespace KlangHub.Application
             settings.AutoMute = false;
             settings.MinimizeToTray = false;
             settings.GroupByRoom = false;
+            settings.ReceiverAppId = string.Empty;
             settings.ConvertMultiChannelToStereo = false;
             settings.DarkMode = true;   // premium "hi-fi console" dark theme is the out-of-box default
             devices.SetSettings(settings);

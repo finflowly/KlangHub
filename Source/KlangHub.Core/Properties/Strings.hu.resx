@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Szobák szerint</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>CAST-VEVŐ</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>Alkalmazásazonosító</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Üresen hagyva a Google alapértelmezett vevője fut. Saját azonosítóval a KlangHub neve és színei jelennek meg.</value>
+  </data>
 </root>

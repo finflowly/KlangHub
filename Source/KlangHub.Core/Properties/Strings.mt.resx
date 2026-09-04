@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Skont il-kamra</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>RIĊEVITUR CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>ID tal-applikazzjoni</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Ħalli vojt għar-riċevitur standard ta' Google. ID tiegħek turi l-isem u l-kuluri ta' KlangHub fuq it-TV.</value>
+  </data>
 </root>

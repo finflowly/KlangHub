@@ -40,7 +40,7 @@ namespace KlangHub.Communication
         {
             applicationLogic = applicationLogicIn;
             logger = loggerIn;
-            chromeCastMessages = new ChromeCastMessages();
+            chromeCastMessages = new ChromeCastMessages { ReceiverAppId = CastReceiver.AppId };
             chromeCastDestination = string.Empty;
             chromeCastSource = string.Format("client-8{0}", new Random().Next(10000, 99999));
             requestId = 0;

@@ -462,4 +462,13 @@
   <data name="Room_SpeakersMany_Text" xml:space="preserve">
     <value>{0} enceintes</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>RÉCEPTEUR CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>ID d'application</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Laisser vide pour le récepteur standard de Google. Un ID propre affiche le nom et les couleurs de KlangHub.</value>
+  </data>
 </root>

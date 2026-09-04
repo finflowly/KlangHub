@@ -1026,5 +1026,29 @@ namespace KlangHub.Properties {
             }
         }
 
+        public static string Label_Section_Receiver_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_Section_Receiver_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_ReceiverAppId_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_ReceiverAppId_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_ReceiverAppIdHint_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_ReceiverAppIdHint_Text", resourceCulture);
+            }
+        }
+
     }
 }

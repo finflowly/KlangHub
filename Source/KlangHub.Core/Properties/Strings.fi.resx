@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Huoneittain</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>CAST-VASTAANOTIN</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>Sovellustunnus</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Tyhjä kenttä tarkoittaa Googlen vakiovastaanotinta. Oma tunnus näyttää KlangHubin nimen ja värit.</value>
+  </data>
 </root>

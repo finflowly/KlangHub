@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Toa järgi</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>CAST-VASTUVÕTJA</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>Rakenduse ID</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Tühi väli tähendab Google'i vaikevastuvõtjat. Oma ID näitab teleris KlangHubi nime ja värve.</value>
+  </data>
 </root>

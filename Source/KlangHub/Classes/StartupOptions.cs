@@ -1,4 +1,4 @@
-namespace KlangHub.Classes
+﻿namespace KlangHub.Classes
 {
     /// <summary>
     /// Options handed to the app on the command line. The installer uses <see cref="Culture"/> to launch
@@ -10,5 +10,14 @@ namespace KlangHub.Classes
     {
         /// <summary>Two-letter culture requested with <c>--lang=xx</c>, or null.</summary>
         public static string? Culture { get; set; }
+
+        /// <summary>
+        /// The Cast receiver application id KlangHub launches. Empty or null means Google's Default Media
+        /// Receiver. A registered id (Cast Developer Console) launches KlangHub's own receiver instead - the
+        /// one that carries our name and our colours on the television. It lives in the settings rather than
+        /// in the code because the id belongs to whoever registered it: anyone forking the project needs
+        /// their own (see receiver/README.md).
+        /// </summary>
+        public static string? ReceiverAppId { get; set; }
     }
 }

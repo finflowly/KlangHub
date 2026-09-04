@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Po sobah</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>SPREJEMNIK CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>ID aplikacije</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Prazno polje pomeni Googlov standardni sprejemnik. Lasten ID pokaže ime in barve KlangHuba na TV.</value>
+  </data>
 </root>

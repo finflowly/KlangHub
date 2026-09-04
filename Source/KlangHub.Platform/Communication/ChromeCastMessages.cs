@@ -60,9 +60,20 @@ namespace KlangHub.Communication
             return GetCastMessage(new PayloadMessageBase { type = "CLOSE" }, namespaceConnect, null, null);
         }
 
+        /// <summary>Google's Default Media Receiver - the app every Cast device already has.</summary>
+        public const string DefaultReceiverAppId = "CC1AD845";
+
+        /// <summary>
+        /// The receiver application to launch. Empty means Google's default; an eight-character id from the
+        /// Cast Developer Console launches KlangHub's own receiver instead, which is what puts our name and
+        /// our colours on the television (see receiver/README.md).
+        /// </summary>
+        public string ReceiverAppId { get; set; } = DefaultReceiverAppId;
+
         public CastMessage GetLaunchMessage(int requestId)
         {
-            var message = new MessageLaunch { type = "LAUNCH", appId = "CC1AD845", requestId = requestId };
+            var appId = string.IsNullOrWhiteSpace(ReceiverAppId) ? DefaultReceiverAppId : ReceiverAppId.Trim();
+            var message = new MessageLaunch { type = "LAUNCH", appId = appId, requestId = requestId };
             return GetCastMessage(message, namespaceReceiver);
         }
 

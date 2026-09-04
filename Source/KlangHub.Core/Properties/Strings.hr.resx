@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Po sobama</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>CAST PRIJAMNIK</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>ID aplikacije</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Prazno polje znači Googleov standardni prijamnik. Vlastiti ID prikazuje ime i boje KlangHuba na TV-u.</value>
+  </data>
 </root>

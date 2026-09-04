@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Ανά δωμάτιο</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>ΔΕΚΤΗΣ CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>Αναγνωριστικό εφαρμογής</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Άφησέ το κενό για τον προεπιλεγμένο δέκτη της Google. Δικό σου ID δείχνει το όνομα και τα χρώματα του KlangHub.</value>
+  </data>
 </root>

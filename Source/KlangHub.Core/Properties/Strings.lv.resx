@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Pa telpām</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>CAST UZTVĒRĒJS</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>Lietotnes ID</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Atstāj tukšu Google standarta uztvērējam. Savs ID rāda KlangHub nosaukumu un krāsas TV ekrānā.</value>
+  </data>
 </root>

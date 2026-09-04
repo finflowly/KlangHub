@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Podľa izby</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>PRIJÍMAČ CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>ID aplikácie</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Prázdne pole znamená štandardný prijímač Google. Vlastné ID ukáže na TV názov a farby KlangHubu.</value>
+  </data>
 </root>

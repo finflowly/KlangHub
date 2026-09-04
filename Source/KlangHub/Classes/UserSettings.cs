@@ -296,6 +296,20 @@ namespace KlangHub.Classes
             }
         }
 
+        /// <summary>The Cast receiver application id; empty = Google's Default Media Receiver.</summary>
+        [UserScopedSetting()]
+        public string? ReceiverAppId
+        {
+            get
+            {
+                return (string?)this[nameof(ReceiverAppId)];
+            }
+            set
+            {
+                this[nameof(ReceiverAppId)] = value;
+            }
+        }
+
         /// <summary>Whether the device grid is grouped into rooms.</summary>
         [UserScopedSetting()]
         public bool? GroupByRoom

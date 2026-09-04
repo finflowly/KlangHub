@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Por divisão</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>RECETOR CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>ID da aplicação</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Deixa vazio para o recetor padrão da Google. Um ID próprio mostra o nome e as cores do KlangHub na TV.</value>
+  </data>
 </root>

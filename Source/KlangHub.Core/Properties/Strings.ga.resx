@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>De réir seomra</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>GLACADÓIR CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>Aitheantas feidhmchláir</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Fág folamh do ghlacadóir caighdeánach Google. Taispeánann d'aitheantas féin ainm agus dathanna KlangHub.</value>
+  </data>
 </root>

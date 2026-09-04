@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Wg pokoju</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>ODBIORNIK CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>ID aplikacji</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Puste pole oznacza standardowy odbiornik Google. Własne ID pokazuje nazwę i kolory KlangHub na TV.</value>
+  </data>
 </root>

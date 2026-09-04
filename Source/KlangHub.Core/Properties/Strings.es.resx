@@ -404,4 +404,13 @@
   <data name="Button_GroupRooms_Text" xml:space="preserve">
     <value>Por sala</value>
   </data>
+  <data name="Label_Section_Receiver_Text" xml:space="preserve">
+    <value>RECEPTOR CAST</value>
+  </data>
+  <data name="Label_ReceiverAppId_Text" xml:space="preserve">
+    <value>ID de aplicación</value>
+  </data>
+  <data name="Label_ReceiverAppIdHint_Text" xml:space="preserve">
+    <value>Déjalo vacío para el receptor estándar de Google. Un ID propio muestra el nombre y los colores de KlangHub.</value>
+  </data>
 </root>
