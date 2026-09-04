@@ -263,3 +263,25 @@ Gruppierung an ist.
 **Der Umschalter war unsichtbar.** „Nach Räumen" verschwand unterhalb von 690 px Fensterbreite, also bei der
 Standardgröße — das Feature existierte, aber niemand konnte es finden. Die Schwelle liegt jetzt bei 560 px,
 und die Zusammenfassung links weicht der Werkzeugleiste mit einer Ellipse, statt unter ihr zu verschwinden.
+
+## Fehlerbehebung: FLAC und MP3 stotterten, WAV lief (2026-09-04)
+
+**Befund.** `StreamingConnection.SendData` stellte vor die ersten Audiodaten einen Header — und zwar für
+**alles, was nicht WAV war**, einen selbstgebauten „MP3-Header". Der schrieb jedes Header-*Bit* als ganzes
+*Byte* (`writer.Write(new byte[] { 1, 1, 1, … })`), also rund 32 Bytes 0x00/0x01 statt der vier Bytes eines
+MPEG-Frame-Headers. Diese Bytes landeten vor jedem MP3-Stream **und vor jedem FLAC-Stream**.
+
+Beide Formate beschreiben sich selbst: LAME liefert vollständige MPEG-Frames mit eigenem 4-Byte-Header,
+und der FLAC-Encoder schreibt „fLaC" plus STREAMINFO vor seinen ersten Frame. Alles, was davor steht, muss
+der Decoder erst überspringen — je nach Gerät mit Knacken, Aussetzern oder Verweigerung. WAV war nicht
+betroffen, weil rohes LPCM tatsächlich einen RIFF-Header braucht und den korrekten bekam. Genau das erklärt
+das gemeldete Muster: alle WAV-Modi liefen, FLAC und beide MP3-Stufen zickten.
+
+**Behebung.** `AudioHeader.GetStreamHeader` entscheidet an einer Stelle, was vorangestellt wird: RIFF für
+WAV, **nichts** für MP3 und FLAC. Der handgeschriebene MP3-Header ist ersatzlos entfallen. Acht Tests decken
+das ab.
+
+**Bewusst nicht mitgeändert:** Die Puffergrößen in `ApplicationBuffer.SetBufferSize` rechnen mit
+Byte-pro-Sekunde-Schätzungen, die nur für MP3 stimmen (WAV läuft real mit 192 000 B/s statt der
+angenommenen 40 000). Das ist Altbestand, WAV spielt damit einwandfrei — und zwei Dinge gleichzeitig zu
+ändern würde verschleiern, welche Änderung gewirkt hat.

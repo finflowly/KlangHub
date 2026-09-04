@@ -38,47 +38,26 @@ namespace KlangHub.Streaming
         }
 
         /// <summary>
-        /// Generate a mp3 header for a mp3 stream.
-        /// see: http://www.mp3-tech.org/programmer/frame_header.html
+        /// The bytes that must precede the audio data for a given stream format.
+        /// <para>
+        /// Only WAV needs one. Raw LPCM has no structure of its own, so it gets a RIFF header describing the
+        /// sample format. MP3 and FLAC are self-describing: LAME emits complete MPEG frames (each with its own
+        /// 4-byte header), and the FLAC encoder writes the "fLaC" magic plus STREAMINFO before its first
+        /// frame. Anything put in front of those bytes is garbage the decoder has to resynchronise past.
+        /// </para>
+        /// <para>
+        /// This used to prepend a hand-built "MP3 header" to <b>everything that was not WAV</b> - and that
+        /// header wrote each header BIT as a whole BYTE, so ~32 bytes of 0x00/0x01 landed in front of every
+        /// MP3 <i>and</i> every FLAC stream. That is exactly why WAV played on the TV while FLAC and MP3
+        /// stuttered or refused: the container was fine, the bytes in front of it were not.
+        /// </para>
         /// </summary>
-        /// <param name="format">the format of the stream</param>
-        /// <returns>a mp3 header</returns>
-        public byte[] GetMp3Header(AudioFormat format, SupportedStreamFormat streamFormat)
+        public byte[] GetStreamHeader(AudioFormat format, SupportedStreamFormat streamFormat)
         {
-            if (format == null)
-                return new byte[0];
+            if (format == null || !StreamCodec.IsWav(streamFormat))
+                return System.Array.Empty<byte>();
 
-            var riffHeaderStream = new MemoryStream();
-            var writer = new BinaryWriter(riffHeaderStream, Encoding.UTF8);
-
-            //Write header: AAAAAAAA AAABBCCD EEEEFFGH IIJJKLMM
-            writer.Write(new byte[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }); // A: all bits must be set
-            writer.Write(new byte[] { 1, 1 }); // B: MPEG Version 1 (ISO/IEC 11172-3)
-            writer.Write(new byte[] { 0, 1 }); // C: Layer III
-            writer.Write(new byte[] { 1 }); // D: 1 - Not protected
-
-            if (streamFormat.Equals(SupportedStreamFormat.Mp3_128))
-                //                                                                              V1,L3
-                writer.Write(new byte[] { 1, 0, 0, 1 }); // E: bitrate: 1001 	288 	160 	128 	144 	80
-            else
-                writer.Write(new byte[] { 1, 1, 1, 0 }); // E: bitrate: 1110 	448 	384 	320 	256 	160
-
-            if (format.SampleRate == 44100)
-                writer.Write(new byte[] { 0, 0 }); // F: MPEG1 - 44100 Hz
-            else if (format.SampleRate == 48000)
-                writer.Write(new byte[] { 0, 1 }); // F: MPEG1 - 48000 Hz
-            else
-                writer.Write(new byte[] { 1, 0 }); // F: MPEG1 - 32000  Hz
-
-            writer.Write(new byte[] { 0 }); // G: 0 - frame is not padded
-            writer.Write(new byte[] { 0 }); // H: Private bit. This one is only informative. 
-            writer.Write(new byte[] { 0, 0 }); // I: Stereo
-            writer.Write(new byte[] { 0, 0 }); // J: Mode extension (Only used in Joint stereo) 
-            writer.Write(new byte[] { 0 }); // K: Copyright - Audio is not copyrighted
-            writer.Write(new byte[] { 0 }); // L: Original - Copy of original media
-            writer.Write(new byte[] { 0, 0 }); // M: Emphasis - none
-
-            return riffHeaderStream.ToArray();
+            return GetRiffHeader(format);
         }
     }
 }

@@ -135,21 +135,14 @@ namespace KlangHub.Streaming
                 }
             }
 
-            // Send audio header before the first data.
+            // Send the audio header before the first data - which for MP3 and FLAC means sending nothing,
+            // because those streams already carry their own (see AudioHeader.GetStreamHeader).
             if (!isAudioHeaderSent)
             {
                 isAudioHeaderSent = true;
-                if (streamFormat.Equals(SupportedStreamFormat.Wav) ||
-                    streamFormat.Equals(SupportedStreamFormat.Wav_16bit) ||
-                    streamFormat.Equals(SupportedStreamFormat.Wav_24bit) ||
-                    streamFormat.Equals(SupportedStreamFormat.Wav_32bit))
-                {
-                    Send(audioHeader.GetRiffHeader(format));
-                }
-                else
-                {
-                    Send(audioHeader.GetMp3Header(format, streamFormat));
-                }
+                var header = audioHeader.GetStreamHeader(format, streamFormat);
+                if (header.Length > 0)
+                    Send(header);
             }
 
             Send(dataToSend);

@@ -69,6 +69,12 @@ namespace KlangHub.Classes
             SetBufferSize();
         }
 
+        // NOTE (2026-09-04): these are per-second byte estimates, and only the MP3 ones are accurate
+        // (320 kbps = 40 000 B/s, 128 kbps = 16 000 B/s). Real WAV runs at 192 000 B/s (16-bit/48k stereo)
+        // and FLAC at roughly half of that, so "10 seconds" is really about two. It has been that way since
+        // before the rewrite and WAV plays fine, so it is left alone deliberately: the stuttering reported for
+        // FLAC/MP3 was traced to junk bytes in front of the stream (see AudioHeader.GetStreamHeader), and
+        // changing the buffer maths at the same time would make it impossible to tell which fix did what.
         private void SetBufferSize()
         {
             switch (streamFormatSelected)
