@@ -986,5 +986,45 @@ namespace KlangHub.Properties {
             }
         }
 
+        public static string Room_Presets_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Room_Presets_Text", resourceCulture);
+            }
+        }
+
+        public static string Room_Unassigned_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Room_Unassigned_Text", resourceCulture);
+            }
+        }
+
+        public static string Button_GroupRooms_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Button_GroupRooms_Text", resourceCulture);
+            }
+        }
+
+        public static string Room_SpeakersOne_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Room_SpeakersOne_Text", resourceCulture);
+            }
+        }
+
+        public static string Room_SpeakersMany_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Room_SpeakersMany_Text", resourceCulture);
+            }
+        }
+
     }
 }

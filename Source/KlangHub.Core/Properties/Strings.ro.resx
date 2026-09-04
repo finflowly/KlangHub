@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>FĂRĂ PIERDERI · FIECARE CAMERĂ CÂNTĂ</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Living;Bucătărie;Dormitor;Baie;Birou;Sufragerie;Hol;Camera copiilor;Terasă;Grădină;Subsol;Pod;Camera de oaspeți;Atelier;Loft;Dressing;Seră;Balcon;Garaj;Camera de petreceri</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 difuzor</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} difuzoare</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Fără cameră încă</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Pe camere</value>
+  </data>
 </root>

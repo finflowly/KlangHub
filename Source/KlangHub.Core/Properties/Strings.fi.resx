@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>HÄVIÖTÖN · JOKA HUONE LAULAA</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Olohuone;Keittiö;Makuuhuone;Kylpyhuone;Työhuone;Ruokailuhuone;Eteinen;Lastenhuone;Terassi;Puutarha;Kellari;Ullakko;Vierashuone;Verstas;Loft;Vaatehuone;Talvipuutarha;Parveke;Autotalli;Juhlatila</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 kaiutin</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} kaiutinta</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Ei vielä huonetta</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Huoneittain</value>
+  </data>
 </root>

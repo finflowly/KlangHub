@@ -296,6 +296,20 @@ namespace KlangHub.Classes
             }
         }
 
+        /// <summary>Whether the device grid is grouped into rooms.</summary>
+        [UserScopedSetting()]
+        public bool? GroupByRoom
+        {
+            get
+            {
+                return (bool?)this[nameof(GroupByRoom)];
+            }
+            set
+            {
+                this[nameof(GroupByRoom)] = value;
+            }
+        }
+
         [UserScopedSetting()]
         public bool? ConvertMultiChannelToStereo
         {

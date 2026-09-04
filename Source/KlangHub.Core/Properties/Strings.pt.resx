@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>SEM PERDAS · CADA DIVISÃO CANTA</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Sala de estar;Cozinha;Quarto;Casa de banho;Escritório;Sala de jantar;Corredor;Quarto das crianças;Terraço;Jardim;Cave;Sótão;Quarto de hóspedes;Oficina;Loft;Closet;Jardim de inverno;Varanda;Garagem;Sala de festas</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 coluna</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} colunas</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Ainda sem divisão</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Por divisão</value>
+  </data>
 </root>

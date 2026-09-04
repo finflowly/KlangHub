@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>VERLUSTFREI · JEDER RAUM SINGT</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Wohnzimmer;Küche;Schlafzimmer;Bad;Büro;Esszimmer;Flur;Kinderzimmer;Terrasse;Garten;Keller;Dachboden;Gästezimmer;Werkstatt;Loft;Ankleide;Wintergarten;Balkon;Garage;Partyraum</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Noch kein Raum</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Nach Räumen</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 Lautsprecher</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} Lautsprecher</value>
+  </data>
 </root>

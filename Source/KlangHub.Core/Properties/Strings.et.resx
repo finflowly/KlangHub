@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>KADUDETA · IGA TUBA LAULAB</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Elutuba;Köök;Magamistuba;Vannituba;Kabinet;Söögituba;Esik;Lastetuba;Terrass;Aed;Kelder;Pööning;Külalistetuba;Töökoda;Loft;Garderoob;Talveaed;Rõdu;Garaaž;Peoruum</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 kõlar</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} kõlarit</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Tuba määramata</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Toa järgi</value>
+  </data>
 </root>

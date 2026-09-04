@@ -447,4 +447,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>LOSSLESS · EVERY ROOM SINGS</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Living room;Kitchen;Bedroom;Bathroom;Office;Dining room;Hallway;Kids' room;Terrace;Garden;Basement;Attic;Guest room;Workshop;Loft;Walk-in closet;Conservatory;Balcony;Garage;Party room</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>No room yet</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>By room</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 speaker</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} speakers</value>
+  </data>
 </root>

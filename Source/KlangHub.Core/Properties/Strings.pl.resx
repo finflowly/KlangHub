@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>BEZSTRATNIE · KAŻDY POKÓJ ŚPIEWA</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Salon;Kuchnia;Sypialnia;Łazienka;Biuro;Jadalnia;Przedpokój;Pokój dziecięcy;Taras;Ogród;Piwnica;Strych;Pokój gościnny;Warsztat;Loft;Garderoba;Ogród zimowy;Balkon;Garaż;Sala imprezowa</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 głośnik</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} głośniki</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Brak pokoju</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Wg pokoju</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -54,10 +54,11 @@ namespace KlangHub.UserControls
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
             // 1) the drop-down button band (always painted light by the OS) + the amber chevron
-            var btn = new Rectangle(Width - ButtonW - 4, 0, ButtonW + 4, Height);  // full height: the flat
-            //  drop-down button leaves a light hairline along its top edge otherwise
+            // Full height AND a little wider than the OS button: an editable combo draws a narrower button
+            // than a drop-down list, and the leftover edge showed through as a stray light sliver.
+            var btn = new Rectangle(Width - ButtonW - 6, 0, ButtonW + 6, Height);
             using (var b = new SolidBrush(Theme.Ink2)) g.FillRectangle(b, btn);
-            int cx = Width - ButtonW / 2 - 4, cy = Height / 2;
+            int cx = Width - ButtonW / 2 - 6, cy = Height / 2;
             using (var pen = new Pen(Theme.Amber, 1.7f) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round })
                 g.DrawLines(pen, new[] { new PointF(cx - 4.5f, cy - 2.2f), new PointF(cx, cy + 2.8f), new PointF(cx + 4.5f, cy - 2.2f) });
 

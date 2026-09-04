@@ -447,4 +447,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>SANS PERTE · CHAQUE PIÈCE CHANTE</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Salon;Cuisine;Chambre;Salle de bain;Bureau;Salle à manger;Couloir;Chambre d'enfant;Terrasse;Jardin;Cave;Grenier;Chambre d'amis;Atelier;Loft;Dressing;Véranda;Balcon;Garage;Salle de fête</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Pas encore de pièce</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Par pièce</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 enceinte</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} enceintes</value>
+  </data>
 </root>

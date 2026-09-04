@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>FÖRLUSTFRITT · VARJE RUM SJUNGER</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Vardagsrum;Kök;Sovrum;Badrum;Kontor;Matsal;Hall;Barnrum;Terrass;Trädgård;Källare;Vind;Gästrum;Verkstad;Loft;Klädkammare;Uterum;Balkong;Garage;Festlokal</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 högtalare</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} högtalare</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Inget rum än</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Per rum</value>
+  </data>
 </root>

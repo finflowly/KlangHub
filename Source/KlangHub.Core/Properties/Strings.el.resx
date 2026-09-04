@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>ΧΩΡΙΣ ΑΠΩΛΕΙΕΣ · ΚΑΘΕ ΔΩΜΑΤΙΟ ΤΡΑΓΟΥΔΑ</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Σαλόνι;Κουζίνα;Υπνοδωμάτιο;Μπάνιο;Γραφείο;Τραπεζαρία;Διάδρομος;Παιδικό δωμάτιο;Βεράντα;Κήπος;Υπόγειο;Σοφίτα;Ξενώνας;Εργαστήριο;Λοφτ;Ντουλάπα;Χειμωνιάτικος κήπος;Μπαλκόνι;Γκαράζ;Αίθουσα πάρτι</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 ηχείο</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} ηχεία</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Χωρίς δωμάτιο</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Ανά δωμάτιο</value>
+  </data>
 </root>

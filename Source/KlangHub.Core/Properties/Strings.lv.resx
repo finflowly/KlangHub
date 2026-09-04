@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>BEZ ZUDUMIEM · KATRA ISTABA DZIED</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Viesistaba;Virtuve;Guļamistaba;Vannasistaba;Kabinets;Ēdamistaba;Gaitenis;Bērnu istaba;Terase;Dārzs;Pagrabs;Bēniņi;Viesu istaba;Darbnīca;Lofts;Ģērbtuve;Ziemas dārzs;Balkons;Garāža;Svinību telpa</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 skaļrunis</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} skaļruņi</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Vēl nav telpas</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Pa telpām</value>
+  </data>
 </root>

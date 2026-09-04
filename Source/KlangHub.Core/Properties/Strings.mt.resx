@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>BLA TELF · KULL KAMRA TKANTA</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Salott;Kċina;Kamra tas-sodda;Kamra tal-banju;Uffiċċju;Kamra tal-ikel;Kuritur;Kamra tat-tfal;Terrazzin;Ġnien;Kantina;Kamra tal-bejt;Kamra tal-mistednin;Workshop;Loft;Kamra tal-ħwejjeġ;Serra;Gallarija;Garaxx;Kamra tal-parties</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 spikers</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} spikers</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Għadha bla kamra</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Skont il-kamra</value>
+  </data>
 </root>

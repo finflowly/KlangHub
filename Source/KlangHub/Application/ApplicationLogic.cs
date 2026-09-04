@@ -278,6 +278,7 @@ namespace KlangHub.Application
                 mainForm.SetRecordingDeviceID(settings.RecordingDeviceID ?? null);
                 mainForm.SetAutoMute(settings.AutoMute ?? false);
                 mainForm.SetMinimizeToTray(settings.MinimizeToTray ?? false);
+                mainForm.SetGroupByRoom(settings.GroupByRoom ?? false);
                 mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo ?? false);
                 mainForm.SetDarkMode(settings.DarkMode ?? true);
                 mainForm.SetStreamTitle(settings.StreamTitle ?? Properties.Strings.ChromeCast_StreamTitle);
@@ -321,6 +322,7 @@ namespace KlangHub.Application
             settings.RecordingDeviceID = mainForm.GetRecordingDeviceID();
             settings.AutoMute = mainForm.GetAutoMute();
             settings.MinimizeToTray = mainForm.GetMinimizeToTray();
+            settings.GroupByRoom = mainForm.GetGroupByRoom();
             settings.ConvertMultiChannelToStereo = mainForm.GetConvertMultiChannelToStereo();
             settings.DarkMode = mainForm.GetDarkMode();
             settings.StreamTitle = mainForm.GetStreamTitle();
@@ -366,6 +368,7 @@ namespace KlangHub.Application
             settings.RecordingDeviceID = null!;
             settings.AutoMute = false;
             settings.MinimizeToTray = false;
+            settings.GroupByRoom = false;
             settings.ConvertMultiChannelToStereo = false;
             settings.DarkMode = true;   // premium "hi-fi console" dark theme is the out-of-box default
             devices.SetSettings(settings);
@@ -386,6 +389,7 @@ namespace KlangHub.Application
             mainForm.SetRecordingDeviceID(settings.RecordingDeviceID);
             mainForm.SetAutoMute(settings.AutoMute.Value);
             mainForm.SetMinimizeToTray(settings.MinimizeToTray.Value);
+            mainForm.SetGroupByRoom(settings.GroupByRoom ?? false);
             mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo.Value);
             mainForm.SetDarkMode(settings.DarkMode!.Value);
             mainForm.SetStreamTitle(Properties.Strings.ChromeCast_StreamTitle);

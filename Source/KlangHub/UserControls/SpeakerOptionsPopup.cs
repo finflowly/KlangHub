@@ -17,7 +17,8 @@ namespace KlangHub.UserControls
         private int maxVolume;
         private Rectangle sliderRect, doneRect, roomWell;
         private bool dragging;
-        private readonly TextBox roomBox;
+        private readonly DarkComboBox roomBox;
+        private readonly FieldFrame roomFrame;
 
         public int MaxVolume => maxVolume;
 
@@ -34,25 +35,49 @@ namespace KlangHub.UserControls
             StartPosition = FormStartPosition.Manual;
             ShowInTaskbar = false;
             BackColor = Theme.Surface;
-            ClientSize = new Size(260, 216);
+            ClientSize = new Size(280, 224);
             KeyPreview = true;
 
-            // A real TextBox, stripped of its border and dropped into the drawn well below - the same field
-            // material the settings page uses, so the popover belongs to the same system.
-            roomBox = new TextBox
+            // Pick a room or type one: an editable combo does both in one control. The list carries the usual
+            // rooms of a home in the user's own language; anything typed by hand is just as valid, which is
+            // why this is not a closed drop-down.
+            roomBox = new DarkComboBox
             {
-                BorderStyle = BorderStyle.None,
+                DropDownStyle = ComboBoxStyle.DropDown,
+                Text = currentRoom ?? string.Empty,
+                MaxLength = 40,
+                FlatStyle = FlatStyle.Flat,
                 BackColor = Theme.Ink2,
                 ForeColor = Theme.Ivory,
                 Font = Theme.Body,
-                Text = currentRoom ?? string.Empty,
-                MaxLength = 40,
-                Bounds = new Rectangle(30, 103, ClientSize.Width - 60, 20),
+                MaxDropDownItems = 10,
             };
-            Controls.Add(roomBox);
+            roomBox.Items.AddRange(RoomPresets.Labels());
+
+            // Hosted in the same drawn well the settings page uses: a combo cannot round or recolour its own
+            // border, so the well draws the shape and the combo is clipped inside it.
+            roomFrame = new FieldFrame
+            {
+                Bounds = new Rectangle(18, 94, ClientSize.Width - 36, 36),
+                Padding = new Padding(0),
+            };
+            roomFrame.Controls.Add(roomBox);
+            Controls.Add(roomFrame);
+            FitRoomBox();
+            roomFrame.Resize += (s, a) => FitRoomBox();
             // clip the borderless form to a rounded card so it floats (no dark square corners behind the card)
             using (var rp = Theme.RoundedRect(new RectangleF(0, 0, ClientSize.Width, ClientSize.Height), Theme.RadCard))
                 Region = new Region(rp);
+        }
+
+        private void FitRoomBox()
+        {
+            // one pixel of air on each side: the combo would otherwise sit exactly on the well's hairline
+            // and paint over it, leaving the field looking borderless.
+            roomBox.Width = Math.Max(40, roomFrame.ClientSize.Width - 4);
+            roomBox.Left = 2;
+            roomBox.Top = Math.Max(0, (roomFrame.ClientSize.Height - roomBox.Height) / 2);
+            roomBox.ClipToWell();
         }
 
         public DialogResult ShowAt(Point screenLocation)
@@ -84,23 +109,21 @@ namespace KlangHub.UserControls
             // --- room ---
             using (var b = new SolidBrush(Theme.Slate))
                 g.DrawString(KlangHub.Properties.Strings.Popup_Room_Text, Theme.Small, b, 18, 76);
-            roomWell = new Rectangle(18, 96, Width - 36, 34);
-            Theme.FillRounded(g, roomWell, Theme.RadControl, Theme.Ink2);
-            Theme.DrawRounded(g, roomWell, Theme.RadControl, roomBox.Focused ? Theme.Amber : Theme.Line);
-            if (roomBox.Text.Length == 0 && !roomBox.Focused)
-                using (var b = new SolidBrush(Theme.Slate2))
-                    g.DrawString(KlangHub.Properties.Strings.Popup_RoomHint_Text, Theme.Small, b, 30, 105);
+            roomWell = roomFrame.Bounds;
+            // the room's glyph sits next to the field, so the icon the tile will carry is visible while choosing
+            RoomPresets.DrawIcon(g, new RectangleF(Width - 46, 68, 26, 26), roomBox.Text,
+                                 string.IsNullOrWhiteSpace(roomBox.Text) ? Theme.Slate2 : Theme.Amber);
 
             // --- maximum volume ---
             using (var b = new SolidBrush(Theme.Slate))
-                g.DrawString(KlangHub.Properties.Strings.Popup_MaxVolume_Text, Theme.Small, b, 18, 140);
+                g.DrawString(KlangHub.Properties.Strings.Popup_MaxVolume_Text, Theme.Small, b, 18, 146);
             using (var b = new SolidBrush(Theme.Amber))
-                g.DrawString(maxVolume + "%", Theme.Name, b, Width - 62, 134);
+                g.DrawString(maxVolume + "%", Theme.Name, b, Width - 62, 140);
 
-            sliderRect = new Rectangle(18, 166, Width - 36, 12);
+            sliderRect = new Rectangle(18, 172, Width - 36, 12);
             Theme.DrawAmberSlider(g, sliderRect, maxVolume / 100f, 14f);
 
-            doneRect = new Rectangle(Width - 92, 186, 74, 24);
+            doneRect = new Rectangle(Width - 92, 192, 74, 24);
             Theme.FillRounded(g, doneRect, Theme.RadControl, Theme.Amber);
             using (var b = new SolidBrush(Theme.OnAmber))
             using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
@@ -134,15 +157,16 @@ namespace KlangHub.UserControls
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            roomBox.GotFocus += (s, a) => Invalidate();
-            roomBox.LostFocus += (s, a) => Invalidate();
+            roomBox.GotFocus += (s, a) => { roomFrame.Focused2 = true; roomFrame.Invalidate(); Invalidate(); };
+            roomBox.LostFocus += (s, a) => { roomFrame.Focused2 = false; roomFrame.Invalidate(); Invalidate(); };
             roomBox.TextChanged += (s, a) => Invalidate();
+            roomBox.SelectedIndexChanged += (s, a) => Invalidate();
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape) { DialogResult = DialogResult.Cancel; Close(); }
-            else if (e.KeyCode == Keys.Enter) { DialogResult = DialogResult.OK; Close(); }
+            else if (e.KeyCode == Keys.Enter && !roomBox.DroppedDown) { DialogResult = DialogResult.OK; Close(); }
             base.OnKeyDown(e);
         }
 

@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>TABSFRIT · HVERT RUM SYNGER</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Stue;Køkken;Soveværelse;Badeværelse;Kontor;Spisestue;Entré;Børneværelse;Terrasse;Have;Kælder;Loftrum;Gæsteværelse;Værksted;Loft;Walk-in-garderobe;Havestue;Altan;Garage;Festlokale</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 højttaler</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} højttalere</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Intet rum endnu</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Efter rum</value>
+  </data>
 </root>

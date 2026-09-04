@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>BEZE ZTRÁT · KAŽDÝ POKOJ ZPÍVÁ</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Obývák;Kuchyně;Ložnice;Koupelna;Pracovna;Jídelna;Chodba;Dětský pokoj;Terasa;Zahrada;Sklep;Půda;Pokoj pro hosty;Dílna;Loft;Šatna;Zimní zahrada;Balkon;Garáž;Párty místnost</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 reproduktor</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} reproduktory</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Zatím bez pokoje</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Podle pokoje</value>
+  </data>
 </root>

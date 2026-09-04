@@ -211,3 +211,30 @@ Fallback.
 - **Prüft die .NET Desktop Runtime** und lädt sie bei Bedarf automatisch von Microsoft (`aka.ms`), bevor
   installiert wird; Microsofts Installer holt sich die Rechte selbst, weshalb das Setup ohne Adminrechte
   auskommt (Installation pro Benutzer, kein UAC, kein grauer Modus-Dialog).
+
+## Räume als Struktur (2026-09-04) — Vorauswahl, Gruppierung, Raum-Fader
+
+**Raum-Vorauswahl.** Das ⋮-Popup einer Kachel bietet jetzt die zwanzig Räume, aus denen ein Zuhause meist
+besteht — Wohnzimmer, Küche, Bad, Loft, Wintergarten, Partyraum … — als aufklappbare Liste, und man kann
+trotzdem frei tippen (`ComboBoxStyle.DropDown`). Die Identitäten sind fest und englisch (`RoomPresets.Ids`),
+übersetzt wird nur die **Beschriftung**, als *eine* Ressourcenzeile pro Sprache, deren Einträge über die
+Position zu den Identitäten gehören. Das hält zwanzig Räume × vierundzwanzig Sprachen bei einer Zeile je
+Sprache statt 480 Schlüsseln — der Preis ist, dass eine Übersetzung mit einem Eintrag zu wenig alles um eins
+verschieben und die Küche „Bad" nennen würde. Genau das prüft ein Test für jede Sprache.
+
+**Ein Symbol je Raum.** Vierzehn gezeichnete Glyphen (Sofa, Topf, Bett, Dusche, Schreibtisch, Teller, Tür,
+Drachen, Sonnenschirm, Baum, Haus, Loft-Dach, Bügel, Rolltor, Discokugel); alles andere — auch ein selbst
+getippter Raum — bekommt seine Initiale im Ring. Immer passend, nie ein falsches Bild. Ein Raum, der auf
+Deutsch benannt wurde, behält sein Symbol nach dem Sprachwechsel: `IdFor` sucht in allen 24 Sprachen.
+
+**Gruppierte Ansicht.** Der Umschalter „Nach Räumen" in der Kopfzeile ordnet das Raster in Blöcke: eine
+Raumleiste über voller Breite, darunter die Kacheln dieses Raums. Technisch bleibt es dasselbe
+`FlowLayoutPanel` — die Leiste wird eingefügt und mit `SetFlowBreak` umbrochen, sodass das Layout weiter
+mitfließt und an den Kacheln nichts geändert werden musste. Räume alphabetisch, „Noch kein Raum" zuletzt:
+das ist eine To-do-Liste, kein Raum. Die Wahl wird mit den übrigen Einstellungen gespeichert.
+
+**Der Raum-Fader ist relativ.** Ein Raum will selten *einen* Pegel — der Küchenlautsprecher steht auf 40 %,
+der am Fenster auf 15 %. Ziehen verschiebt deshalb **jeden** Lautsprecher um dieselbe Anzahl Punkte und
+erhält damit die Balance, statt den Raum auf einen Wert einzuebnen. Die harte Obergrenze jeder Kachel gilt
+weiter: Ein Raum auf 100 % sprengt die Wohnung nicht, der auf 23 % gedeckelte Lautsprecher bleibt bei 23 %.
+Dazu Stummschaltung für den ganzen Raum und −/+ für zwei Punkte Feinschliff (Pfeiltasten und `M` ebenso).

@@ -54,6 +54,8 @@ namespace KlangHub
         IntPtr GetHandle();
         void RestartRecording();
         void SetMinimizeToTray(bool minimizeToTray);
+        void SetGroupByRoom(bool groupByRoom);
+        bool GetGroupByRoom();
         bool GetMinimizeToTray();
         void SetConvertMultiChannelToStereo(bool convertMultiChannelToStereo);
         bool GetConvertMultiChannelToStereo();

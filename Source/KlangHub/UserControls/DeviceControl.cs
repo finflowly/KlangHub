@@ -93,6 +93,39 @@ namespace KlangHub.UserControls
 
         public string GetDeviceName() => deviceName;
         public bool IsGroup => descriptor?.IsGroup ?? false;
+
+        /// <summary>Raised when the user gave this speaker a different room, so the grid can regroup.</summary>
+        public event EventHandler? RoomChanged;
+
+        /// <summary>The room this speaker was assigned to, or null while it has none.</summary>
+        public string? Room => SpeakerPrefs.GetRoom(descriptor?.Id);
+
+        /// <summary>Current volume in percent, as this card last saw it.</summary>
+        public int VolumePercent => volume;
+
+        /// <summary>The per-speaker hard cap - a room fader must never push a card past it.</summary>
+        public int MaxVolumePercent => maxVolume;
+
+        public bool IsMuted => muted;
+
+        /// <summary>Moves this card's volume by <paramref name="delta"/> percentage points, keeping it inside
+        /// 0..cap. Used by the room fader, which shifts a whole room while preserving the balance the user
+        /// dialled in between its speakers.</summary>
+        public void NudgeVolume(int delta)
+        {
+            int target = Math.Clamp(volume + delta, 0, maxVolume);
+            if (target == volume) return;
+            volume = target;
+            Invalidate();
+            TryOnSession(s => s.SetVolume(target / 100f));
+        }
+
+        /// <summary>Mutes or unmutes this speaker (the room bar mutes a whole room at once).</summary>
+        public void SetMuted(bool value)
+        {
+            if (muted == value) return;
+            TryOnSession(s => s.SetMuted(value));
+        }
         public string? Id => descriptor?.Id;
         public bool IsPlaying => state == PlaybackState.Playing || state == PlaybackState.Buffering;
 
@@ -579,11 +612,14 @@ namespace KlangHub.UserControls
             var loc = PointToScreen(new Point(overflowRect.Left - 230, overflowRect.Bottom + 4));
             if (popup.ShowAt(loc) == DialogResult.OK)
             {
+                var roomBefore = SpeakerPrefs.GetRoom(descriptor?.Id);
                 maxVolume = popup.MaxVolume;
                 SpeakerPrefs.SetMaxVolume(descriptor?.Id, maxVolume);
                 SpeakerPrefs.SetRoom(descriptor?.Id, popup.Room);
                 if (volume > maxVolume) TryOnSession(s => s.SetVolume(maxVolume / 100f));
                 Invalidate();
+                if (!string.Equals(roomBefore ?? string.Empty, popup.Room, StringComparison.CurrentCultureIgnoreCase))
+                    RoomChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 

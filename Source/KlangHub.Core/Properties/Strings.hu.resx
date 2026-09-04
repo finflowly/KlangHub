@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>VESZTESÉGMENTES · MINDEN SZOBA ÉNEKEL</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Nappali;Konyha;Hálószoba;Fürdőszoba;Dolgozószoba;Étkező;Előszoba;Gyerekszoba;Terasz;Kert;Pince;Padlás;Vendégszoba;Műhely;Loft;Gardrób;Télikert;Erkély;Garázs;Partiszoba</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 hangszóró</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} hangszóró</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Még nincs szoba</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Szobák szerint</value>
+  </data>
 </root>

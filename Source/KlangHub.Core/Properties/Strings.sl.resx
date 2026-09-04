@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>BREZ IZGUB · VSAKA SOBA POJE</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Dnevna soba;Kuhinja;Spalnica;Kopalnica;Pisarna;Jedilnica;Hodnik;Otroška soba;Terasa;Vrt;Klet;Podstrešje;Soba za goste;Delavnica;Loft;Garderobna soba;Zimski vrt;Balkon;Garaža;Prostor za zabave</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 zvočnik</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} zvočniki</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Še brez sobe</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Po sobah</value>
+  </data>
 </root>

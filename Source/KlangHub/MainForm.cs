@@ -305,6 +305,7 @@ namespace KlangHub
             if (IsDisposed) return;
 
             var deviceControl = new DeviceControl(BuildSessionAccessor(device));
+            deviceControl.RoomChanged += (s, e) => RebuildDeviceLayout();
             pnlDevices.Controls.Add(deviceControl);
             var filter = GetFilterDevices();
             if (filter != null)
@@ -1583,6 +1584,9 @@ namespace KlangHub
             ThemeGroupBoxBorder(grpOptions);
             pnlDevices.BackColor = Classes.Theme.Ink;
             Classes.DwmChrome.UseDarkScrollbars(pnlDevices);
+            pnlDevices.Resize += (s, e) => ResizeRoomBars();
+            pnlDevices.ControlAdded += (s, e) => { if (groupByRoom && e.Control is DeviceControl) BeginInvoke(new Action(RebuildDeviceLayout)); };
+            pnlDevices.ControlRemoved += (s, e) => { if (groupByRoom && e.Control is DeviceControl) BeginInvoke(new Action(RebuildDeviceLayout)); };
             EnableBackdrop(tabPageMain);
             EnableBackdrop(tabPageOptions);
             EnableBackdrop(tabPageLog);
@@ -1703,6 +1707,107 @@ namespace KlangHub
         /// <summary>True while the selected stream format carries the original samples (WAV / FLAC).</summary>
         private static bool IsLosslessFormat() =>
             !Classes.Theme.CurrentFormatLabel.StartsWith("MP3", StringComparison.OrdinalIgnoreCase);
+
+
+        // ================= grouping the grid by room =================================================
+        // Once speakers carry a room, the flat grid stops being the honest picture of a home: what the eye
+        // wants is the kitchen next to the kitchen. The FlowLayoutPanel keeps its cards - a full-width room
+        // bar is inserted before each block and a flow break after it, so the layout still reflows on resize
+        // and nothing about the cards themselves has to change.
+        private readonly List<UserControls.RoomBarControl> roomBars = new();
+        private bool groupByRoom;
+
+        /// <summary>Whether the device grid is grouped into rooms (persisted with the other settings).</summary>
+        public bool GetGroupByRoom() => groupByRoom;
+
+        public void SetGroupByRoom(bool value)
+        {
+            if (groupByRoom == value) return;
+            groupByRoom = value;
+            if (btnGroupRooms != null) btnGroupRooms.Primary = value;
+            RebuildDeviceLayout();   // persisted with the rest of the settings on close (ApplicationLogic)
+        }
+
+        /// <summary>Speakers of one room, in the order they appear in the grid.</summary>
+        private IReadOnlyList<DeviceControl> DevicesInRoom(string room) =>
+            pnlDevices.Controls.OfType<DeviceControl>()
+                .Where(d => d.Visible && string.Equals(RoomOf(d), room, StringComparison.CurrentCultureIgnoreCase))
+                .ToList();
+
+        /// <summary>A card's room, or the "no room yet" bucket - so every speaker belongs somewhere.</summary>
+        private static string RoomOf(DeviceControl d) =>
+            string.IsNullOrWhiteSpace(d.Room) ? Properties.Strings.Room_Unassigned_Text : d.Room!.Trim();
+
+        /// <summary>
+        /// Re-orders the grid: either the plain card sequence, or room bar + that room's cards, room by room.
+        /// Called whenever something changes that can move a card between rooms.
+        /// </summary>
+        private void RebuildDeviceLayout()
+        {
+            if (pnlDevices == null || IsDisposed) return;
+            if (InvokeRequired) { BeginInvoke(new Action(RebuildDeviceLayout)); return; }
+
+            pnlDevices.SuspendLayout();
+            try
+            {
+                foreach (var bar in roomBars)
+                {
+                    pnlDevices.Controls.Remove(bar);
+                    bar.Dispose();
+                }
+                roomBars.Clear();
+
+                var cards = pnlDevices.Controls.OfType<DeviceControl>().ToList();
+                foreach (var c in cards) pnlDevices.SetFlowBreak(c, false);
+
+                if (!groupByRoom)
+                    return;
+
+                // rooms in alphabetical order, with the unassigned bucket last - it is a to-do list, not a room
+                string unassigned = Properties.Strings.Room_Unassigned_Text;
+                var rooms = cards.Where(c => c.Visible).Select(RoomOf).Distinct(StringComparer.CurrentCultureIgnoreCase)
+                    .OrderBy(r => string.Equals(r, unassigned, StringComparison.CurrentCultureIgnoreCase) ? 1 : 0)
+                    .ThenBy(r => r, StringComparer.CurrentCulture)
+                    .ToList();
+
+                int index = 0;
+                foreach (var room in rooms)
+                {
+                    string captured = room;
+                    var bar = new UserControls.RoomBarControl(captured, () => DevicesInRoom(captured));
+                    bar.RoomChanged += (s, e) => RefreshRoomSummary();
+                    roomBars.Add(bar);
+
+                    pnlDevices.Controls.Add(bar);
+                    pnlDevices.Controls.SetChildIndex(bar, index++);
+                    pnlDevices.SetFlowBreak(bar, true);
+                    SizeRoomBar(bar);
+
+                    var inRoom = cards.Where(c => c.Visible && string.Equals(RoomOf(c), captured, StringComparison.CurrentCultureIgnoreCase)).ToList();
+                    foreach (var card in inRoom)
+                        pnlDevices.Controls.SetChildIndex(card, index++);
+                    if (inRoom.Count > 0)
+                        pnlDevices.SetFlowBreak(inRoom[^1], true);
+                }
+            }
+            finally
+            {
+                pnlDevices.ResumeLayout(true);
+                pnlDevices.Invalidate(true);
+            }
+        }
+
+        /// <summary>A room bar spans the grid, so it has to follow the panel's width.</summary>
+        private void SizeRoomBar(UserControls.RoomBarControl bar)
+        {
+            int available = pnlDevices.ClientSize.Width - bar.Margin.Horizontal - 4;
+            bar.Width = Math.Max(280, available);
+        }
+
+        private void ResizeRoomBars()
+        {
+            foreach (var bar in roomBars) SizeRoomBar(bar);
+        }
 
         // ================= Einstellungen: the settings page, rebuilt as console cards =================
         // The designer's flat two-column flow (label column | control column) read as a form dialog from 2010:
@@ -1983,6 +2088,7 @@ namespace KlangHub
         // UserControls/ConsoleTabStrip): its native body frame is what drew the light hairline around the whole
         // window, and owner-draw could never reach it. The strip is created here and docked above the page host.
         private UserControls.ConsoleTabStrip? tabStrip;
+        private UserControls.PillButton? btnGroupRooms;
 
         private void SetupTabStrip()
         {
@@ -2039,15 +2145,40 @@ namespace KlangHub
             pnlVolumeAllButtons.Dock = DockStyle.Right;
             pnlVolumeAllButtons.FlowDirection = FlowDirection.RightToLeft;
             pnlVolumeAllButtons.WrapContents = false;
-            btnScan.Margin = new Padding(12, 9, 4, 4);
+            btnScan.Margin = new Padding(10, 9, 4, 4);
             btnScan.AutoSize = false;
-            btnScan.Size = new Size(178, 36);
-            var master = new UserControls.MasterVolumeControl { Name = "masterVolume", Margin = new Padding(3, 9, 4, 4) };
+            btnScan.Size = new Size(168, 36);
+            btnGroupRooms = new UserControls.PillButton
+            {
+                Name = "btnGroupRooms",
+                Text = Properties.Strings.Button_GroupRooms_Text,
+                AutoSize = false,
+                Size = new Size(132, 36),
+                Margin = new Padding(10, 9, 2, 4),
+                Primary = groupByRoom,
+            };
+            btnGroupRooms.Click += (s, e) => SetGroupByRoom(!groupByRoom);
+            pnlVolumeAllButtons.Controls.Add(btnGroupRooms);
+
+            var master = new UserControls.MasterVolumeControl { Name = "masterVolume", Margin = new Padding(3, 9, 2, 4) };
+            master.Size = new Size(152, 36);
             master.VolumeDragged += t => { foreach (Control c in pnlDevices.Controls) if (c is UserControls.DeviceControl dc) dc.ApplyVolumeAbsolute(t); };
             master.MuteClicked += () => devices?.VolumeMute();
             pnlVolumeAllButtons.Controls.Add(master);
             pnlVolumeAllButtons.Controls.SetChildIndex(btnScan, 0);  // right-to-left: first child sits rightmost
-            pnlVolumeAllButtons.Controls.SetChildIndex(master, 1);
+            pnlVolumeAllButtons.Controls.SetChildIndex(btnGroupRooms, 1);
+            pnlVolumeAllButtons.Controls.SetChildIndex(master, 2);
+
+            // The toolbar has to share one line with the live summary on the left. When the window gets too
+            // narrow for all three, the room toggle steps back first - it is the one control with a home in
+            // the settings too, and hiding it beats letting the fader collide with the text.
+            void FitToolbar()
+            {
+                bool room = grpVolume.ClientSize.Width > 690;
+                if (btnGroupRooms != null && btnGroupRooms.Visible != room) btnGroupRooms.Visible = room;
+            }
+            grpVolume.Resize += (s, e) => FitToolbar();
+            FitToolbar();
         }
 
         // The app now wears the same picture the Chromecast puts on the TV (Resources/artwork.png, served
@@ -2094,7 +2225,11 @@ namespace KlangHub
         {
             foreach (Control c in parent.Controls)
             {
-                if (c is ComboBox cb)
+                if (c is UserControls.DarkComboBox)
+                {
+                    // paints itself (closed field and rows) - a second handler would draw over it
+                }
+                else if (c is ComboBox cb)
                 {
                     cb.FlatStyle = FlatStyle.Flat;
                     cb.DrawMode = DrawMode.OwnerDrawFixed;

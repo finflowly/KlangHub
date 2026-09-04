@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>BE NUOSTOLIŲ · KIEKVIENAS KAMBARYS DAINUOJA</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Svetainė;Virtuvė;Miegamasis;Vonia;Kabinetas;Valgomasis;Koridorius;Vaikų kambarys;Terasa;Sodas;Rūsys;Palėpė;Svečių kambarys;Dirbtuvės;Loftas;Drabužinė;Žiemos sodas;Balkonas;Garažas;Švenčių salė</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 garsiakalbis</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} garsiakalbiai</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Kambarys nenurodytas</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Pagal kambarį</value>
+  </data>
 </root>

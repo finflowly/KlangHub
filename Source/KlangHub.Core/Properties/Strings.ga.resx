@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>GAN CHAILLIÚINT · CANANN GACH SEOMRA</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Seomra suí;Cistin;Seomra leapa;Seomra folctha;Oifig;Seomra bia;Halla;Seomra na bpáistí;Ardán;Gairdín;Íoslach;Áiléar;Seomra aíonna;Ceardlann;Lofta;Seomra éadaí;Grianán;Balcóin;Garáiste;Seomra cóisire</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 challaire</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} challaire</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Gan seomra fós</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>De réir seomra</value>
+  </data>
 </root>

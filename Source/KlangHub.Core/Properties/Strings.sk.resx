@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>BEZ STRÁT · KAŽDÁ IZBA SPIEVA</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Obývačka;Kuchyňa;Spálňa;Kúpeľňa;Pracovňa;Jedáleň;Chodba;Detská izba;Terasa;Záhrada;Pivnica;Podkrovie;Hosťovská izba;Dielňa;Loft;Šatňa;Zimná záhrada;Balkón;Garáž;Párty miestnosť</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 reproduktor</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} reproduktory</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Zatiaľ bez izby</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Podľa izby</value>
+  </data>
 </root>

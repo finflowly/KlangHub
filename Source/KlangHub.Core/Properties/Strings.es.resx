@@ -389,4 +389,19 @@
   <data name="Artwork_Tagline_Text" xml:space="preserve">
     <value>SIN PÉRDIDA · CADA SALA CANTA</value>
   </data>
+  <data name="Room_Presets_Text" xml:space="preserve">
+    <value>Salón;Cocina;Dormitorio;Baño;Despacho;Comedor;Pasillo;Habitación infantil;Terraza;Jardín;Sótano;Buhardilla;Habitación de invitados;Taller;Loft;Vestidor;Jardín de invierno;Balcón;Garaje;Sala de fiestas</value>
+  </data>
+  <data name="Room_SpeakersOne_Text" xml:space="preserve">
+    <value>1 altavoz</value>
+  </data>
+  <data name="Room_SpeakersMany_Text" xml:space="preserve">
+    <value>{0} altavoces</value>
+  </data>
+  <data name="Room_Unassigned_Text" xml:space="preserve">
+    <value>Sin sala aún</value>
+  </data>
+  <data name="Button_GroupRooms_Text" xml:space="preserve">
+    <value>Por sala</value>
+  </data>
 </root>
