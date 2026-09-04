@@ -299,3 +299,31 @@ erscheinen.
 **Abgeschnittene Kopfzeile.** Die Zusammenfassung wich der Werkzeugleiste zwar aus, aber mit einer Ellipse
 mitten im Wort („verlustfrei a…"). Jetzt fällt bei Platzmangel eine ganze Aussage weg statt eines
 Wortendes — erst die Qualitätsformel, dann das Format, notfalls bleibt die Anzahl allein stehen.
+
+## Warum der Fernseher zwei-, dreimal lud (2026-09-04, Nacht)
+
+Nach dem Header-Fix liefen FLAC und MP3 — aber erst nach mehreren Ladeversuchen. Ursache war die
+**Startschwelle**: `SendStartupBuffer` hält das erste Byte zurück, bis der Puffer gefüllt ist, und diese
+Schwelle wurde mit zwei geratenen Konstanten berechnet (40 000 B/s für WAV, MP3 320 *und* FLAC; 16 000 für
+MP3 128). Nur die MP3-Zahlen stimmten — und sie standen auf der falschen Seite des Vergleichs. Bei der
+Voreinstellung „10 Sekunden" bedeutete das:
+
+| Format | Schwelle | reale Wartezeit bis zum ersten Byte |
+|---|---|---|
+| WAV 16-bit/48 kHz | 750 000 B | 3,9 s |
+| MP3 320 | 750 000 B | 18,8 s |
+| MP3 128 | 510 000 B | **31,9 s** |
+| FLAC | 750 000 B | 6,5 s |
+
+Der Empfänger gab lange vorher auf und lud neu — genau die zwei bis drei Umdrehungen des Ladebalkens. WAV
+zeigte es nie, weil seine Schätzung zufällig viermal zu klein war und die Wartezeit dadurch kurz blieb.
+
+**Behebung.** `StreamRate` liefert die echte Byte-Rate je Format: PCM für WAV, die Bitrate für MP3,
+konservative 70 % von PCM für FLAC. „Zehn Sekunden" sind jetzt in jedem Format zehn Sekunden. Zusätzlich ist
+die Wartezeit auf vier Sekunden gedeckelt: Was bis dahin da ist, geht an den Empfänger, der Rest fließt
+hinterher. Ein Polster ist gut, aber nicht um den Preis eines Empfängers, der nie startet.
+
+**Dazu: `streamType` ist jetzt `LIVE`.** Der Stream ist eine endlose Aufnahme dessen, was der PC gerade
+spielt — ohne Dauer, ohne Ende, ohne Sprungziel. Als `BUFFERED` deklariert hielt der Empfänger ihn für eine
+Datei, zeigte einen Fortschrittsbalken, der sich nie füllen kann, und durfte Bereiche anfordern, die es nicht
+gibt. Bewusst als eigener Commit, damit es einzeln zurückdrehbar bleibt.

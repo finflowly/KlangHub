@@ -83,7 +83,11 @@ namespace KlangHub.Communication
                 {
                     contentId = streamingUrl,
                     contentType = meta.ContentType,
-                    streamType = "BUFFERED", // BUFFERED or LIVE
+                    // LIVE, not BUFFERED: this is an endless capture of what the PC is playing right now.
+                    // It has no duration, no end and nothing to seek to. Declaring it BUFFERED tells the
+                    // receiver it is looking at a file - so it shows a progress bar that can never fill and
+                    // may try to fetch ranges of something that does not exist. LIVE is what it actually is.
+                    streamType = "LIVE",
                     metadata = new Metadata
                     {
                         // metadataType 3 = MusicTrackMediaMetadata: the Default Media Receiver renders the
