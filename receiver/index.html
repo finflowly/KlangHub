@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KlangHub</title>
+
+  <!--
+    KlangHub — Cast Web Receiver
+    ================================================================================================
+    What a television shows while KlangHub streams to it. Registered in the Cast Developer Console
+    as a Custom Receiver; the application id it hands back goes into KlangHub under
+    Einstellungen → Cast-Empfänger. Hosted from this repository via GitHub Pages, which is why the
+    whole thing is one self-contained file plus four images: no build step, no dependencies.
+
+    Stage 1 (this file): the app's own face on the TV instead of "Default Media Receiver" — the ink
+    palette, the ring band, the wordmark, and the room / format the sender puts in the metadata.
+    Stage 2 (planned): a live level meter fed over a custom namespace.
+    Stage 3 (planned): multi-room synchronisation — a shared clock over that same namespace and
+    Web Audio scheduling. See docs/PLAN-MULTIROOM-SYNC.md.
+
+    The colours are the app's tokens (Source/KlangHub/Classes/Theme.cs) so the television, the app
+    window and the installer are recognisably one product.
+  -->
+  <!--
+    No subresource integrity hash on purpose: this is Google's own Cast SDK, served from gstatic and
+    updated by Google under a stable v3 URL. Pinning a hash would break every receiver the moment they
+    ship a patch - and the script is not optional, the device cannot run a receiver without it.
+  -->
+  <script type="text/javascript"
+          src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+
+  <style>
+    :root {
+      --ink: #0E1014;
+      --ink-2: #0B0D11;
+      --amber: #E8B65A;
+      --amber-dim: #B98B3E;
+      --ivory: #F3ECDD;
+      --slate: #8A9AA6;
+    }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--ink);
+      color: var(--ivory);
+      font-family: "Segoe UI", "Roboto", system-ui, sans-serif;
+      overflow: hidden;
+    }
+
+    /* The built-in player still does the work; it is simply not what anyone looks at. Audio has no
+       picture, so the element is kept out of sight rather than removed - removing it would take the
+       playback machinery with it. */
+    cast-media-player {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+    }
+
+    #stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 8vw;
+      background:
+        radial-gradient(circle at 74% 34%, rgba(232, 182, 90, .05) 0%, transparent 55%),
+        linear-gradient(180deg, var(--ink-2), var(--ink));
+    }
+
+    /* The ring band: the brand's one gesture, echoing the app's backdrop and the artwork on the
+       receiver image. Pure CSS so it scales to any panel without an asset. */
+    #rings {
+      position: absolute;
+      right: 12vw;
+      top: 50%;
+      width: 62vh;
+      height: 62vh;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    #rings i {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      border: 1px solid rgba(232, 182, 90, .14);
+      border-radius: 50%;
+    }
+    #rings i:nth-child(1) { width: 14%; height: 14%; background: var(--amber); border: none;
+                            box-shadow: 0 0 6vh rgba(232, 182, 90, .45); }
+    #rings i:nth-child(2) { width: 26%; height: 26%; border-color: rgba(232, 182, 90, .8); }
+    #rings i:nth-child(3) { width: 42%; height: 42%; border-color: rgba(232, 182, 90, .3); }
+    #rings i:nth-child(4) { width: 60%; height: 60%; }
+    #rings i:nth-child(5) { width: 78%; height: 78%; }
+    #rings i:nth-child(6) { width: 100%; height: 100%; }
+
+    #title {
+      font-size: 5.4vh;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      margin: 0 0 1.2vh;
+      max-width: 60vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #subtitle {
+      font-size: 2.4vh;
+      color: var(--slate);
+      margin: 0 0 4vh;
+      max-width: 60vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Format and state, set as tracked capitals like the section labels in the app. */
+    #badges { display: flex; gap: 1.4vh; align-items: center; }
+    .badge {
+      font-size: 1.7vh;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--amber);
+      border: 1px solid rgba(232, 182, 90, .3);
+      background: rgba(232, 182, 90, .08);
+      padding: .8vh 1.6vh;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .badge.quiet { color: var(--slate); border-color: rgba(138, 154, 166, .28); background: transparent; }
+
+    #wordmark {
+      position: absolute;
+      left: 8vw;
+      bottom: 6vh;
+      display: flex;
+      align-items: baseline;
+      gap: 1.4vh;
+      opacity: .85;
+    }
+    #wordmark b { font-size: 2.6vh; font-weight: 600; letter-spacing: .01em; }
+    #wordmark span { font-size: 1.5vh; letter-spacing: .18em; text-transform: uppercase; color: var(--amber-dim); }
+
+    /* Idle: nothing is playing, so the screen says only who is waiting. */
+    body.idle #title, body.idle #subtitle, body.idle #badges { opacity: 0; }
+    body.idle #rings { right: 50%; transform: translate(50%, -50%); }
+
+    #title, #subtitle, #badges, #rings { transition: opacity .4s ease, right .6s ease, transform .6s ease; }
+  </style>
+</head>
+
+<body class="idle">
+  <cast-media-player></cast-media-player>
+
+  <div id="stage">
+    <div id="rings"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+    <h1 id="title"></h1>
+    <p id="subtitle"></p>
+    <div id="badges">
+      <span class="badge" id="format"></span>
+      <span class="badge quiet" id="state" aria-hidden="true"></span>
+    </div>
+
+    <div id="wordmark"><b>KlangHub</b><span id="tagline">Lossless whole-home audio</span></div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var context = cast.framework.CastReceiverContext.getInstance();
+      var playerManager = context.getPlayerManager();
+
+      var elTitle = document.getElementById('title');
+      var elSubtitle = document.getElementById('subtitle');
+      var elFormat = document.getElementById('format');
+      var elState = document.getElementById('state');
+
+      // The sender puts the room in the title and its own subtitle line in the metadata; the content
+      // type tells us the format without a second channel.
+      function describeFormat(contentType) {
+        if (!contentType) return '';
+        if (contentType.indexOf('mpeg') >= 0) return 'MP3';
+        if (contentType.indexOf('flac') >= 0) return 'FLAC';
+        if (contentType.indexOf('wav') >= 0) return 'WAV';
+        return contentType;
+      }
+
+      function show(media) {
+        var metadata = (media && media.metadata) || {};
+        elTitle.textContent = metadata.title || 'KlangHub';
+        elSubtitle.textContent = metadata.artist || metadata.albumName || '';
+        elFormat.textContent = describeFormat(media && media.contentType);
+        elFormat.style.display = elFormat.textContent ? '' : 'none';
+        document.body.classList.remove('idle');
+      }
+
+      playerManager.addEventListener(cast.framework.events.EventType.LOAD_START, function (event) {
+        show(event.media);
+        elState.textContent = '···';      // connecting
+      });
+
+      playerManager.addEventListener(cast.framework.events.EventType.PLAYING, function () {
+        document.body.classList.remove('idle');
+        elState.textContent = '▶';   // playing
+      });
+
+      playerManager.addEventListener(cast.framework.events.EventType.PAUSE, function () {
+        elState.textContent = '‖';   // paused
+      });
+
+      // A stopped or ended stream returns the screen to the quiet state rather than leaving the last
+      // room's name standing there.
+      [cast.framework.events.EventType.MEDIA_FINISHED,
+       cast.framework.events.EventType.ERROR].forEach(function (type) {
+        playerManager.addEventListener(type, function () {
+          document.body.classList.add('idle');
+          elState.textContent = '';
+        });
+      });
+
+      // KlangHub sends an endless capture of the PC's output: there is no duration and nothing to
+      // seek to, so the built-in controls are of no use here.
+      var options = new cast.framework.CastReceiverOptions();
+      options.disableIdleTimeout = false;   // let the device go home when the sender stops
+      context.start(options);
+    })();
+  </script>
+</body>
+</html>

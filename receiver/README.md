@@ -2,13 +2,18 @@
 
 Was der Fernseher zeigt, wenn KlangHub auf ihn streamt. Zwei Ausbaustufen, dieselbe Registrierung:
 
-| | Styled Media Receiver (hier fertig) | Custom Receiver (später) |
+Beide Varianten liegen hier fertig — registriert wird **eine** davon:
+
+| | Custom Receiver (`index.html`) | Styled Media Receiver (`klanghub.css`) |
 |---|---|---|
-| Was man gestalten kann | Hintergrund, Start-Logo, Leerlauf-Bild, Fortschrittsbalken, Wasserzeichen | die komplette Seite |
+| Registrierter Typ | Custom Receiver, **Receiver Application URL** | Styled Media Receiver, **Skin URL** |
+| Was man gestalten kann | die komplette Seite | Hintergrund, Start-Logo, Leerlauf-Bild, Fortschrittsbalken, Wasserzeichen |
 | Eigener App-Name statt „Default Media Receiver" | ja | ja |
-| Live-Pegelmeter, eigenes Text-Layout | nein | ja |
-| Multiroom-Synchronität | nein | ja (das ist der eigentliche Grund) |
-| Aufwand | diese CSS-Datei | eigene HTML/JS-App + Sync-Protokoll |
+| Eigenes Text-Layout | ja | nein |
+| Live-Pegelmeter (geplant) | ja | nein |
+| Multiroom-Synchronität (geplant) | ja — das ist der eigentliche Grund | nein |
+
+Empfehlung: **Custom Receiver**. Der Styled-Weg bleibt als einfache Alternative bestehen.
 
 Der Plan für die zweite Stufe steht in [`docs/PLAN-MULTIROOM-SYNC.md`](../docs/PLAN-MULTIROOM-SYNC.md).
 
@@ -16,7 +21,8 @@ Der Plan für die zweite Stufe steht in [`docs/PLAN-MULTIROOM-SYNC.md`](../docs/
 
 ```
 receiver/
-  klanghub.css          ← die Skin-Datei, ihre URL wird bei Google registriert
+  index.html            ← Custom Receiver: DIESE URL wird registriert
+  klanghub.css          ← Alternative: Skin-Datei für den Styled Media Receiver
   assets/
     background.png      1920×1080  hinter der laufenden Wiedergabe
     splash.png          1920×1080  Leerlauf-Bildschirm (mit Wortmarke)
@@ -34,8 +40,15 @@ liegt in `tools/make-receiver-assets.ps1`.
    `https://<konto>.github.io/<repo>/receiver/klanghub.css`.
    Kurz im Browser aufrufen — sie muss als Text erscheinen, mit `https://`.
 2. **Registrieren.** Auf https://cast.google.com/publish anmelden, Entwicklerkonto anlegen (einmalig 5 USD),
-   *Add New Application* → **Styled Media Receiver**, oben die CSS-URL eintragen. Google vergibt eine
-   **App-ID** aus acht Zeichen.
+   *Add New Application* → **Custom Receiver**. Im Formular:
+   - **Name:** `KlangHub` — das steht später auf dem Fernseher.
+   - **Receiver Application URL:** `https://<konto>.github.io/<repo>/receiver/` (zeigt auf `index.html`).
+   - **Guest Mode:** aus. Erlaubt Casting von Geräten außerhalb des WLANs; KlangHub nutzt das nicht.
+   - **Google Cast for Audio:** **an**. Ohne dieses Häkchen lädt der Receiver **nicht** auf reinen
+     Audio-Geräten — also weder auf einem Google Home noch auf einer Soundbar.
+   - **Package Name:** leer (es gibt keine Android-TV-App).
+
+   Google vergibt daraufhin eine **App-ID** aus acht Zeichen.
 3. **Testgerät freischalten.** Seriennummer des Cast-Geräts eintragen (Google-Home-App → Gerät →
    Einstellungen → Geräteinformationen), **fünfzehn Minuten warten**, dann das Gerät vom Strom trennen und
    neu starten. Danach steht dort „Ready for Testing".
