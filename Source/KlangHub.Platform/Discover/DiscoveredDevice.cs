@@ -45,6 +45,50 @@ namespace KlangHub.Discover
             }
         }
 
+        /// <summary>
+        /// The hardware model this endpoint announces in its mDNS TXT record ("md=Google Nest Audio").
+        /// <see cref="Headers"/> holds those tokens as one serialized string, so read up to the next quote or
+        /// separator. Null for groups (their "model" is the literal "Google Cast Group") and when nothing is
+        /// announced - the UI then falls back to a generic subtitle rather than showing a fragment.
+        /// </summary>
+        [XmlIgnore]
+        public string? ModelName
+        {
+            get
+            {
+                // eureka is the better source when it has been fetched (it names the real product, e.g.
+                // "Harman Kardon Enchant"); the mDNS TXT record is the fallback for groups and for devices
+                // whose eureka_info call has not landed yet.
+                var mf = Eureka?.DeviceInfo?.Manufacturer?.Trim();
+                var md = Eureka?.DeviceInfo?.Model_name?.Trim();
+                if (!string.IsNullOrEmpty(md))
+                    return !string.IsNullOrEmpty(mf)
+                           && md!.IndexOf(mf!, System.StringComparison.OrdinalIgnoreCase) < 0
+                        ? $"{mf} {md}"
+                        : md;
+
+                return ParseModel(Headers);
+            }
+        }
+
+        internal static string? ParseModel(string? headers)
+        {
+            if (string.IsNullOrEmpty(headers))
+                return null;
+
+            int i = headers!.IndexOf("md=", System.StringComparison.OrdinalIgnoreCase);
+            if (i < 0)
+                return null;
+
+            i += 3;
+            int end = headers.IndexOfAny(new[] { '"', ';', '\n', '\r' }, i);
+            var model = (end < 0 ? headers[i..] : headers[i..end]).Trim();
+            if (model.Length == 0 || model.Equals("Google Cast Group", System.StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            return model;
+        }
+
         public string MACAddress { get; set; } = null!;
         public string Id { get; set; } = null!;
     }

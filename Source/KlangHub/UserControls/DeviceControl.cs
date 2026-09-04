@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -138,6 +139,7 @@ namespace KlangHub.UserControls
         private void OnTick()
         {
             if (IsDisposed) return;
+            PollForModel();
             bool playing = state == PlaybackState.Playing || state == PlaybackState.Buffering;
             if (playing)
             {
@@ -166,12 +168,16 @@ namespace KlangHub.UserControls
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-            g.Clear(Theme.Ink);
+
+            // The tile is glass: it shows the app's own backdrop through itself, softly blurred. The slice is
+            // anchored to the WINDOW, so the rings line up with the surrounding page instead of restarting
+            // inside every card.
+            Theme.PaintBackdrop(g, this, blurDivisor: 5, veilScale: 0.78f);   // the pane gathers light
 
             bool playing = state == PlaybackState.Playing || state == PlaybackState.Buffering;
             bool error = state == PlaybackState.Error;
             bool group = descriptor?.IsGroup == true;
-            cardRect = new Rectangle(2, 2, Width - 5, Height - 5);
+            cardRect = new Rectangle(4, 3, Width - 9, Height - 9);   // inset leaves room for the float shadow
             var cardF = new RectangleF(cardRect.X, cardRect.Y, cardRect.Width, cardRect.Height);
 
             // soft amber glow behind a playing card (the signature)
@@ -183,11 +189,14 @@ namespace KlangHub.UserControls
                 g.FillPath(gb, glow);
             }
 
-            // card surface: playing = amber-tinted; hovered = lifted onto 'Raised'; else the flat surface
+            // glass pane: playing = amber-tinted and a little more solid (it has to carry the meter), hovered
+            // = lifted and slightly clearer, otherwise the plain surface tint.
             Color surface = playing ? Theme.Blend(Theme.Surface, Theme.Amber, 0.05f) : hovering ? Theme.Raised : Theme.Surface;
-            Color borderCol = playing ? Color.FromArgb(150, Theme.Amber) : error ? Color.FromArgb(90, Theme.Ember) : hovering ? Theme.LineHi : Theme.Line;
-            Theme.FillRounded(g, cardF, Theme.RadCard, surface);
-            Theme.DrawRounded(g, cardF, Theme.RadCard, borderCol, 1.2f);
+            Color borderCol = playing ? Color.FromArgb(170, Theme.Amber) : error ? Color.FromArgb(110, Theme.Ember)
+                : hovering ? Color.FromArgb(190, Theme.LineHi) : Color.FromArgb(150, Theme.LineHi);
+            int alpha = playing ? Theme.GlassAlpha + 26 : hovering ? Theme.GlassAlpha - 12 : Theme.GlassAlpha;
+            Theme.DrawSoftShadow(g, cardF, Theme.RadCard, hovering ? 4f : 3f, hovering ? 60 : 46);
+            Theme.FillGlass(g, cardF, Theme.RadCard, surface, borderCol, alpha);
 
             // left accent bar (amber playing / ember error)
             var accent = playing ? Theme.Amber : error ? Theme.Ember : Color.Transparent;
@@ -272,12 +281,55 @@ namespace KlangHub.UserControls
             if (Focused) Theme.DrawFocusRing(g, cardF, Theme.RadCard);
         }
 
+        // The model name only exists once mDNS has announced the device - a card built from the persisted
+        // device list starts without it. Poll the live session for it (cheap property read, no reconnect),
+        // stop as soon as it arrives, and give up after a while so a device that never announces one costs
+        // nothing.
+        private string? model;
+        private int modelPolls;
+
+        private void PollForModel()
+        {
+            // eureka_info can take a while to answer (and a device rediscovered from the persisted list only
+            // gets its details on the next announcement), so keep looking for several minutes rather than
+            // giving up after the first seconds. One property read every ~2 s costs nothing.
+            if (model != null || modelPolls > 4000 || session == null) return;
+            if ((modelPolls++ % 22) != 0) return;                               // every ~2 s at the 90 ms tick
+            try
+            {
+                var m = session.Device?.Model;
+                if (!string.IsNullOrWhiteSpace(m)) { model = m; Invalidate(); }
+            }
+            catch { /* the session may be mid-reconnect - just try again on the next poll */ }
+        }
+
+        // The concept's card carries "room · model" under the name. The room IS the device name a Chromecast
+        // announces (people name them after the room), so the subtitle adds what the name cannot say: the
+        // hardware behind it, straight from the mDNS "md=" record - and for a group, that it is one.
         private string Subtitle()
         {
-            if (descriptor?.IsGroup == true) return "Multiroom-Gruppe";
+            if (descriptor?.IsGroup == true)
+                return descriptor.MemberCount > 1
+                    ? string.Format(KlangHub.Properties.Strings.Card_Subtitle_Group_Text,
+                          string.Format(KlangHub.Properties.Strings.Label_RoomSummaryDevicesMany_Text, descriptor.MemberCount))
+                    : KlangHub.Properties.Strings.Card_Subtitle_GroupPlain_Text;
+
             var sc = statusText?.Trim();
             if (!string.IsNullOrEmpty(sc)) return sc!;
-            return descriptor?.Id != null ? "Cast-Gerät" : string.Empty;
+            var m = !string.IsNullOrWhiteSpace(model) ? model : descriptor?.Model;
+            if (!string.IsNullOrWhiteSpace(m) && !SaysTheSame(m!, deviceName)) return m!;
+            return descriptor?.Id != null ? KlangHub.Properties.Strings.Card_Subtitle_Device_Text : string.Empty;
+        }
+
+        /// <summary>True when the model would only repeat the device name ("Enchant Speaker" under
+        /// "Enchant Speaker") - people name a Chromecast after its room or its model, so the subtitle has to
+        /// step back rather than echo the line above it.</summary>
+        private static bool SaysTheSame(string model, string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return false;
+            static string Key(string s) => new string(s.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+            string a = Key(model), b = Key(name!);
+            return a.Length > 0 && b.Length > 0 && (a == b || a.Contains(b) || b.Contains(a));
         }
 
         private static string StatusWord(PlaybackState s) => s switch

@@ -17,8 +17,8 @@
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            tabControl = new System.Windows.Forms.TabControl();
-            tabPageMain = new System.Windows.Forms.TabPage();
+            tabControl = new System.Windows.Forms.Panel();
+            tabPageMain = new System.Windows.Forms.Panel();
             grpDevices = new System.Windows.Forms.GroupBox();
             pnlDevices = new System.Windows.Forms.FlowLayoutPanel();
             grpLag = new System.Windows.Forms.GroupBox();
@@ -34,13 +34,13 @@
             btnVolumeUp = new System.Windows.Forms.Button();
             btnVolumeDown = new System.Windows.Forms.Button();
             btnVolumeMute = new System.Windows.Forms.Button();
-            btnScan = new System.Windows.Forms.Button();
-            tabPageOptions = new System.Windows.Forms.TabPage();
+            btnScan = new KlangHub.UserControls.PillButton();
+            tabPageOptions = new System.Windows.Forms.Panel();
             grpOptions = new System.Windows.Forms.GroupBox();
             pnlOptions = new System.Windows.Forms.Panel();
             flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             pnlResetSettings = new System.Windows.Forms.Panel();
-            btnResetSettings = new System.Windows.Forms.Button();
+            btnResetSettings = new KlangHub.UserControls.PillButton();
             pnlOptionsCheckBoxes = new System.Windows.Forms.Panel();
             chkDarkMode = new KlangHub.UserControls.ToggleSwitch();
             chkConvertMultiChannelToStereo = new KlangHub.UserControls.ToggleSwitch();
@@ -64,7 +64,7 @@
             lblLanguage = new System.Windows.Forms.Label();
             lblDevice = new System.Windows.Forms.Label();
             pnlOptionsComboBoxesRight = new System.Windows.Forms.Panel();
-            txtStreamTitle = new System.Windows.Forms.TextBox();
+            txtStreamTitle = new KlangHub.UserControls.DarkTextBox();
             cmbBufferInSeconds = new KlangHub.UserControls.DarkComboBox();
             cmbFilterDevices = new KlangHub.UserControls.DarkComboBox();
             cmbLanguage = new KlangHub.UserControls.DarkComboBox();
@@ -74,14 +74,14 @@
             lblNewReleaseAvailable = new System.Windows.Forms.LinkLabel();
             linkHelp = new System.Windows.Forms.LinkLabel();
             lblVersion = new System.Windows.Forms.Label();
-            tabPageLog = new System.Windows.Forms.TabPage();
+            tabPageLog = new System.Windows.Forms.Panel();
             pnlLog = new System.Windows.Forms.Panel();
             txtLog = new System.Windows.Forms.TextBox();
             pnlPingPong = new System.Windows.Forms.Panel();
             lblPingPong = new System.Windows.Forms.Label();
             pnlLogCopyToClipboard = new System.Windows.Forms.FlowLayoutPanel();
-            btnClipboardCopy = new System.Windows.Forms.Button();
-            btnClearLog = new System.Windows.Forms.Button();
+            btnClipboardCopy = new KlangHub.UserControls.PillButton();
+            btnClearLog = new KlangHub.UserControls.PillButton();
             volumeMeterTooltip = new System.Windows.Forms.ToolTip(components);
             tabControl.SuspendLayout();
             tabPageMain.SuspendLayout();
@@ -111,10 +111,8 @@
             tabControl.Controls.Add(tabPageOptions);
             tabControl.Controls.Add(tabPageLog);
             tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            tabControl.Location = new System.Drawing.Point(16, 20);
             tabControl.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             tabControl.Name = "tabControl";
-            tabControl.SelectedIndex = 0;
             tabControl.Size = new System.Drawing.Size(1119, 781);
             tabControl.TabIndex = 3;
             // 
@@ -123,13 +121,11 @@
             tabPageMain.Controls.Add(grpDevices);
             tabPageMain.Controls.Add(grpLag);
             tabPageMain.Controls.Add(grpVolume);
-            tabPageMain.Location = new System.Drawing.Point(4, 29);
             tabPageMain.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             tabPageMain.Name = "tabPageMain";
-            tabPageMain.Padding = new System.Windows.Forms.Padding(20, 25, 20, 25);
+            tabPageMain.Padding = new System.Windows.Forms.Padding(22, 12, 22, 16);
             tabPageMain.Size = new System.Drawing.Size(1111, 748);
             tabPageMain.TabIndex = 1;
-            tabPageMain.UseVisualStyleBackColor = true;
             // 
             // grpDevices
             // 
@@ -336,20 +332,17 @@
             btnScan.Size = new System.Drawing.Size(167, 30);
             btnScan.TabIndex = 11;
             btnScan.Text = "Scan again for devices";
-            btnScan.UseVisualStyleBackColor = true;
             btnScan.Click += BtnScan_Click;
             // 
             // tabPageOptions
             // 
             tabPageOptions.Controls.Add(grpOptions);
-            tabPageOptions.Location = new System.Drawing.Point(4, 29);
             tabPageOptions.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             tabPageOptions.Name = "tabPageOptions";
-            tabPageOptions.Padding = new System.Windows.Forms.Padding(20, 25, 20, 25);
+            tabPageOptions.Padding = new System.Windows.Forms.Padding(22, 12, 22, 16);
             tabPageOptions.Size = new System.Drawing.Size(1111, 748);
             tabPageOptions.TabIndex = 2;
             tabPageOptions.Text = "Options";
-            tabPageOptions.UseVisualStyleBackColor = true;
             // 
             // grpOptions
             // 
@@ -412,7 +405,6 @@
             btnResetSettings.Size = new System.Drawing.Size(114, 28);
             btnResetSettings.TabIndex = 46;
             btnResetSettings.Text = "Reset Settings";
-            btnResetSettings.UseVisualStyleBackColor = true;
             btnResetSettings.Click += BtnResetSettings_Click;
             // 
             // pnlOptionsCheckBoxes
@@ -821,14 +813,12 @@
             tabPageLog.Controls.Add(pnlLog);
             tabPageLog.Controls.Add(pnlPingPong);
             tabPageLog.Controls.Add(pnlLogCopyToClipboard);
-            tabPageLog.Location = new System.Drawing.Point(4, 29);
             tabPageLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             tabPageLog.Name = "tabPageLog";
             tabPageLog.Padding = new System.Windows.Forms.Padding(20, 25, 20, 25);
             tabPageLog.Size = new System.Drawing.Size(1111, 748);
             tabPageLog.TabIndex = 0;
             tabPageLog.Text = "Log";
-            tabPageLog.UseVisualStyleBackColor = true;
             // 
             // pnlLog
             // 
@@ -898,7 +888,6 @@
             btnClipboardCopy.Size = new System.Drawing.Size(139, 30);
             btnClipboardCopy.TabIndex = 3;
             btnClipboardCopy.Text = "Copy to clipboard";
-            btnClipboardCopy.UseVisualStyleBackColor = true;
             btnClipboardCopy.Click += BtnClipboardCopy_Click;
             // 
             // btnClearLog
@@ -911,7 +900,6 @@
             btnClearLog.Size = new System.Drawing.Size(82, 30);
             btnClearLog.TabIndex = 4;
             btnClearLog.Text = "Clear Log";
-            btnClearLog.UseVisualStyleBackColor = true;
             btnClearLog.Click += BtnClearLog_Click;
             // 
             // MainForm
@@ -924,7 +912,7 @@
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             Name = "MainForm";
-            Padding = new System.Windows.Forms.Padding(16, 20, 16, 20);
+            Padding = new System.Windows.Forms.Padding(0);
             Text = "KlangHub";
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
@@ -969,24 +957,24 @@
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl;
-        private System.Windows.Forms.TabPage tabPageMain;
+        private System.Windows.Forms.Panel tabControl;
+        private System.Windows.Forms.Panel tabPageMain;
         private System.Windows.Forms.GroupBox grpLag;
         private System.Windows.Forms.TrackBar trbLag;
         private System.Windows.Forms.GroupBox grpVolume;
         private System.Windows.Forms.Button btnVolumeMute;
-        private System.Windows.Forms.TabPage tabPageLog;
+        private System.Windows.Forms.Panel tabPageLog;
         private System.Windows.Forms.Label lblLagMin;
         private System.Windows.Forms.Label lblLagMax;
         private System.Windows.Forms.Button btnVolumeUp;
         private System.Windows.Forms.Button btnVolumeDown;
-        private System.Windows.Forms.Button btnClipboardCopy;
-        private System.Windows.Forms.Button btnScan;
-        private System.Windows.Forms.TabPage tabPageOptions;
+        private KlangHub.UserControls.PillButton btnClipboardCopy;
+        private KlangHub.UserControls.PillButton btnScan;
+        private System.Windows.Forms.Panel tabPageOptions;
         private System.Windows.Forms.GroupBox grpOptions;
         private System.Windows.Forms.FlowLayoutPanel pnlVolumeAllButtons;
         private System.Windows.Forms.FlowLayoutPanel pnlLogCopyToClipboard;
-        private System.Windows.Forms.Button btnClearLog;
+        private KlangHub.UserControls.PillButton btnClearLog;
         private System.Windows.Forms.GroupBox grpDevices;
         private System.Windows.Forms.FlowLayoutPanel pnlDevices;
         private System.Windows.Forms.Label lblLagExperimental;
@@ -998,7 +986,7 @@
         private System.Windows.Forms.LinkLabel lblNewReleaseAvailable;
         private System.Windows.Forms.Panel pnlOptions;
         private System.Windows.Forms.Panel pnlResetSettings;
-        private System.Windows.Forms.Button btnResetSettings;
+        private KlangHub.UserControls.PillButton btnResetSettings;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Panel pnlOptionsCheckBoxes;
         private KlangHub.UserControls.ToggleSwitch chkLogDeviceCommunication;
@@ -1033,7 +1021,7 @@
         private KlangHub.UserControls.ToggleSwitch chkMinimizeToTray;
         private KlangHub.UserControls.ToggleSwitch chkConvertMultiChannelToStereo;
         private KlangHub.UserControls.ToggleSwitch chkDarkMode;
-        private System.Windows.Forms.TextBox txtStreamTitle;
+        private KlangHub.UserControls.DarkTextBox txtStreamTitle;
         private System.Windows.Forms.Label lblStreamTitle;
     }
 }

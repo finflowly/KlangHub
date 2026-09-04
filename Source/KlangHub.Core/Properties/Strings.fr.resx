@@ -360,4 +360,43 @@
   <data name="Label_StreamTitle_Text" xml:space="preserve">
     <value>Titre du flux</value>
   </data>
+  <data name="Label_RoomSummaryTitle_Text" xml:space="preserve">
+    <value>Appareils sur votre réseau</value>
+  </data>
+  <data name="Label_RoomSummaryPlayingOne_Text" xml:space="preserve">
+    <value>1 en lecture</value>
+  </data>
+  <data name="Label_RoomSummaryPlayingMany_Text" xml:space="preserve">
+    <value>{0} en lecture</value>
+  </data>
+  <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
+    <value>1 pièce</value>
+  </data>
+  <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
+    <value>{0} pièces</value>
+  </data>
+  <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
+    <value>1 groupe</value>
+  </data>
+  <data name="Label_RoomSummaryGroupsMany_Text" xml:space="preserve">
+    <value>{0} groupes</value>
+  </data>
+  <data name="Label_RoomSummaryLossless_Text" xml:space="preserve">
+    <value>sans perte dans toute la maison</value>
+  </data>
+  <data name="Label_RoomSummaryCompressed_Text" xml:space="preserve">
+    <value>compressé dans toute la maison</value>
+  </data>
+  <data name="Label_RoomSummaryEmpty_Text" xml:space="preserve">
+    <value>Recherche d'appareils…</value>
+  </data>
+  <data name="Card_Subtitle_Group_Text" xml:space="preserve">
+    <value>Multiroom · {0}</value>
+  </data>
+  <data name="Card_Subtitle_Device_Text" xml:space="preserve">
+    <value>Appareil Cast</value>
+  </data>
+  <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
+    <value>Groupe multi-pièces</value>
+  </data>
 </root>

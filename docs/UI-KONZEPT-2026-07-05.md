@@ -93,3 +93,72 @@ Jede Phase: Build 0 Fehler + 140 Tests grün; Full-Solution-Build grün.
 
 **Braucht the maintainer's Auge (Sandbox hat kein Display):** weißer Rand weg?, Titelleiste als nahtloser Block?,
 Karten-Zustände/Glow/Fokus?, Toggles + Combo-Chevron in den Einstellungen?, DPI-Schärfe.
+
+## Visueller Pass (2026-09-04) — Tab-Deck, Fensterrand, Einstellungen
+
+Der zurückgestellte Teil aus Phase 3/4 ist jetzt umgesetzt, gegen den echten laufenden Build verifiziert
+(Screenshots der Räume- und der Einstellungen-Seite, normal + maximiert).
+
+**1. Tab-Deck & weißer Rand.** Das stock `TabControl` ist raus. Es zeichnete einen nativen Body-Frame um
+seine Seiten, den Owner-Drawing prinzipiell nicht erreicht — genau die helle Haarlinie, die das ganze Fenster
+umrahmte. Ersatz: `UserControls/ConsoleTabStrip` (owner-drawn Band, aktiver Tab = angehobene Ink-Fläche mit
+2-px-Bernstein-Oberkante) über drei gewöhnlichen `Panel`-Seiten, die der Strip zeigt/versteckt. Dazu
+`Form.Padding = 0` — der Streifen sitzt bündig auf der Fensterkante, wie im Ziel-Mockup.
+
+**2. Kopfzeile.** Der zweite Wortmarken-Header entfällt (die Marke lebt in der Titelleiste: Icon + Caption).
+Die Zusammenfassungszeile *ist* jetzt die Kopfzeile: Text hart links, Master-Fader + „Räume neu suchen" hart
+rechts (`.apptop` des Konzepts). Auch die Caption „DEINE RÄUME" über dem Raster fällt weg — die Summary
+benennt bereits, was folgt.
+
+**3. Einstellungen.** Die Seite wird zur Laufzeit in Konsolen-Karten neu aufgebaut
+(`MainForm.SetupSettingsPage`); alle vorhandenen Controls werden umgehängt, keine Bindung ändert sich.
+Zwei `CardPanel` („Klangprofil & Verbindung" als `TableLayoutPanel`-Raster, „Verhalten & Komfort" als
+Toggle-Liste mit Haarlinien), darunter ein ruhiger Footer. Die Spalte ist auf ~920 px gedeckelt, damit
+Label und Schalter Paare bleiben.
+
+**4. Was WinForms nicht hergibt — und wie es gelöst ist.**
+- Eine `ComboBox` zeichnet ihren 1-px-Rahmen aus dem eigenen `WM_PAINT`; Über-Zeichnen gewann nur an den
+  Ecken. Lösung: `DarkComboBox.ClipToWell()` gibt ihr eine gerundete `Region` 2 px innen — der native Rand
+  erreicht den Bildschirm nie. Der Rahmen kommt vom `FieldFrame` darunter, der Chevron aus dem Overdraw.
+- Owner-Draw einer Combo malt **beide** Flächen: geschlossenes Feld *und* Listenzeilen. Beide gleich zu
+  füllen war der Grund, warum jedes Feld als helle Box in der eigenen Mulde saß — jetzt Ink-2 für das Feld,
+  Surface/Raised für die Liste (`DrawItemState.ComboBoxEdit`).
+- Native Scrollbars: `DwmChrome.UseDarkScrollbars` (`DarkMode_Explorer`) statt weißer Rinne.
+- `PillButton` zeigt seinen Fokusring nur bei Tastaturnavigation (`ShowFocusCues`), sonst sah der
+  Erst-Fokus wie eine Primär-Aktion aus.
+
+## Zweiter visueller Pass (2026-09-04) — Marken-Backdrop, Glas, Kopfzeile
+
+**5. Das TV-Bild ist jetzt der App-Hintergrund.** `Resources/artwork.png` — dasselbe Bild, das der Chromecast
+als `/artwork.png` holt und vollflächig auf den Fernseher legt — liegt hinter der ganzen App
+(`Theme.PaintBackdrop`). Es ist an das **Fenster** verankert, nicht an das jeweilige Panel: jede Fläche malt
+ihre eigene Scheibe desselben Bildes, also laufen die Ringe nahtlos über Werkzeugleiste, Raster und Karten
+hinweg. Skalierung ist rein dynamisch (Cover × Zoom), daher passt sich der Hintergrund jeder Fenstergröße an;
+`RepaintBackdrop()` zeichnet beim Resize alle Flächen neu, weil Standard-Container das von sich aus nicht tun.
+
+Der Bildausschnitt ist bewusst gewählt: Das Artwork ist fürs TV komponiert (Ringe um die Mitte, Wortmarke
+darunter). Ungeschnitten säße diese Wortmarke quer im Fenster und läse sich als zweites, konkurrierendes Logo.
+Deshalb wird das Bild vergrößert und so gerahmt, dass das Fenster **kurz vor** dem leuchtenden Zentrum endet —
+sichtbar bleibt das ruhige Ringband, unter einem von oben nach unten dichter werdenden Ink-Schleier.
+
+**6. Glassmorphism.** Geräte-Kacheln und Einstellungs-Karten sind Glasscheiben: Sie zeigen den Backdrop
+weichgezeichnet durch sich hindurch (GDI+ kann kein Gaussian-Blur — die Scheibe wird verkleinert gerendert und
+bikubisch wieder hochskaliert, was genau den Milchglas-Effekt ergibt), darüber ein durchscheinender Farbton mit
+vertikalem Verlauf, eine helle Lichtkante an der Oberkante und ein weicher Schlagschatten. Hinter Glas ist der
+Schleier bewusst dünner (`veilScale`) — eine Scheibe sammelt Licht. Die spielende Kachel wird etwas dichter
+(sie muss das Pegel-Meter tragen), die überfahrene etwas klarer. Der Downsample-Puffer wird wiederverwendet
+statt pro Frame allokiert.
+
+**7. Kopfzeile & Kachel-Untertitel.** Die Zusammenfassung folgt dem Konzept-Board: „Geräte im Heimnetz · N
+spielen" über „N Räume · M Gruppen · Format · verlustfrei ans ganze Haus" — vollständig lokalisiert (DE/EN/FR)
+statt hart deutsch. Die Kachel nennt unter dem Namen die Hardware: `DiscoveredDevice.ModelName` liest zuerst
+`eureka_info` (`device_info.model_name`, mit Hersteller-Präfix wenn er fehlt), sonst den mDNS-`md=`-Eintrag.
+Damit dieser überhaupt ankommt, reicht `Devices.SetDeviceInformation` das TXT-Record jetzt über die
+eureka-Grenze weiter (vorher ging es dort verloren — auch im Fallback für Geräte ohne `eureka_info`, also
+genau für Fernseher und Soundbars). Wiederholt das Modell nur den Gerätenamen, tritt der Untertitel zurück.
+
+**8. Aus dem Review übernommen:** akkumulierendes Padding in `ClampSettingsWidth` (die Einstellungen-Spalte
+schrumpfte beim Ziehen der Fensterkante gegen 0), toter Idempotenz-Guard in `SetupRoomSummary`, eine
+überzählige Trennlinie über der ersten Toggle-Zeile, überschriebene Textfarben der Summary-Labels,
+Combo-Höhe im Feld-Well, Ctrl+Tab-Navigation (kam vorher vom `TabControl`), Karten-Captions bei Sprachwechsel,
+Font-Leak in `PillButton`.

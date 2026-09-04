@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -72,6 +72,18 @@ namespace KlangHub.Classes
         {
             if (control.IsHandleCreated) SetWindowTheme(control.Handle, string.Empty, string.Empty);
             else control.HandleCreated += (s, e) => SetWindowTheme(control.Handle, string.Empty, string.Empty);
+        }
+
+        /// <summary>
+        /// Switches a scrolling control's native scroll bars to the OS dark variant ("DarkMode_Explorer"),
+        /// so an AutoScroll panel stops cutting a bright white gutter down the side of the dark console.
+        /// Best-effort: on builds without the dark theme class the call is a no-op and the light bar stays.
+        /// </summary>
+        public static void UseDarkScrollbars(Control control)
+        {
+            if (control == null) return;
+            if (control.IsHandleCreated) SetWindowTheme(control.Handle, "DarkMode_Explorer", null);
+            else control.HandleCreated += (s, e) => SetWindowTheme(control.Handle, "DarkMode_Explorer", null);
         }
     }
 }

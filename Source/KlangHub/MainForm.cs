@@ -110,7 +110,7 @@ namespace KlangHub
             btnVolumeUp.Text = Properties.Strings.Button_Up_Text;
             btnVolumeDown.Text = Properties.Strings.Button_Down_Text;
             btnVolumeMute.Text = Properties.Strings.Button_Mute_Text;
-            grpDevices.Text = Properties.Strings.Group_Devices_Text;
+            grpDevices.Text = string.Empty; // the live summary row above the grid is the heading now
             btnScan.Text = Properties.Strings.Button_ScanAgain_Text;
             grpLag.Text = Properties.Strings.Group_Lag_Text;
             lblLagMin.Text = Properties.Strings.Label_MinimumLag_Text;
@@ -143,6 +143,7 @@ namespace KlangHub
             volumeMeterTooltip.SetToolTip(lblDb, Properties.Strings.Tooltip_RecordingLevel_Text);
             volumeMeterTooltip.SetToolTip(volumeMeter, Properties.Strings.Tooltip_RecordingLevel_Text);
             lblFilterDevices.Text = Properties.Strings.Label_FilterDevices_Text;
+            RefreshTabCaptions();
             lblBufferInSeconds.Text = Properties.Strings.Label_BufferInSeconds_Text;
             lblStreamTitle.Text = Properties.Strings.Label_StreamTitle_Text;
             chkDarkMode.Text = Properties.Strings.Check_DarkMode_Text;
@@ -293,7 +294,6 @@ namespace KlangHub
                 grpDevices.Height = tabPageMain.Height - grpVolume.Height - grpLag.Height - 30;
             }
             pnlDevices.Height = grpDevices.Height - 30;
-            btnScan.Top = grpDevices.Height - btnScan.Height - 10;
             grpLag.Visible = showLag;
             chkShowLagControl.Checked = showLag;
         }
@@ -956,16 +956,7 @@ namespace KlangHub
                 return;
 
             chkLogDeviceCommunication.Checked = logDeviceCommunication;
-            if (logDeviceCommunication)
-            {
-                if (!tabControl.TabPages.Contains(tabPageLog))
-                    tabControl.TabPages.Add(tabPageLog);
-            }
-            else
-            {
-                if (tabControl.TabPages.Contains(tabPageLog))
-                    tabControl.TabPages.Remove(tabPageLog);
-            }
+            tabStrip?.SetTabShown(tabPageLog, logDeviceCommunication);
             ApplyTheme(null, GetDarkMode());
         }
 
@@ -1461,14 +1452,17 @@ namespace KlangHub
             {
                 case DeviceControl:
                     return; // owner-drawn; leave it alone
-                case TabControl tc:
-                    tc.BackColor = ink; tc.ForeColor = text;
-                    break;
-                case TabPage tp:
-                    tp.BackColor = ink; tp.ForeColor = text;
-                    break;
+                case UserControls.CardPanel:
+                case UserControls.HairLine:
+                case UserControls.FieldFrame:
+                case UserControls.PillButton:
+                case UserControls.ConsoleTabStrip:
+                    return; // owner-drawn against the token set; the generic cascade would flatten them
                 case GroupBox gb:
                     gb.BackColor = ink; gb.ForeColor = subtle;
+                    break;
+                case UserControls.DarkTextBox dtb:
+                    dtb.BackColor = Classes.Theme.Ink2; dtb.ForeColor = text;
                     break;
                 case TextBox tb:
                     tb.BackColor = recessed; tb.ForeColor = text;
@@ -1482,14 +1476,20 @@ namespace KlangHub
                     chk.BackColor = Color.Transparent; chk.ForeColor = text; chk.FlatStyle = FlatStyle.Flat;
                     chk.FlatAppearance.BorderColor = Classes.Theme.Line;
                     break;
+                case UserControls.DarkComboBox dcb:
+                    dcb.BackColor = Classes.Theme.Ink2; dcb.ForeColor = text;
+                    break;
                 case ComboBox cb:
                     cb.BackColor = surface; cb.ForeColor = text; cb.FlatStyle = FlatStyle.Flat;
                     break;
                 case FlowLayoutPanel flp when flp.Parent is not DeviceControl:
                     flp.BackColor = ink; flp.ForeColor = text;
                     break;
-                case Panel pnl when pnl.Parent is not DeviceControl:
-                    pnl.BackColor = ink; pnl.ForeColor = text;
+                case Panel pnl when pnl.Tag as string == "backdrop":
+                case FlowLayoutPanel flp2 when flp2.Tag as string == "backdrop":
+                    return;   // shows the shared backdrop through - a solid ink fill would block it
+                case Panel pnl2 when pnl2.Parent is not DeviceControl && pnl2.Parent is not UserControls.CardPanel:
+                    pnl2.BackColor = ink; pnl2.ForeColor = text;
                     break;
                 case Button btn when btn.Parent is not DeviceControl:
                     btn.BackColor = surface; btn.ForeColor = text;
@@ -1499,12 +1499,13 @@ namespace KlangHub
                     btn.UseVisualStyleBackColor = false;
                     break;
                 case Label lbl when lbl.Parent is not DeviceControl && lbl.Name != "lblSectionSound" && lbl.Name != "lblSectionBehavior":
-                    lbl.BackColor = Color.Transparent; lbl.ForeColor = subtle;
+                    lbl.BackColor = Color.Transparent;
+                    if (lbl.Tag as string != "keep-fg") lbl.ForeColor = subtle;
                     break;
             }
         }
 
-        private UserControls.AppHeaderControl? headerControl;
+        private bool premiumChromeApplied;
 
         /// <summary>
         /// Applies the premium "hi-fi console" chrome: the branded header band above the master-volume bar, and
@@ -1512,18 +1513,25 @@ namespace KlangHub
         /// </summary>
         private void SetupPremiumChrome()
         {
-            if (tabPageMain == null || headerControl != null)
+            if (tabPageMain == null || premiumChromeApplied)
                 return;
+            premiumChromeApplied = true;
 
-            headerControl = new UserControls.AppHeaderControl();
-            tabPageMain.Controls.Add(headerControl);  // last-added => top-most Dock=Top, sits above grpVolume
-
+            Resize += (s, e) => RepaintBackdrop();
+            ResizeEnd += (s, e) => RepaintBackdrop();
+            grpVolume.Height = 64;   // one calm toolbar strip, not a 84-px group box
             ThemeGroupBoxBorder(grpVolume);
             ThemeGroupBoxBorder(grpDevices);
             ThemeGroupBoxBorder(grpLag);
             ThemeGroupBoxBorder(grpOptions);
             pnlDevices.BackColor = Classes.Theme.Ink;
-            pnlDevices.Paint += PnlDevices_PaintRingWatermark;
+            Classes.DwmChrome.UseDarkScrollbars(pnlDevices);
+            EnableBackdrop(tabPageMain);
+            EnableBackdrop(tabPageOptions);
+            EnableBackdrop(tabPageLog);
+            EnableBackdrop(pnlDevices);
+            pnlVolumeAllButtons.BackColor = Color.Transparent;   // WinForms paints the parent through it
+            pnlVolumeAllButtons.Tag = "backdrop";
             SetupComboBoxDarkDraw(this);
 
             var icon = Classes.Theme.LoadAppIcon();
@@ -1536,9 +1544,8 @@ namespace KlangHub
 
             SetupMasterVolumeFader();
             SetupRoomSummary();
-            SetupBrandCredit();
             SetupTabStrip();
-            SetupOptionsSections();
+            SetupSettingsPage();
         }
 
         private System.Windows.Forms.Timer? roomSummaryTimer;
@@ -1549,8 +1556,8 @@ namespace KlangHub
         // stacked labels (different weights match the concept's title/subtitle) inserted before the fader.
         private void SetupRoomSummary()
         {
-            if (pnlVolumeAllButtons == null || pnlVolumeAllButtons.Controls.ContainsKey("pnlRoomSummary"))
-                return;
+            if (grpVolume == null || grpVolume.Controls.ContainsKey("pnlRoomSummary"))
+                return;   // the stack lives in grpVolume since the toolbar rebuild - guard the real parent
 
             grpVolume.Text = string.Empty; // no more generic uppercase caption on this row
 
@@ -1561,6 +1568,7 @@ namespace KlangHub
                 ForeColor = Classes.Theme.Ivory,
                 BackColor = Color.Transparent,
                 Margin = new Padding(0),
+                Tag = "keep-fg",   // the generic label cascade would flatten the title into slate
             };
             lblRoomSummarySubtitle = new Label
             {
@@ -1569,6 +1577,7 @@ namespace KlangHub
                 ForeColor = Classes.Theme.Slate,
                 BackColor = Color.Transparent,
                 Margin = new Padding(0),
+                Tag = "keep-fg",
             };
             var stack = new FlowLayoutPanel
             {
@@ -1582,8 +1591,11 @@ namespace KlangHub
             };
             stack.Controls.Add(lblRoomSummaryTitle);
             stack.Controls.Add(lblRoomSummarySubtitle);
-            pnlVolumeAllButtons.Controls.Add(stack);
-            pnlVolumeAllButtons.Controls.SetChildIndex(stack, 0);
+            stack.Margin = new Padding(2, 8, 24, 4);
+            stack.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            grpVolume.Controls.Add(stack);
+            stack.Location = new Point(4, 10);
+            stack.BringToFront();
 
             RefreshRoomSummary();
             roomSummaryTimer = new System.Windows.Forms.Timer { Interval = 1000 };
@@ -1591,134 +1603,367 @@ namespace KlangHub
             roomSummaryTimer.Start();
         }
 
+        // The concept board's header line, now fully localized and built from what discovery actually knows:
+        // a title that names the scope and how much of it is playing, and a quiet second line with the count,
+        // how many of those are multi-room groups, the stream format and what that format means for quality.
         private void RefreshRoomSummary()
         {
             if (lblRoomSummaryTitle == null || lblRoomSummarySubtitle == null) return;
-            var (total, playing) = CountDevices();
-            // Unified vocabulary: "Räume" everywhere (matches the tabs), with correct singular ("1 Raum",
-            // "1 spielt").
-            string count = total == 1 ? "1 Raum" : $"{total} Räume";
-            string verb = playing == 1 ? "spielt" : "spielen";
-            lblRoomSummaryTitle.Text = playing > 0 ? $"{count} · {playing} {verb}" : count;
-            lblRoomSummarySubtitle.Text = string.Format(Properties.Strings.Label_RoomSummarySubtitle_Text, Classes.Theme.CurrentFormatLabel);
-        }
+            var (total, playing, groups) = CountDevices();
 
-        // Groups the flat Einstellungen list into two labelled sections. Both panels are plain Dock=Top
-        // stacks, so a header appended at runtime (Controls.Add always adds to the END of the collection,
-        // and WinForms docks Top-siblings in REVERSE collection order - last added = outermost/topmost)
-        // lands exactly above the existing rows without touching any of their designer-computed layout.
-        private void SetupOptionsSections()
-        {
-            if (pnlOptions == null || pnlOptions.Controls.ContainsKey("lblSectionSound"))
-                return;
-
-            pnlOptions.Controls.Add(SectionDivider());
-            pnlOptions.Controls.Add(SectionHeader("lblSectionSound", Properties.Strings.Label_Section_Sound_Text));
-
-            pnlOptionsCheckBoxes.Controls.Add(SectionDivider());
-            pnlOptionsCheckBoxes.Controls.Add(SectionHeader("lblSectionBehavior", Properties.Strings.Label_Section_Behavior_Text));
-        }
-
-        private static Label SectionHeader(string name, string text) => new Label
-        {
-            Name = name,
-            Text = text,
-            UseMnemonic = false, // otherwise "&" in the title (e.g. "Klangprofil & Verbindung") is eaten as an accelerator marker
-            Dock = DockStyle.Top,
-            Height = 30,
-            Padding = new Padding(0, 10, 0, 4),
-            Font = new Font(Classes.Theme.Label.FontFamily, 8.5f, FontStyle.Bold),
-            ForeColor = Classes.Theme.Amber,
-            BackColor = Color.Transparent,
-            TextAlign = ContentAlignment.BottomLeft,
-        };
-
-        private static Panel SectionDivider() => new Panel
-        {
-            Dock = DockStyle.Top,
-            Height = 1,
-            Margin = new Padding(0),
-            BackColor = Classes.Theme.Line,
-        };
-
-        // The native TabControl header ignores BackColor/ForeColor (OS visual-styles draw it), which is why the
-        // tab strip kept its light chrome even after the rest of the app went dark. Owner-draw it as flat,
-        // borderless pills with an amber underline on the active tab, per the approved UI concept.
-        private void SetupTabStrip()
-        {
-            if (tabControl == null || tabControl.DrawMode == TabDrawMode.OwnerDrawFixed)
-                return;
-            tabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
-            tabControl.SizeMode = TabSizeMode.Fixed;
-            tabControl.Padding = new Point(18, 6);
-            tabControl.ItemSize = new Size(128, 34);
-            tabControl.DrawItem += TabControl_DrawItem;
-            Classes.DwmChrome.DisableVisualStyles(tabControl); // stop the native tab-row chrome bleeding through
-            if (txtLog != null) Classes.DwmChrome.DisableVisualStyles(txtLog); // dark scrollbar instead of a light native one
-        }
-
-        private void TabControl_DrawItem(object? sender, DrawItemEventArgs e)
-        {
-            bool dark = GetDarkMode();
-            var tab = tabControl.TabPages[e.Index];
-            bool active = e.Index == tabControl.SelectedIndex;
-            var g = e.Graphics;
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            var bg = dark ? (active ? Classes.Theme.Ink : Classes.Theme.Ink2) : (active ? SystemColors.Control : SystemColors.ControlLight);
-            var fg = dark ? (active ? Classes.Theme.Ivory : Classes.Theme.Slate) : (active ? Color.Black : SystemColors.GrayText);
-            using (var b = new SolidBrush(bg)) g.FillRectangle(b, e.Bounds);
-
-            using var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center, FormatFlags = StringFormatFlags.NoWrap };
-            using var tabFont = new Font(Classes.Theme.Name.FontFamily, 9.5f, FontStyle.Bold);
-            using (var fb = new SolidBrush(fg)) g.DrawString(tab.Text, tabFont, fb, e.Bounds, sf);
-
-            if (active)
+            string title = Properties.Strings.Label_RoomSummaryTitle_Text;
+            if (playing > 0)
             {
-                var underline = dark ? Classes.Theme.Amber : SystemColors.Highlight;
-                using var pen = new Pen(underline, 2.4f);
-                g.DrawLine(pen, e.Bounds.Left + 6, e.Bounds.Bottom - 2, e.Bounds.Right - 6, e.Bounds.Bottom - 2);
+                string p = playing == 1
+                    ? Properties.Strings.Label_RoomSummaryPlayingOne_Text
+                    : string.Format(Properties.Strings.Label_RoomSummaryPlayingMany_Text, playing);
+                title += " · " + p;
+            }
+            lblRoomSummaryTitle.Text = title;
+
+            if (total == 0)
+            {
+                lblRoomSummarySubtitle.Text = Properties.Strings.Label_RoomSummaryEmpty_Text;
+                return;
             }
 
-            // The fixed-width tab strip rarely fills the control's whole width - the leftover band to the right
-            // of the last tab isn't covered by any DrawItem call and would otherwise show the native light
-            // tab-row background. Paint over it once, right after the last tab.
-            if (e.Index == tabControl.TabCount - 1 && e.Bounds.Right < tabControl.Width)
+            string rooms = total == 1
+                ? Properties.Strings.Label_RoomSummaryDevicesOne_Text
+                : string.Format(Properties.Strings.Label_RoomSummaryDevicesMany_Text, total);
+            if (groups > 0)
             {
-                var rest = new Rectangle(e.Bounds.Right, e.Bounds.Top, tabControl.Width - e.Bounds.Right, e.Bounds.Height);
-                using var rb = new SolidBrush(dark ? Classes.Theme.Ink : SystemColors.Control);
-                g.FillRectangle(rb, rest);
+                string g = groups == 1
+                    ? Properties.Strings.Label_RoomSummaryGroupsOne_Text
+                    : string.Format(Properties.Strings.Label_RoomSummaryGroupsMany_Text, groups);
+                rooms += " · " + g;
             }
+            string quality = IsLosslessFormat()
+                ? Properties.Strings.Label_RoomSummaryLossless_Text
+                : Properties.Strings.Label_RoomSummaryCompressed_Text;
+            lblRoomSummarySubtitle.Text = $"{rooms} · {Classes.Theme.CurrentFormatLabel} · {quality}";
         }
 
-        // A small, discreet brand credit - not legally required (see docs/THIRD-PARTY-LICENSES.md and
-        // README.md for the formal MIT attribution to the original author), just a quiet personal signature.
-        private void SetupBrandCredit()
+        /// <summary>True while the selected stream format carries the original samples (WAV / FLAC).</summary>
+        private static bool IsLosslessFormat() =>
+            !Classes.Theme.CurrentFormatLabel.StartsWith("MP3", StringComparison.OrdinalIgnoreCase);
+
+        // ================= Einstellungen: the settings page, rebuilt as console cards =================
+        // The designer's flat two-column flow (label column | control column) read as a form dialog from 2010:
+        // stock combo chrome, a white text box, hairline dividers and no shared material with the Raeume page.
+        // This rebuild re-hosts the very same controls (every binding, event and Get/Set stays untouched) inside
+        // the concept's surface cards, on one 8-px grid, with the field wells and pill buttons the rest of the
+        // app already uses.
+        private UserControls.CardPanel? cardSound, cardBehavior;
+        private Panel? settingsScroll;
+
+        private void SetupSettingsPage()
         {
-            if (grpOptions == null || grpOptions.Controls.ContainsKey("lblCredit"))
+            if (tabPageOptions == null || settingsScroll != null)
                 return;
 
+            // The old containers keep existing (the designer still wires them) but leave the visual tree.
+            grpOptions.Visible = false;
+            tabPageOptions.Controls.Remove(grpOptions);
+
+            settingsScroll = new Panel
+            {
+                Name = "pnlSettingsScroll",
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor = Classes.Theme.Ink,
+            };
+            tabPageOptions.Controls.Add(settingsScroll);
+            Classes.DwmChrome.UseDarkScrollbars(settingsScroll);
+            EnableBackdrop(settingsScroll);
+
+            cardSound = BuildSoundCard();
+            cardBehavior = BuildBehaviorCard();
+            var footer = BuildSettingsFooter();
+
+            // Dock=Top siblings stack in REVERSE collection order, so add bottom-up.
+            settingsScroll.Controls.Add(footer);
+            settingsScroll.Controls.Add(Spacer(16));
+            settingsScroll.Controls.Add(cardBehavior);
+            settingsScroll.Controls.Add(Spacer(16));
+            settingsScroll.Controls.Add(cardSound);
+            settingsScroll.Controls.Add(Spacer(4));
+
+            // A settings column wider than ~900 px pushes labels and switches apart until the rows stop reading
+            // as pairs; cap it with right padding rather than absolute widths so it still reflows on any DPI.
+            settingsScroll.Resize += (s, e) => ClampSettingsWidth();
+            ClampSettingsWidth();
+        }
+
+        private void ClampSettingsWidth()
+        {
+            if (settingsScroll == null) return;
+            // ClientSize already includes the padding band (only DisplayRectangle subtracts it), so the
+            // slack must be measured against ClientSize alone - adding Padding.Right back in made every
+            // resize event stack another band on top and squeezed the column shut.
+            int slack = Math.Max(0, settingsScroll.ClientSize.Width - 920);
+            var want = new Padding(0, 0, slack, 8);
+            if (settingsScroll.Padding != want) settingsScroll.Padding = want;
+        }
+
+        private static Panel Spacer(int h) =>
+            new Panel { Dock = DockStyle.Top, Height = h, BackColor = Color.Transparent, Tag = "backdrop" };
+
+        /// <summary>Card 1 - the sound profile and connection fields, on a two-column label/field grid.</summary>
+        private UserControls.CardPanel BuildSoundCard()
+        {
+            var card = new UserControls.CardPanel
+            {
+                Name = "cardSound",
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(22, 46, 22, 20),   // top inset leaves room for the tracked caption
+                Caption = Properties.Strings.Label_Section_Sound_Text,
+            };
+
+            var grid = new TableLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                ColumnCount = 2,
+                BackColor = Color.Transparent,
+                Margin = new Padding(0),
+            };
+            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 226));
+            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));   // the field follows the card width
+
+            AddField(grid, lblIpAddressUsed, WrapField(cmbIP4AddressUsed));
+            AddField(grid, lblDevice, WrapField(cmbRecordingDevice));
+            AddField(grid, lblStreamFormat, WrapField(cmbStreamFormat));
+            AddField(grid, lblLanguage, WrapField(cmbLanguage));
+            AddField(grid, lblFilterDevices, WrapField(cmbFilterDevices));
+            AddField(grid, lblBufferInSeconds, WrapField(cmbBufferInSeconds));
+            AddField(grid, lblStreamTitle, WrapField(txtStreamTitle));
+
+            card.Controls.Add(grid);
+            return card;
+        }
+
+        /// <summary>
+        /// Puts an input inside the drawn field well. A TextBox simply drops its border; a ComboBox cannot,
+        /// so it is filled to the well and clipped to a rounded region (DarkComboBox.ClipToWell) that cuts
+        /// its light native frame off. Either way the visible shape is the well: ink-2, 9-px, one hairline.
+        /// </summary>
+        private UserControls.FieldFrame WrapField(Control input)
+        {
+            var well = new UserControls.FieldFrame { Margin = new Padding(0, 5, 0, 5), Padding = new Padding(0) };
+            input.Parent?.Controls.Remove(input);
+            if (input is TextBox tb) { tb.BorderStyle = BorderStyle.None; tb.Multiline = false; }
+            input.BackColor = Classes.Theme.Ink2;
+            input.ForeColor = Classes.Theme.Ivory;
+            input.Font = Classes.Theme.Body;
+            input.Dock = DockStyle.None;
+            well.Controls.Add(input);
+
+            void Fit()
+            {
+                if (input is UserControls.DarkComboBox combo)
+                {
+                    // A drop-down ComboBox forces its own PreferredHeight, so filling the well is impossible;
+                    // centre it and let it own the full width (its rounded clip becomes the visible field).
+                    combo.Width = well.ClientSize.Width;
+                    combo.Top = Math.Max(0, (well.ClientSize.Height - combo.Height) / 2);
+                    combo.Left = 0;
+                    combo.ClipToWell();
+                }
+                else
+                {
+                    input.SetBounds(12, Math.Max(0, (well.ClientSize.Height - input.Height) / 2),
+                                    Math.Max(10, well.ClientSize.Width - 24), input.Height);
+                }
+            }
+            well.Resize += (s, e) => Fit();
+            well.HandleCreated += (s, e) => Fit();
+            Fit();
+
+            input.GotFocus += (s, e) => { well.Focused2 = true; well.Invalidate(); };
+            input.LostFocus += (s, e) => { well.Focused2 = false; well.Invalidate(); };
+            return well;
+        }
+
+        /// <summary>One label/field row on the settings grid - 48 px tall, vertically centred label.</summary>
+        private void AddField(TableLayoutPanel grid, Label label, Control field)
+        {
+            int row = grid.RowCount++;
+            grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+
+            label.Parent?.Controls.Remove(label);
+            label.AutoSize = false;
+            label.Dock = DockStyle.Fill;
+            label.Margin = new Padding(0, 5, 16, 5);
+            label.TextAlign = ContentAlignment.MiddleLeft;
+            label.Font = Classes.Theme.Body;
+            label.ForeColor = Classes.Theme.Slate;
+            label.BackColor = Color.Transparent;
+            label.Tag = "keep-fg";
+
+            field.Parent?.Controls.Remove(field);
+            field.Dock = DockStyle.Fill;
+            field.Margin = new Padding(0, 5, 0, 5);
+
+            grid.Controls.Add(label, 0, row);
+            grid.Controls.Add(field, 1, row);
+        }
+
+        /// <summary>Card 2 - the behaviour toggles, one 38-px switch row each, hairline-separated.</summary>
+        private UserControls.CardPanel BuildBehaviorCard()
+        {
+            var card = new UserControls.CardPanel
+            {
+                Name = "cardBehavior",
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(22, 46, 22, 14),
+                Caption = Properties.Strings.Label_Section_Behavior_Text,
+            };
+
+            var stack = new Panel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                BackColor = Color.Transparent,
+                Margin = new Padding(0),
+            };
+
+            // Dock=Top stacking is reverse-of-collection, so add the list bottom-up to keep the reading order.
+            var toggles = new UserControls.ToggleSwitch[]
+            {
+                chkHook, chkShowWindowOnStart, chkStartApplicationWhenWindowsStarts, chkAutoStart,
+                chkAutoStartLastUsed, chkAutoRestart, chkLogDeviceCommunication, chkAutoMute,
+                chkMinimizeToTray, chkConvertMultiChannelToStereo, chkShowLagControl, chkDarkMode,
+            };
+            bool seenVisible = false;
+            for (int i = toggles.Length - 1; i >= 0; i--)
+            {
+                var t = toggles[i];
+                t.Parent?.Controls.Remove(t);
+                t.Dock = DockStyle.Top;
+                t.AutoSize = false;
+                t.Height = 38;
+                t.Margin = new Padding(0);
+                // Dock=Top reverses the order, so a line added AFTER a toggle ends up ABOVE it: only add one
+                // once a visible row is already stacked, never before the first one.
+                if (t.Visible && seenVisible) stack.Controls.Add(new UserControls.HairLine());
+                stack.Controls.Add(t);
+                if (t.Visible) seenVisible = true;
+            }
+
+            card.Controls.Add(stack);
+            return card;
+        }
+
+        /// <summary>The quiet closing row: reset action left, help link, version and signature below.</summary>
+        private Panel BuildSettingsFooter()
+        {
+            var footer = new Panel
+            {
+                Name = "pnlSettingsFooter",
+                Dock = DockStyle.Top,
+                Height = 112,
+                BackColor = Color.Transparent,
+                Tag = "backdrop",
+            };
+
+            btnResetSettings.Parent?.Controls.Remove(btnResetSettings);
+            btnResetSettings.AutoSize = false;
+            btnResetSettings.Size = new Size(214, 36);
+            btnResetSettings.Location = new Point(0, 8);
+            footer.Controls.Add(btnResetSettings);
+
+            linkHelp.Parent?.Controls.Remove(linkHelp);
+            linkHelp.AutoSize = true;
+            linkHelp.Location = new Point(230, 17);
+            linkHelp.Font = Classes.Theme.Body;
+            linkHelp.LinkBehavior = LinkBehavior.HoverUnderline;
+            linkHelp.TextAlign = ContentAlignment.MiddleLeft;
+            footer.Controls.Add(linkHelp);
+
+            lblNewReleaseAvailable.Parent?.Controls.Remove(lblNewReleaseAvailable);
+            lblNewReleaseAvailable.AutoSize = true;
+            lblNewReleaseAvailable.Dock = DockStyle.None;
+            lblNewReleaseAvailable.Location = new Point(0, 58);
+            lblNewReleaseAvailable.Padding = new Padding(0);
+            lblNewReleaseAvailable.Font = Classes.Theme.Small;
+            footer.Controls.Add(lblNewReleaseAvailable);
+
+            lblVersion.Parent?.Controls.Remove(lblVersion);
+            lblVersion.AutoSize = true;
+            lblVersion.Dock = DockStyle.None;
+            lblVersion.Location = new Point(0, 78);
+            lblVersion.Padding = new Padding(0);
+            lblVersion.Font = Classes.Theme.Small;
+            lblVersion.ForeColor = Classes.Theme.Slate2;
+            lblVersion.Tag = "keep-fg";
+            footer.Controls.Add(lblVersion);
+
+            // A small, discreet brand signature - not legally required (see docs/THIRD-PARTY-LICENSES.md and
+            // README.md for the formal MIT attribution to the original author), just a quiet personal line.
             var credit = new Label
             {
                 Name = "lblCredit",
                 Text = Properties.Strings.Label_Credit_Text,
-                Dock = DockStyle.Bottom,
                 AutoSize = true,
-                Padding = new Padding(10, 2, 3, 6),
+                Location = new Point(0, 96),
                 Font = new Font(Classes.Theme.Small.FontFamily, 8f, FontStyle.Italic),
                 ForeColor = Classes.Theme.Slate2,
                 BackColor = Color.Transparent,
+                Tag = "keep-fg",
             };
-            grpOptions.Controls.Add(credit);
-
-            if (headerControl != null)
-            {
-                toolTipGroup2 ??= new ToolTip();
-                toolTipGroup2.SetToolTip(headerControl, Properties.Strings.Label_Credit_Text);
-            }
+            footer.Controls.Add(credit);
+            return footer;
         }
 
-        private ToolTip? toolTipGroup2;
+        // The stock TabControl was replaced by an owner-drawn strip over plain panel pages (see
+        // UserControls/ConsoleTabStrip): its native body frame is what drew the light hairline around the whole
+        // window, and owner-draw could never reach it. The strip is created here and docked above the page host.
+        private UserControls.ConsoleTabStrip? tabStrip;
+
+        private void SetupTabStrip()
+        {
+            if (tabControl == null || tabStrip != null)
+                return;
+
+            tabControl.BackColor = Classes.Theme.Ink;
+            tabStrip = new UserControls.ConsoleTabStrip();
+            tabStrip.AddTab(tabPageMain, Properties.Strings.Tab_Main_Text);
+            tabStrip.AddTab(tabPageOptions, Properties.Strings.Tab_Options_Text);
+            tabStrip.AddTab(tabPageLog, Properties.Strings.Tab_Log_Text);
+            Controls.Add(tabStrip);            // index 1 => docks Top first, the Fill page host keeps the rest
+            tabStrip.SetTabShown(tabPageLog, chkLogDeviceCommunication?.Checked ?? false);
+
+            if (txtLog != null) Classes.DwmChrome.UseDarkScrollbars(txtLog); // dark scrollbar instead of a light native one
+        }
+
+        /// <summary>Re-applies every caption this code owns after a language change (the designer-bound
+        /// texts are handled by ApplyLocalization itself).</summary>
+        /// <summary>Restores Ctrl+Tab / Ctrl+Shift+Tab page switching, which came with the stock TabControl
+        /// and had to be re-implemented alongside the owner-drawn strip.</summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (tabStrip != null && (keyData & Keys.Control) == Keys.Control && (keyData & Keys.KeyCode) == Keys.Tab)
+                if (tabStrip.StepSelection((keyData & Keys.Shift) == Keys.Shift ? -1 : 1))
+                    return true;
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void RefreshTabCaptions()
+        {
+            if (cardSound != null) { cardSound.Caption = Properties.Strings.Label_Section_Sound_Text; cardSound.Invalidate(); }
+            if (cardBehavior != null) { cardBehavior.Caption = Properties.Strings.Label_Section_Behavior_Text; cardBehavior.Invalidate(); }
+            RefreshRoomSummary();
+            if (tabStrip == null) return;
+            tabStrip.SetTabText(tabPageMain, Properties.Strings.Tab_Main_Text);
+            tabStrip.SetTabText(tabPageOptions, Properties.Strings.Tab_Options_Text);
+            tabStrip.SetTabText(tabPageLog, Properties.Strings.Tab_Log_Text);
+        }
 
         // Replaces the old Lauter/Leiser/Alle-stumm buttons with a single master-volume fader (per the approved
         // UI concept): dragging it sets every visible card to that absolute level (each card still enforces its
@@ -1732,31 +1977,58 @@ namespace KlangHub
             btnVolumeDown.Visible = false;
             btnVolumeMute.Visible = false;
 
-            var master = new UserControls.MasterVolumeControl { Name = "masterVolume", Margin = new Padding(3, 10, 12, 4) };
+            // right-aligned toolbar cluster: [Erneut suchen] [master fader] reading right-to-left
+            pnlVolumeAllButtons.Dock = DockStyle.Right;
+            pnlVolumeAllButtons.FlowDirection = FlowDirection.RightToLeft;
+            pnlVolumeAllButtons.WrapContents = false;
+            btnScan.Margin = new Padding(12, 9, 4, 4);
+            btnScan.AutoSize = false;
+            btnScan.Size = new Size(178, 36);
+            var master = new UserControls.MasterVolumeControl { Name = "masterVolume", Margin = new Padding(3, 9, 4, 4) };
             master.VolumeDragged += t => { foreach (Control c in pnlDevices.Controls) if (c is UserControls.DeviceControl dc) dc.ApplyVolumeAbsolute(t); };
             master.MuteClicked += () => devices?.VolumeMute();
             pnlVolumeAllButtons.Controls.Add(master);
-            pnlVolumeAllButtons.Controls.SetChildIndex(master, 0);
+            pnlVolumeAllButtons.Controls.SetChildIndex(btnScan, 0);  // right-to-left: first child sits rightmost
+            pnlVolumeAllButtons.Controls.SetChildIndex(master, 1);
         }
 
-        // A faint concentric-ring watermark bleeding off the top-right corner - echoes the brand's amber "sound
-        // rings" (the TV artwork / app logo) behind the device grid, per the approved UI concept. Child cards
-        // paint over it since they're separate child windows, so it only shows through the gaps.
-        private void PnlDevices_PaintRingWatermark(object? sender, PaintEventArgs e)
+        // The app now wears the same picture the Chromecast puts on the TV (Resources/artwork.png, served
+        // as /artwork.png to the receiver): one continuous, window-anchored backdrop behind everything, laid
+        // under a heavy ink veil so cards, text and meters keep their contrast. Every surface that opts in
+        // paints its own slice of that one image, so the panel seams stay invisible.
+        private readonly List<Control> backdropSurfaces = new();
+
+        private void EnableBackdrop(Control c)
         {
-            if (!GetDarkMode()) return;
-            var g = e.Graphics;
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            float cx = pnlDevices.ClientSize.Width - 20, cy = -60;
-            DrawRing(g, cx, cy, 90, 26);
-            DrawRing(g, cx, cy, 160, 16);
-            DrawRing(g, cx, cy, 230, 9);
+            if (c == null || backdropSurfaces.Contains(c)) return;
+            SetDoubleBuffered(c);
+            c.Paint += (s, e) => Classes.Theme.PaintBackdrop(e.Graphics, c);
+            if (c is ScrollableControl sc && sc.AutoScroll)
+                sc.Scroll += (s, e) => sc.Invalidate();   // a scrolled panel blits its old pixels; redraw them
+            backdropSurfaces.Add(c);
+            c.Invalidate();
         }
 
-        private static void DrawRing(Graphics g, float cx, float cy, float r, int alpha)
+        /// <summary>The backdrop is scaled to the WINDOW, so every surface has to repaint whenever the window
+        /// changes size - otherwise each panel keeps a slice of the old scale and the image tears at the seams.
+        /// Stock containers do not invalidate on resize, so drive it from the form.</summary>
+        private void RepaintBackdrop()
         {
-            using var pen = new Pen(Color.FromArgb(alpha, Classes.Theme.Amber), 1.4f);
-            g.DrawEllipse(pen, cx - r, cy - r, r * 2, r * 2);
+            foreach (var c in backdropSurfaces)
+                if (!c.IsDisposed) c.Invalidate();
+        }
+
+        /// <summary>Turns on double buffering for a stock container (the property is protected), so the
+        /// backdrop does not flicker while the window resizes.</summary>
+        private static void SetDoubleBuffered(Control c)
+        {
+            try
+            {
+                typeof(Control).GetProperty("DoubleBuffered",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                    ?.SetValue(c, true, null);
+            }
+            catch { /* best effort - a non-buffered backdrop still draws correctly */ }
         }
 
         // WinForms DropDownList combos ignore BackColor, so owner-draw them for the dark theme.
@@ -1780,21 +2052,45 @@ namespace KlangHub
             if (sender is not ComboBox cb) return;
             bool dark = GetDarkMode();
             bool selected = (e.State & DrawItemState.Selected) != 0;
-            var bg = dark ? (selected ? Classes.Theme.Raised : Classes.Theme.Surface) : (selected ? SystemColors.Highlight : SystemColors.Window);
-            var fg = dark ? Classes.Theme.Ivory : (selected ? SystemColors.HighlightText : SystemColors.ControlText);
-            using (var b = new SolidBrush(bg)) e.Graphics.FillRectangle(b, e.Bounds);
+
+            // This handler paints BOTH the closed field (ComboBoxEdit) and the drop-down rows. They are two
+            // different surfaces: the closed field is the recessed ink-2 well of the settings page, the rows
+            // are a raised list. Painting the field in the list colour is what made every field read as a
+            // light box inside its own well.
+            bool isField = (e.State & DrawItemState.ComboBoxEdit) != 0;
+            var bounds = isField ? cb.ClientRectangle : e.Bounds;
+            var bg = !dark ? (selected && !isField ? SystemColors.Highlight : SystemColors.Window)
+                   : isField ? Classes.Theme.Ink2
+                   : selected ? Classes.Theme.Raised
+                   : Classes.Theme.Surface;
+            var fg = dark ? Classes.Theme.Ivory : (selected && !isField ? SystemColors.HighlightText : SystemColors.ControlText);
+
+            using (var b = new SolidBrush(bg)) e.Graphics.FillRectangle(b, bounds);
+            if (selected && !isField && dark)
+                using (var accent = new SolidBrush(Classes.Theme.Amber))
+                    e.Graphics.FillRectangle(accent, bounds.X, bounds.Y, 3, bounds.Height);
+
             if (e.Index >= 0)
-                TextRenderer.DrawText(e.Graphics, cb.GetItemText(cb.Items[e.Index]), cb.Font,
-                    new Point(e.Bounds.X + 2, e.Bounds.Y + 1), fg);
+            {
+                var r = new Rectangle(bounds.X + 11, bounds.Y, bounds.Width - (isField ? 40 : 20), bounds.Height);
+                TextRenderer.DrawText(e.Graphics, cb.GetItemText(cb.Items[e.Index]), cb.Font, r, fg,
+                    TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis
+                    | TextFormatFlags.NoPrefix);
+            }
         }
 
-        private (int total, int playing) CountDevices()
+        private (int total, int playing, int groups) CountDevices()
         {
-            int total = 0, playing = 0;
+            int total = 0, playing = 0, groups = 0;
             if (pnlDevices != null)
                 foreach (var c in pnlDevices.Controls)
-                    if (c is UserControls.DeviceControl dc) { total++; if (dc.IsPlaying) playing++; }
-            return (total, playing);
+                    if (c is UserControls.DeviceControl dc)
+                    {
+                        total++;
+                        if (dc.IsPlaying) playing++;
+                        if (dc.IsGroup) groups++;
+                    }
+            return (total, playing, groups);
         }
 
         // Over-draw the stock GroupBox etched border with Ink (children paint themselves on top) and re-draw the
@@ -1802,17 +2098,13 @@ namespace KlangHub
         private void ThemeGroupBoxBorder(GroupBox gb)
         {
             if (gb == null) return;
+            SetDoubleBuffered(gb);
             gb.Paint += (s, e) =>
             {
                 if (!GetDarkMode()) return;
                 var g = e.Graphics;
-                using (var b = new SolidBrush(Classes.Theme.Ink))
-                {
-                    g.FillRectangle(b, 0, 0, gb.Width, 15);
-                    g.FillRectangle(b, 0, 0, 3, gb.Height);
-                    g.FillRectangle(b, gb.Width - 3, 0, 3, gb.Height);
-                    g.FillRectangle(b, 0, gb.Height - 3, gb.Width, 3);
-                }
+                // the backdrop covers the whole box, etched 3D border included - no ink patches needed
+                Classes.Theme.PaintBackdrop(g, gb);
                 if (!string.IsNullOrEmpty(gb.Text))
                 {
                     g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;

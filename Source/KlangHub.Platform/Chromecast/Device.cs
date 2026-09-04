@@ -720,7 +720,10 @@ namespace KlangHub.Application
         public event EventHandler<VolumeStatus>? VolumeChanged;
 
         CastDeviceDescriptor IPlaybackSession.Device =>
-            new(ChromecastDeviceId.From(discoveredDevice), GetFriendlyName(), ProviderId.Chromecast, IsGroup());
+            new(ChromecastDeviceId.From(discoveredDevice), GetFriendlyName(), ProviderId.Chromecast, IsGroup())
+            {
+                Model = discoveredDevice?.ModelName,   // the card's subtitle: what hardware fills this room
+            };
 
         PlaybackState IPlaybackSession.State => ChromecastStateMapper.ToPlaybackState(GetDeviceState());
 

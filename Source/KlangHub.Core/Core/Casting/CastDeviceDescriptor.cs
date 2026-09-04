@@ -1,4 +1,4 @@
-namespace KlangHub.Core.Casting
+﻿namespace KlangHub.Core.Casting
 {
     /// <summary>
     /// Provider-neutral identity of a discovered playback endpoint. Just enough to identify, display
@@ -16,6 +16,14 @@ namespace KlangHub.Core.Casting
         ProviderId Provider,
         bool IsGroup)
     {
+        /// <summary>Hardware model as announced by the endpoint (Chromecast mDNS "md=", e.g. "Google Nest
+        /// Audio"), when it is known - shown as the card's subtitle. Null when the provider has no model
+        /// information; never part of the identity.</summary>
+        public string? Model { get; init; }
+
+        /// <summary>Number of members behind a group, when the provider knows it (0 = unknown).</summary>
+        public int MemberCount { get; init; }
+
         public override string ToString() => Name;
     }
 }

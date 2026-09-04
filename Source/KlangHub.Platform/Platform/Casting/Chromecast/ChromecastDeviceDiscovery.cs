@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using KlangHub.Discover;
@@ -52,6 +52,10 @@ namespace KlangHub.Platform.Casting.Chromecast
             inner.Dispose();
         }
 
+        /// <summary>The model a Chromecast announces in its TXT record, or null - see
+        /// <see cref="DiscoveredDevice.ParseModel"/>.</summary>
+        internal static string? ModelOf(string? headers) => DiscoveredDevice.ParseModel(headers);
+
         private void OnDiscovered(DiscoveredDevice device)
         {
             if (device == null)
@@ -66,7 +70,10 @@ namespace KlangHub.Platform.Casting.Chromecast
                 byId[id] = device;
             }
 
-            DeviceDiscovered?.Invoke(this, new CastDeviceDescriptor(id, device.Name, ProviderId.Chromecast, device.IsGroup));
+            DeviceDiscovered?.Invoke(this, new CastDeviceDescriptor(id, device.Name, ProviderId.Chromecast, device.IsGroup)
+            {
+                Model = ModelOf(device.Headers),
+            });
         }
     }
 }

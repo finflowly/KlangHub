@@ -387,4 +387,43 @@
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
     <value>{0} · streaming to your whole home</value>
   </data>
+  <data name="Label_RoomSummaryTitle_Text" xml:space="preserve">
+    <value>Devices on your network</value>
+  </data>
+  <data name="Label_RoomSummaryPlayingOne_Text" xml:space="preserve">
+    <value>1 playing</value>
+  </data>
+  <data name="Label_RoomSummaryPlayingMany_Text" xml:space="preserve">
+    <value>{0} playing</value>
+  </data>
+  <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
+    <value>1 room</value>
+  </data>
+  <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
+    <value>{0} rooms</value>
+  </data>
+  <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
+    <value>1 group</value>
+  </data>
+  <data name="Label_RoomSummaryGroupsMany_Text" xml:space="preserve">
+    <value>{0} groups</value>
+  </data>
+  <data name="Label_RoomSummaryLossless_Text" xml:space="preserve">
+    <value>lossless to your whole home</value>
+  </data>
+  <data name="Label_RoomSummaryCompressed_Text" xml:space="preserve">
+    <value>compressed to your whole home</value>
+  </data>
+  <data name="Label_RoomSummaryEmpty_Text" xml:space="preserve">
+    <value>Looking for devices…</value>
+  </data>
+  <data name="Card_Subtitle_Group_Text" xml:space="preserve">
+    <value>Multiroom · {0}</value>
+  </data>
+  <data name="Card_Subtitle_Device_Text" xml:space="preserve">
+    <value>Cast device</value>
+  </data>
+  <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
+    <value>Multi-room group</value>
+  </data>
 </root>

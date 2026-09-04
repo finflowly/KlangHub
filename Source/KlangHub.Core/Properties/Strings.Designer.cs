@@ -826,5 +826,109 @@ namespace KlangHub.Properties {
             }
         }
 
+        public static string Label_RoomSummaryTitle_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryTitle_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryPlayingOne_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryPlayingOne_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryPlayingMany_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryPlayingMany_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryDevicesOne_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryDevicesOne_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryDevicesMany_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryDevicesMany_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryGroupsOne_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryGroupsOne_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryGroupsMany_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryGroupsMany_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryLossless_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryLossless_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryCompressed_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryCompressed_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_RoomSummaryEmpty_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_RoomSummaryEmpty_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Subtitle_Group_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Subtitle_Group_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Subtitle_Device_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Subtitle_Device_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Subtitle_GroupPlain_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Subtitle_GroupPlain_Text", resourceCulture);
+            }
+        }
+
     }
 }

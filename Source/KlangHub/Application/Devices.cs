@@ -57,8 +57,9 @@ namespace KlangHub.Application
             {
                 logger?.Log($"Discovery: '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) - fetching eureka_info.");
                 var mdnsId = discoveredDevice.Id;
+                var mdnsTxt = discoveredDevice.Headers;
                 applicationLogic.StartTask(DeviceInformation.GetDeviceInformation(
-                    discoveredDevice, e => SetDeviceInformation(e, mdnsId), () => AddFromMdnsFallback(discoveredDevice), logger!));
+                    discoveredDevice, e => SetDeviceInformation(e, mdnsId, mdnsTxt), () => AddFromMdnsFallback(discoveredDevice), logger!));
             }
             else
             {
@@ -234,7 +235,7 @@ namespace KlangHub.Application
         /// Callback for when the device information is collected.
         /// </summary>
         /// <param name="eurekaIn"></param>
-        private void SetDeviceInformation(DeviceEureka eurekaIn, string? mdnsId = null)
+        private void SetDeviceInformation(DeviceEureka eurekaIn, string? mdnsId = null, string? mdnsTxt = null)
         {
             // Log the mDNS id= too - it is the only stable identity across a DHCP move, and this line confirms
             // (on a HW run) that each placeholder-MAC device advertises a distinct, stable id for the reconcile.
@@ -254,6 +255,14 @@ namespace KlangHub.Application
                 Id = mdnsId!,
                 Eureka = eurekaIn
             };
+
+            // Carry the mDNS TXT record across the eureka boundary as well: it is where the hardware model
+            // ("md=…") lives, and devices that never answer eureka_info (TV-integrated Cast, soundbars) would
+            // otherwise lose the only model information there is. Never carry a group record through - IsGroup
+            // is derived from these very tokens and this path is for single devices only.
+            if (!string.IsNullOrEmpty(mdnsTxt) && mdnsTxt!.IndexOf("Google Cast Group", StringComparison.OrdinalIgnoreCase) < 0)
+                discoveredDevice.Headers = mdnsTxt;
+
             OnDeviceAvailable(discoveredDevice);
         }
 
@@ -269,7 +278,8 @@ namespace KlangHub.Application
                 return;
 
             logger?.Log($"Adding '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) from mDNS - no eureka_info.");
-            SetDeviceInformation(new DeviceEureka { Name = discoveredDevice.Name, Ip_address = discoveredDevice.IPAddress }, discoveredDevice.Id);
+            SetDeviceInformation(new DeviceEureka { Name = discoveredDevice.Name, Ip_address = discoveredDevice.IPAddress },
+                discoveredDevice.Id, discoveredDevice.Headers);
         }
 
         /// <summary>

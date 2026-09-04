@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
   <xs:schema id="root">
@@ -328,5 +328,44 @@
   </data>
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
     <value>{0} · streamt ins ganze Haus</value>
+  </data>
+  <data name="Label_RoomSummaryTitle_Text" xml:space="preserve">
+    <value>Geräte im Heimnetz</value>
+  </data>
+  <data name="Label_RoomSummaryPlayingOne_Text" xml:space="preserve">
+    <value>1 spielt</value>
+  </data>
+  <data name="Label_RoomSummaryPlayingMany_Text" xml:space="preserve">
+    <value>{0} spielen</value>
+  </data>
+  <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
+    <value>1 Raum</value>
+  </data>
+  <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
+    <value>{0} Räume</value>
+  </data>
+  <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
+    <value>1 Gruppe</value>
+  </data>
+  <data name="Label_RoomSummaryGroupsMany_Text" xml:space="preserve">
+    <value>{0} Gruppen</value>
+  </data>
+  <data name="Label_RoomSummaryLossless_Text" xml:space="preserve">
+    <value>verlustfrei ans ganze Haus</value>
+  </data>
+  <data name="Label_RoomSummaryCompressed_Text" xml:space="preserve">
+    <value>komprimiert ans ganze Haus</value>
+  </data>
+  <data name="Label_RoomSummaryEmpty_Text" xml:space="preserve">
+    <value>Suche nach Geräten…</value>
+  </data>
+  <data name="Card_Subtitle_Group_Text" xml:space="preserve">
+    <value>Multiroom · {0}</value>
+  </data>
+  <data name="Card_Subtitle_Device_Text" xml:space="preserve">
+    <value>Cast-Gerät</value>
+  </data>
+  <data name="Card_Subtitle_GroupPlain_Text" xml:space="preserve">
+    <value>Multiroom-Gruppe</value>
   </data>
 </root>
