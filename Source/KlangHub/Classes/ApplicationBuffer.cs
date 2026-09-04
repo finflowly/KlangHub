@@ -13,6 +13,18 @@ namespace KlangHub.Classes
         private int reduceLagThreshold;
         private SupportedStreamFormat streamFormatSelected;
         private bool startBufferSend;
+
+        /// <summary>Head-room the ring buffer always keeps on top of the user's setting.</summary>
+        private const double BaseBufferSeconds = 2.0;
+
+        /// <summary>
+        /// How long the first byte may be held back while the start-up buffer fills. The buffer is a cushion
+        /// for the receiver, but a receiver that gets nothing at all gives up and reloads - which is what it
+        /// did for minutes on MP3, where the old byte-based threshold meant waiting for half a minute of
+        /// audio. Whatever has accumulated by this deadline is sent, and the rest simply follows.
+        /// </summary>
+        private const double MaxStartupWaitSeconds = 4.0;
+
         private const double BufferSizeInBytesDefault = 350000;
         private double BufferSizeInBytes = BufferSizeInBytesDefault;
         private int ExtraBufferInSeconds = 0;
@@ -29,13 +41,17 @@ namespace KlangHub.Classes
             streamFormatSelected = streamFormatIn;
             SetBufferSize();
 
-            byte[] bufferAlreadySent;
-            do
+            // Wait for the cushion, but never longer than MaxStartupWaitSeconds: hand the receiver what is
+            // there and let the rest stream in behind it. Polling every 100 ms rather than every second keeps
+            // the wait from rounding up to whole seconds on top of that.
+            var deadline = DateTime.UtcNow.AddSeconds(MaxStartupWaitSeconds);
+            byte[] bufferAlreadySent = GetBufferAlreadySent();
+            while (bufferAlreadySent.Length < BufferSizeInBytes && DateTime.UtcNow < deadline)
             {
+                Task.Delay(100).Wait();
                 bufferAlreadySent = GetBufferAlreadySent();
-                if (bufferAlreadySent.Length < BufferSizeInBytes)
-                    Task.Delay(1000).Wait();
-            } while (bufferAlreadySent.Length < BufferSizeInBytes);
+            }
+
             device.OnRecordingDataAvailable(bufferAlreadySent, waveFormat, reduceLagThreshold, streamFormatSelected);
             startBufferSend = true;
         }
@@ -69,36 +85,17 @@ namespace KlangHub.Classes
             SetBufferSize();
         }
 
-        // NOTE (2026-09-04): these are per-second byte estimates, and only the MP3 ones are accurate
-        // (320 kbps = 40 000 B/s, 128 kbps = 16 000 B/s). Real WAV runs at 192 000 B/s (16-bit/48k stereo)
-        // and FLAC at roughly half of that, so "10 seconds" is really about two. It has been that way since
-        // before the rewrite and WAV plays fine, so it is left alone deliberately: the stuttering reported for
-        // FLAC/MP3 was traced to junk bytes in front of the stream (see AudioHeader.GetStreamHeader), and
-        // changing the buffer maths at the same time would make it impossible to tell which fix did what.
+        /// <summary>
+        /// Sizes the ring buffer in SECONDS of the selected format, using that format's real byte rate
+        /// (<see cref="StreamRate"/>). The old code used two constants for every format, so "10 seconds"
+        /// meant two seconds of WAV - and thirty-two seconds of MP3 128, which no receiver waits for.
+        /// </summary>
         private void SetBufferSize()
         {
-            switch (streamFormatSelected)
-            {
-                case SupportedStreamFormat.Wav:
-                case SupportedStreamFormat.Wav_16bit:
-                case SupportedStreamFormat.Wav_24bit:
-                case SupportedStreamFormat.Wav_32bit:
-                    BufferSizeInBytes = ExtraBufferInSeconds * 40000 + BufferSizeInBytesDefault;
-                    break;
-                case SupportedStreamFormat.Mp3_320:
-                    BufferSizeInBytes = ExtraBufferInSeconds * 40000 + BufferSizeInBytesDefault;
-                    break;
-                case SupportedStreamFormat.Flac:
-                    // Lossless but compressed (~half of 16-bit WAV); size like the WAV/Mp3_320 tier so the
-                    // startup buffer over-provisions slightly rather than risking under-buffering.
-                    BufferSizeInBytes = ExtraBufferInSeconds * 40000 + BufferSizeInBytesDefault;
-                    break;
-                case SupportedStreamFormat.Mp3_128:
-                    BufferSizeInBytes = ExtraBufferInSeconds * 16000 + BufferSizeInBytesDefault;
-                    break;
-                default:
-                    break;
-            }
+            double seconds = ExtraBufferInSeconds + BaseBufferSeconds;
+            BufferSizeInBytes = Math.Max(
+                BufferSizeInBytesDefault / 4,   // a floor, so a tiny format still buffers something
+                StreamRate.BytesForSeconds(waveFormat, streamFormatSelected, seconds));
         }
 
         /// <summary>
