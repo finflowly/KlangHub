@@ -443,4 +443,94 @@
   <data name="Card_Pill_Group_Text" xml:space="preserve">
     <value>Gruppo</value>
   </data>
+  <data name="Popup_Details_Text" xml:space="preserve">
+    <value>Dettagli</value>
+  </data>
+  <data name="Details_Title_Text" xml:space="preserve">
+    <value>Informazioni sul dispositivo</value>
+  </data>
+  <data name="Detail_Type_Text" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="Detail_Model_Text" xml:space="preserve">
+    <value>Modello</value>
+  </data>
+  <data name="Detail_Manufacturer_Text" xml:space="preserve">
+    <value>Produttore</value>
+  </data>
+  <data name="Detail_Firmware_Text" xml:space="preserve">
+    <value>Firmware</value>
+  </data>
+  <data name="Detail_CastProtocol_Text" xml:space="preserve">
+    <value>Protocollo Cast</value>
+  </data>
+  <data name="Detail_AudioFormats_Text" xml:space="preserve">
+    <value>Formati audio</value>
+  </data>
+  <data name="Detail_HiResAudio_Text" xml:space="preserve">
+    <value>Audio ad alta risoluzione</value>
+  </data>
+  <data name="Detail_Multiroom_Text" xml:space="preserve">
+    <value>Multiroom</value>
+  </data>
+  <data name="Detail_Network_Text" xml:space="preserve">
+    <value>Rete</value>
+  </data>
+  <data name="Detail_Signal_Text" xml:space="preserve">
+    <value>Segnale</value>
+  </data>
+  <data name="Detail_Address_Text" xml:space="preserve">
+    <value>Indirizzo</value>
+  </data>
+  <data name="Detail_MacAddress_Text" xml:space="preserve">
+    <value>Indirizzo MAC</value>
+  </data>
+  <data name="Detail_Serial_Text" xml:space="preserve">
+    <value>ID dispositivo</value>
+  </data>
+  <data name="Detail_Language_Text" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="Detail_Uptime_Text" xml:space="preserve">
+    <value>In funzione da</value>
+  </data>
+  <data name="Detail_UpdatePending_Text" xml:space="preserve">
+    <value>Aggiornamento disponibile</value>
+  </data>
+  <data name="Detail_ReleaseTrack_Text" xml:space="preserve">
+    <value>Canale di aggiornamento</value>
+  </data>
+  <data name="Detail_Activity_Text" xml:space="preserve">
+    <value>Attività</value>
+  </data>
+  <data name="Detail_TypeTv_Text" xml:space="preserve">
+    <value>Televisore</value>
+  </data>
+  <data name="Detail_TypeSpeaker_Text" xml:space="preserve">
+    <value>Altoparlante</value>
+  </data>
+  <data name="Detail_TypeGroup_Text" xml:space="preserve">
+    <value>Gruppo</value>
+  </data>
+  <data name="Detail_Yes_Text" xml:space="preserve">
+    <value>Sì</value>
+  </data>
+  <data name="Detail_No_Text" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Detail_Ethernet_Text" xml:space="preserve">
+    <value>Cavo Ethernet</value>
+  </data>
+  <data name="Detail_UptimeFormat_Text" xml:space="preserve">
+    <value>{0} g {1} h</value>
+  </data>
+  <data name="Detail_FormatsNote_Text" xml:space="preserve">
+    <value>Garantito dallo standard Cast. Ciò che questo dispositivo decodifica davvero si può misurare solo dal nostro ricevitore.</value>
+  </data>
+  <data name="Detail_Empty_Text" xml:space="preserve">
+    <value>Questo dispositivo non rivela altro che il proprio nome.</value>
+  </data>
+  <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
+    <value>{0} h</value>
+  </data>
 </root>

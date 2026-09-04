@@ -443,4 +443,94 @@
   <data name="Card_Pill_Group_Text" xml:space="preserve">
     <value>Grupa</value>
   </data>
+  <data name="Popup_Details_Text" xml:space="preserve">
+    <value>Detalizēti</value>
+  </data>
+  <data name="Details_Title_Text" xml:space="preserve">
+    <value>Ierīces informācija</value>
+  </data>
+  <data name="Detail_Type_Text" xml:space="preserve">
+    <value>Veids</value>
+  </data>
+  <data name="Detail_Model_Text" xml:space="preserve">
+    <value>Modelis</value>
+  </data>
+  <data name="Detail_Manufacturer_Text" xml:space="preserve">
+    <value>Ražotājs</value>
+  </data>
+  <data name="Detail_Firmware_Text" xml:space="preserve">
+    <value>Programmaparatūra</value>
+  </data>
+  <data name="Detail_CastProtocol_Text" xml:space="preserve">
+    <value>Cast protokols</value>
+  </data>
+  <data name="Detail_AudioFormats_Text" xml:space="preserve">
+    <value>Audio formāti</value>
+  </data>
+  <data name="Detail_HiResAudio_Text" xml:space="preserve">
+    <value>Augstas izšķirtspējas audio</value>
+  </data>
+  <data name="Detail_Multiroom_Text" xml:space="preserve">
+    <value>Vairāku telpu skaņa</value>
+  </data>
+  <data name="Detail_Network_Text" xml:space="preserve">
+    <value>Tīkls</value>
+  </data>
+  <data name="Detail_Signal_Text" xml:space="preserve">
+    <value>Signāls</value>
+  </data>
+  <data name="Detail_Address_Text" xml:space="preserve">
+    <value>Adrese</value>
+  </data>
+  <data name="Detail_MacAddress_Text" xml:space="preserve">
+    <value>MAC adrese</value>
+  </data>
+  <data name="Detail_Serial_Text" xml:space="preserve">
+    <value>Ierīces ID</value>
+  </data>
+  <data name="Detail_Language_Text" xml:space="preserve">
+    <value>Valoda</value>
+  </data>
+  <data name="Detail_Uptime_Text" xml:space="preserve">
+    <value>Darbojas</value>
+  </data>
+  <data name="Detail_UpdatePending_Text" xml:space="preserve">
+    <value>Pieejams atjauninājums</value>
+  </data>
+  <data name="Detail_ReleaseTrack_Text" xml:space="preserve">
+    <value>Atjauninājumu kanāls</value>
+  </data>
+  <data name="Detail_Activity_Text" xml:space="preserve">
+    <value>Darbība</value>
+  </data>
+  <data name="Detail_TypeTv_Text" xml:space="preserve">
+    <value>Televizors</value>
+  </data>
+  <data name="Detail_TypeSpeaker_Text" xml:space="preserve">
+    <value>Skaļrunis</value>
+  </data>
+  <data name="Detail_TypeGroup_Text" xml:space="preserve">
+    <value>Grupa</value>
+  </data>
+  <data name="Detail_Yes_Text" xml:space="preserve">
+    <value>Jā</value>
+  </data>
+  <data name="Detail_No_Text" xml:space="preserve">
+    <value>Nē</value>
+  </data>
+  <data name="Detail_Ethernet_Text" xml:space="preserve">
+    <value>Tīkla kabelis</value>
+  </data>
+  <data name="Detail_UptimeFormat_Text" xml:space="preserve">
+    <value>{0} d {1} st</value>
+  </data>
+  <data name="Detail_FormatsNote_Text" xml:space="preserve">
+    <value>Garantē Cast standarts. To, ko ierīce patiešām atkodē, var izmērīt tikai mūsu pašu uztvērējā.</value>
+  </data>
+  <data name="Detail_Empty_Text" xml:space="preserve">
+    <value>Šī ierīce neatklāj neko vairāk par savu nosaukumu.</value>
+  </data>
+  <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
+    <value>{0} st</value>
+  </data>
 </root>

@@ -1130,5 +1130,275 @@ namespace KlangHub.Properties {
             }
         }
 
-    }
+            /// <summary>
+        ///   Looks up a localized string similar to Details.
+        /// </summary>
+        public static string Popup_Details_Text {
+            get {
+                return ResourceManager.GetString("Popup_Details_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Device information.
+        /// </summary>
+        public static string Details_Title_Text {
+            get {
+                return ResourceManager.GetString("Details_Title_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Detail_Type_Text {
+            get {
+                return ResourceManager.GetString("Detail_Type_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Model.
+        /// </summary>
+        public static string Detail_Model_Text {
+            get {
+                return ResourceManager.GetString("Detail_Model_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Manufacturer.
+        /// </summary>
+        public static string Detail_Manufacturer_Text {
+            get {
+                return ResourceManager.GetString("Detail_Manufacturer_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Firmware.
+        /// </summary>
+        public static string Detail_Firmware_Text {
+            get {
+                return ResourceManager.GetString("Detail_Firmware_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cast protocol.
+        /// </summary>
+        public static string Detail_CastProtocol_Text {
+            get {
+                return ResourceManager.GetString("Detail_CastProtocol_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Audio formats.
+        /// </summary>
+        public static string Detail_AudioFormats_Text {
+            get {
+                return ResourceManager.GetString("Detail_AudioFormats_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Hi-res audio.
+        /// </summary>
+        public static string Detail_HiResAudio_Text {
+            get {
+                return ResourceManager.GetString("Detail_HiResAudio_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Multiroom.
+        /// </summary>
+        public static string Detail_Multiroom_Text {
+            get {
+                return ResourceManager.GetString("Detail_Multiroom_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Network.
+        /// </summary>
+        public static string Detail_Network_Text {
+            get {
+                return ResourceManager.GetString("Detail_Network_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Signal.
+        /// </summary>
+        public static string Detail_Signal_Text {
+            get {
+                return ResourceManager.GetString("Detail_Signal_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Address.
+        /// </summary>
+        public static string Detail_Address_Text {
+            get {
+                return ResourceManager.GetString("Detail_Address_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MAC address.
+        /// </summary>
+        public static string Detail_MacAddress_Text {
+            get {
+                return ResourceManager.GetString("Detail_MacAddress_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Device ID.
+        /// </summary>
+        public static string Detail_Serial_Text {
+            get {
+                return ResourceManager.GetString("Detail_Serial_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string Detail_Language_Text {
+            get {
+                return ResourceManager.GetString("Detail_Language_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Running for.
+        /// </summary>
+        public static string Detail_Uptime_Text {
+            get {
+                return ResourceManager.GetString("Detail_Uptime_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Update pending.
+        /// </summary>
+        public static string Detail_UpdatePending_Text {
+            get {
+                return ResourceManager.GetString("Detail_UpdatePending_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Update channel.
+        /// </summary>
+        public static string Detail_ReleaseTrack_Text {
+            get {
+                return ResourceManager.GetString("Detail_ReleaseTrack_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Activity.
+        /// </summary>
+        public static string Detail_Activity_Text {
+            get {
+                return ResourceManager.GetString("Detail_Activity_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Television.
+        /// </summary>
+        public static string Detail_TypeTv_Text {
+            get {
+                return ResourceManager.GetString("Detail_TypeTv_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Speaker.
+        /// </summary>
+        public static string Detail_TypeSpeaker_Text {
+            get {
+                return ResourceManager.GetString("Detail_TypeSpeaker_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Group.
+        /// </summary>
+        public static string Detail_TypeGroup_Text {
+            get {
+                return ResourceManager.GetString("Detail_TypeGroup_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string Detail_Yes_Text {
+            get {
+                return ResourceManager.GetString("Detail_Yes_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string Detail_No_Text {
+            get {
+                return ResourceManager.GetString("Detail_No_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Ethernet cable.
+        /// </summary>
+        public static string Detail_Ethernet_Text {
+            get {
+                return ResourceManager.GetString("Detail_Ethernet_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} d {1} h.
+        /// </summary>
+        public static string Detail_UptimeFormat_Text {
+            get {
+                return ResourceManager.GetString("Detail_UptimeFormat_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Guaranteed by the Cast standard. What this device really decodes can only be measured from inside our own receiver..
+        /// </summary>
+        public static string Detail_FormatsNote_Text {
+            get {
+                return ResourceManager.GetString("Detail_FormatsNote_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to This device announces nothing beyond its name..
+        /// </summary>
+        public static string Detail_Empty_Text {
+            get {
+                return ResourceManager.GetString("Detail_Empty_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} h.
+        /// </summary>
+        public static string Detail_UptimeHoursFormat_Text {
+            get {
+                return ResourceManager.GetString("Detail_UptimeHoursFormat_Text", resourceCulture);
+            }
+        }
+
+}
 }

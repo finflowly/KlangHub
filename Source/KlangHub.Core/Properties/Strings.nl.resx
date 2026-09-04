@@ -443,4 +443,94 @@
   <data name="Card_Pill_Group_Text" xml:space="preserve">
     <value>Groep</value>
   </data>
+  <data name="Popup_Details_Text" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Details_Title_Text" xml:space="preserve">
+    <value>Apparaatgegevens</value>
+  </data>
+  <data name="Detail_Type_Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Detail_Model_Text" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Detail_Manufacturer_Text" xml:space="preserve">
+    <value>Fabrikant</value>
+  </data>
+  <data name="Detail_Firmware_Text" xml:space="preserve">
+    <value>Firmware</value>
+  </data>
+  <data name="Detail_CastProtocol_Text" xml:space="preserve">
+    <value>Cast-protocol</value>
+  </data>
+  <data name="Detail_AudioFormats_Text" xml:space="preserve">
+    <value>Audioformaten</value>
+  </data>
+  <data name="Detail_HiResAudio_Text" xml:space="preserve">
+    <value>Hi-res-audio</value>
+  </data>
+  <data name="Detail_Multiroom_Text" xml:space="preserve">
+    <value>Multiroom</value>
+  </data>
+  <data name="Detail_Network_Text" xml:space="preserve">
+    <value>Netwerk</value>
+  </data>
+  <data name="Detail_Signal_Text" xml:space="preserve">
+    <value>Signaal</value>
+  </data>
+  <data name="Detail_Address_Text" xml:space="preserve">
+    <value>Adres</value>
+  </data>
+  <data name="Detail_MacAddress_Text" xml:space="preserve">
+    <value>MAC-adres</value>
+  </data>
+  <data name="Detail_Serial_Text" xml:space="preserve">
+    <value>Apparaat-ID</value>
+  </data>
+  <data name="Detail_Language_Text" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="Detail_Uptime_Text" xml:space="preserve">
+    <value>Actief sinds</value>
+  </data>
+  <data name="Detail_UpdatePending_Text" xml:space="preserve">
+    <value>Update beschikbaar</value>
+  </data>
+  <data name="Detail_ReleaseTrack_Text" xml:space="preserve">
+    <value>Updatekanaal</value>
+  </data>
+  <data name="Detail_Activity_Text" xml:space="preserve">
+    <value>Activiteit</value>
+  </data>
+  <data name="Detail_TypeTv_Text" xml:space="preserve">
+    <value>Televisie</value>
+  </data>
+  <data name="Detail_TypeSpeaker_Text" xml:space="preserve">
+    <value>Luidspreker</value>
+  </data>
+  <data name="Detail_TypeGroup_Text" xml:space="preserve">
+    <value>Groep</value>
+  </data>
+  <data name="Detail_Yes_Text" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Detail_No_Text" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="Detail_Ethernet_Text" xml:space="preserve">
+    <value>Netwerkkabel</value>
+  </data>
+  <data name="Detail_UptimeFormat_Text" xml:space="preserve">
+    <value>{0} d {1} u</value>
+  </data>
+  <data name="Detail_FormatsNote_Text" xml:space="preserve">
+    <value>Gegarandeerd door de Cast-standaard. Wat dit apparaat werkelijk decodeert, is pas in onze eigen ontvanger te meten.</value>
+  </data>
+  <data name="Detail_Empty_Text" xml:space="preserve">
+    <value>Dit apparaat verraadt niets meer dan zijn naam.</value>
+  </data>
+  <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
+    <value>{0} u</value>
+  </data>
 </root>

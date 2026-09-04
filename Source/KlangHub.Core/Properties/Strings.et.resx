@@ -443,4 +443,94 @@
   <data name="Card_Pill_Group_Text" xml:space="preserve">
     <value>Rühm</value>
   </data>
+  <data name="Popup_Details_Text" xml:space="preserve">
+    <value>Üksikasjad</value>
+  </data>
+  <data name="Details_Title_Text" xml:space="preserve">
+    <value>Seadme teave</value>
+  </data>
+  <data name="Detail_Type_Text" xml:space="preserve">
+    <value>Tüüp</value>
+  </data>
+  <data name="Detail_Model_Text" xml:space="preserve">
+    <value>Mudel</value>
+  </data>
+  <data name="Detail_Manufacturer_Text" xml:space="preserve">
+    <value>Tootja</value>
+  </data>
+  <data name="Detail_Firmware_Text" xml:space="preserve">
+    <value>Püsivara</value>
+  </data>
+  <data name="Detail_CastProtocol_Text" xml:space="preserve">
+    <value>Casti protokoll</value>
+  </data>
+  <data name="Detail_AudioFormats_Text" xml:space="preserve">
+    <value>Helivormingud</value>
+  </data>
+  <data name="Detail_HiResAudio_Text" xml:space="preserve">
+    <value>Kõrglahutusega heli</value>
+  </data>
+  <data name="Detail_Multiroom_Text" xml:space="preserve">
+    <value>Mitmeruumiheli</value>
+  </data>
+  <data name="Detail_Network_Text" xml:space="preserve">
+    <value>Võrk</value>
+  </data>
+  <data name="Detail_Signal_Text" xml:space="preserve">
+    <value>Signaal</value>
+  </data>
+  <data name="Detail_Address_Text" xml:space="preserve">
+    <value>Aadress</value>
+  </data>
+  <data name="Detail_MacAddress_Text" xml:space="preserve">
+    <value>MAC-aadress</value>
+  </data>
+  <data name="Detail_Serial_Text" xml:space="preserve">
+    <value>Seadme ID</value>
+  </data>
+  <data name="Detail_Language_Text" xml:space="preserve">
+    <value>Keel</value>
+  </data>
+  <data name="Detail_Uptime_Text" xml:space="preserve">
+    <value>Töötanud</value>
+  </data>
+  <data name="Detail_UpdatePending_Text" xml:space="preserve">
+    <value>Värskendus saadaval</value>
+  </data>
+  <data name="Detail_ReleaseTrack_Text" xml:space="preserve">
+    <value>Värskenduskanal</value>
+  </data>
+  <data name="Detail_Activity_Text" xml:space="preserve">
+    <value>Tegevus</value>
+  </data>
+  <data name="Detail_TypeTv_Text" xml:space="preserve">
+    <value>Teler</value>
+  </data>
+  <data name="Detail_TypeSpeaker_Text" xml:space="preserve">
+    <value>Kõlar</value>
+  </data>
+  <data name="Detail_TypeGroup_Text" xml:space="preserve">
+    <value>Rühm</value>
+  </data>
+  <data name="Detail_Yes_Text" xml:space="preserve">
+    <value>Jah</value>
+  </data>
+  <data name="Detail_No_Text" xml:space="preserve">
+    <value>Ei</value>
+  </data>
+  <data name="Detail_Ethernet_Text" xml:space="preserve">
+    <value>Võrgukaabel</value>
+  </data>
+  <data name="Detail_UptimeFormat_Text" xml:space="preserve">
+    <value>{0} p {1} t</value>
+  </data>
+  <data name="Detail_FormatsNote_Text" xml:space="preserve">
+    <value>Tagab Casti standard. Mida see seade tegelikult dekodeerib, saab mõõta alles meie oma vastuvõtjas.</value>
+  </data>
+  <data name="Detail_Empty_Text" xml:space="preserve">
+    <value>See seade ei reeda midagi peale oma nime.</value>
+  </data>
+  <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
+    <value>{0} t</value>
+  </data>
 </root>

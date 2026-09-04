@@ -443,4 +443,94 @@
   <data name="Card_Pill_Group_Text" xml:space="preserve">
     <value>Група</value>
   </data>
+  <data name="Popup_Details_Text" xml:space="preserve">
+    <value>Подробности</value>
+  </data>
+  <data name="Details_Title_Text" xml:space="preserve">
+    <value>Информация за устройството</value>
+  </data>
+  <data name="Detail_Type_Text" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="Detail_Model_Text" xml:space="preserve">
+    <value>Модел</value>
+  </data>
+  <data name="Detail_Manufacturer_Text" xml:space="preserve">
+    <value>Производител</value>
+  </data>
+  <data name="Detail_Firmware_Text" xml:space="preserve">
+    <value>Фърмуер</value>
+  </data>
+  <data name="Detail_CastProtocol_Text" xml:space="preserve">
+    <value>Протокол Cast</value>
+  </data>
+  <data name="Detail_AudioFormats_Text" xml:space="preserve">
+    <value>Аудиоформати</value>
+  </data>
+  <data name="Detail_HiResAudio_Text" xml:space="preserve">
+    <value>Аудио с висока разделителна способност</value>
+  </data>
+  <data name="Detail_Multiroom_Text" xml:space="preserve">
+    <value>Мултирум</value>
+  </data>
+  <data name="Detail_Network_Text" xml:space="preserve">
+    <value>Мрежа</value>
+  </data>
+  <data name="Detail_Signal_Text" xml:space="preserve">
+    <value>Сигнал</value>
+  </data>
+  <data name="Detail_Address_Text" xml:space="preserve">
+    <value>Адрес</value>
+  </data>
+  <data name="Detail_MacAddress_Text" xml:space="preserve">
+    <value>MAC адрес</value>
+  </data>
+  <data name="Detail_Serial_Text" xml:space="preserve">
+    <value>Идентификатор</value>
+  </data>
+  <data name="Detail_Language_Text" xml:space="preserve">
+    <value>Език</value>
+  </data>
+  <data name="Detail_Uptime_Text" xml:space="preserve">
+    <value>Работи от</value>
+  </data>
+  <data name="Detail_UpdatePending_Text" xml:space="preserve">
+    <value>Налична актуализация</value>
+  </data>
+  <data name="Detail_ReleaseTrack_Text" xml:space="preserve">
+    <value>Канал за актуализации</value>
+  </data>
+  <data name="Detail_Activity_Text" xml:space="preserve">
+    <value>Дейност</value>
+  </data>
+  <data name="Detail_TypeTv_Text" xml:space="preserve">
+    <value>Телевизор</value>
+  </data>
+  <data name="Detail_TypeSpeaker_Text" xml:space="preserve">
+    <value>Високоговорител</value>
+  </data>
+  <data name="Detail_TypeGroup_Text" xml:space="preserve">
+    <value>Група</value>
+  </data>
+  <data name="Detail_Yes_Text" xml:space="preserve">
+    <value>Да</value>
+  </data>
+  <data name="Detail_No_Text" xml:space="preserve">
+    <value>Не</value>
+  </data>
+  <data name="Detail_Ethernet_Text" xml:space="preserve">
+    <value>Мрежов кабел</value>
+  </data>
+  <data name="Detail_UptimeFormat_Text" xml:space="preserve">
+    <value>{0} д {1} ч</value>
+  </data>
+  <data name="Detail_FormatsNote_Text" xml:space="preserve">
+    <value>Гарантирано от стандарта Cast. Какво наистина декодира това устройство, може да се измери едва в нашия собствен приемник.</value>
+  </data>
+  <data name="Detail_Empty_Text" xml:space="preserve">
+    <value>Това устройство не издава нищо освен името си.</value>
+  </data>
+  <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
+    <value>{0} ч</value>
+  </data>
 </root>

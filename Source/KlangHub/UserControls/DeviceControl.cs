@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -400,13 +401,17 @@ namespace KlangHub.UserControls
 
         /// <summary>True when the model would only repeat the device name ("Enchant Speaker" under
         /// "Enchant Speaker") - people name a Chromecast after its room or its model, so the subtitle has to
-        /// step back rather than echo the line above it.</summary>
+        /// step back rather than echo the line above it.
+        ///
+        /// Only an exact match counts. Containment used to qualify too, and that swallowed the very thing
+        /// the subtitle exists for: a speaker called "Google Home" announces the model "Google Home Speaker",
+        /// which is a longer, more precise name - not an echo. Whatever the model adds, it stays.</summary>
         private static bool SaysTheSame(string model, string? name)
         {
             if (string.IsNullOrWhiteSpace(name)) return false;
             static string Key(string s) => new string(s.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
             string a = Key(model), b = Key(name!);
-            return a.Length > 0 && b.Length > 0 && (a == b || a.Contains(b) || b.Contains(a));
+            return a.Length > 0 && a == b;
         }
 
         /// <summary>
@@ -595,6 +600,9 @@ namespace KlangHub.UserControls
         {
             base.OnMouseUp(e);
             if (draggingVolume) { draggingVolume = false; return; }
+            // A right-click is the shortcut to the details card. A double-click cannot be: clicking the card
+            // body toggles playback, so a second click would start and stop the music on the way there.
+            if (e.Button == MouseButtons.Right) { ShowSpeakerDetails(); return; }
             if (e.Button != MouseButtons.Left) return;
 
             if (playRect.Contains(e.Location)) TryOnSession(s => s.TogglePlayStop());
@@ -652,11 +660,25 @@ namespace KlangHub.UserControls
         protected override void OnMouseEnter(EventArgs e) { base.OnMouseEnter(e); hovering = true; Invalidate(); }
         protected override void OnMouseLeave(EventArgs e) { base.OnMouseLeave(e); hovering = false; Cursor = Cursors.Default; Invalidate(); }
 
+        /// <summary>The read-only card: everything the speaker announces about itself. The facts are read
+        /// from the live session rather than kept here, because a device's details fill in over the first
+        /// seconds - the firmware and the network arrive with the setup endpoint, well after the name.</summary>
+        private void ShowSpeakerDetails()
+        {
+            IReadOnlyList<Core.Casting.DeviceFact>? details = null;
+            try { details = (sessionAccessor?.Invoke() ?? session)?.Device?.Details; }
+            catch (InvalidOperationException) { details = descriptor?.Details; }
+
+            using var card = new SpeakerDetailsPopup(deviceName, details ?? descriptor?.Details);
+            card.ShowAt(PointToScreen(new Point(Math.Max(0, (Width - 460) / 2), 24)));
+        }
+
         private void ShowSpeakerOptions()
         {
             using var popup = new SpeakerOptionsPopup(deviceName, maxVolume, SpeakerPrefs.GetRoom(descriptor?.Id));
             var loc = PointToScreen(new Point(overflowRect.Left - 230, overflowRect.Bottom + 4));
-            if (popup.ShowAt(loc) == DialogResult.OK)
+            var answer = popup.ShowAt(loc);
+            if (answer == DialogResult.OK || answer == DialogResult.Retry)
             {
                 var roomBefore = SpeakerPrefs.GetRoom(descriptor?.Id);
                 maxVolume = popup.MaxVolume;
@@ -667,6 +689,9 @@ namespace KlangHub.UserControls
                 if (!string.Equals(roomBefore ?? string.Empty, popup.Room, StringComparison.CurrentCultureIgnoreCase))
                     RoomChanged?.Invoke(this, EventArgs.Empty);
             }
+
+            if (answer == DialogResult.Retry)
+                ShowSpeakerDetails();
         }
 
         private void TryOnSession(Func<IPlaybackSession, Task> action)

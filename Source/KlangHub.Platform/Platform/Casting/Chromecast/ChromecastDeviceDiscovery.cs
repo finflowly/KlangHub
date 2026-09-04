@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using KlangHub.Application;
 using KlangHub.Discover;
 using KlangHub.Discover.Interfaces;
 
@@ -73,6 +74,10 @@ namespace KlangHub.Platform.Casting.Chromecast
             DeviceDiscovered?.Invoke(this, new CastDeviceDescriptor(id, device.Name, ProviderId.Chromecast, device.IsGroup)
             {
                 Model = ModelOf(device.Headers),
+                // Rebuilt on every announcement rather than cached: eureka_info answers seconds after the
+                // first mDNS packet, so the early descriptor carries only what the announcement said and a
+                // later one carries the firmware and the network too.
+                Details = DeviceFacts.For(device),
             });
         }
     }

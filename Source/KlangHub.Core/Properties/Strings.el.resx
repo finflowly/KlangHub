@@ -443,4 +443,94 @@
   <data name="Card_Pill_Group_Text" xml:space="preserve">
     <value>Ομάδα</value>
   </data>
+  <data name="Popup_Details_Text" xml:space="preserve">
+    <value>Λεπτομέρειες</value>
+  </data>
+  <data name="Details_Title_Text" xml:space="preserve">
+    <value>Πληροφορίες συσκευής</value>
+  </data>
+  <data name="Detail_Type_Text" xml:space="preserve">
+    <value>Τύπος</value>
+  </data>
+  <data name="Detail_Model_Text" xml:space="preserve">
+    <value>Μοντέλο</value>
+  </data>
+  <data name="Detail_Manufacturer_Text" xml:space="preserve">
+    <value>Κατασκευαστής</value>
+  </data>
+  <data name="Detail_Firmware_Text" xml:space="preserve">
+    <value>Υλικολογισμικό</value>
+  </data>
+  <data name="Detail_CastProtocol_Text" xml:space="preserve">
+    <value>Πρωτόκολλο Cast</value>
+  </data>
+  <data name="Detail_AudioFormats_Text" xml:space="preserve">
+    <value>Μορφές ήχου</value>
+  </data>
+  <data name="Detail_HiResAudio_Text" xml:space="preserve">
+    <value>Ήχος υψηλής ανάλυσης</value>
+  </data>
+  <data name="Detail_Multiroom_Text" xml:space="preserve">
+    <value>Πολυδωμάτιο</value>
+  </data>
+  <data name="Detail_Network_Text" xml:space="preserve">
+    <value>Δίκτυο</value>
+  </data>
+  <data name="Detail_Signal_Text" xml:space="preserve">
+    <value>Σήμα</value>
+  </data>
+  <data name="Detail_Address_Text" xml:space="preserve">
+    <value>Διεύθυνση</value>
+  </data>
+  <data name="Detail_MacAddress_Text" xml:space="preserve">
+    <value>Διεύθυνση MAC</value>
+  </data>
+  <data name="Detail_Serial_Text" xml:space="preserve">
+    <value>Αναγνωριστικό συσκευής</value>
+  </data>
+  <data name="Detail_Language_Text" xml:space="preserve">
+    <value>Γλώσσα</value>
+  </data>
+  <data name="Detail_Uptime_Text" xml:space="preserve">
+    <value>Λειτουργεί εδώ και</value>
+  </data>
+  <data name="Detail_UpdatePending_Text" xml:space="preserve">
+    <value>Διαθέσιμη ενημέρωση</value>
+  </data>
+  <data name="Detail_ReleaseTrack_Text" xml:space="preserve">
+    <value>Κανάλι ενημερώσεων</value>
+  </data>
+  <data name="Detail_Activity_Text" xml:space="preserve">
+    <value>Δραστηριότητα</value>
+  </data>
+  <data name="Detail_TypeTv_Text" xml:space="preserve">
+    <value>Τηλεόραση</value>
+  </data>
+  <data name="Detail_TypeSpeaker_Text" xml:space="preserve">
+    <value>Ηχείο</value>
+  </data>
+  <data name="Detail_TypeGroup_Text" xml:space="preserve">
+    <value>Ομάδα</value>
+  </data>
+  <data name="Detail_Yes_Text" xml:space="preserve">
+    <value>Ναι</value>
+  </data>
+  <data name="Detail_No_Text" xml:space="preserve">
+    <value>Όχι</value>
+  </data>
+  <data name="Detail_Ethernet_Text" xml:space="preserve">
+    <value>Καλώδιο δικτύου</value>
+  </data>
+  <data name="Detail_UptimeFormat_Text" xml:space="preserve">
+    <value>{0} ημ {1} ώ</value>
+  </data>
+  <data name="Detail_FormatsNote_Text" xml:space="preserve">
+    <value>Εγγυημένο από το πρότυπο Cast. Τι αποκωδικοποιεί πραγματικά αυτή η συσκευή μπορεί να μετρηθεί μόνο από τον δικό μας δέκτη.</value>
+  </data>
+  <data name="Detail_Empty_Text" xml:space="preserve">
+    <value>Αυτή η συσκευή δεν αποκαλύπτει τίποτα πέρα από το όνομά της.</value>
+  </data>
+  <data name="Detail_UptimeHoursFormat_Text" xml:space="preserve">
+    <value>{0} ώ</value>
+  </data>
 </root>

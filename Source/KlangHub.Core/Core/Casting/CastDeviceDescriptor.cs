@@ -24,6 +24,12 @@
         /// <summary>Number of members behind a group, when the provider knows it (0 = unknown).</summary>
         public int MemberCount { get; init; }
 
+        /// <summary>Everything the provider could find out about this endpoint, in display order - shown in
+        /// the speaker details view. Empty when the provider knows nothing beyond the name, which is a
+        /// perfectly ordinary case and not an error.</summary>
+        public System.Collections.Generic.IReadOnlyList<DeviceFact> Details { get; init; }
+            = System.Array.Empty<DeviceFact>();
+
         public override string ToString() => Name;
     }
 }

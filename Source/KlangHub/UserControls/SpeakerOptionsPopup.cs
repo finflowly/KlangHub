@@ -15,7 +15,7 @@ namespace KlangHub.UserControls
     {
         private readonly string speakerName;
         private int maxVolume;
-        private Rectangle sliderRect, doneRect, roomWell;
+        private Rectangle sliderRect, doneRect, roomWell, detailsRect;
         private bool dragging;
         private readonly DarkComboBox roomBox;
         private readonly FieldFrame roomFrame;
@@ -123,6 +123,14 @@ namespace KlangHub.UserControls
             sliderRect = new Rectangle(18, 172, Width - 36, 12);
             Theme.DrawAmberSlider(g, sliderRect, maxVolume / 100f, 14f);
 
+            // "Details" sits opposite Done as quiet text, not a second button: it opens a read-only card,
+            // so it should not compete with the one control that commits a change.
+            var detailsText = KlangHub.Properties.Strings.Popup_Details_Text;
+            var detailsSize = g.MeasureString(detailsText, Theme.Label);
+            detailsRect = new Rectangle(18, 194, (int)detailsSize.Width + 2, (int)detailsSize.Height);
+            using (var b = new SolidBrush(detailsRect.Contains(PointToClient(MousePosition)) ? Theme.Ivory : Theme.Slate))
+                g.DrawString(detailsText, Theme.Label, b, detailsRect.Location);
+
             doneRect = new Rectangle(Width - 92, 192, 74, 24);
             Theme.FillRounded(g, doneRect, Theme.RadControl, Theme.Amber);
             using (var b = new SolidBrush(Theme.OnAmber))
@@ -133,14 +141,19 @@ namespace KlangHub.UserControls
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (doneRect.Contains(e.Location)) { DialogResult = DialogResult.OK; Close(); return; }
+            // Retry, not a second dialog opened from here: the card is what owns the device, so it commits
+            // whatever was changed and then shows the details itself.
+            if (detailsRect.Contains(e.Location)) { DialogResult = DialogResult.Retry; Close(); return; }
             if (roomWell.Contains(e.Location)) { roomBox.Focus(); Invalidate(); return; }
             if (e.Y >= sliderRect.Y - 8 && e.Y <= sliderRect.Bottom + 8) { dragging = true; ApplyFromX(e.X); }
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (dragging) ApplyFromX(e.X);
-            else Cursor = doneRect.Contains(e.Location) ? Cursors.Hand : Cursors.Default;
+            if (dragging) { ApplyFromX(e.X); return; }
+            bool overControl = doneRect.Contains(e.Location) || detailsRect.Contains(e.Location);
+            Cursor = overControl ? Cursors.Hand : Cursors.Default;
+            Invalidate(detailsRect with { Width = detailsRect.Width + 2, Height = detailsRect.Height + 2 });
         }
 
         protected override void OnMouseUp(MouseEventArgs e) => dragging = false;
