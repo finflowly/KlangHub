@@ -35,10 +35,10 @@ liegt in `tools/make-receiver-assets.ps1`.
 
 ## Einrichten
 
-1. **Veröffentlichen.** In den Repository-Einstellungen unter *Pages* als Quelle den Branch `main` und den
-   Ordner `/ (root)` wählen. Danach liegt die Datei unter
-   `https://<konto>.github.io/<repo>/receiver/klanghub.css`.
-   Kurz im Browser aufrufen — sie muss als Text erscheinen, mit `https://`.
+1. **Veröffentlichen.** Erst `git push`, dann in den Repository-Einstellungen unter *Pages* als Quelle den
+   Standard-Branch (hier `master`) und den Ordner `/ (root)` wählen. Danach liegt die Seite unter
+   `https://<konto>.github.io/<repo>/receiver/` — die Groß- und Kleinschreibung des Repository-Namens zählt.
+   Kurz im Browser aufrufen: Es muss die dunkle Seite mit den Ringen erscheinen, nicht eine 404-Seite.
 2. **Registrieren.** Auf https://cast.google.com/publish anmelden, Entwicklerkonto anlegen (einmalig 5 USD),
    *Add New Application* → **Custom Receiver**. Im Formular:
    - **Name:** `KlangHub` — das steht später auf dem Fernseher.
