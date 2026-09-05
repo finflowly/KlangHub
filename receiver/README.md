@@ -65,3 +65,23 @@ Icon 512 × 512); jede spätere Änderung erfordert erneutes Veröffentlichen.
   eine Verbindung. Ohne eingetragene App-ID läuft KlangHub weiterhin vollständig offline.
 - Die App-ID hängt am Google-Konto dessen, der registriert. Wer das Projekt forkt, trägt seine eigene ein —
   deshalb steht sie in den Einstellungen und nicht im Code.
+
+## Offen: Bühnen-Nachrichten haben keinen Absender
+
+Cast authentifiziert Sender nicht. Wer im selben Netz ist, kann sich in eine laufende Session hängen und
+Nachrichten in `urn:x-cast:de.klanghub.stage` schicken — der Receiver wertet `event.senderId` nicht aus,
+und die Nachricht trägt kein gemeinsames Geheimnis. Möglich wäre damit: beliebiger Text und ein beliebiges
+Bild in Vollbild auf dem Fernseher, dazu ein HTTP-Aufruf des Cast-Geräts an einen fremden Server.
+
+**Was schon geht:** Aller Text läuft über `textContent`, nie über `innerHTML` — es gibt also keine
+Codeausführung. Die Cover-URL wird seit dem Audit auf `http`/`https` eingeschränkt, die Metadatenfelder auf
+512 Zeichen. Was bleibt, ist Defacement im Wohnzimmer.
+
+**Warum es noch nicht behoben ist.** Die Lösung ist ein Zufalls-Token, das beim LOAD mitgegeben und in jeder
+Bühnen-Nachricht mitgeschickt wird; Nachrichten ohne passendes Token verwirft der Receiver. Dafür braucht es
+auf beiden Seiten einen Kanal, den es heute auf keiner gibt (`customData` im LOAD, ein Interceptor hier) —
+also eine Protokolländerung über Sender und Empfänger hinweg, in einer Komponente, die **noch nie auf echter
+Hardware gelaufen ist**: GitHub Pages ist nicht eingeschaltet und es ist keine App-ID eingetragen.
+
+Eine beidseitige Handschlag-Änderung ungetestet auszuliefern ist der zuverlässigste Weg, sie kaputt
+auszuliefern. Sie gehört in denselben Arbeitsschritt wie die erste Abnahme auf einem echten Fernseher.
