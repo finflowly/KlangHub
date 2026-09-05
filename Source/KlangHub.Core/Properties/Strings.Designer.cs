@@ -1409,5 +1409,23 @@ namespace KlangHub.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to 1 room.
+        /// </summary>
+        public static string Label_RoomSummaryRoomsOne_Text {
+            get {
+                return ResourceManager.GetString("Label_RoomSummaryRoomsOne_Text", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} rooms.
+        /// </summary>
+        public static string Label_RoomSummaryRoomsMany_Text {
+            get {
+                return ResourceManager.GetString("Label_RoomSummaryRoomsMany_Text", resourceCulture);
+            }
+        }
+
 }
 }

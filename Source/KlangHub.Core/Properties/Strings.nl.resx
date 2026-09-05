@@ -339,10 +339,10 @@
     <value>{0} spelen</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 kamer</value>
+    <value>1 apparaat</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} kamers</value>
+    <value>{0} apparaten</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
     <value>1 groep</value>
@@ -535,5 +535,11 @@
   </data>
   <data name="Detail_VolumeStep_Text" xml:space="preserve">
     <value>Volumestap</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsOne_Text" xml:space="preserve">
+    <value>1 kamer</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
+    <value>{0} kamers</value>
   </data>
 </root>

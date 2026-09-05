@@ -339,10 +339,10 @@
     <value>{0} idoqqu</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 kamra</value>
+    <value>1 apparat</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} kmamar</value>
+    <value>{0} apparati</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
     <value>1 grupp</value>
@@ -535,5 +535,11 @@
   </data>
   <data name="Detail_VolumeStep_Text" xml:space="preserve">
     <value>Pass tal-volum</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsOne_Text" xml:space="preserve">
+    <value>1 kamra</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
+    <value>{0} kmamar</value>
   </data>
 </root>

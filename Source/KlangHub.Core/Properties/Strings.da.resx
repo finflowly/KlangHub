@@ -339,10 +339,10 @@
     <value>{0} spiller</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 rum</value>
+    <value>1 enhed</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} rum</value>
+    <value>{0} enheder</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
     <value>1 gruppe</value>
@@ -535,5 +535,11 @@
   </data>
   <data name="Detail_VolumeStep_Text" xml:space="preserve">
     <value>Lydstyrketrin</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsOne_Text" xml:space="preserve">
+    <value>1 rum</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
+    <value>{0} rum</value>
   </data>
 </root>

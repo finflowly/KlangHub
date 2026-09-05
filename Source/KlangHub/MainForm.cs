@@ -1734,17 +1734,19 @@ namespace KlangHub
         private void RefreshRoomSummary()
         {
             if (lblRoomSummaryTitle == null || lblRoomSummarySubtitle == null) return;
-            var (total, playing, groups) = CountDevices();
+            var (total, playing, groups, roomCount) = CountDevices();
 
-            string title = Properties.Strings.Label_RoomSummaryTitle_Text;
-            if (playing > 0)
-            {
-                string p = playing == 1
-                    ? Properties.Strings.Label_RoomSummaryPlayingOne_Text
-                    : string.Format(Properties.Strings.Label_RoomSummaryPlayingMany_Text, playing);
-                title += " · " + p;
-            }
-            lblRoomSummaryTitle.Text = title;
+            string scope = Properties.Strings.Label_RoomSummaryTitle_Text;
+            string? nowPlaying = playing == 0 ? null
+                : playing == 1 ? Properties.Strings.Label_RoomSummaryPlayingOne_Text
+                : string.Format(Properties.Strings.Label_RoomSummaryPlayingMany_Text, playing);
+
+            // The title used to be cut mid-word by an ellipsis - "Geräte im Heimnetz · 2 s…" tells nobody
+            // how many are playing, which is the one thing that line is for. So the scope steps back when
+            // the row is narrow and the count stays: it is the fact, the scope is the label.
+            lblRoomSummaryTitle.Text = nowPlaying == null
+                ? scope
+                : FirstThatFits(lblRoomSummaryTitle, new[] { $"{scope} · {nowPlaying}", nowPlaying });
 
             if (total == 0)
             {
@@ -1752,27 +1754,31 @@ namespace KlangHub
                 return;
             }
 
-            string rooms = total == 1
+            string devices = total == 1
                 ? Properties.Strings.Label_RoomSummaryDevicesOne_Text
                 : string.Format(Properties.Strings.Label_RoomSummaryDevicesMany_Text, total);
-            if (groups > 0)
-            {
-                string g = groups == 1
-                    ? Properties.Strings.Label_RoomSummaryGroupsOne_Text
-                    : string.Format(Properties.Strings.Label_RoomSummaryGroupsMany_Text, groups);
-                rooms += " · " + g;
-            }
+            string? rooms = roomCount == 0 ? null
+                : roomCount == 1 ? Properties.Strings.Label_RoomSummaryRoomsOne_Text
+                : string.Format(Properties.Strings.Label_RoomSummaryRoomsMany_Text, roomCount);
+            string? groupsText = groups == 0 ? null
+                : groups == 1 ? Properties.Strings.Label_RoomSummaryGroupsOne_Text
+                : string.Format(Properties.Strings.Label_RoomSummaryGroupsMany_Text, groups);
             string quality = IsLosslessFormat()
                 ? Properties.Strings.Label_RoomSummaryLossless_Text
                 : Properties.Strings.Label_RoomSummaryCompressed_Text;
 
+            static string Join(params string?[] parts)
+                => string.Join(" · ", parts.Where(p => !string.IsNullOrEmpty(p)));
+
             // Drop whole clauses rather than letting an ellipsis cut a word in half: the quality phrase is
-            // the poetry, the format is the fact, the count is the point - so they go in that order.
+            // the poetry, the format is the fact, the counts are the point - so they go in that order.
             lblRoomSummarySubtitle.Text = FirstThatFits(lblRoomSummarySubtitle, new[]
             {
-                $"{rooms} · {Classes.Theme.CurrentFormatLabel} · {quality}",
-                $"{rooms} · {Classes.Theme.CurrentFormatLabel}",
-                rooms,
+                Join(devices, rooms, groupsText, Classes.Theme.CurrentFormatLabel, quality),
+                Join(devices, rooms, groupsText, Classes.Theme.CurrentFormatLabel),
+                Join(devices, rooms, Classes.Theme.CurrentFormatLabel),
+                Join(devices, rooms),
+                devices,
             });
         }
 
@@ -2468,9 +2474,13 @@ namespace KlangHub
             }
         }
 
-        private (int total, int playing, int groups) CountDevices()
+        private (int total, int playing, int groups, int rooms) CountDevices()
         {
             int total = 0, playing = 0, groups = 0;
+            // Rooms are what the user actually assigned, so they are counted, not assumed: four speakers in
+            // a flat may well be two rooms. The header used to print the DEVICE count under the word
+            // "rooms" - four tiles, three of them in the living room, and it still said "4 Räume".
+            var rooms = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
             if (pnlDevices != null)
                 foreach (var c in pnlDevices.Controls)
                     if (c is UserControls.DeviceControl dc)
@@ -2478,8 +2488,10 @@ namespace KlangHub
                         total++;
                         if (dc.IsPlaying) playing++;
                         if (dc.IsGroup) groups++;
+                        var room = dc.Room;
+                        if (!string.IsNullOrWhiteSpace(room)) rooms.Add(room!.Trim());
                     }
-            return (total, playing, groups);
+            return (total, playing, groups, rooms.Count);
         }
 
         // Over-draw the stock GroupBox etched border with Ink (children paint themselves on top) and re-draw the

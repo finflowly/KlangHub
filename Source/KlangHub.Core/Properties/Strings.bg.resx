@@ -339,10 +339,10 @@
     <value>{0} свирят</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 стая</value>
+    <value>1 устройство</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} стаи</value>
+    <value>{0} устройства</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
     <value>1 група</value>
@@ -535,5 +535,11 @@
   </data>
   <data name="Detail_VolumeStep_Text" xml:space="preserve">
     <value>Стъпка на звука</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsOne_Text" xml:space="preserve">
+    <value>1 стая</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
+    <value>{0} стаи</value>
   </data>
 </root>

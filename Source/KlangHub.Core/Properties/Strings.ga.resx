@@ -339,10 +339,10 @@
     <value>{0} ag seinm</value>
   </data>
   <data name="Label_RoomSummaryDevicesOne_Text" xml:space="preserve">
-    <value>1 seomra</value>
+    <value>1 ghléas</value>
   </data>
   <data name="Label_RoomSummaryDevicesMany_Text" xml:space="preserve">
-    <value>{0} seomra</value>
+    <value>{0} gléas</value>
   </data>
   <data name="Label_RoomSummaryGroupsOne_Text" xml:space="preserve">
     <value>1 ghrúpa</value>
@@ -535,5 +535,11 @@
   </data>
   <data name="Detail_VolumeStep_Text" xml:space="preserve">
     <value>Céim airde</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsOne_Text" xml:space="preserve">
+    <value>1 seomra</value>
+  </data>
+  <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
+    <value>{0} seomra</value>
   </data>
 </root>
