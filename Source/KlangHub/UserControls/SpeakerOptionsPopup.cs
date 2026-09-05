@@ -183,10 +183,22 @@ namespace KlangHub.UserControls
             base.OnKeyDown(e);
         }
 
+        /// <summary>
+        /// Clicking away commits the change, the way a lightweight popover should - unless the room list
+        /// is open. That list is a window of its own, and on the way up it can take the activation with
+        /// it; treating that as "the user clicked away" would close the popup at the exact moment they
+        /// were reaching for a room.
+        /// </summary>
+        internal bool ShouldCommitOnDeactivate => !roomBox.DroppedDown;
+
         protected override void OnDeactivate(EventArgs e)
         {
-            // clicking away commits the change (matches a lightweight popover)
-            if (DialogResult == DialogResult.None && Visible) { DialogResult = DialogResult.OK; Close(); }
+            if (DialogResult == DialogResult.None && Visible && ShouldCommitOnDeactivate)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+
             base.OnDeactivate(e);
         }
     }

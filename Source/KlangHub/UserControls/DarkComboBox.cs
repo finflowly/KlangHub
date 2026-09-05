@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using KlangHub.Classes;
 
@@ -17,7 +18,61 @@ namespace KlangHub.UserControls
     public sealed class DarkComboBox : ComboBox
     {
         private const int WM_PAINT = 0x000F;
-        private const int ButtonW = 30;
+
+        /// <summary>
+        /// Where the drop-down button really is - asked of Windows rather than assumed.
+        /// <para>
+        /// This used to be a fixed 30 pixels off the right edge. That is about right for a
+        /// <c>DropDownList</c>, which is the shape the settings page uses, and wrong for an editable
+        /// combo, whose button Windows draws seventeen pixels wide. Measured on the room picker in the
+        /// speaker popup - a 240-pixel editable field - the button runs from 221 to 238 and the edit
+        /// control from 3 to 220, while the amber chevron was being painted around x=219.
+        /// </para>
+        /// <para>
+        /// So the arrow people saw was drawn inside the text box, two pixels short of the button. Clicking
+        /// it put the caret in the text and selected the room name; the list never opened, and nothing
+        /// about the list was wrong. An affordance that is not the control is worse than no affordance.
+        /// </para>
+        /// </summary>
+        internal Rectangle DropDownButtonBounds
+        {
+            get
+            {
+                if (IsHandleCreated)
+                {
+                    var info = new COMBOBOXINFO { cbSize = Marshal.SizeOf<COMBOBOXINFO>() };
+                    if (GetComboBoxInfo(Handle, ref info) &&
+                        info.rcButton.right > info.rcButton.left &&
+                        info.rcButton.bottom > info.rcButton.top)
+                    {
+                        return Rectangle.FromLTRB(info.rcButton.left, info.rcButton.top,
+                                                  info.rcButton.right, info.rcButton.bottom);
+                    }
+                }
+
+                // No window yet, or an OS that declines to say. A scroll-bar's width is what Windows sizes
+                // this button from, and it follows the display's scaling.
+                var width = Math.Max(12, SystemInformation.VerticalScrollBarWidth);
+                return new Rectangle(Math.Max(0, Width - width - 2), 2, width, Math.Max(1, Height - 4));
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT { public int left, top, right, bottom; }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct COMBOBOXINFO
+        {
+            public int cbSize;
+            public RECT rcItem;
+            public RECT rcButton;
+            public int stateButton;
+            public IntPtr hwndCombo, hwndItem, hwndList;
+        }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetComboBoxInfo(IntPtr hwnd, ref COMBOBOXINFO info);
 
         /// <summary>
         /// Paints both surfaces this control has: the closed field (a recessed ink-2 well) and the drop-down
@@ -106,11 +161,13 @@ namespace KlangHub.UserControls
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
             // 1) the drop-down button band (always painted light by the OS) + the amber chevron
-            // Full height AND a little wider than the OS button: an editable combo draws a narrower button
-            // than a drop-down list, and the leftover edge showed through as a stray light sliver.
-            var btn = new Rectangle(Width - ButtonW - 6, 0, ButtonW + 6, Height);
+            // The band is taken from where the button actually is and then grown to the control's edges,
+            // so nothing the OS painted survives at any corner. The chevron is centred on the button
+            // itself, which is the whole point: what people aim at has to be what accepts the click.
+            var button = DropDownButtonBounds;
+            var btn = Rectangle.FromLTRB(Math.Max(0, button.Left - 4), 0, Width, Height);
             using (var b = new SolidBrush(Theme.Ink2)) g.FillRectangle(b, btn);
-            int cx = Width - ButtonW / 2 - 6, cy = Height / 2;
+            int cx = button.Left + button.Width / 2, cy = Height / 2;
             using (var pen = new Pen(Theme.Amber, 1.7f) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round })
                 g.DrawLines(pen, new[] { new PointF(cx - 4.5f, cy - 2.2f), new PointF(cx, cy + 2.8f), new PointF(cx + 4.5f, cy - 2.2f) });
 
