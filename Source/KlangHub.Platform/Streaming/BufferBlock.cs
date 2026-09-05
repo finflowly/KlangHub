@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace KlangHub.Streaming
 {
@@ -23,15 +23,23 @@ namespace KlangHub.Streaming
 
         /// <summary>Adds bytes to the buffer. Returns false when they did not fit and were lost.</summary>
         internal bool Add(byte[] dataArray, int numberOfBytes)
+            => Add(new ReadOnlySpan<byte>(dataArray, 0, numberOfBytes));
+
+        /// <summary>
+        /// Adds a span - the shape WASAPI hands its capture buffer over in, which is only valid for the
+        /// duration of the callback. Copying straight from it saves the intermediate array NAudio used to
+        /// allocate for every packet, about fifty times a second.
+        /// </summary>
+        internal bool Add(ReadOnlySpan<byte> data)
         {
-            if (numberOfBytes > SpaceLeft)
+            if (data.Length > SpaceLeft)
             {
-                DroppedBytes += numberOfBytes;
+                DroppedBytes += data.Length;
                 return false;
             }
 
-            Array.Copy(dataArray, 0, Data, Used, numberOfBytes);
-            Used += numberOfBytes;
+            data.CopyTo(new Span<byte>(Data, Used, data.Length));
+            Used += data.Length;
             return true;
         }
 

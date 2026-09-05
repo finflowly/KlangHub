@@ -60,5 +60,31 @@ namespace KlangHub.Tests.Platform
             Assert.True(buffer.Add(new byte[10], 10));
             Assert.Equal(0, buffer.DroppedBytes);
         }
+
+        [Fact]
+        public void A_span_from_the_capture_callback_is_copied_in_the_same_way()
+        {
+            // NAudio 3 hands the WASAPI buffer over as a span that is only valid inside the callback.
+            var buffer = Small();
+            var packet = new byte[] { 1, 2, 3, 4 };
+
+            Assert.True(buffer.Add(new System.ReadOnlySpan<byte>(packet)));
+            Assert.Equal(4, buffer.Used);
+            Assert.Equal(new byte[] { 1, 2, 3, 4 }, buffer.Data[..4]);
+
+            // and the copy is a copy: the caller's memory going away must not matter
+            packet[0] = 99;
+            Assert.Equal(1, buffer.Data[0]);
+        }
+
+        [Fact]
+        public void A_span_that_does_not_fit_is_counted_too()
+        {
+            var buffer = Small();
+            buffer.Add(new byte[8], 8);
+
+            Assert.False(buffer.Add(new System.ReadOnlySpan<byte>(new byte[5])));
+            Assert.Equal(5, buffer.DroppedBytes);
+        }
     }
 }

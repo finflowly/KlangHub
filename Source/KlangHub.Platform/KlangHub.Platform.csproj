@@ -14,7 +14,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="2.3.0" />
+    <PackageReference Include="NAudio" Version="3.0.1" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
     <!-- Managed FLAC (FLAKE) encoder for lossless live streaming. LGPL-3.0: shipped as a separate,
          replaceable DLL (framework-dependent build) + attribution in docs/THIRD-PARTY-LICENSES.md. -->

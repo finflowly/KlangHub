@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace KlangHub.Platform.Audio
     /// </summary>
     public sealed class LoopbackCaptureEngine : IAudioCaptureEngine
     {
-        private WasapiCapture? soundIn;
+        private WasapiRecorder? soundIn;
         private bool isRecording = false;
         private WaveFormat? waveFormat;
         private DateTime latestDataAvailable;
@@ -123,58 +123,79 @@ namespace KlangHub.Platform.Audio
 
             try
             {
-                if (recordingDevice.DataFlow == DataFlow.Render)
-                {
-                    soundIn = new WasapiLoopbackCapture(recordingDevice);
-                }
-                else
-                {
-                    soundIn = new WasapiCapture(recordingDevice);
-                }
+                // NAudio 3 builds the recorder with its format already decided, so the device's own mix
+                // format has to be read first - it used to be read off the half-constructed capture object.
+                // Same numbers, one step earlier.
+                WaveFormat mixFormat;
+                using (var probe = recordingDevice.CreateAudioClient())
+                    mixFormat = probe.MixFormat;
 
+                WaveFormat captureFormat = mixFormat;
                 var selectedFormat = settings.StreamFormat;
                 var convertMultiChannelToStereo = settings.ConvertMultiChannelToStereo;
-                var nrChannels = convertMultiChannelToStereo ? soundIn.WaveFormat.Channels : 2;
+                var nrChannels = convertMultiChannelToStereo ? mixFormat.Channels : 2;
                 // Cap the capture rate at 48 kHz. Cast receivers force a 48 kHz internal mixer, so a 96 kHz
                 // stream is resampled away on-device anyway - capping it here halves the on-wire bitrate (e.g.
                 // 32-bit stereo 6 -> 3 Mbit/s) with no audible loss, cutting the underrun/"noise" risk on
                 // weak-Wi-Fi speakers. (48 kHz is also the max LAME accepts for MP3.) VERIFIED on this hardware:
                 // WASAPI shared-mode genuinely converts the 32-bit-float mix to the requested rate/depth.
-                var rate = System.Math.Min(soundIn.WaveFormat.SampleRate, 48000);
+                var rate = System.Math.Min(mixFormat.SampleRate, 48000);
                 switch (selectedFormat)
                 {
                     case SupportedStreamFormat.Wav:
-                        soundIn.WaveFormat = new WaveFormat(44100, 16, nrChannels);
+                        captureFormat = new WaveFormat(44100, 16, nrChannels);
                         break;
                     case SupportedStreamFormat.Mp3_320:
                     case SupportedStreamFormat.Mp3_128:
-                        soundIn.WaveFormat = new WaveFormat(rate, 16, 2);
+                        captureFormat = new WaveFormat(rate, 16, 2);
                         break;
                     case SupportedStreamFormat.Wav_16bit:
-                        soundIn.WaveFormat = new WaveFormat(rate, 16, nrChannels);
+                        captureFormat = new WaveFormat(rate, 16, nrChannels);
                         break;
                     case SupportedStreamFormat.Wav_24bit:
-                        soundIn.WaveFormat = new WaveFormat(rate, 24, nrChannels);
+                        captureFormat = new WaveFormat(rate, 24, nrChannels);
                         break;
                     case SupportedStreamFormat.Wav_32bit:
-                        soundIn.WaveFormat = new WaveFormat(rate, 32, nrChannels);
+                        captureFormat = new WaveFormat(rate, 32, nrChannels);
                         break;
                     case SupportedStreamFormat.Flac:
                         // FLAC needs INTEGER PCM (the WASAPI mix format is typically 32-bit float). 24-bit int =
                         // true HiFi, losslessly FLAC-compressed (verified: FLAKE round-trips 24-bit byte-exact).
                         // FLAC is the out-of-box default: lossless like WAV but COMPRESSED, so it doesn't OOM
                         // small speakers the way 32-bit uncompressed LPCM did on the Enchant (ERROR 102).
-                        soundIn.WaveFormat = new WaveFormat(rate, 24, nrChannels);
+                        captureFormat = new WaveFormat(rate, 24, nrChannels);
                         break;
                     default:
                         break;
                 }
+                var builder = new WasapiRecorderBuilder()
+                    .WithDevice(recordingDevice)
+                    .WithFormat(captureFormat)
+                    // The engine's minimum period instead of a fixed buffer. Everything downstream already
+                    // buffers for the receiver's sake; what this removes is latency at the very START of
+                    // the chain, which is the part multi-room synchronisation can never win back later.
+                    .WithLowLatency(true)
+                    // The capture thread is the one thread in this app that must not be preempted: a missed
+                    // packet here is a hole in the stream for every speaker at once.
+                    .WithMmcssThreadPriority("Pro Audio");
+
+                if (recordingDevice.DataFlow == DataFlow.Render)
+                    builder = builder.WithLoopbackCapture();
+
+                soundIn = builder.Build();
+
                 waveFormat = soundIn.WaveFormat;
                 logger.Log($"Stream format set to {waveFormat.Encoding} {waveFormat.SampleRate} {waveFormat.BitsPerSample} bit");
                 soundIn.DataAvailable += OnDataAvailable;
                 soundIn.RecordingStopped += OnRecordingStopped;
                 soundIn.StartRecording();
                 isRecording = true;
+
+                // Said out loud because it is not guaranteed: low latency needs IAudioClient3 and a format
+                // the engine can take at its minimum period, and it silently falls back when it cannot.
+                logger.Log(soundIn.LowLatencyActive
+                    ? $"Capture latency {soundIn.LatencyMilliseconds:F1} ms (IAudioClient3 low-latency mode)"
+                    : $"Capture latency {soundIn.LatencyMilliseconds:F1} ms (standard mode: {soundIn.LowLatencyUnavailableReason})");
 
                 var bytesPerSecond = soundIn.WaveFormat.SampleRate * soundIn.WaveFormat.Channels * (soundIn.WaveFormat.BitsPerSample / 8);
                 bufferCaptured = new BufferBlock() { Data = new byte[bytesPerSecond / 2] };
@@ -197,19 +218,33 @@ namespace KlangHub.Platform.Audio
             return false;
         }
 
-        private void OnDataAvailable(object? sender, WaveInEventArgs e)
+        /// <summary>
+        /// A packet straight from WASAPI, zero-copy.
+        ///
+        /// The buffer is a view onto WASAPI's own memory and is only valid inside this call, so it is
+        /// copied into the ring here - which is what the old handler did anyway, just from a byte[] NAudio
+        /// had already allocated for us. One allocation per packet less, about fifty times a second.
+        ///
+        /// <paramref name="qpcPosition"/> is the moment the device captured this packet, on the same
+        /// QueryPerformanceCounter clock the whole machine shares. It is not used yet; it is the anchor the
+        /// planned multi-room synchronisation needs, and it only exists because the capture reports it -
+        /// there is no way to recover it later. See docs/PLAN-MULTIROOM-SYNC.md.
+        /// </summary>
+        private void OnDataAvailable(ReadOnlySpan<byte> buffer, AudioClientBufferFlags flags,
+                                     long devicePosition, long qpcPosition)
         {
             if (soundIn == null || soundIn.WaveFormat == null)
                 return;
 
             latestDataAvailable = DateTime.Now;
+            lastCaptureQpc = qpcPosition;
 
             lock (bufferSwapSync)
-            {
-                var currentBuffer = bufferCaptured;
-                currentBuffer.Add(e.Buffer, e.BytesRecorded);
-            }
+                bufferCaptured.Add(buffer);
         }
+
+        /// <summary>When the last packet was captured, on the machine's QueryPerformanceCounter clock.</summary>
+        private long lastCaptureQpc;
 
         /// <summary>Enumerate the currently available capture/render endpoints (neutral).</summary>
         public IReadOnlyList<AudioCaptureDevice> GetDevices()
@@ -255,12 +290,16 @@ namespace KlangHub.Platform.Audio
             if (device == null)
                 return null!;
 
+            // One client, disposed. The old MMDevice.AudioClient property created a fresh COM object on
+            // every read - and this read it twice per device, on a list refreshed every fifteen seconds.
+            using var client = device.CreateAudioClient();
+            var mix = client.MixFormat;
             return new AudioCaptureDevice(
                 device.ID,
                 device.FriendlyName,
                 ToAudioFlow(device.DataFlow),
-                device.AudioClient.MixFormat.SampleRate,
-                device.AudioClient.MixFormat.Channels);
+                mix.SampleRate,
+                mix.Channels);
         }
 
         private static AudioFlow ToAudioFlow(DataFlow flow) => flow switch

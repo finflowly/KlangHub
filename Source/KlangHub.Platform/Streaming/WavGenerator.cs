@@ -11,7 +11,7 @@ namespace KlangHub.Streaming
     public class WavGenerator
     {
         private WaveFormat waveFormat = new WaveFormat(44100, 2);
-        private WaveOutEvent? player;
+        private WaveOut? player;
 
         /// <summary>
         /// Play (looping) silence, to make sure there always something captured.
@@ -44,7 +44,7 @@ namespace KlangHub.Streaming
 
             try
             {
-                player = new WaveOutEvent();
+                player = new WaveOut();
                 if (!string.IsNullOrEmpty(deviceName))
                 {
                     for (int i = -1; i < WaveOut.DeviceCount; i++)
