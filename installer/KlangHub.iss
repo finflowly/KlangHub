@@ -100,6 +100,10 @@ Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 ; than shown as a click-through nobody reads.
 Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
 Source: "..\docs\THIRD-PARTY-LICENSES.md"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+; The copyleft licences themselves, not just a link to them: LGPL-2.1 s1, LGPL-3.0 s4 and MPL-1.1 s3.5
+; each ask that a copy of the licence accompany the distribution. FLAKE (FLAC), LAME (MP3) and
+; Ude.NetStandard (encoding detection) are all shipped under one of them.
+Source: "..\licenses\*"; DestDir: "{app}\licenses"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExe}"

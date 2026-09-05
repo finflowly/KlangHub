@@ -1,4 +1,10 @@
-// The Google Cast wire format: the frame every message between a sender and a receiver travels in.
+﻿// The Google Cast wire format: the frame every message between a sender and a receiver travels in.
+//
+// Origin and licence: restated from the Cast channel definition published in the Chromium source tree
+// (components/media_router/common/providers/cast/channel/), Copyright The Chromium Authors, under the
+// BSD-3-Clause licence - https://chromium.googlesource.com/chromium/src/+/main/LICENSE
+// Field numbers, enum values and message names ARE the protocol and are reproduced exactly; several of
+// the explanatory comments follow the original wording. See docs/THIRD-PARTY-LICENSES.md.
 //
 // Rewritten from the original proto2 definition for the modern C# runtime, which does not support proto2.
 // The wire format is unchanged - field numbers and types are what a Chromecast reads, and they are

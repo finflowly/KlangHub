@@ -1,7 +1,7 @@
 # KlangHub
 
 **Die All-in-One Multiroom-Audio-Lösung für Windows.**
-Chromecast, Spotify Connect und mehr – zentral auf deinem PC.
+Der Ton deines PCs auf allen Lautsprechern im Haus – aus einer Anwendung.
 
 KlangHub nimmt den Ton deines Windows-Desktops (oder eines Mikrofon-/Line-In-Eingangs)
 auf und streamt ihn ins lokale Netzwerk an deine Wiedergabegeräte – für synchronen
@@ -9,10 +9,11 @@ Multiroom-Sound aus einer einzigen Anwendung.
 
 ## Status
 
-KlangHub befindet sich in aktiver Weiterentwicklung: eigenständige, modulare
-Premium-Anwendung mit sauberer Schichtentrennung, Erweiterbarkeit für weitere
-Streaming-Protokolle (u. a. Spotify Connect) und einer modernen, markeneigenen
-"Hi-Fi-Konsolen"-Oberfläche.
+KlangHub befindet sich in aktiver Weiterentwicklung. Heute streamt es an
+Google-Cast-fähige Geräte. Die Architektur ist auf weitere Protokolle vorbereitet;
+AirPlay- und Snapcast-Geräte werden bereits im Netz gefunden, aber noch nicht
+bespielt. Was die Anwendung kann, steht unter „Funktionen" – dort steht nichts,
+was sie nicht kann.
 
 ## Funktionen
 
@@ -49,4 +50,26 @@ Komponenten und deren Lizenzen.
 ## Lizenz
 
 KlangHub steht unter der MIT-Lizenz, siehe [LICENSE](LICENSE) für den vollständigen Text
-und die Namensnennung.
+und die Namensnennung. Die Codebasis ist ein Fork eines Chromecast-Audio-Streamers von
+**SamDel** (MIT); die mitgelieferten Fremdkomponenten und ihre Lizenzen stehen in
+[docs/THIRD-PARTY-LICENSES.md](docs/THIRD-PARTY-LICENSES.md).
+
+## Marken und Unabhängigkeit
+
+KlangHub ist ein unabhängiges Open-Source-Projekt und steht in **keiner Verbindung zu
+Google, Apple, Spotify, Samsung oder Harman** und wird von diesen weder unterstützt noch
+zertifiziert.
+
+Produkt- und Protokollnamen werden ausschließlich beschreibend verwendet, um zu sagen,
+mit welchen Geräten die Anwendung arbeitet:
+
+- **Chromecast**, **Google Cast** und **Google Home** sind Marken von Google LLC.
+- **AirPlay** ist eine Marke von Apple Inc. KlangHub **findet** AirPlay-Geräte im Netzwerk
+  (offene mDNS-Ankündigungen), sendet aber **keinen** AirPlay-Audiostrom. Dafür wären
+  Apples Pairing-Verfahren und eine MFi-Lizenzierung nötig – beides ist hier weder
+  implementiert noch umgangen.
+- **Spotify** und **Spotify Connect** sind Marken von Spotify AB. KlangHub unterstützt
+  Spotify Connect **nicht**.
+- **Snapcast** ist ein Projekt von Johannes Pohl (GPL-3.0). KlangHub findet Snapcast-Geräte
+  im Netz; eine Steuerung ist nicht implementiert. Es wird kein Snapcast-Code verwendet
+  oder gelinkt.
