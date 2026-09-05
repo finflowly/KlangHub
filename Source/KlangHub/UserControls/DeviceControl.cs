@@ -257,7 +257,7 @@ namespace KlangHub.UserControls
             // ---- status row: dot + word (left) ----
             // "Connecting" is the moment between picking a speaker and hearing it - it used to fall through
             // to "Connected", so the card claimed to be ready while nothing was playing yet.
-            bool connecting = state is PlaybackState.Connecting or PlaybackState.Loading;
+            bool connecting = state is PlaybackState.Connecting or PlaybackState.Loading or PlaybackState.AwaitingApproval;
             Color dotColor = playing || connecting ? Theme.Amber : error ? Theme.Ember : Theme.Blue;
             Color labelColor = playing || connecting ? Theme.Amber : error ? Theme.Ember : Theme.Blend(Theme.Slate, Theme.Ivory, 0.35f);
             string statusLabel = StatusWord(state);
@@ -431,6 +431,10 @@ namespace KlangHub.UserControls
             PlaybackState.Connecting or PlaybackState.Loading => KlangHub.Properties.Strings.Card_Status_Connecting_Text,
             PlaybackState.Paused => KlangHub.Properties.Strings.Card_Status_Paused_Text,
             PlaybackState.Error => KlangHub.Properties.Strings.Card_Status_Error_Text,
+            // The one status that asks something of the listener: the device is holding the launch until
+            // somebody allows it there. "Connecting" would be true and useless - after five silent minutes
+            // it reads as a hang instead of as "walk over and press allow".
+            PlaybackState.AwaitingApproval => KlangHub.Properties.Strings.Card_Status_AwaitingApproval_Text,
             _ => KlangHub.Properties.Strings.Card_Status_Connected_Text,
         };
 

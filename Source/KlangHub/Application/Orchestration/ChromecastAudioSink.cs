@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Net.Sockets;
 using KlangHub.Application.Interfaces;
@@ -22,7 +22,20 @@ namespace KlangHub.Application.Orchestration
         private const int trbLagMaximumValue = 1000;
         private int reduceLagThreshold = trbLagMaximumValue;
         private IAudioEncoder? encoder = null;
-        private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Wav_24bit; // uncompressed HiFi out-of-box (the maintainer's setup); settings override on load
+
+        /// <summary>
+        /// Guards the encoder. An encoder is a state machine carrying a half-filled block between calls, and
+        /// FLAKE reaches into its buffers through unsafe pointers - entering one from two threads does not
+        /// merely garble the stream, it writes past managed arrays and corrupts the GC heap.
+        ///
+        /// The capture engine is now built so only one thread ever gets here, but this is the layer that can
+        /// PROVE it, and it costs an uncontended lock on a path that runs at most a thousand times a second.
+        /// </summary>
+        private readonly object encoderSync = new();
+
+        /// <summary>Test seam: how an encoder is made for a format. Production uses the real encoders.</summary>
+        internal Func<SupportedStreamFormat, AudioFormat, IAudioEncoder>? EncoderFactory { get; set; }
+        private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Wav_24bit; // uncompressed HiFi out-of-box (verified on real hardware); settings override on load
 
         public ChromecastAudioSink(IDevices devicesIn, ILogger loggerIn)
         {
@@ -45,14 +58,17 @@ namespace KlangHub.Application.Orchestration
             // through their encoder. StreamCodec is the single source of truth for that decision.
             if (!StreamCodec.IsWav(streamFormatSelected))
             {
-                if (encoder == null)
+                lock (encoderSync)
                 {
-                    encoder = CreateEncoder(streamFormatSelected, formatIn);
+                    if (encoder == null)
+                    {
+                        encoder = CreateEncoder(streamFormatSelected, formatIn);
+                    }
+                    // Tier2-A1: dataToSendIn is already frame.Data (a fresh per-frame array read synchronously
+                    // by the encoder) — the old .ToArray() clone was pure waste.
+                    encoder.Encode(dataToSendIn);
+                    dataToSendIn = encoder.Read();
                 }
-                // Tier2-A1: dataToSendIn is already frame.Data (a fresh per-frame array read synchronously
-                // by the encoder) — the old .ToArray() clone was pure waste.
-                encoder.Encode(dataToSendIn);
-                dataToSendIn = encoder.Read();
             }
             if (dataToSendIn.Length > 0)
             {
@@ -62,6 +78,9 @@ namespace KlangHub.Application.Orchestration
 
         private IAudioEncoder CreateEncoder(SupportedStreamFormat format, AudioFormat formatIn)
         {
+            if (EncoderFactory != null)
+                return EncoderFactory(format, formatIn);
+
             return StreamCodec.IsFlac(format)
                 ? new FlacEncoder(formatIn, logger)
                 : new Mp3Encoder(formatIn, format, logger);
@@ -88,7 +107,10 @@ namespace KlangHub.Application.Orchestration
         {
             try
             {
-                socketIn.Send(ArtworkHttp.BuildImageResponse(ArtworkImage.Bytes));
+                // The real cover of the piece that is playing, when the metadata cascade found one; the
+                // branded picture otherwise. Never a generic placeholder while an actual cover exists.
+                var image = Platform.NowPlaying.CurrentCover.Bytes ?? ArtworkImage.Bytes;
+                socketIn.Send(ArtworkHttp.BuildImageResponse(image));
             }
             catch (Exception ex)
             {
@@ -110,17 +132,26 @@ namespace KlangHub.Application.Orchestration
             {
                 logger.Log($"Set stream format to {formatIn}");
                 streamFormatSelected = formatIn;
-                encoder = null;
+                lock (encoderSync)
+                    encoder = null;
 
                 devices.Stop();
                 devices.Start();
             }
         }
 
-        public void ClearEncoder() => encoder = null;
+        public void ClearEncoder()
+        {
+            lock (encoderSync)
+                encoder = null;
+        }
 
         public void SetLagThreshold(int lagThresholdIn) => reduceLagThreshold = lagThresholdIn;
 
-        public void DisposeEncoder() => encoder?.Dispose();
+        public void DisposeEncoder()
+        {
+            lock (encoderSync)
+                encoder?.Dispose();
+        }
     }
 }

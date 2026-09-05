@@ -230,7 +230,7 @@ namespace KlangHub
 
             if (cmbStreamFormat.Items.Count == 0)
             {
-                // WAV 24-bit first: uncompressed HiFi out-of-box default (the maintainer's setup runs it problem-free).
+                // WAV 24-bit first: uncompressed HiFi out-of-box default (runs problem-free on the test hardware).
                 // FLAC follows, still labelled "recommended" - it's the robust pick for small/weak speakers that
                 // struggled with high-bitrate uncompressed LPCM (ERROR 102). MP3 last for legacy compatibility.
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_24bit));
@@ -412,18 +412,112 @@ namespace KlangHub
             }
         }
 
+        /// <summary>
+        /// Mirrors the log checkbox so <see cref="Log"/> can decide whether a line is wanted WITHOUT first
+        /// hopping to the UI thread to read the control. The check used to happen after the hop, so a
+        /// switched-off log cost exactly as much as a switched-on one.
+        /// </summary>
+        private volatile bool logDeviceCommunicationEnabled;
+
+        /// <summary>
+        /// The same conversation, on disc. The text box shows what is happening; the file is what lets
+        /// somebody work out afterwards why the sound stopped for a second forty minutes into an album.
+        /// Created on the first line that is logged, so a listener who never turns the log on never gets
+        /// a file.
+        /// </summary>
+        private Platform.Diagnostics.DeviceLogFile? deviceLogFile;
+
+        /// <summary>Log lines posted to the UI thread but not yet processed. See <see cref="Log"/>.</summary>
+        private int pendingLogPosts;
+
+        /// <summary>Above this many queued lines the log drops rather than grows. Audio outranks logging.</summary>
+        private const int MaxPendingLogPosts = 400;
+
+        /// <summary>
+        /// Write one line to the log pane.
+        ///
+        /// Callable from any thread, and it must never make the caller wait: the capture drain loop and every
+        /// Cast connection log from their own threads, and a blocking Invoke parks them for as long as the UI
+        /// thread is busy - which during start-up is seconds. A parked drain loop stops emptying the capture
+        /// ring, BufferBlock starts dropping, and a dropped block does not click in a FLAC stream, it breaks
+        /// the bitstream: the receiver answers with a decode error and stops. That is the "Ton bricht ab"
+        /// reported from real hardware, and the soundbar's error 102.
+        ///
+        /// So: no marshalling for a line nobody wants, BeginInvoke instead of Invoke for the rest, and a
+        /// bounded queue - if the UI thread falls that far behind, the line is dropped, not the audio.
+        /// </summary>
         public void Log(string message)
         {
-            if (txtLog == null || log == null)
+            if (txtLog == null || log == null || message == null)
                 return;
+
+            var isKeepAlive = message.Contains("\"type\":\"PONG\"") || message.Contains("\"type\":\"PING\"");
+            if (!isKeepAlive && !logDeviceCommunicationEnabled)
+                return;
+
+            // To disc first, and before the UI hop. The text box drops messages when it falls behind
+            // (MaxPendingLogPosts), and the ones it drops under load are precisely the ones a dropout
+            // investigation needs.
+            WriteToLogFile(message);
 
             try
             {
                 if (InvokeRequired)
                 {
-                    Invoke(new Action<string>(Log), new object[] { message });
+                    if (Volatile.Read(ref pendingLogPosts) >= MaxPendingLogPosts)
+                        return;
+
+                    Interlocked.Increment(ref pendingLogPosts);
+                    BeginInvoke(new Action<string>(LogOnUiThread), new object[] { message });
                     return;
                 }
+
+                LogCore(message);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void WriteToLogFile(string message)
+        {
+            if (!logDeviceCommunicationEnabled)
+                return;
+
+            try
+            {
+                deviceLogFile ??= new Platform.Diagnostics.DeviceLogFile(DeviceLogFolder);
+                deviceLogFile.Write(message);
+            }
+            catch (Exception)
+            {
+                // A diagnostic is never a reason for the music to stop.
+            }
+        }
+
+        /// <summary>Where the device conversation is written. Beside the speaker settings, not in Temp.</summary>
+        public static string DeviceLogFolder => System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KlangHub", "logs");
+
+        private void LogOnUiThread(string message)
+        {
+            try
+            {
+                LogCore(message);
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                Interlocked.Decrement(ref pendingLogPosts);
+            }
+        }
+
+        private void LogCore(string message)
+        {
+            try
+            {
                 if (IsDisposed) return;
 
                 if (message.Contains("\"type\":\"PONG\"") || message.Contains("\"type\":\"PING\""))
@@ -1105,6 +1199,8 @@ namespace KlangHub
                 return;
 
             chkLogDeviceCommunication.Checked = logDeviceCommunication;
+            // Keep the lock-free mirror Log() reads in step with the control.
+            logDeviceCommunicationEnabled = logDeviceCommunication;
             tabStrip?.SetTabShown(tabPageLog, logDeviceCommunication);
             ApplyTheme(null, GetDarkMode());
         }
@@ -1473,6 +1569,9 @@ namespace KlangHub
             base.Dispose(disposing);
             captureEngine?.Dispose();
             wavGenerator?.Dispose();
+            // Flushes what is still buffered. Without this the last lines before a crash - the interesting
+            // ones - are the ones that never reach the disc.
+            deviceLogFile?.Dispose();
         }
 
         private void ChkAutoMute_CheckedChanged(object sender, EventArgs e)
@@ -1947,8 +2046,10 @@ namespace KlangHub
         // This rebuild re-hosts the very same controls (every binding, event and Get/Set stays untouched) inside
         // the concept's surface cards, on one 8-px grid, with the field wells and pill buttons the rest of the
         // app already uses.
-        private UserControls.CardPanel? cardSound, cardBehavior, cardReceiver;
+        private UserControls.CardPanel? cardSound, cardBehavior, cardReceiver, cardNowPlaying;
         private UserControls.DarkTextBox? txtReceiverAppId;
+        private UserControls.DarkTextBox? txtNowPlayingFile;
+        private UserControls.ToggleSwitch? chkReadFileTags, chkReadWindowsNowPlaying;
         private Panel? settingsScroll;
 
         private void SetupSettingsPage()
@@ -1973,6 +2074,7 @@ namespace KlangHub
 
             cardSound = BuildSoundCard();
             cardBehavior = BuildBehaviorCard();
+            cardNowPlaying = BuildNowPlayingCard();
             cardReceiver = BuildReceiverCard();
             var footer = BuildSettingsFooter();
 
@@ -1980,6 +2082,8 @@ namespace KlangHub
             settingsScroll.Controls.Add(footer);
             settingsScroll.Controls.Add(Spacer(16));
             settingsScroll.Controls.Add(cardReceiver);
+            settingsScroll.Controls.Add(Spacer(16));
+            settingsScroll.Controls.Add(cardNowPlaying);
             settingsScroll.Controls.Add(Spacer(16));
             settingsScroll.Controls.Add(cardBehavior);
             settingsScroll.Controls.Add(Spacer(16));
@@ -2110,7 +2214,152 @@ namespace KlangHub
         }
 
         /// <summary>
-        /// Card 3 - the Cast receiver. Empty means Google's Default Media Receiver, which is what a
+        /// Card 3 - where the titles on the television come from.
+        /// <para>
+        /// The loopback stream KlangHub casts is an endless tone: no artist, no title, no cover. Everything
+        /// the screen shows about the music is gathered here, and this card is where somebody whose player
+        /// publishes nothing at all - Clementine being the case this was built for - can point KlangHub at
+        /// a file that does. Both switches are on by default: a listener who never opens this page should
+        /// get the fullest screen KlangHub can manage, not the emptiest.
+        /// </para>
+        /// </summary>
+        private UserControls.CardPanel BuildNowPlayingCard()
+        {
+            var card = new UserControls.CardPanel
+            {
+                Name = "cardNowPlaying",
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(22, 46, 22, 20),
+                Caption = Properties.Strings.Label_Section_NowPlaying_Text,
+            };
+
+            chkReadFileTags = NowPlayingToggle("chkReadFileTags", Properties.Strings.Check_ReadFileTags_Text);
+            chkReadWindowsNowPlaying = NowPlayingToggle("chkReadWindowsNowPlaying", Properties.Strings.Check_ReadWindowsNowPlaying_Text);
+
+            var stack = new Panel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                BackColor = Color.Transparent,
+                Margin = new Padding(0),
+            };
+            // Dock=Top stacking is reverse-of-collection, so add bottom-up to keep the reading order.
+            stack.Controls.Add(chkReadWindowsNowPlaying);
+            stack.Controls.Add(new UserControls.HairLine());
+            stack.Controls.Add(chkReadFileTags);
+
+            var grid = new TableLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                ColumnCount = 2,
+                BackColor = Color.Transparent,
+                Margin = new Padding(0, 6, 0, 0),
+            };
+            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 226));
+            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+
+            txtNowPlayingFile = new UserControls.DarkTextBox { MaxLength = 260 };
+            txtNowPlayingFile.TextChanged += (s, e) => applicationLogic?.ApplyNowPlayingOptions();
+
+            var browse = new UserControls.PillButton
+            {
+                Text = Properties.Strings.Button_BrowseNowPlaying_Text,
+                Dock = DockStyle.Right,
+                Width = 132,
+                Margin = new Padding(8, 5, 0, 5),
+            };
+            browse.Click += (s, e) => BrowseForNowPlayingFile();
+
+            // The well takes whatever the button leaves, so the path stays readable at any window width.
+            var row = new Panel { BackColor = Color.Transparent, Margin = new Padding(0) };
+            var well = WrapField(txtNowPlayingFile);
+            well.Dock = DockStyle.Fill;
+            well.Margin = new Padding(0);
+            row.Controls.Add(well);
+            row.Controls.Add(browse);
+
+            AddField(grid, new Label { Text = Properties.Strings.Label_NowPlayingFile_Text, UseMnemonic = false }, row);
+
+            var hint = new Label
+            {
+                Name = "lblNowPlayingHint",
+                Text = Properties.Strings.Label_NowPlayingHint_Text,
+                UseMnemonic = false,
+                Dock = DockStyle.Top,
+                AutoSize = false,
+                Height = 52,
+                Padding = new Padding(0, 8, 0, 0),
+                Font = Classes.Theme.Small,
+                ForeColor = Classes.Theme.Slate2,
+                BackColor = Color.Transparent,
+                Tag = "keep-fg",
+            };
+
+            card.Controls.Add(hint);
+            card.Controls.Add(grid);
+            card.Controls.Add(stack);
+            return card;
+        }
+
+        /// <summary>One switch row on the now-playing card, matching the behaviour card exactly.</summary>
+        private UserControls.ToggleSwitch NowPlayingToggle(string name, string text)
+        {
+            var toggle = new UserControls.ToggleSwitch
+            {
+                Name = name,
+                Text = text,
+                Dock = DockStyle.Top,
+                AutoSize = false,
+                Height = 38,
+                Margin = new Padding(0),
+                Checked = true,
+                UseMnemonic = false,
+            };
+            toggle.CheckedChanged += (s, e) => applicationLogic?.ApplyNowPlayingOptions();
+            return toggle;
+        }
+
+        private void BrowseForNowPlayingFile()
+        {
+            using var dialog = new OpenFileDialog
+            {
+                // CheckFileExists is off on purpose: the helper that writes this file may not have run yet,
+                // and refusing to accept the path until it has would be a puzzle rather than a safeguard.
+                CheckFileExists = false,
+                Title = Properties.Strings.Label_NowPlayingFile_Text,
+            };
+
+            if (!string.IsNullOrWhiteSpace(txtNowPlayingFile?.Text))
+            {
+                try { dialog.InitialDirectory = System.IO.Path.GetDirectoryName(txtNowPlayingFile.Text) ?? string.Empty; }
+                catch (Exception) { /* a path we cannot parse is simply not used as a starting point */ }
+            }
+
+            if (dialog.ShowDialog(this) == DialogResult.OK && txtNowPlayingFile != null)
+                txtNowPlayingFile.Text = dialog.FileName;
+        }
+
+        /// <summary>The metadata settings as the user left them.</summary>
+        public bool GetReadFileTags() => chkReadFileTags?.Checked ?? true;
+
+        public bool GetReadWindowsNowPlaying() => chkReadWindowsNowPlaying?.Checked ?? true;
+
+        public string GetNowPlayingFilePath() => txtNowPlayingFile?.Text?.Trim() ?? string.Empty;
+
+        public void SetNowPlayingSettings(bool readFileTags, bool readWindowsNowPlaying, string filePath)
+        {
+            if (chkReadFileTags != null) chkReadFileTags.Checked = readFileTags;
+            if (chkReadWindowsNowPlaying != null) chkReadWindowsNowPlaying.Checked = readWindowsNowPlaying;
+            if (txtNowPlayingFile != null) txtNowPlayingFile.Text = filePath ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Card 4 - the Cast receiver. Empty means Google's Default Media Receiver, which is what a
         /// television labels "Default Media Receiver". An id registered in the Cast Developer Console
         /// launches KlangHub's own receiver instead. It belongs in the settings rather than in the code
         /// because the id belongs to whoever registered it - anyone forking the project needs their own.
@@ -2328,6 +2577,9 @@ namespace KlangHub
             if (cardSound != null) { cardSound.Caption = Properties.Strings.Label_Section_Sound_Text; cardSound.Invalidate(); }
             if (cardBehavior != null) { cardBehavior.Caption = Properties.Strings.Label_Section_Behavior_Text; cardBehavior.Invalidate(); }
             if (cardReceiver != null) { cardReceiver.Caption = Properties.Strings.Label_Section_Receiver_Text; cardReceiver.Invalidate(); }
+            if (cardNowPlaying != null) { cardNowPlaying.Caption = Properties.Strings.Label_Section_NowPlaying_Text; cardNowPlaying.Invalidate(); }
+            if (chkReadFileTags != null) chkReadFileTags.Text = Properties.Strings.Check_ReadFileTags_Text;
+            if (chkReadWindowsNowPlaying != null) chkReadWindowsNowPlaying.Text = Properties.Strings.Check_ReadWindowsNowPlaying_Text;
             RefreshRoomSummary();
             if (tabStrip == null) return;
             tabStrip.SetTabText(tabPageMain, Properties.Strings.Tab_Main_Text);

@@ -29,6 +29,15 @@ namespace KlangHub.Streaming
 
         private readonly Thread streamThread;
         private long bytesSent;
+
+        /// <summary>
+        /// Records how well this connection is actually being fed, and says something only when it is
+        /// not. Two speakers fell behind real time and dropped their sockets on 2026-09-05, audibly, and
+        /// the log could not say whether KlangHub had stopped supplying audio or the network had stopped
+        /// carrying it - because nothing measured how long a send took. Now it does.
+        /// </summary>
+        private KlangHub.Core.Streaming.StreamHealth? health;
+        private DateTime healthWindowStarted = DateTime.Now;
         private readonly DateTime startedAt = DateTime.Now;
         private BufferBlock bufferCaptured, bufferSend;
         readonly object bufferSwapSync = new();
@@ -80,8 +89,14 @@ namespace KlangHub.Streaming
 
                         try
                         {
+                            // Timed on purpose: Socket.Send is synchronous, so a far end that has stopped
+                            // taking data shows up here as a send that takes hundreds of milliseconds
+                            // instead of single digits. That one number separates "the network stalled"
+                            // from "we produced nothing".
+                            var sendStarted = Stopwatch.GetTimestamp();
                             streamer.Socket?.Send(streamer.bufferSend.Data, 0, count, SocketFlags.None);
                             streamer.bytesSent += count;
+                            streamer.RecordSend(count, Stopwatch.GetElapsedTime(sendStarted));
                         }
                         catch (Exception ex)
                         {
@@ -108,6 +123,7 @@ namespace KlangHub.Streaming
                         }
                     }
 
+                    streamer.ReportHealth();
                     Thread.Sleep(1);
                 }
             }
@@ -121,6 +137,42 @@ namespace KlangHub.Streaming
                 }
             }
         }
+
+        /// <summary>How much audio a second of music actually is, so a shortfall can be recognised.</summary>
+        private void RecordSend(int count, TimeSpan blocked)
+        {
+            health ??= new KlangHub.Core.Streaming.StreamHealth(expectedBytesPerSecond);
+            health.Sent(count, blocked);
+        }
+
+        /// <summary>
+        /// Says something once a second, and only when this connection is not keeping up. A line per
+        /// second for a healthy stream would bury the one second that matters under the other nine
+        /// hundred that do not.
+        /// </summary>
+        private void ReportHealth()
+        {
+            if (health == null)
+                return;
+
+            var window = DateTime.Now - healthWindowStarted;
+            if (window < TimeSpan.FromSeconds(1))
+                return;
+
+            healthWindowStarted = DateTime.Now;
+            var line = health.Report(window);
+            if (line != null && device != null)
+                logger?.Log($"[{device.GetHost()}:{device.GetPort()}] {line}");
+        }
+
+        /// <summary>
+        /// What one second of this stream weighs, remembered from the capture format the sender hands over
+        /// with the audio. It matters that this is the real format rather than an assumption: WAV at
+        /// 48 kHz/24-bit is nearly three times what MP3 is, and a threshold set for one would be
+        /// meaningless for the other. FLAC compresses, so the figure is an upper bound - which is why the
+        /// shortfall threshold leaves room below it.
+        /// </summary>
+        private volatile int expectedBytesPerSecond = 250_000;
 
         private DateTime lastDropReport = DateTime.MinValue;
         private long pendingDroppedBytes;
@@ -196,6 +248,11 @@ namespace KlangHub.Streaming
                     return;
                 }
             }
+
+            // Remember what a second of this stream weighs, so the health watch can tell a shortfall from
+            // a busy moment. Uncompressed size; FLAC comes out below it, which the threshold allows for.
+            if (format != null && format.SampleRate > 0 && format.Channels > 0 && format.BitsPerSample > 0)
+                expectedBytesPerSecond = format.SampleRate * format.Channels * (format.BitsPerSample / 8);
 
             // Send the audio header before the first data - which for MP3 and FLAC means sending nothing,
             // because those streams already carry their own (see AudioHeader.GetStreamHeader).
