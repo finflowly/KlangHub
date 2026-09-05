@@ -1,6 +1,11 @@
 MIT License
 
 Copyright (c) 2017 https://github.com/SamDel
+Copyright (c) 2026 Neo & Trinity (https://github.com/finflowly/KlangHub)
+
+The first line covers the ChromeCast-Desktop-Audio-Streamer this project was
+forked from; the second covers KlangHub's own work. Both notices must travel
+with any copy - removing either one is not permitted by this licence.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -25,7 +25,10 @@
     <PackageReference Include="NAudio" Version="3.0.1" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
     <!-- Managed FLAC (FLAKE) encoder for lossless live streaming. LGPL-3.0: shipped as a separate,
-         replaceable DLL (framework-dependent build) + attribution in docs/THIRD-PARTY-LICENSES.md. -->
+         replaceable DLL + attribution in docs/THIRD-PARTY-LICENSES.md. The publish is self-contained but
+         neither single-file nor trimmed, so the DLL stays its own replaceable file - which is the whole
+         basis on which the LGPL obligation is met. Do not turn on PublishSingleFile here without
+         reading that document first. -->
     <PackageReference Include="CUETools.Codecs.FLAKE" Version="1.0.5" />
     <PackageReference Include="Tmds.MDns" Version="0.9.1" />
     <!-- net10: System.Text.Json is provided in-box by the shared framework (SDK NU1510) — no package ref needed. -->

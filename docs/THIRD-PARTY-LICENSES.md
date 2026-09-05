@@ -4,8 +4,11 @@ KlangHub is distributed under the MIT License (see [LICENSE](../LICENSE)). This 
 third-party component it uses, the licence each is under, and — where a licence asks for more than a
 mention — how that obligation is met.
 
-Components ship as their own assemblies. The framework-dependent build keeps them as separate,
-replaceable DLLs; none are statically merged into KlangHub.
+Components ship as their own assemblies. The published build is **self-contained** — it carries the
+.NET runtime with it — but it is **not** single-file and **not** trimmed: every component listed below
+lands in the installation directory as its own DLL, next to `KlangHub.exe`, and can be replaced with a
+compatible build. Nothing is statically merged into KlangHub. That is what makes the LGPL components
+below satisfiable, so it is a property of the build rather than an accident of it.
 
 The full text of every copyleft licence involved is in [`licenses/`](../licenses/) and is installed
 alongside the application — LGPL-2.1 §1, LGPL-3.0 §4 and MPL-1.1 §3.5 each ask for a copy of the
@@ -72,6 +75,16 @@ television stage and more), but the original authorship and terms are gratefully
 - **Purpose:** Windows-specific APIs on .NET.
 - **Licence:** MIT, © Microsoft Corporation · **Source:** https://github.com/dotnet/runtime
 
+### The .NET runtime itself
+
+- **Purpose:** the build is self-contained, so the runtime is installed with the application rather
+  than downloaded — `coreclr.dll`, `System.*.dll`, `WinRT.Runtime.dll` and the rest of the shared
+  framework are all in the installation directory.
+- **Licence:** MIT, © .NET Foundation and contributors, and redistribution is expressly permitted by
+  the .NET Library License. · **Source:** https://github.com/dotnet/runtime
+- **Listed here because it is shipped.** It arrives through the publish rather than through a
+  `PackageReference`, which is exactly how a redistributed component gets forgotten.
+
 ### Ude.NetStandard
 
 - **Purpose:** character-encoding detection. Ships as a dependency of z440.atl.core, which uses it to
@@ -92,6 +105,8 @@ television stage and more), but the original authorship and terms are gratefully
 - **Purpose:** reading ID3, Vorbis, MP4 and FLAC tags plus embedded cover art, so the television can
   name the artist, title and album of a track KlangHub only hears as loopback audio.
 - **Licence:** MIT · **Source:** https://github.com/Zeugma440/atldotnet
+- **Ships as:** `ATL.dll` — the assembly name does not match the package name, which is worth stating
+  so the file can be found in an installation.
 - **Why not TagLib#:** TagLib# is LGPL. The project already carries LGPL obligations for two codecs and
   deliberately does not add a third for a job an MIT library does just as well.
 

@@ -61,8 +61,15 @@ Icon 512 × 512); jede spätere Änderung erfordert erneutes Veröffentlichen.
 
 ## Zu wissen
 
-- Die Seite wird **aus dem Internet** geladen. Der Audiostream bleibt lokal im WLAN, aber der Start braucht
-  eine Verbindung. Ohne eingetragene App-ID läuft KlangHub weiterhin vollständig offline.
+- Die Seite wird **aus dem Internet** geladen — und zwar vom **Cast-Gerät**, nicht von KlangHub. Es holt
+  `index.html` von der registrierten HTTPS-Adresse, dazu Googles CAF-SDK von `www.gstatic.com` und die
+  Schriften Fraunces und Inter Tight von `fonts.googleapis.com` / `fonts.gstatic.com`. Keine dieser
+  Dateien liegt in diesem Repository; sie werden zur Laufzeit geladen und nicht mitgeliefert. Der
+  Audiostream bleibt dabei lokal im WLAN, aber der Start braucht eine Verbindung.
+- Ohne eingetragene App-ID entfällt das alles: dann läuft die Wiedergabe über Googles
+  Standard-Empfänger und ohne diese Seite. KlangHub selbst fragt beim Start allerdings in jedem Fall
+  GitHub nach einer neueren Version — siehe [SECURITY.md](../SECURITY.md). „Vollständig offline" wäre
+  also zu viel gesagt.
 - Die App-ID hängt am Google-Konto dessen, der registriert. Wer das Projekt forkt, trägt seine eigene ein —
   deshalb steht sie in den Einstellungen und nicht im Code.
 

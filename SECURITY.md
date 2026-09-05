@@ -32,4 +32,12 @@ Zur Einordnung, was überhaupt angreifbar ist:
 - Die Steuerverbindung zum Empfänger läuft über **TLS auf Port 8009**; das Gerätezertifikat wird
   dabei nicht geprüft, weil Cast-Geräte Zertifikate verwenden, die kein öffentlicher Trust Store
   kennt.
-- KlangHub sendet keine Daten an Dritte, verlangt kein Konto und legt keine Telemetrie an.
+- KlangHub verlangt kein Konto, legt keine Telemetrie an und sendet nichts über die Wiedergabe,
+  die Geräte oder den Rechner an Dritte.
+- **Eine** Verbindung nach draußen gibt es: Beim Start fragt KlangHub
+  `api.github.com/repos/finflowly/KlangHub/releases/latest` nach der neuesten Version und liest daraus
+  nur `tag_name` und `html_url`. Gesendet wird dabei nichts außer dem, was jede HTTPS-Anfrage mit sich
+  bringt — die IP-Adresse des Rechners und ein fester User-Agent (`finflowly/KlangHub`). Windows-
+  Anmeldedaten werden ausdrücklich nicht angeboten. Abschalten lässt sich die Abfrage derzeit nicht.
+- Ist eine Cast-App-ID eingetragen, lädt außerdem das **Cast-Gerät** (nicht KlangHub) die
+  Receiver-Seite und Googles CAF-SDK aus dem Internet. Ohne App-ID entfällt das.
