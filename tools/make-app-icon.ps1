@@ -1,10 +1,10 @@
-# Builds Source/KlangHub/KlangHub.ico - the icon Windows shows in the title bar, the taskbar, the tray
+﻿# Builds Source/KlangHub/KlangHub.ico - the icon Windows shows in the title bar, the taskbar, the tray
 # and the Task Manager.
 #
 # Why a generator and not a single drawing scaled down: the previous icon was one 256-px artwork
 # (a dark rounded tile with three concentric amber rings) resampled to every smaller size. At 16 and
 # 20 px - the sizes the Task Manager and the tray actually use - the rings blur into each other and
-# the tile goes dark and featureless. the maintainer saw exactly that and called it "ein Icon ohne Inhalt".
+# the tile goes dark and featureless. Observed exactly that on a real Start menu: "ein Icon ohne Inhalt".
 #
 # So each size is drawn for itself. Small sizes drop the concentric rings and keep one bold amber ring
 # plus a solid centre, thick enough to survive at 16 px; from 48 px up the full three-ring mark returns.

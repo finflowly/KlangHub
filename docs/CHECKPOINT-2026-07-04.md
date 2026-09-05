@@ -88,7 +88,7 @@ Reference direction: App → Platform → Core.
 
 ## 4. Chromecast discovery robustness — the "Enchant Speaker" saga (RESOLVED ✅, HW-confirmed by the maintainer)
 A real user network (Harman Kardon **Enchant Speaker** [Chromecast-built-in], Samsung **Soundbar** HW-Q995GD,
-**Google TV**, **TCL TV**, **the multi-room group** group) exposed a chain of discovery bugs. Fixed across
+**Google TV**, **TCL TV**, multizone group) exposed a chain of discovery bugs. Fixed across
 `2eae1cb → 163c09f → 03cf6e0 → 9ae31bb → 55ac11f → fcad43a → 61c814d → a632cf6`. Final working state:
 1. **eureka_info fallback** (`2eae1cb`) — devices that don't serve `http://<ip>:8008/setup/eureka_info` are
    still added from mDNS (matches other cast apps).
@@ -113,7 +113,7 @@ guessing before the full log made the placeholder-MAC root cause obvious. Don't 
 with a targeted fix here.
 
 **NEW CHAPTER 2026-07-05 (commit `6dba09f`, HW-test PENDING): the group-hosting speaker — dedup by IP:port.**
-the maintainer's network regrouped: the Enchant now *hosts* the "the multi-room group" multizone group, so its IPv4 (`.154`)
+the maintainer's network regrouped: the Enchant now *hosts* the multizone group, so its IPv4 (`.154`)
 serves BOTH its own `:8009` receiver AND the group's `:32223` leader. `Devices.GetDevice` deduped placeholder-MAC
 devices by **IP alone**, so the Enchant `.154:8009` matched the co-located group at `.154` → OnDeviceAvailable took
 the *update* branch → `onAddDeviceCallback` never fired → no tile (log: `Discovered device: Enchant …:8009` present
@@ -136,7 +136,7 @@ originally broke the whole saga).
 **NEXT CHAPTER 2026-07-05 (commits `ef3ac32`+`4a6b51d`, HW-test PENDING): the Enchant goes IPv6-only-flapping —
 IPv4 RECOVERY.** In later logs the Enchant advertised its own `_googlecast` **IPv6-only** (`fd1a:…%8`) in some scans
 (no IPv4 at all) → the IPv6-skip dropped it → no tile, and the IP:port dedup fix couldn't help (it never reached
-discovery). BUT the Enchant is **dual-stack**: its `.154` IPv4 is *donated* by the "the multi-room group" group it hosts
+discovery). BUT the Enchant is **dual-stack**: its `.154` IPv4 is *donated* by the multizone group it hosts
 (same `fd1a` IPv6 host, announced WITH `.154`). **Fix = `Ipv4Recovery`** (`Discover/Ipv4Recovery.cs`): learn each
 device's IPv4 keyed by its mDNS `id=` AND by every IPv6 host announced alongside it (scope-normalized, 120s TTL);
 an IPv6-only announcement then recovers a usable IPv4 → discovered + controlled + streamed **over IPv4**, no risky
@@ -152,7 +152,7 @@ net10/Tier-2 discovery** (byte-identical there); it's a NEW device-topology case
 (9 new `Ipv4RecoveryTests` + `DevicesTests`). **True-IPv6-only (a device with NO IPv4 ever) remains unsupported** —
 it's intentionally skipped (no audio return path over IPv6; the dormant plumbing above is the head-start for that
 separate milestone). **HW-test focus:** Enchant tile appears + casts on itself over the recovered `.154`; the 2 TVs
-never spawn a `[ipv6]` duplicate; the multi-room group still casts separately.
+never spawn a `[ipv6]` duplicate; the group still casts separately.
 
 ## 5. Roadmap (next)
 - **M4 — Snapcast control-plane** (recommended next feature): `SnapcastProvider.CreateSession` → a real

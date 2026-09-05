@@ -17,7 +17,7 @@ Bei Problemen: **Optionen → „Log device communication" AN** (blendet den ver
 
 ## A. Discovery — 5 Geräte, egal ob IPv4 oder IPv6
 1. App starten, ~30 s warten.
-2. **Erwartung:** 5 Kacheln — Enchant, Google TV, TCL TV, Soundbar, the multi-room group (Gruppe).
+2. **Erwartung:** 5 Kacheln — Enchant, Google TV, TCL TV, Soundbar, eine Gruppe.
    **DHCP-Move-Test (BUG A, neu):** Enchant im Betrieb stromlos machen + wieder einstecken (bekommt ggf. eine
    neue IP). **Erwartung jetzt:** die alte Kachel migriert auf die neue IP — **keine 6. „Error"-Kachel** mehr,
    kein Dauer-Reconnect-Spam. Falls doch ein Zombie bleibt: Log-Tab an → die `eureka: … id=`-Zeile des Enchant

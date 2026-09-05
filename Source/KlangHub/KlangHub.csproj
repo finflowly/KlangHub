@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- Windows SDK version required for Windows.Media.Control (SMTC): the now-playing session
+         Windows itself keeps, which is how KlangHub learns what an external player is playing. -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>KlangHub</RootNamespace>
     <AssemblyName>KlangHub</AssemblyName>
     <Product>KlangHub</Product>
-    <Version>1.0.0</Version>
+    <Version>0.0.1</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>

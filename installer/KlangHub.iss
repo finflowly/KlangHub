@@ -7,13 +7,13 @@
 ; up in the same language the installation just spoke.
 ;
 ; Build:  "%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe" installer\KlangHub.iss
-; Input:  publish\KlangHub-1.0-win-x64  (dotnet publish -c Release -r win-x64 --self-contained true)
+; Input:  publish\KlangHub-0.0.1-win-x64  (dotnet publish -c Release -r win-x64 --self-contained true)
 
 #define AppName        "KlangHub"
-#define AppVersion     "1.0"
+#define AppVersion     "0.0.1"
 #define AppPublisher   "Neo & Trinity"
 #define AppExe         "KlangHub.exe"
-#define SourceDir      "..\publish\KlangHub-1.0-win-x64"
+#define SourceDir      "..\publish\KlangHub-0.0.1-win-x64"
 
 [Setup]
 AppId={{7C2F4E11-9A63-4D8B-B0F2-3E5A1C6D8B44}
@@ -21,7 +21,7 @@ AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
 AppPublisher={#AppPublisher}
-VersionInfoVersion=1.0.0.0
+VersionInfoVersion=0.0.1.0
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 UninstallDisplayIcon={app}\{#AppExe}

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using KlangHub.Classes;
 using Xunit;
@@ -69,7 +69,7 @@ namespace KlangHub.Tests.Ui
         [Fact]
         public void A_name_the_user_typed_is_not_forced_into_a_preset()
         {
-            Assert.Null(RoomPresets.IdFor("the maintainer's Ecke"));
+            Assert.Null(RoomPresets.IdFor("Lieblingsecke"));
             Assert.Null(RoomPresets.IdFor("   "));
             Assert.Null(RoomPresets.IdFor(null));
         }

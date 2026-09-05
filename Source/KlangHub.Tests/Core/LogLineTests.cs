@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using KlangHub.Core.Diagnostics;
 using Xunit;
 
 namespace KlangHub.Tests.Core
 {
-    /// <summary>The samples are real lines from the maintainer's log of 2026-09-05.</summary>
+    /// <summary>The samples are real lines from a measured device log of 2026-09-05.</summary>
     public class LogLineTests
     {
         private static readonly DateTime T = new(2026, 9, 5, 8, 33, 19, 123, DateTimeKind.Local);

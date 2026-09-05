@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace KlangHub.Core.Casting
@@ -7,7 +7,7 @@ namespace KlangHub.Core.Casting
     /// Stops the same announcement from being acted on over and over.
     ///
     /// One mDNS scan does not produce one announcement per device: the browser reports every service as
-    /// "added" and again as "changed", once per network interface. In the maintainer's log of 2026-09-05 a single
+    /// "added" and again as "changed", once per network interface. In a measured log of 2026-09-05 a single
     /// scan produced SIX identical announcements for the soundbar, and each one sent an HTTP request to a
     /// device that was decoding FLAC at the time - repeated several times a minute, for every speaker.
     ///

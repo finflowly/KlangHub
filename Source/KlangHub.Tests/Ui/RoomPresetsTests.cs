@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -74,7 +74,7 @@ namespace KlangHub.Tests.Ui
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        [InlineData("the maintainer's Höhle")]
+        [InlineData("Meine Höhle")]
         public void A_room_typed_by_hand_has_no_preset_identity(string? name)
         {
             Assert.Null(RoomPresets.IdFor(name));

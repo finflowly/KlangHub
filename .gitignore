@@ -118,3 +118,19 @@ $RECYCLE.BIN/
 
 # Build output / packaged releases
 dist/
+
+# ---- Working material that must never reach a public repository ----
+# Screenshots and research PDFs sitting in the repository root. They routinely carry things that
+# belong to whoever took them and to nobody else: local IP addresses, device names, the audio
+# hardware in the machine, a user name in a window title. Keep them out by shape rather than by
+# remembering each time.
+/*.png
+/*.jpg
+/*.jpeg
+/*.pdf
+/*.log
+
+# The device conversation KlangHub can write. It contains the addresses of every speaker in the
+# house and what was played on them.
+*.log
+logs/
