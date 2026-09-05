@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using KlangHub.Core.Streaming;
 
 namespace KlangHub.Streaming
 {
@@ -23,13 +24,44 @@ namespace KlangHub.Streaming
             if (parts.Length < 2)
                 return false;
 
-            var path = parts[1];
-            var query = path.IndexOf('?');
-            if (query >= 0)
-                path = path.Substring(0, query);
+            var target = parts[1];
+            var path = target;
+            var query = string.Empty;
+            var split = target.IndexOf('?');
+            if (split >= 0)
+            {
+                path = target.Substring(0, split);
+                query = target.Substring(split + 1);
+            }
 
-            return path.StartsWith("/artwork", StringComparison.OrdinalIgnoreCase);
+            if (!path.StartsWith("/artwork", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // And it has to carry this run's secret. The address is handed to the device being cast to;
+            // without this, /artwork.png answered anyone on the network who asked - and what it answers
+            // with is the cover of whatever is playing, which is a live account of what is being listened
+            // to, given to a guest on the wireless for nothing more than asking.
+            return SessionSecret.Matches(ValueOf(query, "k"));
         }
+
+        /// <summary>The value of one query parameter, or null when it is not there.</summary>
+        private static string? ValueOf(string query, string name)
+        {
+            foreach (var pair in query.Split('&'))
+            {
+                var equals = pair.IndexOf('=');
+                if (equals < 0)
+                    continue;
+
+                if (string.Equals(pair.Substring(0, equals), name, StringComparison.Ordinal))
+                    return pair.Substring(equals + 1);
+            }
+
+            return null;
+        }
+
+        /// <summary>The query string that lets a request through, for whoever builds the address.</summary>
+        public static string SecretQuery => "k=" + SessionSecret.Value;
 
         /// <summary>
         /// What the bytes actually are. Album art found beside a track is usually JPEG, and announcing a
@@ -64,7 +96,8 @@ namespace KlangHub.Streaming
             // The stage on the television takes its colour from this picture, which means drawing it
             // into a canvas and reading the pixels back. Without this the browser marks that canvas
             // tainted and the read throws - the screen would fall back to a flat grey with nothing to
-            // explain why. The image is already served to anyone on the network who asks for the audio.
+            // explain why. What keeps this from being an open door is the secret in the address: the
+            // header says any page may read the answer, not that anyone may ask the question.
             header.Append("Access-Control-Allow-Origin: *\r\n");
             header.Append("Connection: close\r\n");
             header.Append("\r\n");

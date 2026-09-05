@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using KlangHub.Core.Streaming;
 using KlangHub.Streaming;
 using Xunit;
 
@@ -6,16 +7,56 @@ namespace KlangHub.Tests.Platform
 {
     public class ArtworkHttpTests
     {
+        /// <summary>The address the device is actually given, with this run's secret in it.</summary>
+        private static string Ours(string target)
+            => "GET " + target.Replace("{k}", ArtworkHttp.SecretQuery) + " HTTP/1.1\r\nHost: x\r\n\r\n";
+
         [Theory]
-        [InlineData("GET /artwork.png HTTP/1.1\r\nHost: x\r\n\r\n", true)]
-        [InlineData("GET /artwork.png?v=2 HTTP/1.1\r\n\r\n", true)]
-        [InlineData("GET /ARTWORK.PNG HTTP/1.1\r\n\r\n", true)]
-        [InlineData("GET / HTTP/1.1\r\nHost: x\r\n\r\n", false)]
-        [InlineData("GET /stream.wav HTTP/1.1\r\n\r\n", false)]
-        [InlineData("", false)]
-        public void IsArtworkRequest_matches_only_the_artwork_path(string request, bool expected)
+        [InlineData("/artwork.png?{k}", true)]
+        [InlineData("/artwork.png?{k}&lang=de", true)]
+        [InlineData("/artwork.png?lang=de&{k}", true)]
+        [InlineData("/ARTWORK.PNG?{k}", true)]
+        [InlineData("/", false)]
+        [InlineData("/stream.wav?{k}", false)]
+        public void IsArtworkRequest_matches_only_the_artwork_path(string target, bool expected)
         {
-            Assert.Equal(expected, ArtworkHttp.IsArtworkRequest(request));
+            Assert.Equal(expected, ArtworkHttp.IsArtworkRequest(Ours(target)));
+        }
+
+        [Theory]
+        [InlineData("GET /artwork.png HTTP/1.1\r\nHost: x\r\n\r\n")]
+        [InlineData("GET /artwork.png?v=2 HTTP/1.1\r\n\r\n")]
+        [InlineData("GET /artwork.png?k= HTTP/1.1\r\n\r\n")]
+        [InlineData("GET /artwork.png?k=guessing HTTP/1.1\r\n\r\n")]
+        [InlineData("GET /artwork.png?kk=x HTTP/1.1\r\n\r\n")]
+        [InlineData("")]
+        public void The_cover_is_not_handed_to_whoever_asks(string request)
+        {
+            // The cover of what is playing right now is a live answer to "what are they listening to",
+            // and it used to be given to anyone on the network for the asking - a guest on the wireless,
+            // or anything else that had found its way on. The address goes to the device being cast to,
+            // and the secret in it is what keeps it there.
+            Assert.False(ArtworkHttp.IsArtworkRequest(request));
+        }
+
+        [Fact]
+        public void A_secret_of_the_right_length_but_the_wrong_value_is_still_wrong()
+        {
+            var wrong = new string('A', SessionSecret.Value.Length);
+
+            Assert.False(SessionSecret.Matches(wrong));
+            Assert.False(SessionSecret.Matches(null));
+            Assert.False(SessionSecret.Matches(""));
+            Assert.True(SessionSecret.Matches(SessionSecret.Value));
+        }
+
+        [Fact]
+        public void The_secret_is_long_enough_to_be_worth_having()
+        {
+            // 128 bits as base64url: 22 characters. Short enough to sit in a URL, long enough that
+            // guessing it is not a strategy.
+            Assert.Equal(22, SessionSecret.Value.Length);
+            Assert.Matches("^[A-Za-z0-9_-]+$", SessionSecret.Value);
         }
 
         [Fact]
