@@ -1,0 +1,113 @@
+// Clementine's network remote protocol - the part of it KlangHub listens to.
+//
+// Why this exists: measured on 2026-09-05, Clementine reports NOTHING to Windows' now-playing session
+// while it is playing. Its network remote, on the other hand, hands over the title, the artist, the album,
+// the length, the position and the cover art as bytes - everything the stage on the television needs, and
+// far more than a window title can carry.
+//
+// Licence: the original remotecontrolmessages.proto is published by the Clementine project under the
+// Apache License 2.0 rather than the GPL, explicitly so that third-party applications may speak this
+// protocol without taking on the GPL. Copyright 2017 David Sansome and Andreas Muttscheller.
+// See docs/THIRD-PARTY-LICENSES.md.
+//
+// This is a REDUCED, RE-STATED version: proto3 syntax (Google.Protobuf for C# does not support proto2),
+// carrying only the messages KlangHub reads and only the fields it uses. The field numbers are the
+// protocol itself and are reproduced exactly - a wrong number here does not fail loudly, it silently
+// decodes an album title into a track number.
+//
+// Two proto2 features are deliberately dropped and handled in code instead:
+//   - field defaults ("version = 21"): set explicitly when a message is built.
+//   - groups and required fields: not used by anything here.
+
+syntax = "proto3";
+
+package klanghub.clementine;
+
+option csharp_namespace = "KlangHub.Platform.Clementine";
+
+enum MsgType {
+  UNKNOWN = 0;
+  CONNECT = 1;
+  DISCONNECT = 2;
+  PLAY = 20;
+  PLAYPAUSE = 21;
+  PAUSE = 22;
+  STOP = 23;
+  NEXT = 24;
+  PREVIOUS = 25;
+  INFO = 40;
+  CURRENT_METAINFO = 41;
+  ENGINE_STATE_CHANGED = 44;
+  KEEP_ALIVE = 45;
+  UPDATE_TRACK_POSITION = 46;
+}
+
+enum EngineState {
+  Empty = 0;
+  Idle = 1;
+  Playing = 2;
+  Paused = 3;
+}
+
+message SongMetadata {
+  int32 id = 1;
+  int32 index = 2;
+  string title = 3;
+  string album = 4;
+  string artist = 5;
+  string albumartist = 6;
+  int32 track = 7;
+  int32 disc = 8;
+  string pretty_year = 9;
+  string genre = 10;
+  int32 playcount = 11;
+  string pretty_length = 12;
+  // The cover, as bytes, straight from Clementine's own library. This is the field that turns a bare
+  // title on the television into a record sleeve filling the screen.
+  bytes art = 13;
+  int32 length = 14;
+  bool is_local = 15;
+  string filename = 16;
+  int32 file_size = 17;
+  float rating = 18;
+  string url = 19;
+  string art_automatic = 20;
+  string art_manual = 21;
+  int32 type = 22;
+}
+
+message RequestConnect {
+  int32 auth_code = 1;
+  bool send_playlist_songs = 2;
+  bool downloader = 3;
+}
+
+message ResponseClementineInfo {
+  string version = 1;
+  EngineState state = 2;
+  bool allow_downloads = 3;
+  repeated string files_music_extensions = 4;
+}
+
+message ResponseCurrentMetadata {
+  SongMetadata song_metadata = 1;
+}
+
+message ResponseEngineStateChanged {
+  EngineState state = 1;
+}
+
+message ResponseUpdateTrackPosition {
+  int32 position = 1;
+}
+
+message Message {
+  int32 version = 1;
+  MsgType type = 2;
+
+  ResponseClementineInfo response_clementine_info = 15;
+  ResponseCurrentMetadata response_current_metadata = 16;
+  ResponseEngineStateChanged response_engine_state_changed = 19;
+  ResponseUpdateTrackPosition response_update_track_position = 20;
+  RequestConnect request_connect = 21;
+}
