@@ -252,7 +252,7 @@
     <value>Leagan</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · cáilíocht CD (44,1 kHz / 16-bit)</value>
+    <value>WAV · cáilíocht CD (44)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
     <value>Seomraí</value>
@@ -303,10 +303,10 @@
     <value>WAV · 16-bit (gan chomhbhrú)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-bit HiFi (gan chomhbhrú, réamhshocrú)</value>
+    <value>WAV · 24-bit HiFi (gan chomhbhrú)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-bit (gan chomhbhrú, LPCM)</value>
+    <value>WAV · 32-bit (gan chomhbhrú)</value>
   </data>
   <data name="Flac" xml:space="preserve">
     <value>FLAC · gan chailliúint, foirfe do challairí beaga</value>
@@ -571,5 +571,9 @@
   </data>
   <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
     <value>{0} seomra</value>
+  </data>
+  <data name="Option_Recommended_Text" xml:space="preserve">
+    <value>(Molta)</value>
+    <comment>Appended to the entry a fresh installation starts with.</comment>
   </data>
 </root>

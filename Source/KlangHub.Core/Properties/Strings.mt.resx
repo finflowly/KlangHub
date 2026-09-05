@@ -252,7 +252,7 @@
     <value>Verżjoni</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · kwalità CD (44,1 kHz / 16-bit)</value>
+    <value>WAV · kwalità CD (44)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
     <value>Kmamar</value>
@@ -303,10 +303,10 @@
     <value>WAV · 16-bit (mhux kompressat)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-bit HiFi (mhux kompressat, default)</value>
+    <value>WAV · 24-bit HiFi (mhux kompressat)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-bit (mhux kompressat, LPCM)</value>
+    <value>WAV · 32-bit (mhux kompressat)</value>
   </data>
   <data name="Flac" xml:space="preserve">
     <value>FLAC · bla telf, ideali għal sperkers żgħar</value>
@@ -571,5 +571,9 @@
   </data>
   <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
     <value>{0} kmamar</value>
+  </data>
+  <data name="Option_Recommended_Text" xml:space="preserve">
+    <value>(Rakkomandat)</value>
+    <comment>Appended to the entry a fresh installation starts with.</comment>
   </data>
 </root>

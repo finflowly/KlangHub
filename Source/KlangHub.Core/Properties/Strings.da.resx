@@ -252,7 +252,7 @@
     <value>Version</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · CD-kvalitet (44,1 kHz / 16-bit)</value>
+    <value>WAV · CD-kvalitet (44)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
     <value>Rum</value>
@@ -303,10 +303,10 @@
     <value>WAV · 16-bit (ukomprimeret)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-bit HiFi (ukomprimeret, standard)</value>
+    <value>WAV · 24-bit HiFi (ukomprimeret)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-bit (ukomprimeret, LPCM)</value>
+    <value>WAV · 32-bit (ukomprimeret)</value>
   </data>
   <data name="Flac" xml:space="preserve">
     <value>FLAC · tabsfri, bedst til små højttalere</value>
@@ -571,5 +571,9 @@
   </data>
   <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
     <value>{0} rum</value>
+  </data>
+  <data name="Option_Recommended_Text" xml:space="preserve">
+    <value>(Anbefales)</value>
+    <comment>Appended to the entry a fresh installation starts with.</comment>
   </data>
 </root>

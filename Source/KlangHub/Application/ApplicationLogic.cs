@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using KlangHub.Classes;
+using KlangHub.Core.Models;
 using KlangHub.Platform.Audio;
 using KlangHub.Application.Interfaces;
 using KlangHub.Streaming.Interfaces;
@@ -267,7 +268,7 @@ namespace KlangHub.Application
                 mainForm.SetWindowVisibility(settings.ShowWindowOnStart ?? true);
                 mainForm.SetKeyboardHooks(settings.UseKeyboardShortCuts ?? false);
                 mainForm.SetIP4AddressUsed(settings.Ip4AddressUsed ?? string.Empty);
-                mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_16bit);
+                mainForm.SetStreamFormat(settings.StreamFormat ?? RecommendedDefaults.StreamFormat);
                 // A stored choice always wins. The installer's --lang= is a FIRST-RUN hint, and it used to
                 // win on every launch instead - so a user who installed in English, switched the app to
                 // German, then ran an upgrade was put back into English and had it written to disk on
@@ -284,7 +285,7 @@ namespace KlangHub.Application
                         Math.Min(Math.Max(settings.Left!.Value, 0), Screen.PrimaryScreen!.Bounds.Width),
                         Math.Min(Math.Max(settings.Top!.Value, 0), Screen.PrimaryScreen.Bounds.Height)
                     );
-                mainForm.SetExtraBufferInSeconds(settings.ExtraBufferInSeconds ?? 10);
+                mainForm.SetExtraBufferInSeconds(settings.ExtraBufferInSeconds ?? RecommendedDefaults.ExtraBufferSeconds);
                 mainForm.SetRecordingDeviceID(settings.RecordingDeviceID ?? null);
                 mainForm.SetAutoMute(settings.AutoMute ?? false);
                 mainForm.SetMinimizeToTray(settings.MinimizeToTray ?? false);
@@ -371,7 +372,7 @@ namespace KlangHub.Application
             // anyone who wants more, and the weakest speakers (which choked on 32-bit LPCM with ERROR 102)
             // stay happy by default.
             settings.Ip4AddressUsed = string.Empty;
-            settings.StreamFormat = SupportedStreamFormat.Wav_16bit;
+            settings.StreamFormat = RecommendedDefaults.StreamFormat;
             settings.Culture = MainForm.SupportedCultures.Contains(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
                 ? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
                 : "en";   // the app ships 24 EU languages; anything else reads English
@@ -385,7 +386,7 @@ namespace KlangHub.Application
             settings.Top = Screen.PrimaryScreen.Bounds.Height / 2 - settings.Size.Value.Height / 2;
             // 10 s of receiver-side cushion out of the box: enough to ride out Wi-Fi jitter and underruns
             // (the "noise" seen on the Enchant over a weak link) without a latency anyone notices for music.
-            settings.ExtraBufferInSeconds = 10;
+            settings.ExtraBufferInSeconds = RecommendedDefaults.ExtraBufferSeconds;
             settings.RecordingDeviceID = null!;
             settings.AutoMute = false;
             settings.MinimizeToTray = false;

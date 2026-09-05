@@ -252,7 +252,7 @@
     <value>Versiune</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · calitate CD (44,1 kHz / 16-bit)</value>
+    <value>WAV · calitate CD (44)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
     <value>Camere</value>
@@ -303,10 +303,10 @@
     <value>WAV · 16-bit (necomprimat)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-bit HiFi (necomprimat, implicit)</value>
+    <value>WAV · 24-bit HiFi (necomprimat)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-bit (necomprimat, LPCM)</value>
+    <value>WAV · 32-bit (necomprimat)</value>
   </data>
   <data name="Flac" xml:space="preserve">
     <value>FLAC · fără pierderi, ideal pentru boxe mici</value>
@@ -571,5 +571,9 @@
   </data>
   <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
     <value>{0} camere</value>
+  </data>
+  <data name="Option_Recommended_Text" xml:space="preserve">
+    <value>(Recomandat)</value>
+    <comment>Appended to the entry a fresh installation starts with.</comment>
   </data>
 </root>

@@ -252,7 +252,7 @@
     <value>Wersja</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · jakość CD (44,1 kHz / 16-bit)</value>
+    <value>WAV · jakość CD (44)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
     <value>Pokoje</value>
@@ -303,10 +303,10 @@
     <value>WAV · 16-bit (bez kompresji)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-bit HiFi (bez kompresji, domyślnie)</value>
+    <value>WAV · 24-bit HiFi (bez kompresji)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-bit (bez kompresji, LPCM)</value>
+    <value>WAV · 32-bit (bez kompresji)</value>
   </data>
   <data name="Flac" xml:space="preserve">
     <value>FLAC · bezstratny, dobry dla małych głośników</value>
@@ -571,5 +571,9 @@
   </data>
   <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
     <value>pokoje: {0}</value>
+  </data>
+  <data name="Option_Recommended_Text" xml:space="preserve">
+    <value>(Zalecane)</value>
+    <comment>Appended to the entry a fresh installation starts with.</comment>
   </data>
 </root>

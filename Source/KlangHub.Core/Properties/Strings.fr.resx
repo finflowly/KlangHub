@@ -343,13 +343,13 @@
     <value>Réduire dans la barre d'état à la fermeture</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>Wav ((taux d'échantillonnage de la carte son/24bit)</value>
+    <value>WAV · 24-bit HiFi (non compressé)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
     <value>Wav (taux d'échantillonnage de la carte son/32bit — LPCM non compressé)</value>
   </data>
   <data name="Flac" xml:space="preserve">
-    <value>FLAC (HiFi sans perte — recommandé)</value>
+    <value>FLAC · sans perte, idéal pour petites enceintes</value>
   </data>
   <data name="Media_Subtitle" xml:space="preserve">
     <value>En direct de votre PC</value>
@@ -629,5 +629,9 @@
   </data>
   <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
     <value>{0} pièces</value>
+  </data>
+  <data name="Option_Recommended_Text" xml:space="preserve">
+    <value>(Recommandé)</value>
+    <comment>Appended to the entry a fresh installation starts with.</comment>
   </data>
 </root>

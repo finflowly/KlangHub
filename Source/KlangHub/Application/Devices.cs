@@ -514,7 +514,7 @@ namespace KlangHub.Application
 
             AutoStart = settingsIn.AutoStartDevices ?? false;
             StartLastUsedDevices = settingsIn.StartLastUsedDevices ?? false;
-            applicationBuffer.SetExtraBufferInSeconds(settingsIn.ExtraBufferInSeconds ?? 10);
+            applicationBuffer.SetExtraBufferInSeconds(settingsIn.ExtraBufferInSeconds ?? KlangHub.Core.Models.RecommendedDefaults.ExtraBufferSeconds);
         }
 
         /// <summary>

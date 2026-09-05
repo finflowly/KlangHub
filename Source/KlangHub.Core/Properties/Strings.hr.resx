@@ -252,7 +252,7 @@
     <value>Verzija</value>
   </data>
   <data name="Wav" xml:space="preserve">
-    <value>WAV · CD kvaliteta (44,1 kHz / 16-bit)</value>
+    <value>WAV · CD kvaliteta (44)</value>
   </data>
   <data name="Tab_Main_Text" xml:space="preserve">
     <value>Sobe</value>
@@ -303,10 +303,10 @@
     <value>WAV · 16-bit (nekomprimirano)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-bit HiFi (nekomprimirano, zadano)</value>
+    <value>WAV · 24-bit HiFi (nekomprimirano)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-bit (nekomprimirano, LPCM)</value>
+    <value>WAV · 32-bit (nekomprimirano)</value>
   </data>
   <data name="Flac" xml:space="preserve">
     <value>FLAC · bez gubitaka, idealno za male zvučnike</value>
@@ -571,5 +571,9 @@
   </data>
   <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
     <value>{0} soba</value>
+  </data>
+  <data name="Option_Recommended_Text" xml:space="preserve">
+    <value>(Preporučeno)</value>
+    <comment>Appended to the entry a fresh installation starts with.</comment>
   </data>
 </root>

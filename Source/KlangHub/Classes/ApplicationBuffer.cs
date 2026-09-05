@@ -37,7 +37,9 @@ namespace KlangHub.Classes
 
         private const double BufferSizeInBytesDefault = 350000;
         private double BufferSizeInBytes = BufferSizeInBytesDefault;
-        private int ExtraBufferInSeconds = 0;
+        /// <summary>Overwritten from the settings on load; the same value they default to, so the two
+        /// cannot disagree during the moment before that happens.</summary>
+        private int ExtraBufferInSeconds = KlangHub.Core.Models.RecommendedDefaults.ExtraBufferSeconds;
 
         /// <summary>
         /// Send the startup buffer, a buffer containing the past x seconds.

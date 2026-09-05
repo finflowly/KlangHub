@@ -88,6 +88,7 @@ namespace KlangHub
                 : av.Build > 0 ? $"{av.Major}.{av.Minor}.{av.Build}"
                 : $"{av.Major}.{av.Minor}";
             FillStreamFormats();
+            FillBufferSeconds();
             FillFilterDevices();
             lblVersion.Text = $"{Properties.Strings.Version} {appVersion}";
             applicationLogic.StartTask(() =>
@@ -230,19 +231,37 @@ namespace KlangHub
 
             if (cmbStreamFormat.Items.Count == 0)
             {
-                // WAV 24-bit first: uncompressed HiFi out-of-box default (runs problem-free on the test hardware).
-                // FLAC follows, still labelled "recommended" - it's the robust pick for small/weak speakers that
-                // struggled with high-bitrate uncompressed LPCM (ERROR 102). MP3 last for legacy compatibility.
-                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_24bit));
+                // FLAC first, because it is what a fresh installation gets: lossless, so nothing is thrown
+                // away, and compressed, so it fits down a link that uncompressed 24-bit can overrun - which
+                // is what the small speakers were reporting as ERROR 102. The uncompressed picks follow for
+                // anyone who wants them, MP3 last for legacy compatibility. The entry that is recommended
+                // says so from RecommendedDefaults; it is not written into any of the translations.
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Flac));
+                cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_24bit));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_16bit));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav_32bit));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Wav));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Mp3_320));
                 cmbStreamFormat.Items.Add(new ComboboxItem(SupportedStreamFormat.Mp3_128));
-                cmbStreamFormat.SelectedIndex = 0; // WAV 24-bit
+                cmbStreamFormat.SelectedIndex = 0;   // the recommended one
                 SetStreamFormat();
             }
+        }
+
+        /// <summary>
+        /// Fills the cushion list, 0 to 20 seconds.
+        /// <para>
+        /// In code rather than in the designer, and as values rather than as strings: the recommended
+        /// entry carries a word after its number, and the list used to be read back with int.Parse.
+        /// </para>
+        /// </summary>
+        private void FillBufferSeconds()
+        {
+            if (cmbBufferInSeconds == null || cmbBufferInSeconds.Items.Count > 0)
+                return;
+
+            for (int seconds = 0; seconds <= 20; seconds++)
+                cmbBufferInSeconds.Items.Add(new ComboboxItem(seconds));
         }
 
         private void AddressChangedCallback(object? sender, EventArgs e)
@@ -914,7 +933,9 @@ namespace KlangHub
                 string? address = null;
                 try { address = cmbIP4AddressUsed?.SelectedItem?.ToString(); } catch (InvalidOperationException) { }
                 string? buffer = null;
-                try { buffer = cmbBufferInSeconds?.SelectedItem?.ToString(); } catch (InvalidOperationException) { }
+                // The number alone in the diagnostics header - the list's own text carries the
+                // recommendation mark, which is for people, not for a log.
+                try { buffer = SecondsOf(cmbBufferInSeconds?.SelectedItem).ToString(); } catch (InvalidOperationException) { }
 
                 var fields = new List<KeyValuePair<string, string?>>
                 {
@@ -1534,7 +1555,7 @@ namespace KlangHub
 
             for (int i = 0; i < cmbBufferInSeconds.Items.Count; i++)
             {
-                if (int.Parse((string)cmbBufferInSeconds.Items[i]!) == extraBufferInSecondsIn)
+                if (SecondsOf(cmbBufferInSeconds.Items[i]) == extraBufferInSecondsIn)
                     cmbBufferInSeconds.SelectedIndex = i;
             }
         }
@@ -1548,8 +1569,18 @@ namespace KlangHub
             if (devices == null)
                 return 0;
 
-            return int.Parse((string)cmbBufferInSeconds.SelectedItem!);
+            return SecondsOf(cmbBufferInSeconds.SelectedItem);
         }
+
+        /// <summary>
+        /// The seconds an entry of the buffer list stands for. Read from the value, never from the text:
+        /// the recommended entry carries a word after the number, and int.Parse would choke on it.
+        /// </summary>
+        private static int SecondsOf(object? item) => item switch
+        {
+            ComboboxItem { Value: int seconds } => seconds,
+            _ => KlangHub.Core.Models.RecommendedDefaults.ExtraBufferSeconds,
+        };
 
         /// <summary>
         /// Change the buffer on the devices.
@@ -1559,8 +1590,7 @@ namespace KlangHub
             if (cmbBufferInSeconds == null || devices == null)
                 return;
 
-            var bufferInSeconds = int.Parse((string)cmbBufferInSeconds.SelectedItem!);
-            devices.SetExtraBufferInSeconds(bufferInSeconds);
+            devices.SetExtraBufferInSeconds(SecondsOf(cmbBufferInSeconds.SelectedItem));
         }
 
         public void SetRecordingDeviceID(string? recordingDeviceIDIn)

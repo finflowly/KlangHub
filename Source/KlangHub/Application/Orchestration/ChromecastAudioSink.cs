@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Sockets;
 using KlangHub.Application.Interfaces;
 using KlangHub.Classes;
+using KlangHub.Core.Models;
 using KlangHub.Platform.Audio;
 using KlangHub.Streaming;
 
@@ -37,7 +38,7 @@ namespace KlangHub.Application.Orchestration
         internal Func<SupportedStreamFormat, AudioFormat, IAudioEncoder>? EncoderFactory { get; set; }
         // volatile: written from the interface thread when the user changes the format, read on the
         // capture thread for every frame.
-        private volatile SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Wav_24bit; // uncompressed HiFi out-of-box (verified on real hardware); settings override on load
+        private volatile SupportedStreamFormat streamFormatSelected = RecommendedDefaults.StreamFormat; // settings override on load
 
         public ChromecastAudioSink(IDevices devicesIn, ILogger loggerIn)
         {

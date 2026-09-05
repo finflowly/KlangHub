@@ -710,7 +710,8 @@
             // 
             cmbBufferInSeconds.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cmbBufferInSeconds.FormattingEnabled = true;
-            cmbBufferInSeconds.Items.AddRange(new object[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" });
+            // Filled in code, not here: each entry is a ComboboxItem holding the number of seconds, so the
+            // recommended one can say so without the text having to be parsed back into a number.
             cmbBufferInSeconds.Location = new System.Drawing.Point(3, 165);
             cmbBufferInSeconds.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             cmbBufferInSeconds.Name = "cmbBufferInSeconds";

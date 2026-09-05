@@ -361,10 +361,10 @@
     <value>WAV · 16-bit (uncompressed)</value>
   </data>
   <data name="Wav_24bit" xml:space="preserve">
-    <value>WAV · 24-bit HiFi (uncompressed, default)</value>
+    <value>WAV · 24-bit HiFi (uncompressed)</value>
   </data>
   <data name="Wav_32bit" xml:space="preserve">
-    <value>WAV · 32-bit (uncompressed, LPCM)</value>
+    <value>WAV · 32-bit (uncompressed)</value>
   </data>
   <data name="Flac" xml:space="preserve">
     <value>FLAC · lossless, best for weak/small speakers</value>
@@ -629,5 +629,9 @@
   </data>
   <data name="Label_RoomSummaryRoomsMany_Text" xml:space="preserve">
     <value>{0} rooms</value>
+  </data>
+  <data name="Option_Recommended_Text" xml:space="preserve">
+    <value>(Recommended)</value>
+    <comment>Appended to the entry a fresh installation starts with.</comment>
   </data>
 </root>
