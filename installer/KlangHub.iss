@@ -233,72 +233,6 @@ bg.LangPageTitle=Език
 bg.LangPageSubtitle=На какъв език да говори KlangHub?
 bg.LangPageInfo=Избери езика на приложението. Можеш да го смениш по всяко време в настройките.
 
-en.RuntimeTitle=Microsoft .NET Desktop Runtime
-en.RuntimeInfo=KlangHub needs the Microsoft .NET Desktop Runtime. Setup will download and install it now (about 57 MB).
-en.RuntimeFailed=The .NET Desktop Runtime could not be installed. KlangHub will not start without it. You can install it manually from https://dotnet.microsoft.com/download
-de.RuntimeTitle=Microsoft .NET Desktop Runtime
-de.RuntimeInfo=KlangHub benötigt die Microsoft .NET Desktop Runtime. Setup lädt sie jetzt herunter und installiert sie (etwa 57 MB).
-de.RuntimeFailed=Die .NET Desktop Runtime konnte nicht installiert werden. Ohne sie startet KlangHub nicht. Du kannst sie manuell installieren: https://dotnet.microsoft.com/download
-fr.RuntimeTitle=Microsoft .NET Desktop Runtime
-fr.RuntimeInfo=KlangHub a besoin du Microsoft .NET Desktop Runtime. Le programme d'installation va le télécharger et l'installer (environ 57 Mo).
-fr.RuntimeFailed=Le .NET Desktop Runtime n'a pas pu être installé. KlangHub ne démarrera pas sans lui : https://dotnet.microsoft.com/download
-es.RuntimeTitle=Microsoft .NET Desktop Runtime
-es.RuntimeInfo=KlangHub necesita Microsoft .NET Desktop Runtime. El instalador lo descargará e instalará ahora (unos 57 MB).
-es.RuntimeFailed=No se pudo instalar .NET Desktop Runtime. KlangHub no se iniciará sin él: https://dotnet.microsoft.com/download
-it.RuntimeTitle=Microsoft .NET Desktop Runtime
-it.RuntimeInfo=KlangHub richiede Microsoft .NET Desktop Runtime. Il programma di installazione lo scaricherà e installerà ora (circa 57 MB).
-it.RuntimeFailed=Impossibile installare .NET Desktop Runtime. Senza di esso KlangHub non si avvia: https://dotnet.microsoft.com/download
-nl.RuntimeTitle=Microsoft .NET Desktop Runtime
-nl.RuntimeInfo=KlangHub heeft Microsoft .NET Desktop Runtime nodig. Setup downloadt en installeert die nu (ongeveer 57 MB).
-nl.RuntimeFailed=De .NET Desktop Runtime kon niet worden geïnstalleerd. Zonder deze start KlangHub niet: https://dotnet.microsoft.com/download
-pt.RuntimeTitle=Microsoft .NET Desktop Runtime
-pt.RuntimeInfo=O KlangHub precisa do Microsoft .NET Desktop Runtime. A instalação vai transferi-lo e instalá-lo agora (cerca de 57 MB).
-pt.RuntimeFailed=Não foi possível instalar o .NET Desktop Runtime. Sem ele o KlangHub não arranca: https://dotnet.microsoft.com/download
-pl.RuntimeTitle=Microsoft .NET Desktop Runtime
-pl.RuntimeInfo=KlangHub wymaga Microsoft .NET Desktop Runtime. Instalator pobierze go i zainstaluje teraz (około 57 MB).
-pl.RuntimeFailed=Nie udało się zainstalować .NET Desktop Runtime. Bez niego KlangHub nie uruchomi się: https://dotnet.microsoft.com/download
-sv.RuntimeTitle=Microsoft .NET Desktop Runtime
-sv.RuntimeInfo=KlangHub behöver Microsoft .NET Desktop Runtime. Installationen hämtar och installerar den nu (cirka 57 MB).
-sv.RuntimeFailed=Det gick inte att installera .NET Desktop Runtime. Utan den startar inte KlangHub: https://dotnet.microsoft.com/download
-da.RuntimeTitle=Microsoft .NET Desktop Runtime
-da.RuntimeInfo=KlangHub kræver Microsoft .NET Desktop Runtime. Installationen henter og installerer den nu (cirka 57 MB).
-da.RuntimeFailed=Kunne ikke installere .NET Desktop Runtime. Uden den starter KlangHub ikke: https://dotnet.microsoft.com/download
-fi.RuntimeTitle=Microsoft .NET Desktop Runtime
-fi.RuntimeInfo=KlangHub tarvitsee Microsoft .NET Desktop Runtimen. Asennus lataa ja asentaa sen nyt (noin 57 Mt).
-fi.RuntimeFailed=.NET Desktop Runtimen asennus epäonnistui. Ilman sitä KlangHub ei käynnisty: https://dotnet.microsoft.com/download
-et.RuntimeTitle=Microsoft .NET Desktop Runtime
-et.RuntimeInfo=KlangHub vajab Microsoft .NET Desktop Runtime'i. Paigaldaja laadib selle nüüd alla ja paigaldab (umbes 57 MB).
-et.RuntimeFailed=.NET Desktop Runtime'i ei õnnestunud paigaldada. Ilma selleta KlangHub ei käivitu: https://dotnet.microsoft.com/download
-lv.RuntimeTitle=Microsoft .NET Desktop Runtime
-lv.RuntimeInfo=KlangHub nepieciešams Microsoft .NET Desktop Runtime. Instalētājs to tagad lejupielādēs un uzstādīs (aptuveni 57 MB).
-lv.RuntimeFailed=Neizdevās uzstādīt .NET Desktop Runtime. Bez tā KlangHub nedarbosies: https://dotnet.microsoft.com/download
-lt.RuntimeTitle=Microsoft .NET Desktop Runtime
-lt.RuntimeInfo=KlangHub reikia Microsoft .NET Desktop Runtime. Diegimo programa ją dabar atsisiųs ir įdiegs (apie 57 MB).
-lt.RuntimeFailed=Nepavyko įdiegti .NET Desktop Runtime. Be jos KlangHub nepasileis: https://dotnet.microsoft.com/download
-el.RuntimeTitle=Microsoft .NET Desktop Runtime
-el.RuntimeInfo=Το KlangHub χρειάζεται το Microsoft .NET Desktop Runtime. Η εγκατάσταση θα το κατεβάσει και θα το εγκαταστήσει τώρα (περίπου 57 MB).
-el.RuntimeFailed=Δεν ήταν δυνατή η εγκατάσταση του .NET Desktop Runtime. Χωρίς αυτό το KlangHub δεν ξεκινά: https://dotnet.microsoft.com/download
-cs.RuntimeTitle=Microsoft .NET Desktop Runtime
-cs.RuntimeInfo=KlangHub potřebuje Microsoft .NET Desktop Runtime. Instalátor jej nyní stáhne a nainstaluje (přibližně 57 MB).
-cs.RuntimeFailed=.NET Desktop Runtime se nepodařilo nainstalovat. Bez něj se KlangHub nespustí: https://dotnet.microsoft.com/download
-sk.RuntimeTitle=Microsoft .NET Desktop Runtime
-sk.RuntimeInfo=KlangHub potrebuje Microsoft .NET Desktop Runtime. Inštalátor ho teraz stiahne a nainštaluje (približne 57 MB).
-sk.RuntimeFailed=.NET Desktop Runtime sa nepodarilo nainštalovať. Bez neho sa KlangHub nespustí: https://dotnet.microsoft.com/download
-sl.RuntimeTitle=Microsoft .NET Desktop Runtime
-sl.RuntimeInfo=KlangHub potrebuje Microsoft .NET Desktop Runtime. Namestitev ga bo zdaj prenesla in namestila (približno 57 MB).
-sl.RuntimeFailed=.NET Desktop Runtime ni bilo mogoče namestiti. Brez njega se KlangHub ne zažene: https://dotnet.microsoft.com/download
-hr.RuntimeTitle=Microsoft .NET Desktop Runtime
-hr.RuntimeInfo=KlangHub treba Microsoft .NET Desktop Runtime. Instalacija će ga sada preuzeti i instalirati (oko 57 MB).
-hr.RuntimeFailed=.NET Desktop Runtime nije bilo moguće instalirati. Bez njega se KlangHub neće pokrenuti: https://dotnet.microsoft.com/download
-hu.RuntimeTitle=Microsoft .NET Desktop Runtime
-hu.RuntimeInfo=A KlangHubhoz szükséges a Microsoft .NET Desktop Runtime. A telepítő most letölti és telepíti (körülbelül 57 MB).
-hu.RuntimeFailed=A .NET Desktop Runtime telepítése nem sikerült. Enélkül a KlangHub nem indul el: https://dotnet.microsoft.com/download
-ro.RuntimeTitle=Microsoft .NET Desktop Runtime
-ro.RuntimeInfo=KlangHub are nevoie de Microsoft .NET Desktop Runtime. Programul de instalare îl va descărca și instala acum (aproximativ 57 MB).
-ro.RuntimeFailed=Nu s-a putut instala .NET Desktop Runtime. Fără el, KlangHub nu pornește: https://dotnet.microsoft.com/download
-bg.RuntimeTitle=Microsoft .NET Desktop Runtime
-bg.RuntimeInfo=KlangHub изисква Microsoft .NET Desktop Runtime. Инсталаторът ще го изтегли и инсталира сега (около 57 MB).
-bg.RuntimeFailed=Microsoft .NET Desktop Runtime не можа да бъде инсталиран. Без него KlangHub няма да стартира: https://dotnet.microsoft.com/download
 
 [Code]
 { ------------------------------------------------------------------------------------------------
@@ -540,81 +474,15 @@ begin
     Result := ActiveLanguage;
 end;
 
-{ --- .NET Desktop Runtime: detect, and fetch it if the machine has none --- }
-const
-  RuntimeUrl = 'https://aka.ms/dotnet/10.0/windowsdesktop-runtime-win-x64.exe';
+{ The .NET runtime is not fetched any more, and there is no longer anything to fetch.
+  KlangHub is published with --self-contained true, so every assembly it needs - hostfxr, coreclr,
+  the framework - is installed beside the program. The block that used to stand here detected a
+  machine-wide runtime and, finding none, downloaded some 57 MB from Microsoft into the temporary
+  directory and started it elevated: no checksum, no signature check, and a window between the
+  download finishing and the program starting in which anything running as this user could have
+  swapped the file for one of its own - and had it run as Administrator through a prompt the user had
+  every reason to accept. For a build that never needed the runtime at all. }
 
-var
-  DownloadPage: TDownloadWizardPage;
-
-function DesktopRuntimeInstalled: Boolean;
-var
-  Root: String;
-  FindRec: TFindRec;
-begin
-  { The shared framework lives in one folder per version. KlangHub targets net10.0-windows, so any
-    Microsoft.WindowsDesktop.App\10.* will host it. }
-  Result := False;
-  Root := ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App');
-  if not DirExists(Root) then
-    Exit;
-  if FindFirst(Root + '\10.*', FindRec) then
-  begin
-    try
-      repeat
-        if (FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
-        begin
-          Result := True;
-          Break;
-        end;
-      until not FindNext(FindRec);
-    finally
-      FindClose(FindRec);
-    end;
-  end;
-end;
-
-function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
-begin
-  Result := True;
-end;
-
-{ Runs on the "ready" page: download, then hand over to Microsoft's own installer. It asks for elevation
-  itself (the runtime is machine-wide), which is why setup does not need admin rights of its own. }
-function EnsureRuntime: Boolean;
-var
-  ResultCode: Integer;
-  Target: String;
-begin
-  Result := True;
-  if DesktopRuntimeInstalled then
-    Exit;
-
-  Target := ExpandConstant('{tmp}\windowsdesktop-runtime.exe');
-  DownloadPage.Clear;
-  DownloadPage.Add(RuntimeUrl, 'windowsdesktop-runtime.exe', '');
-  DownloadPage.Show;
-  try
-    try
-      DownloadPage.Download;
-      if not ShellExec('runas', Target, '/install /passive /norestart', '',
-                       SW_SHOW, ewWaitUntilTerminated, ResultCode) then
-        Result := False
-      else if (ResultCode <> 0) and (ResultCode <> 3010) and (ResultCode <> 1641) then
-        Result := False;
-    except
-      Result := False;
-    end;
-  finally
-    DownloadPage.Hide;
-  end;
-
-  if not Result then
-    Result := SuppressibleMsgBox(ExpandConstant('{cm:RuntimeFailed}'), mbError, MB_OKCANCEL, IDOK) = IDOK;
-end;
-
-{ Is KlangHub running? Asked of the process list rather than a window title, so it also finds an
-  instance that has hidden itself in the notification area. }
 function KlangHubIsRunning: Boolean;
 var
   code: Integer;
@@ -666,7 +534,6 @@ begin
       MsgBox(ExpandConstant('{cm:ClosingText}'), mbInformation, MB_OK);
       CloseRunningKlangHub;
     end;
-    Result := EnsureRuntime;
   end;
 end;
 
@@ -676,8 +543,6 @@ begin
   WizardForm.Font.Name := 'Segoe UI';
   WizardForm.Font.Color := clIvory;
   CreateLanguagePage;
-  DownloadPage := CreateDownloadPage(ExpandConstant('{cm:RuntimeTitle}'), ExpandConstant('{cm:RuntimeInfo}'),
-                                     @OnDownloadProgress);
   ThemeAll(WizardForm);
   StyleHeadings;
   DarkenTitleBar(WizardForm.Handle);

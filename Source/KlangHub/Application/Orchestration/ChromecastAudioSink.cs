@@ -35,7 +35,9 @@ namespace KlangHub.Application.Orchestration
 
         /// <summary>Test seam: how an encoder is made for a format. Production uses the real encoders.</summary>
         internal Func<SupportedStreamFormat, AudioFormat, IAudioEncoder>? EncoderFactory { get; set; }
-        private SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Wav_24bit; // uncompressed HiFi out-of-box (verified on real hardware); settings override on load
+        // volatile: written from the interface thread when the user changes the format, read on the
+        // capture thread for every frame.
+        private volatile SupportedStreamFormat streamFormatSelected = SupportedStreamFormat.Wav_24bit; // uncompressed HiFi out-of-box (verified on real hardware); settings override on load
 
         public ChromecastAudioSink(IDevices devicesIn, ILogger loggerIn)
         {
@@ -56,13 +58,18 @@ namespace KlangHub.Application.Orchestration
 
             // WAV/LPCM streams pass raw PCM straight through; compressed/lossless-coded formats (MP3, FLAC) run
             // through their encoder. StreamCodec is the single source of truth for that decision.
-            if (!StreamCodec.IsWav(streamFormatSelected))
+            // Read once and used throughout. It was read separately for the decision, for building the
+            // encoder and for the send, so a format change landing between two of those reads could have
+            // built an encoder for one format and labelled its output as another.
+            var format = streamFormatSelected;
+
+            if (!StreamCodec.IsWav(format))
             {
                 lock (encoderSync)
                 {
                     if (encoder == null)
                     {
-                        encoder = CreateEncoder(streamFormatSelected, formatIn);
+                        encoder = CreateEncoder(format, formatIn);
                     }
                     // Tier2-A1: dataToSendIn is already frame.Data (a fresh per-frame array read synchronously
                     // by the encoder) — the old .ToArray() clone was pure waste.
@@ -72,7 +79,7 @@ namespace KlangHub.Application.Orchestration
             }
             if (dataToSendIn.Length > 0)
             {
-                devices.OnRecordingDataAvailable(dataToSendIn, formatIn, reduceLagThreshold, streamFormatSelected);
+                devices.OnRecordingDataAvailable(dataToSendIn, formatIn, reduceLagThreshold, format);
             }
         }
 
@@ -133,7 +140,12 @@ namespace KlangHub.Application.Orchestration
                 logger.Log($"Set stream format to {formatIn}");
                 streamFormatSelected = formatIn;
                 lock (encoderSync)
+                {
+                    // Disposed, not merely dropped. Letting go of an encoder without disposing it left a
+                    // native LAME instance behind on every change of format.
+                    encoder?.Dispose();
                     encoder = null;
+                }
 
                 devices.Stop();
                 devices.Start();
@@ -151,7 +163,13 @@ namespace KlangHub.Application.Orchestration
         public void DisposeEncoder()
         {
             lock (encoderSync)
+            {
                 encoder?.Dispose();
+                // Cleared as well as disposed. ClearEncoder, immediately above, does the clearing
+                // without the disposing; this did the disposing without the clearing, and left the
+                // field pointing at an encoder that had already been torn down.
+                encoder = null;
+            }
         }
     }
 }

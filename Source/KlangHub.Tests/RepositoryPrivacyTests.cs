@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -177,16 +177,111 @@ namespace KlangHub.Tests
                 || p.Equals("CLAUDE.md", StringComparison.OrdinalIgnoreCase);
         }
 
-        /// <summary>Images the application itself ships. Drawn by us, not captured from somebody's screen.</summary>
+        /// <summary>
+        /// Images the application itself ships. Drawn by us, not captured from somebody's screen.
+        /// <para>
+        /// A list, not a set of directory prefixes. This used to exempt the whole of Source/ and the
+        /// whole of installer/, which meant a screenshot saved one directory below the eight that were
+        /// found in the root - Source/KlangHub/Resources/screenshot.png, say - would have passed every
+        /// layer without a word. The point of the check is the file, not the folder it is in.
+        /// </para>
+        /// </summary>
         private static bool IsShippedAsset(string relativePath)
         {
             var p = relativePath.Replace('\\', '/');
-            return p.StartsWith("Source/", StringComparison.OrdinalIgnoreCase)
-                || p.StartsWith("installer/", StringComparison.OrdinalIgnoreCase)
-                || p.StartsWith("receiver/assets/", StringComparison.OrdinalIgnoreCase);
+            return ShippedAssets.Any(rx => rx.IsMatch(p));
         }
 
+        private static readonly Regex[] ShippedAssets =
+        {
+            new Regex(@"^Source/KlangHub/KlangHub\.ico$", RegexOptions.IgnoreCase),
+            new Regex(@"^Source/KlangHub/Resources/artwork\.png$", RegexOptions.IgnoreCase),
+            new Regex(@"^Source/KlangHub/UserControls/[A-Za-z]+\.png$", RegexOptions.IgnoreCase),
+            new Regex(@"^installer/wizard-(small|large)(-\d+)?\.bmp$", RegexOptions.IgnoreCase),
+            new Regex(@"^receiver/assets/[a-z]+\.png$", RegexOptions.IgnoreCase),
+        };
+
+        /// <summary>
+        /// Who the history says wrote it.
+        /// <para>
+        /// Nothing had ever looked at this. The name and mail address on a commit are as public as
+        /// anything in the files, they travel with every clone, and GitHub prints them on every page -
+        /// and that is exactly how commits carrying a real name and a private address came to be pushed
+        /// without a single check objecting. The files were clean the whole time.
+        /// </para>
+        /// <para>
+        /// Local branches and tags only: a remote-tracking ref is somebody else's history, not something
+        /// this repository is about to publish.
+        /// </para>
+        /// </summary>
+        [Fact]
+        public void No_commit_is_signed_with_a_real_name_or_address()
+        {
+            var offenders = new List<string>();
+
+            foreach (var identity in Git("log", "--branches", "--tags", "--format=%an <%ae>%n%cn <%ce>"))
+            {
+                if (identity.Length == 0 || IsAllowedIdentity(identity))
+                    continue;
+
+                // The finding names the shape, never the address: this output ends up in a log.
+                offenders.Add(Regex.Replace(identity, @"[A-Za-z0-9._%+-]+@", "***@"));
+            }
+
+            Assert.True(offenders.Count == 0,
+                "These commit identities are neither a noreply address nor the upstream author this fork "
+                + "must keep attributing:" + Environment.NewLine
+                + string.Join(Environment.NewLine, offenders.Distinct()));
+        }
+
+        /// <summary>
+        /// Whoever signed a commit before this became a fork keeps their own identity - the licence asks
+        /// for the attribution, and it was already public in the project we forked from. Everything since
+        /// must be a noreply address.
+        /// </summary>
+        private static bool IsAllowedIdentity(string identity)
+            => identity.EndsWith("@users.noreply.github.com>", StringComparison.OrdinalIgnoreCase)
+               || UpstreamAuthors.Contains(identity);
+
+        private static readonly string[] UpstreamAuthors =
+        {
+            "SamDel <github@deaut.nl>",
+            "SamDel <25846417+SamDel@users.noreply.github.com>",
+        };
+
         // ---------------------------------------------------------------- helpers
+
+        /// <summary>
+        /// Runs a git command in the repository and returns its lines. The arguments are passed one by
+        /// one rather than as a single string: a --format carries spaces, and a single string would be
+        /// split on them into arguments git has never heard of.
+        /// </summary>
+        private static IReadOnlyList<string> Git(params string[] arguments)
+        {
+            var start = new ProcessStartInfo("git")
+            {
+                WorkingDirectory = RepositoryRoot(),
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            foreach (var argument in arguments)
+                start.ArgumentList.Add(argument);
+
+            using var process = Process.Start(start);
+            Assert.NotNull(process);
+            var output = process!.StandardOutput.ReadToEnd();
+
+            // The result of the wait is checked. It was not, so a git that hung for thirty seconds gave
+            // this test a short file list and a green tick - failing silently at the one moment it was
+            // supposed to be protecting something.
+            var command = string.Join(' ', arguments);
+            Assert.True(process.WaitForExit(30_000), $"git {command} did not finish within 30 seconds.");
+            Assert.True(process.ExitCode == 0, $"git {command} failed with exit code {process.ExitCode}.");
+
+            return output.Split('\n').Select(l => l.Trim()).Where(l => l.Length > 0).ToList();
+        }
 
         private static IEnumerable<(string Relative, string Full)> TextFiles()
         {
@@ -213,24 +308,7 @@ namespace KlangHub.Tests
         /// What git actually tracks. Deliberately not a directory walk: an ignored file is not a problem,
         /// and walking would flag every screenshot sitting in the working folder, which is allowed.
         /// </summary>
-        private static IReadOnlyList<string> Tracked()
-        {
-            var start = new ProcessStartInfo("git", "ls-files")
-            {
-                WorkingDirectory = RepositoryRoot(),
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            using var process = Process.Start(start);
-            Assert.NotNull(process);
-            var output = process!.StandardOutput.ReadToEnd();
-            process.WaitForExit(30_000);
-
-            return output.Split('\n').Select(l => l.Trim()).Where(l => l.Length > 0).ToList();
-        }
+        private static IReadOnlyList<string> Tracked() => Git("ls-files");
 
         private static string RepositoryRoot()
         {
