@@ -115,6 +115,7 @@ namespace KlangHub.Streaming
         }
 
         private DateTime lastDropReport = DateTime.MinValue;
+        private long pendingDroppedBytes;
 
         /// <summary>
         /// Says out loud when audio had to be thrown away, at most once every five seconds.
@@ -125,17 +126,23 @@ namespace KlangHub.Streaming
         /// </summary>
         private void ReportDroppedAudio()
         {
-            long dropped;
+            // Collected every time, reported at most every five seconds - and the running total is only
+            // cleared when a line is actually written. Draining it on the suppressed path threw away
+            // everything lost inside the quiet window, which on a real overrun is nearly all of it: this
+            // loop runs about a thousand times a second, so the log would have shown one millisecond's
+            // worth of loss and called it the whole story.
             lock (bufferSwapSync)
-                dropped = bufferCaptured.TakeDroppedBytes() + bufferSend.TakeDroppedBytes();
+                pendingDroppedBytes += bufferCaptured.TakeDroppedBytes() + bufferSend.TakeDroppedBytes();
 
-            if (dropped <= 0 || logger == null)
+            if (pendingDroppedBytes <= 0 || logger == null)
                 return;
 
             var now = DateTime.Now;
             if ((now - lastDropReport).TotalSeconds < 5)
                 return;
 
+            var dropped = pendingDroppedBytes;
+            pendingDroppedBytes = 0;
             lastDropReport = now;
             logger.Log($"Disconnected-risk: dropped {dropped} bytes of audio - the send buffer was full. " +
                        "With FLAC or MP3 this breaks the stream for the receiver.");

@@ -151,8 +151,7 @@ namespace KlangHub.UserControls
             int h = muteRect.Contains(e.Location) ? 0
                   : minusRect.Contains(e.Location) ? 1
                   : plusRect.Contains(e.Location) ? 2 : -1;
-            bool onTrack = e.Y >= trackRect.Y - 8 && e.Y <= trackRect.Bottom + 8
-                           && e.X >= trackRect.X - 4 && e.X <= trackRect.Right + 4;
+            bool onTrack = TrackHit(e.Location);
             Cursor = (h >= 0 || onTrack) ? Cursors.Hand : Cursors.Default;
             if (h != hovered) { hovered = h; Invalidate(); }
             base.OnMouseMove(e);
@@ -173,7 +172,11 @@ namespace KlangHub.UserControls
             if (minusRect.Contains(e.Location)) { Shift(-1); return; }
             if (plusRect.Contains(e.Location)) { Shift(+1); return; }
 
-            if (e.Y >= trackRect.Y - 8 && e.Y <= trackRect.Bottom + 8)
+            // The X test is not optional. Without it the accepted band was the full width of the bar at
+            // that height, so clicking the read-only percent figure on the right landed past the track's
+            // end, clamped to 1 and drove every uncapped speaker in the room to 100 % - from a text label,
+            // in one click. OnMouseMove already tested both axes; OnMouseDown did not.
+            if (TrackHit(e.Location))
             {
                 dragging = true;
                 ApplyFromX(e.X);
@@ -249,6 +252,18 @@ namespace KlangHub.UserControls
                 return Math.Max(1, step);
             }
         }
+
+        /// <summary>The one place that decides whether a point is on the room's fader. Both axes, always.</summary>
+        private bool TrackHit(Point p) => IsOnTrack(trackRect, p);
+
+        /// <summary>
+        /// Pure geometry, so the rule can be tested without a window: a point counts as on the fader only
+        /// when it is within reach on BOTH axes. Testing the height alone accepted the whole width of the
+        /// bar, which turned the read-only percent figure into a click-to-maximum control.
+        /// </summary>
+        internal static bool IsOnTrack(Rectangle track, Point p)
+            => p.Y >= track.Y - 8 && p.Y <= track.Bottom + 8
+               && p.X >= track.X - 4 && p.X <= track.Right + 4;
 
         private void Shift(int direction) => SetLevel(Level + direction * StepPercent);
 

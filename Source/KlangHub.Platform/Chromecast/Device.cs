@@ -584,9 +584,9 @@ namespace KlangHub.Application
             if (IsGroup())
                 return;
 
-            var key = discoveredDevice?.Id;
+            var key = discoveredDevice.Id;
             if (string.IsNullOrEmpty(key))
-                key = $"{discoveredDevice?.IPAddress}:{discoveredDevice?.Port}";
+                key = $"{discoveredDevice.IPAddress}:{discoveredDevice.Port}";
             if (!deviceInformationThrottle.ShouldAct(key, null, System.DateTime.Now))
                 return;
 
@@ -754,6 +754,10 @@ namespace KlangHub.Application
             new(ChromecastDeviceId.From(discoveredDevice), GetFriendlyName(), ProviderId.Chromecast, IsGroup())
             {
                 Model = discoveredDevice?.ModelName,   // the card's subtitle: what hardware fills this room
+                // The details card reads the session, not the discovery event, so the facts have to be
+                // rebuilt here too - otherwise every speaker's details view showed its empty state while
+                // DeviceFacts ran happily on the discovery side and its result was thrown away.
+                Details = DeviceFacts.For(discoveredDevice),
             };
 
         PlaybackState IPlaybackSession.State => ChromecastStateMapper.ToPlaybackState(GetDeviceState());
