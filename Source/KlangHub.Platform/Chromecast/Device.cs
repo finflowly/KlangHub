@@ -194,6 +194,12 @@ namespace KlangHub.Application
             {
                 logger.Log($"Connection closed from {streamingConnection.GetRemoteEndPoint()}");
                 streamingConnection = null;
+
+                // The other half of yesterday's fix. That one caught a FAILED SEND; this catches the case
+                // where the receiver closed the audio socket itself - measured 2026-09-05 08:45:30, when a
+                // soundbar answered with detailedErrorCode 102 and hung up. Nothing asked for a rebuild, so
+                // it took 23 seconds instead of six. The gate inside keeps this from racing the poll.
+                ResumeAfterConnectionLoss();
             }
         }
 

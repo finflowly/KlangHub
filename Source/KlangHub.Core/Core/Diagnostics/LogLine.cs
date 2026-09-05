@@ -30,6 +30,7 @@ namespace KlangHub.Core.Diagnostics
         private static readonly Regex VolumeLevel = new("\"level\":(?<v>-?[0-9.eE+-]+)", RegexOptions.Compiled);
         private static readonly Regex VolumeMuted = new("\"muted\":(?<v>true|false)", RegexOptions.Compiled);
         private static readonly Regex Request = new("\"requestId\":(?<v>\\d+)", RegexOptions.Compiled);
+        private static readonly Regex ErrorCode = new("\"detailedErrorCode\":(?<v>\\d+)", RegexOptions.Compiled);
 
         public enum Severity { Info, Warning, Error }
 
@@ -56,6 +57,9 @@ namespace KlangHub.Core.Diagnostics
             if (text.StartsWith("ex ", StringComparison.Ordinal) || text.StartsWith("ex:", StringComparison.Ordinal))
                 return Severity.Error;
 
+            if (text.Contains("\"type\":\"ERROR\"", StringComparison.Ordinal))
+                return Severity.Error;
+
             if (text.Contains("[ConnectError]", StringComparison.Ordinal)
                 || text.Contains("Disconnected", StringComparison.Ordinal)
                 || text.Contains("Connection closed", StringComparison.Ordinal)
@@ -70,8 +74,34 @@ namespace KlangHub.Core.Diagnostics
         /// a status that names a running application, and every message we write ourselves - is left exactly
         /// as it was, because those are the ones worth reading in full.
         /// </summary>
+        /// <summary>
+        /// What a Cast receiver's detailedErrorCode means. Without this the single most important line in a
+        /// failure report - the receiver saying WHY it stopped - is a bare number nobody looks up.
+        /// From the Cast Application Framework error codes.
+        /// </summary>
+        public static string? ExplainErrorCode(int code) => code switch
+        {
+            100 => "the receiver could not identify the problem",
+            101 => "playback was aborted",
+            102 => "the receiver could not decode the stream - a broken or unsupported bitstream",
+            103 => "the receiver lost the connection to the stream",
+            104 => "the receiver does not support this format",
+            110 => "the receiver's own buffer failed",
+            905 => "loading was interrupted",
+            906 => "loading failed",
+            _ => null,
+        };
+
         public static string Summarise(string message)
         {
+            // An error from the receiver is the most valuable line in the whole log. Spell it out.
+            var error = ErrorCode.Match(message);
+            if (error.Success && int.TryParse(error.Groups["v"].Value, out var code))
+            {
+                var meaning = ExplainErrorCode(code);
+                return meaning == null ? message : message + "   <- " + meaning;
+            }
+
             if (message.Contains("\"applications\"", StringComparison.Ordinal))
                 return message;      // a receiver status naming the running app is worth its length
 

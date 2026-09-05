@@ -61,6 +61,8 @@ namespace KlangHub.Streaming
                     // Take().ToArray() -> List.AddRange -> ToArray() triple copy. count is captured and Used
                     // reset before the send, preserving the original "reset-before-send" drop semantics; the
                     // buffer is stable until the next SwapBuffer and Socket.Send is synchronous.
+                    streamer.ReportDroppedAudio();
+
                     var count = streamer.bufferSend.Used;
                     if (count > 0)
                     {
@@ -109,6 +111,33 @@ namespace KlangHub.Streaming
             }
         }
 
+        private DateTime lastDropReport = DateTime.MinValue;
+
+        /// <summary>
+        /// Says out loud when audio had to be thrown away, at most once every five seconds.
+        ///
+        /// A full buffer means the socket could not keep up. For WAV that is a click; for FLAC and MP3 it
+        /// breaks the bitstream and the receiver stops with a decode error. Either way it must appear in the
+        /// log, because a fault nobody can see is a fault nobody can fix.
+        /// </summary>
+        private void ReportDroppedAudio()
+        {
+            long dropped;
+            lock (bufferSwapSync)
+                dropped = bufferCaptured.TakeDroppedBytes() + bufferSend.TakeDroppedBytes();
+
+            if (dropped <= 0 || logger == null)
+                return;
+
+            var now = DateTime.Now;
+            if ((now - lastDropReport).TotalSeconds < 5)
+                return;
+
+            lastDropReport = now;
+            logger.Log($"Disconnected-risk: dropped {dropped} bytes of audio - the send buffer was full. " +
+                       "With FLAC or MP3 this breaks the stream for the receiver.");
+        }
+
         /// <summary>
         /// Swap the captured and send buffers.
         /// </summary>
@@ -134,8 +163,13 @@ namespace KlangHub.Streaming
             if (dataToSend == null || dataToSend.Length == 0 || format == null)
                 return;
 
-            // Lag control functionality.
-            if (reduceLagThreshold < 1000)
+            // Lag control: drop every n-th block to let a lagging device catch up.
+            //
+            // Only ever for uncompressed audio. Throwing a block out of WAV is a click; throwing one out of
+            // FLAC or MP3 breaks the bitstream, and the receiver answers with a decode error and stops
+            // (detailedErrorCode 102). The slider offered that to every user of a compressed format,
+            // silently. Lag on FLAC or MP3 is a job for the buffer, not for the bin.
+            if (reduceLagThreshold < 1000 && StreamCodec.IsWav(streamFormat))
             {
                 reduceLagCounter++;
                 if (reduceLagCounter > reduceLagThreshold)

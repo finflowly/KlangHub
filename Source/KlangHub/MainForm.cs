@@ -802,6 +802,9 @@ namespace KlangHub
                     new("Language", System.Globalization.CultureInfo.CurrentUICulture.Name),
                     new("Audio format", SafeFormatName()),
                     new("Extra buffer", buffer == null ? null : buffer + " s"),
+                    // Belongs here because it changes how the audio itself is treated: below 1000 the app
+                    // drops blocks to reduce lag, and a reader must know that before judging a stream fault.
+                    new("Lag control", LagValue() is int lag && lag < 1000 ? lag + " (dropping blocks)" : "off"),
                     new("Stream address", address),
                     new("Receiver app id", GetReceiverAppId()),
                 };
@@ -813,6 +816,12 @@ namespace KlangHub
                 // A header that cannot be built must never cost the log itself.
                 return $"=== KlangHub diagnostics unavailable: {ex.Message} ==={Environment.NewLine}";
             }
+        }
+
+        private int? LagValue()
+        {
+            try { return trbLag?.Value; }
+            catch (InvalidOperationException) { return null; }
         }
 
         private string? SafeFormatName()
