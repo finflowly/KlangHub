@@ -365,15 +365,11 @@ namespace KlangHub.Platform.Audio
             if (isRecording)
             {
                 logger.Log("Recording Stopped");
-                isRecording = false;
-                if (soundIn != null)
-                {
-                    soundIn.DataAvailable -= OnDataAvailable;
-                    soundIn.RecordingStopped -= OnRecordingStopped;
-                }
-                soundIn?.StopRecording();
-                soundIn?.Dispose();
-                soundIn = null;
+
+                // Through the same door as everybody else. NAudio raises this event inline on its own
+                // capture thread when no SynchronizationContext was captured, and disposing a recorder
+                // from its own thread would make it join itself - forever.
+                StopRecording();
             }
         }
 
@@ -434,16 +430,71 @@ namespace KlangHub.Platform.Audio
             StopRecording();
         }
 
+        /// <summary>
+        /// Ends capture without ever blocking the caller.
+        ///
+        /// NAudio 3's WasapiRecorder.StopRecording() only writes a flag, and its Dispose() joins the
+        /// capture thread with NO timeout. Between StartRecording() and the moment the capture thread
+        /// writes "captureState = Capturing" itself, that flag is overwritten - the stop is lost, the
+        /// capture loop never ends, and the join never returns.
+        ///
+        /// KlangHub walks straight into that window: the engine starts capture while it is being built,
+        /// and MainForm_Load applies the saved settings milliseconds later. Measured on this machine,
+        /// three starts out of six froze in exactly that spot, with the UI thread parked in Thread.Join
+        /// inside Form.OnLoad - no device list, no reaction to the close button, nothing left but the
+        /// Task Manager. That is the "App ist gecrasht beim Start" the maintainer reported.
+        ///
+        /// Two defences, because neither alone is enough:
+        ///   the stop is re-issued until the recorder reports itself stopped, which defeats the lost
+        ///     flag no matter where in its start-up the recorder happened to be;
+        ///   and all of it, the join included, happens on a thread of our own. NAudio marks its capture
+        ///     thread IsBackground, so even one that never returns cannot keep the process alive.
+        ///
+        /// The caller is free to build the next recorder immediately: the old one's handlers are
+        /// detached here, and WASAPI shared-mode loopback has no objection to a brief overlap.
+        /// </summary>
         private void StopRecording()
         {
             isRecording = false;
 
-            if (soundIn == null)
+            var recorder = soundIn;
+            soundIn = null;
+            if (recorder == null)
                 return;
 
-            soundIn?.StopRecording();
-            soundIn?.Dispose();
-            soundIn = null;
+            recorder.DataAvailable -= OnDataAvailable;
+            recorder.RecordingStopped -= OnRecordingStopped;
+
+            new Thread(() => ShutDownRecorder(recorder))
+            {
+                Name = "Loopback Capture Shutdown",
+                IsBackground = true,
+            }.Start();
+        }
+
+        /// <summary>Stops and releases one recorder, off the caller's thread. See StopRecording.</summary>
+        private void ShutDownRecorder(WasapiRecorder recorder)
+        {
+            try
+            {
+                // Every 20 ms for at most three seconds. The capture loop looks at the flag at least
+                // every 300 ms, so a stop that is lost to the start-up race is simply re-sent until it
+                // is seen - and once the recorder is stopped, the join below returns at once.
+                for (int i = 0; i < 150 && recorder.CaptureState != CaptureState.Stopped; i++)
+                {
+                    recorder.StopRecording();
+                    Thread.Sleep(20);
+                }
+
+                if (recorder.CaptureState != CaptureState.Stopped)
+                    logger.Log("Capture did not stop within three seconds; releasing it anyway.");
+
+                recorder.Dispose();
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex, "LoopbackCaptureEngine.ShutDownRecorder");
+            }
         }
 
         public void Restart()
@@ -454,9 +505,7 @@ namespace KlangHub.Platform.Audio
 
         public void Dispose()
         {
-            soundIn?.StopRecording();
-            soundIn?.Dispose();
-            soundIn = null;
+            StopRecording();
             dataAvailableTimer?.Close();
             dataAvailableTimer?.Dispose();
             getDevicesTimer?.Close();
