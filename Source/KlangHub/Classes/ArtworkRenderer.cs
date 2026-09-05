@@ -115,10 +115,11 @@ namespace KlangHub.Classes
 
             var tagline = Properties.Strings.ResourceManager.GetString("Artwork_Tagline_Text", Culture);
             if (string.IsNullOrWhiteSpace(tagline))
-                tagline = "LOSSLESS · WHOLE-HOME AUDIO";
+                tagline = "ONE MUSIC · EVERY ROOM";
 
-            // The claim is set in tracked capitals; long translations are scaled down rather than wrapped, so
-            // the line keeps its shape in every language.
+            // The claim is set in tracked capitals. It is a wordmark and reads the same in every language, but
+            // the fitting loop stays: it is what guarantees the line keeps its shape rather than overflowing,
+            // and it is the only thing standing between a future longer claim and a picture that spills.
             var box = new RectangleF(Size * 0.06f, Size * 0.705f, Size * 0.88f, Size * 0.06f);
             float px = Size * 0.032f;
             using (var tb = new SolidBrush(Color.FromArgb(215, Theme.Amber)))

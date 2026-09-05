@@ -8,9 +8,17 @@ using Xunit;
 namespace KlangHub.Tests.Ui
 {
     /// <summary>
-    /// The Chromecast screen is part of the product, so it has to speak the user's language too - a localized
-    /// app that puts an English claim on the television is only half translated. These pin down that every
-    /// shipped language produces its own artwork, and that switching languages actually changes the picture.
+    /// The artwork is the picture the television shows. It carries two things and both are wordmarks:
+    /// "KlangHub" and the claim beneath it. Neither is translated - a claim that changes wording per
+    /// country is not a claim, it is a caption, and a listener who switches the app to Dutch has not
+    /// asked for a different product name.
+    /// <para>
+    /// This replaced a rule that required the opposite. The tagline used to be translated into all
+    /// twenty-four languages and a test held each language to a distinct wording; it was the ONLY
+    /// localized text on the artwork, so the picture also differed per language and a second test
+    /// pinned that down. Both premises are gone with the decision, and a test whose premise is gone is
+    /// removed rather than rewritten into something it can still pass.
+    /// </para>
     /// </summary>
     public class ArtworkRendererTests : IDisposable
     {
@@ -28,14 +36,20 @@ namespace KlangHub.Tests.Ui
             ArtworkRenderer.Invalidate();
         }
 
+        /// <summary>
+        /// The renderer still produces a real picture whatever the app language is. The cultures here are no
+        /// longer about scripts - the artwork carries no translated text any more - but the renderer reads a
+        /// resource through a culture, and a language that broke that lookup would leave the television with
+        /// the empty fallback rather than an error.
+        /// </summary>
         [Theory]
         [InlineData("en")]
         [InlineData("de")]
-        [InlineData("el")]   // non-latin script
-        [InlineData("bg")]   // cyrillic
+        [InlineData("el")]
+        [InlineData("bg")]
         [InlineData("ga")]
         [InlineData("mt")]
-        public void Renders_a_png_for_every_shipped_script(string culture)
+        public void Renders_a_png_whatever_the_app_language_is(string culture)
         {
             Use(culture);
             var png = ArtworkRenderer.CurrentPng();
@@ -45,32 +59,38 @@ namespace KlangHub.Tests.Ui
             Assert.Equal(new byte[] { 0x89, 0x50, 0x4E, 0x47 }, png[..4]);
         }
 
+        /// <summary>The claim is a wordmark: the same words in every language, and present in every one.</summary>
         [Fact]
-        public void Every_supported_language_carries_its_own_tagline()
+        public void The_claim_is_the_same_wordmark_in_every_language()
         {
-            var english = Lookup("en");
+            const string wordmark = "ONE MUSIC · EVERY ROOM";
+
             foreach (var code in KlangHub.MainForm.SupportedCultures)
-            {
-                var tagline = Lookup(code);
-                Assert.False(string.IsNullOrWhiteSpace(tagline), $"'{code}' has no artwork tagline");
-                if (code != "en")
-                    Assert.False(tagline == english, $"'{code}' still falls back to the English tagline");
-            }
+                Assert.Equal(wordmark, Lookup(code));
 
             static string Lookup(string code) =>
                 KlangHub.Properties.Strings.ResourceManager.GetString(
                     "Artwork_Tagline_Text", CultureInfo.GetCultureInfo(code)) ?? string.Empty;
         }
 
+        /// <summary>
+        /// Every language must still HAVE the key. Deleting it from a file would fall back to the neutral
+        /// resource and look identical - the test above would stay green while one language quietly stopped
+        /// shipping its own copy, and the next translated string added to the artwork would then be missing.
+        /// </summary>
         [Fact]
-        public void Switching_language_changes_the_picture()
+        public void No_language_has_dropped_the_key()
         {
-            Use("de");
-            var german = ArtworkRenderer.CurrentPng();
-            Use("el");
-            var greek = ArtworkRenderer.CurrentPng();
+            foreach (var code in KlangHub.MainForm.SupportedCultures)
+            {
+                if (code == "en")
+                    continue;
 
-            Assert.NotEqual(german, greek);
+                var culture = CultureInfo.GetCultureInfo(code);
+                using var set = KlangHub.Properties.Strings.ResourceManager.GetResourceSet(culture, true, false);
+                Assert.True(set?.GetString("Artwork_Tagline_Text") != null,
+                    $"'{code}' has no Artwork_Tagline_Text of its own and is falling back");
+            }
         }
 
         [Fact]
@@ -96,13 +116,12 @@ namespace KlangHub.Tests.Ui
                 worker.Start();
                 worker.Join();
 
+                // The culture the renderer resolves is the fact under test. It used to be checked a second way,
+                // by rendering German afterwards and requiring a different picture - which worked only while
+                // the tagline was translated and was the sole localized text on the artwork. Both pictures are
+                // identical now by design, so that assertion would have to be deleted or faked; it is deleted.
                 Assert.Equal("nl", seen);
                 Assert.NotNull(png);
-
-                // and it really is the Dutch picture, not the German one
-                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("de");
-                ArtworkRenderer.Invalidate();
-                Assert.NotEqual(png, ArtworkRenderer.CurrentPng());
             }
             finally
             {
