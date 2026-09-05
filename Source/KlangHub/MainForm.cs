@@ -1555,13 +1555,26 @@ namespace KlangHub
 
         /// <summary>
         /// Set the device buffer value.
+        /// <para>
+        /// It fills the list before selecting in it, exactly as <see cref="SetStreamFormat(SupportedStreamFormat)"/>
+        /// and <see cref="SetFilterDevices(FilterDevicesEnum)"/> do - and for the same reason. MainForm_Load
+        /// runs <c>applicationLogic.Initialize()</c>, which pushes every stored setting into the form, BEFORE
+        /// it calls the Fill methods. Without the fill here this loop ran over an empty list, selected
+        /// nothing, and the entries arrived a moment later with no selection on them: a DropDownList holding
+        /// twenty-one items and SelectedIndex -1, which draws as a blank field. The buffer itself was always
+        /// ten seconds - Devices applies it straight from the settings - so only the display was ever wrong,
+        /// which is precisely what made it look like an audio problem.
+        /// </para>
+        /// The guard is on the combo, not on <c>devices</c>. Showing a stored value needs no device: guarding
+        /// a display setter on an unrelated dependency is how it ends up not running at all.
         /// </summary>
         /// <param name="extraBufferInSecondsIn">buffer in seconds</param>
         public void SetExtraBufferInSeconds(int extraBufferInSecondsIn)
         {
-            if (devices == null)
+            if (cmbBufferInSeconds == null)
                 return;
 
+            FillBufferSeconds();
             for (int i = 0; i < cmbBufferInSeconds.Items.Count; i++)
             {
                 if (SecondsOf(cmbBufferInSeconds.Items[i]) == extraBufferInSecondsIn)
@@ -1571,12 +1584,17 @@ namespace KlangHub
 
         /// <summary>
         /// Get the device buffer value (in seconds).
+        /// <para>
+        /// Same guard, same reason - and it used to answer 0 rather than the default when it bailed out,
+        /// which SaveSettings would have written down as a deliberate "no cushion at all". With nothing
+        /// selected <see cref="SecondsOf"/> answers the recommended ten, which is what is actually running.
+        /// </para>
         /// </summary>
         /// <returns>buffer in seconds</returns>
         public int? GetExtraBufferInSeconds()
         {
-            if (devices == null)
-                return 0;
+            if (cmbBufferInSeconds == null)
+                return KlangHub.Core.Models.RecommendedDefaults.ExtraBufferSeconds;
 
             return SecondsOf(cmbBufferInSeconds.SelectedItem);
         }
