@@ -379,10 +379,33 @@ namespace KlangHub.Communication
         }
 
         /// <summary>
-        /// Don't validate the ssl certificate.
+        /// Accepts whatever certificate the Cast device presents.
+        /// <para>
+        /// <b>Why this has to be here.</b> Every Cast device carries a certificate issued by Google to
+        /// that individual unit, chained to a Cast root that is in no public trust store and is not
+        /// published. There is nothing on this machine that could validate it, and no way to obtain
+        /// something that could: refusing unknown issuers here does not make the connection safer, it
+        /// makes it impossible. Every Cast sender does this, Google's own included.
+        /// </para>
+        /// <para>
+        /// <b>What it costs.</b> Somebody already on the network who can answer for the device's address
+        /// - by poisoning ARP, or by replying to the mDNS query first - can terminate this connection
+        /// themselves and read or alter the whole control channel: what is playing, the stream URL, the
+        /// volume. It cannot reach the audio, which is a separate connection, and it needs a foothold on
+        /// the network first.
+        /// </para>
+        /// <para>
+        /// <b>What limits it.</b> This callback is attached to this one <see cref="SslStream"/> and
+        /// nothing else. There is deliberately no ServicePointManager or HttpClientHandler equivalent
+        /// anywhere in the project, so the update check and every other outbound connection still
+        /// validate normally. It is private for the same reason: it is not a helper to be reused.
+        /// </para>
+        /// <para>
+        /// The fix, when it comes, is to remember each device's certificate the first time we see it and
+        /// object when it changes - which closes this without needing anybody's root.
+        /// </para>
         /// </summary>
-        /// <returns></returns>
-        public bool DontValidateServerCertificate(object? sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
+        private bool DontValidateServerCertificate(object? sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
         {
             return true;
         }

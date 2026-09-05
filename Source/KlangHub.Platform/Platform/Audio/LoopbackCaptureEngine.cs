@@ -21,6 +21,8 @@ namespace KlangHub.Platform.Audio
         private WasapiRecorder? soundIn;
         private bool isRecording = false;
         private WaveFormat? waveFormat;
+        /// <summary>When audio last arrived. UTC throughout, so the silence watchdog measures a
+        /// gap and not the offset to local time - and so the hour the clocks change is not a silence.</summary>
         private DateTime latestDataAvailable;
         private System.Timers.Timer? dataAvailableTimer;
         private System.Timers.Timer? getDevicesTimer;
@@ -287,7 +289,7 @@ namespace KlangHub.Platform.Audio
             if (soundIn == null || soundIn.WaveFormat == null)
                 return;
 
-            latestDataAvailable = DateTime.Now;
+            latestDataAvailable = DateTime.UtcNow;
             lastCaptureQpc = qpcPosition;
 
             lock (bufferSwapSync)
@@ -480,7 +482,7 @@ namespace KlangHub.Platform.Audio
         {
             if (dataAvailableTimer == null)
             {
-                latestDataAvailable = DateTime.Now;
+                latestDataAvailable = DateTime.UtcNow;
                 dataAvailableTimer = new System.Timers.Timer
                 {
                     Interval = 1000,
@@ -491,21 +493,34 @@ namespace KlangHub.Platform.Audio
             }
         }
 
+        /// <summary>Long enough with no audio that the devices need something sent, or they give up.</summary>
+        private static readonly TimeSpan SilenceBeforeKeepAlive = TimeSpan.FromSeconds(5);
+
+        /// <summary>Shorter than that, but long enough to be worth a line when the sound later stops.</summary>
+        private static readonly TimeSpan SilenceWorthNoting = TimeSpan.FromSeconds(2);
+
         private void OnCheckForSilence(object? sender, ElapsedEventArgs e)
         {
             if (waveFormat == null)
                 return;
 
-            if ((DateTime.Now - latestDataAvailable).TotalSeconds > 5)
+            // The gap is measured once, before anything is reset. It used to be read after
+            // latestDataAvailable had already been set to now, so the line meant to say how long the
+            // sound had been missing always said about zero - and the second test, which was supposed to
+            // report a shorter gap, could never be true again. The one number worth having when the music
+            // stops was written down and thrown away in the same breath.
+            var quietFor = DateTime.UtcNow - latestDataAvailable;
+
+            if (quietFor > SilenceBeforeKeepAlive)
             {
-                latestDataAvailable = DateTime.Now;
+                latestDataAvailable = DateTime.UtcNow;
                 var silence = new WavGenerator().GetSilenceBytes(1);
                 RaiseDataAvailable(silence);
-                logger.Log($"Check For Silence: Send Silence ({(DateTime.Now - latestDataAvailable).TotalSeconds})");
+                logger.Log($"Check For Silence: nothing captured for {quietFor.TotalSeconds:F1}s - sending a second of silence.");
             }
-            if ((DateTime.Now - latestDataAvailable).TotalSeconds > 2)
+            else if (quietFor > SilenceWorthNoting)
             {
-                logger.Log($"Check For Silence: {(DateTime.Now - latestDataAvailable).TotalSeconds}");
+                logger.Log($"Check For Silence: nothing captured for {quietFor.TotalSeconds:F1}s.");
             }
         }
 

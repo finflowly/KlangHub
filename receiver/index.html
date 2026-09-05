@@ -38,8 +38,30 @@
     updated by Google under a stable v3 URL. Pinning a hash would break every receiver the moment they
     ship a patch - and the script is not optional, the device cannot run a receiver without it.
   -->
+  <!--
+    A content policy, as a meta tag because GitHub Pages serves no headers of its own. It says what
+    this page is allowed to load: the Cast SDK from gstatic, the two font hosts, and pictures from
+    anywhere - the cover art comes from whichever machine is casting, on an address nobody can know in
+    advance. Everything else, and inline script in particular, is refused.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none';
+                 script-src https://www.gstatic.com 'unsafe-inline';
+                 style-src https://fonts.googleapis.com 'unsafe-inline';
+                 font-src https://fonts.gstatic.com;
+                 img-src http: https: data: blob:;
+                 media-src http: https: blob:;
+                 connect-src http: https: wss: ws:;
+                 base-uri 'none';
+                 form-action 'none';
+                 frame-ancestors 'none'">
+
+  <!-- https, spelled out. It was protocol-relative, which is the same thing when this page is served
+       over https - and plain http when it is opened locally for a design review, which the comment
+       above invites. On that path anything on the network could have replaced the SDK, and the SDK is
+       what runs this receiver. -->
   <script type="text/javascript"
-          src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+          src="https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
 
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
@@ -490,12 +512,23 @@
         return;
       }
 
+      // http and https only, and never a bare word that the browser would resolve against this page.
+      // The cover URL arrives in a Cast message, and Cast does not authenticate senders: anything on
+      // the network can send one to a running session.
+      if (!/^https?:\/\//i.test(url)) {
+        el.art.classList.add('empty');
+        el.body.classList.remove('has-cover');
+        applyPalette(null);
+        return;
+      }
+
       var img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = function () {
         if (mine !== coverRequest) return;
         el.cover.src = url;
-        el.wash.style.backgroundImage = 'url("' + url + '")';
+        // encodeURI, so a quotation mark in the URL cannot end the url() and start another one.
+        el.wash.style.backgroundImage = 'url("' + encodeURI(url) + '")';
         el.art.classList.remove('empty');
         el.body.classList.add('has-cover');
         applyPalette(paletteFrom(img));

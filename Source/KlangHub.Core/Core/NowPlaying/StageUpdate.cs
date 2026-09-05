@@ -88,6 +88,21 @@ namespace KlangHub.Core.NowPlaying
                 : rounded.ToString("0.0", CultureInfo.GetCultureInfo("de-DE")) + " kHz";
         }
 
-        private static string? Blank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        /// <summary>
+        /// The longest a single field may be. These come from tags in files, from window titles and from
+        /// whatever a media player chose to report, so none of them has a length anybody guaranteed - and
+        /// they go out over the control channel to the television, where an enormous one is a message the
+        /// device may simply refuse, taking the whole update with it. Longer than any real title.
+        /// </summary>
+        private const int LongestField = 512;
+
+        private static string? Blank(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            var trimmed = value.Trim();
+            return trimmed.Length <= LongestField ? trimmed : trimmed[..LongestField];
+        }
     }
 }

@@ -14,12 +14,18 @@ namespace KlangHub.Application
 
     public class TasksToCancel
     {
-        private List<TaskToCancel>? taskList = new List<TaskToCancel>();
-        private bool IsDisposed = false;
+        /// <summary>
+        /// Never reassigned. It used to be set to null at the end of Dispose, while Add tested it for
+        /// null and then locked on it - so a task starting as the program closed could pass the test,
+        /// have the field cleared underneath it, and take a NullReferenceException on the lock. A field
+        /// you lock on must be the same object for the life of the instance.
+        /// </summary>
+        private readonly List<TaskToCancel> taskList = new List<TaskToCancel>();
+        private volatile bool IsDisposed = false;
 
         public void Add(Action action, CancellationTokenSource? cancellationTokenSource = null)
         {
-            if (action == null || taskList == null || IsDisposed)
+            if (action == null || IsDisposed)
                 return;
 
             lock(taskList)
@@ -28,7 +34,13 @@ namespace KlangHub.Application
                 {
                     cancellationTokenSource = new CancellationTokenSource();
                 }
-                var task = Task.Factory.StartNew(action, cancellationTokenSource.Token);
+
+                // LongRunning, because nearly every action handed to this blocks: a reconnect waits out
+                // its backoff, a status poll waits on a device that may be switched off. Without it these
+                // sit on thread-pool threads, and enough unreachable devices at once starve the pool that
+                // the rest of the program needs.
+                var task = Task.Factory.StartNew(action, cancellationTokenSource.Token,
+                    TaskCreationOptions.LongRunning, TaskScheduler.Default);
                 taskList.Add(new TaskToCancel { Task = task, TokenSource = cancellationTokenSource });
 
                 taskList.RemoveAll(x => x?.Task == null || x.Task.IsCompleted);
@@ -37,9 +49,6 @@ namespace KlangHub.Application
 
         public void Dispose()
         {
-            if (taskList == null)
-                return;
-
             IsDisposed = true;
             lock(taskList)
             {
@@ -62,9 +71,18 @@ namespace KlangHub.Application
                 }
                 taskList.RemoveAll(x => x?.Task == null || x.Task.IsCompleted);
             }
-            Task.WaitAll(taskList.Select(x => x.Task).ToArray(), 4000);
-            taskList.RemoveAll(x => x?.Task == null || x.Task.IsCompleted);
-            taskList = null;
+            Task[] stillRunning;
+            lock (taskList)
+            {
+                stillRunning = taskList.Select(x => x.Task).Where(t => t != null).ToArray();
+            }
+
+            Task.WaitAll(stillRunning, 4000);
+
+            lock (taskList)
+            {
+                taskList.RemoveAll(x => x?.Task == null || x.Task.IsCompleted);
+            }
         }
     }
 }
