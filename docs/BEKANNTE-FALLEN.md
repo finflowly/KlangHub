@@ -40,6 +40,85 @@ prevent garbage collection") hat genau das geändert.
 *Lösung:* Die Browser leben in einem Feld (`DiscoverDevices.browsers`), wie `MdnsDiscovery` es auf der
 anderen Seite der App immer schon getan hat. (Commit `b4ba035`)
 
+**Die Platzhalter-MAC `00:00:00:00:00:00` ist keine Identität — und das muss an zwei Stellen gelten.**
+Fernseher und manche Lautsprecher melden in `eureka_info` eine MAC aus lauter Nullen. Wer danach
+zusammenfasst, klebt fremde Geräte zu einer Kachel zusammen. Nötig war es sowohl in `Devices.GetDevice`
+(die Liste fasst nur bei *echten* MACs nach MAC zusammen, sonst nach Endpunkt) als auch in
+`ChromecastDeviceId.From` (die Sitzungs-Kennung fällt bei Platzhalter-MAC auf `IP:Port` zurück). Nur eine
+der beiden Stellen zu reparieren sieht aus, als wäre es behoben, und ist es nicht.
+
+*Nachtrag:* Der Endpunkt muss **IP und Port** umfassen, nicht nur die IP. Hostet ein Lautsprecher die
+Multiroom-Gruppe, dann bedient dieselbe IPv4 sowohl seinen eigenen Empfänger auf `:8009` als auch den
+Gruppenleiter auf einem anderen Port — bei Dedup nach IP allein verschwindet der Lautsprecher hinter
+seiner eigenen Gruppe (im Protokoll sichtbar als `Discovered device: …` ohne folgendes `Device added:`).
+
+**Ein Gerät, das per DHCP die Adresse wechselt, hinterlässt sonst eine Zombie-Kachel.** Die alte Kachel
+bleibt stehen, versucht endlos zu verbinden und blockiert dabei in Zeitüberschreitungen, während daneben
+eine zweite Kachel für dieselbe Hardware auftaucht. Der Abgleich läuft über die stabile mDNS-`id=` —
+die ging an der `eureka_info`-Grenze verloren und wird jetzt durchgereicht. Zwei Feinheiten gehören dazu:
+Eine Ankündigung *ohne* `id=` darf die gemerkte Kennung nicht leeren, und wiederholte Verbindungsfehler
+werden zunehmend langsamer nachgefasst (15 → 30 → 60 s), damit ein unerreichbares Gerät das Protokoll
+nicht zumüllt.
+
+**Ein Gerät kann seinen Cast-Dienst zeitweise nur über IPv6 ankündigen.** Dann fehlt die IPv4, über die
+allein gestreamt wird, und das Gerät verschwindet — obwohl es dieselbe Hardware ist, die Minuten vorher
+noch da war. `Ipv4Recovery` merkt sich pro Gerät die IPv4 zu seiner mDNS-`id=` *und* zu jedem IPv6-Host,
+der zusammen mit ihr angekündigt wurde (mit begrenzter Haltbarkeit, sonst zeigt der Eintrag nach einem
+DHCP-Wechsel ins Leere). Eine reine IPv6-Ankündigung wird darüber wieder auf eine brauchbare IPv4
+zurückgeführt. Eine rohe IPv6-Adresse darf **nie** in die Geräteliste wandern: Sie zerlegt die
+`eureka_info`-URL, den TLS-Verbindungsaufbau und erzeugt eine Kachel, die sich mit nichts zusammenfassen
+lässt. Entweder eine IPv4 wird gefunden, oder die Ankündigung wird übersprungen.
+
+## Cast-Wiedergabe
+
+**`detailedErrorCode: 102` ist kein Netzwerkfehler, sondern der Speicher des Empfängers.** Gemessen an
+echter Hardware: Ein kleiner Lautsprecher nahm hochauflösendes, **unkomprimiertes** LPCM an, spielte
+etwa eine Minute und warf dann `ERROR 102`, gefolgt von `IDLE(ERROR)` — die App verband neu, lud neu, und
+das Spiel begann von vorn. Der Default Media Receiver lässt seinen Puffer nicht einstellen, der einzige
+Hebel ist also die Datenrate. Zwei Maßnahmen: Aufnahme auf **48 kHz** deckeln (Cast-Empfänger mischen
+ohnehin auf 48 kHz, höher aufgenommenes wird nur wieder heruntergerechnet — halbiert die Rate ohne
+hörbaren Verlust) und ein großzügiges Empfänger-Polster. Wer HiFi ohne Risiko will, nimmt ein
+komprimiert-verlustfreies Format statt mehr Bits.
+
+**`mediaSessionId` muss aus jedem `MEDIA_STATUS` neu gelesen werden.** Eine einmal gemerkte Kennung ist
+nach jedem Neuladen falsch, und Steuerbefehle laufen dann ins Leere.
+
+## Formate und Encoder
+
+**Ein selbstbeschreibendes Format verträgt keinen vorangestellten Header.** MP3 und FLAC bringen ihren
+eigenen Kopf mit (MPEG-Frame-Header bzw. `fLaC` + STREAMINFO); nur rohes LPCM braucht einen
+RIFF/WAVE-Header. Als vor *jedem* Nicht-WAV-Stream noch ein handgeschriebener „MP3-Header" stand — der
+zudem jedes Bit als ganzes Byte schrieb —, mussten die Decoder ihn erst überspringen: Knacken, Aussetzer
+oder Verweigerung, je nach Gerät. Das Muster ist unverwechselbar: **alle WAV-Modi laufen, FLAC und beide
+MP3-Stufen zicken.** Heute entscheidet `AudioHeader.GetStreamHeader` an einer einzigen Stelle, was
+vorangestellt wird.
+
+**Die Startschwelle muss mit der echten Byte-Rate rechnen.** Der erste Bytesatz geht erst raus, wenn der
+Puffer gefüllt ist. Wurde diese Schwelle mit einer geratenen Konstante gerechnet, die nur für ein Format
+stimmte, wartete der Empfänger bei den anderen ein Vielfaches der eingestellten Sekunden — und lud
+zwei-, dreimal neu, bevor überhaupt Ton kam. `StreamRate` liefert die tatsächliche Rate je Format, und
+die Wartezeit ist zusätzlich hart gedeckelt: Ein Polster ist gut, aber nicht um den Preis eines
+Empfängers, der nie startet.
+
+**`streamType` ist `LIVE`, nicht `BUFFERED`.** Der Stream ist eine endlose Aufnahme ohne Dauer und ohne
+Sprungziel. Als `BUFFERED` deklariert hält der Empfänger ihn für eine Datei, zeigt einen
+Fortschrittsbalken, der sich nie füllen kann, und darf Bereiche anfordern, die es nicht gibt.
+
+**Ein FLAC-Encoder schreibt seinen Kopf nur einmal — wenn man ihn nicht zurückspulen lässt.** `FlakeWriter`
+korrigiert STREAMINFO nachträglich, *falls* der Ausgabestrom `CanSeek` meldet. Für einen endlosen
+Live-Stream ist genau das falsch. Ein weiterreichender Strom mit `CanSeek == false` liefert stattdessen
+einen fortlaufenden, in sich gültigen FLAC-Strom mit `total_samples = 0`. Ein Datei-Decoder lehnt so
+etwas ab, ein Streaming-Empfänger nicht — beim Testen also nicht am Datei-Decoder verzweifeln.
+
+**Kein `ArrayPool` für Audio-Frames.** `ApplicationBuffer` hält die Referenz auf das Frame-Array in einer
+rollenden Historie. Ein zurückgegebener Puffer würde diese Historie überschreiben, während sie noch
+gelesen wird. Frisches Array je Frame ist hier keine Nachlässigkeit, sondern Voraussetzung; ein echter
+Pool bräuchte erst eine andere Eigentümer-Regelung.
+
+**WASAPI im Shared Mode wandelt die Bittiefe wirklich.** Die Sorge, eine angeforderte Bittiefe liefere
+nur umetikettierten Float-Mix, ließ sich messen und widerlegen: Die Byte-Mengen skalieren mit der
+Bittiefe. Vor der nächsten Vermutung über den Aufnahmepfad lohnt sich dieselbe Messung.
+
 ## Cast-Drahtformat (Protobuf)
 
 **proto3 schreibt Default-Werte nicht.** `protocol_version` (CASTV2_1_0 = 0) und `payload_type`
@@ -72,7 +151,7 @@ Fenster; die App scheint dann verschwunden. Ein Ballon sagt einmal pro Programml
 
 ## Diagnose-Werkzeug
 
-`dotnet-stack` ist installiert (`~/.dotnet/tools/dotnet-stack.exe`) und war das Mittel, mit dem der
+`dotnet-stack` (ein .NET-Global-Tool, `dotnet tool install -g dotnet-stack`) war das Mittel, mit dem der
 Start-Deadlock in einem Zug gefunden wurde:
 
 ```

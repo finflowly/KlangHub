@@ -1,6 +1,10 @@
 # M1 — Multi-Protocol Preparation: Technical Analysis & Design
 
 Status: **design / analysis** (Phase M, sprint M1). No production code changes.
+
+> Historical note: this analysis was written while the app still targeted .NET 8. The .NET 10 move
+> recommended in §7 has since happened — every project now targets `net10.0` / `net10.0-windows10.0.19041.0`.
+> The protocol analysis itself is unaffected.
 Scope: prepare KlangHub (Windows / .NET 8, WinForms, Chromecast audio caster) so **AirPlay 2** and
 **Snapcast** can be added later with bounded effort — decide the abstraction extensions, the structure,
 and an honest, evidence-based roadmap. **Explicitly not** a protocol implementation.

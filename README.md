@@ -22,27 +22,65 @@ was sie nicht kann.
 - Mehrere Geräte gleichzeitig sowie Gerätegruppen
 - Wählbare Streaming-Formate (WAV 16/24/32 Bit, FLAC verlustfrei, MP3 128/320)
 - Lautstärke- und Wiedergabesteuerung je Raum, inkl. individueller Lautstärke-Obergrenze
-- Systray-Betrieb, Autostart, optionale Tastenkürzel, Deutsch/Englisch
+- Räume benennen, Kacheln nach Räumen gruppieren, ein Raum-Fader, der die Balance erhält
+- Systray-Betrieb, Autostart, optionale Tastenkürzel
+- **24 Sprachen** – alle EU-Amtssprachen, jede vollständig übersetzt (je 171 Texte),
+  in der Sprachwahl unter ihrem eigenen Namen gelistet
+
+Ab Werk streamt KlangHub **WAV 16 Bit** – CD-Qualität, unkomprimiert, und das Format, das jeder
+Cast-Empfänger anstandslos nimmt. 24 Bit und FLAC sitzen einen Klick weiter.
 
 ## Systemvoraussetzungen
 
-- Windows 10/11
-- .NET 10 Desktop Runtime
+- Windows 10/11 (64 Bit)
 - Beim ersten Start muss die Windows-Firewall für dein Heimnetzwerk (privat/öffentlich)
   freigegeben werden, damit die Wiedergabe funktioniert.
+
+Die .NET-Laufzeit bringt der Installer mit – der ausgelieferte Build ist self-contained, du musst
+also nichts vorher installieren. Nur wer selbst baut, braucht das .NET-SDK (siehe unten).
 
 > Hinweis: Zwischen Desktop-Bild und Audio-Wiedergabe besteht systembedingt immer eine
 > Latenz (Puffer). KlangHub ist nicht für lippensynchrone Video-Vertonung gedacht.
 
-## Build (Entwickler)
+## Installation
 
-Voraussetzung: **.NET 10 SDK**.
+Es gibt ein Setup-Programm (Inno Setup): `KlangHub-0.0.1-Setup.exe`. Es installiert pro Benutzer,
+verlangt also keine Administratorrechte, und erkennt die Windows-Sprache selbst.
+
+**Windows wird warnen – das ist zu erwarten.** Das Setup ist **nicht signiert**; ein Codesignatur-
+Zertifikat kostet Geld, das dieses Projekt nicht ausgibt. Windows SmartScreen zeigt deshalb
+„Der Computer wurde durch Windows geschützt" bzw. „Windows hat den Start dieser App verhindert".
+Der Weg dahinter: **„Weitere Informationen" → „Trotzdem ausführen"**. Wer das nicht will, baut
+KlangHub aus der Quelle – die Anleitung steht direkt darunter.
+
+## Selbst bauen und testen
+
+Voraussetzung: das **.NET 10 SDK**. Alle Projekte zielen auf `net10.0` bzw.
+`net10.0-windows10.0.19041.0`; das Windows-SDK-Ziel braucht es für die Now-Playing-Schnittstelle
+von Windows.
 
 ```
 dotnet build Source/KlangHub.sln -c Release
+dotnet test Source/KlangHub.Tests/KlangHub.Tests.csproj
 ```
 
-### Abhängigkeiten
+Das Setup-Programm entsteht aus einem self-contained Publish plus Inno Setup:
+
+```
+dotnet publish Source/KlangHub/KlangHub.csproj -c Release -r win-x64 --self-contained true -o publish/KlangHub-0.0.1-win-x64
+ISCC.exe installer/KlangHub.iss
+```
+
+## Mitmachen
+
+Wie hier gearbeitet wird – Test zuerst, neue Texte in allen 24 Sprachen, und die wichtigste Regel
+eines öffentlichen Repositories – steht in [CONTRIBUTING.md](CONTRIBUTING.md). Ein Überblick über
+die Dokumentation: [docs/README.md](docs/README.md).
+
+Sicherheitslücken bitte nicht als öffentliches Issue melden, sondern wie in
+[SECURITY.md](SECURITY.md) beschrieben.
+
+## Abhängigkeiten
 
 Siehe [docs/THIRD-PARTY-LICENSES.md](docs/THIRD-PARTY-LICENSES.md) für alle mitgelieferten
 Komponenten und deren Lizenzen.

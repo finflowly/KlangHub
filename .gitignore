@@ -134,3 +134,45 @@ dist/
 # house and what was played on them.
 *.log
 logs/
+
+# Everything else that carries more than it appears to. A crash dump holds device names, addresses
+# and window titles - and this project takes dumps to diagnose things, so one will sooner or later be
+# sitting in the working directory when somebody types `git add .`. A capture holds the whole
+# network conversation; an archive holds whatever was put in it.
+*.dmp
+*.mdmp
+*.hdmp
+*.etl
+*.pcap
+*.pcapng
+*.har
+*.zip
+*.7z
+*.rar
+*.mp4
+*.mov
+
+# Images and PDFs anywhere, not only in the root - which is all `/*.png` ever covered. The
+# application's own artwork is put back below.
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.pdf
+!Source/KlangHub/Resources/artwork.png
+!Source/KlangHub/UserControls/*.png
+!installer/wizard-*.bmp
+!receiver/assets/*.png
+
+# Credentials and machine-local configuration.
+.env
+*.pfx
+*.p12
+*.snk
+user.config
+
+# Recorded audio. Whatever was playing at the time is nobody else's business.
+*.wav
+*.mp3
+*.flac

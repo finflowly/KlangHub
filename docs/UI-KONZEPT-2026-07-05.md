@@ -1,7 +1,8 @@
 # KlangHub — UI-Konzept „Die warme HiFi-Konsole" (2026-07-05)
 
-Verbindliches Design-Dokument für den Premium-UI-Redesign. Referenz-Mockup: `UI Konzept.png` im Repo-Root.
-Visuelles Konzept-Board (live, animiert): Artifact `klanghub-konzept-board` (konzept-v1).
+Verbindliches Design-Dokument für den Premium-UI-Redesign. Das Referenz-Mockup und das animierte
+Konzept-Board, gegen die hier gearbeitet wurde, liegen nicht im Repository — maßgeblich ist deshalb, was
+unten in Worten steht: Tokens, Metriken, Zustandsmodell und Copy.
 
 ## Leitidee
 KlangHub ist eine **HiFi-Konsole**, kein Fenster mit Steuerelementen. Warm-dunkler Korpus, **ein**
@@ -9,7 +10,7 @@ Akzent (Bernstein), Karten die **glühen wenn sie spielen**. Reines WinForms, ow
 - **Signatur:** die spielende Karte (Glow + Akzent-Kante + live laufender Pegel). Alles andere ruhig.
 - **Disziplin:** Bernstein nur „spielt" & Fokus · Cyan = verbunden · Ember = nur Fehler · sonst Elfenbein/Slate auf Tinte.
 
-## Entscheidungen (von the maintainer bestätigt 2026-07-05)
+## Entscheidungen (bestätigt 2026-07-05)
 1. **Vokabular:** „Räume / Einstellungen / Protokoll" bleibt (Hausstil, per `GermanLocalizationTests` fixiert).
    Konzept-Wort „Geräte" gilt als überholt. Alle Ausreißer (Header „Geräte", Karten „Cast-Gerät") auf „Räume" vereinheitlichen.
 2. **Theme:** Warm-Dunkel = **feste Identität**. „Dunkles Design"-Schalter fliegt raus, kein Pfad rendert je generisches Hell.
@@ -40,7 +41,8 @@ Neue Theme-Helfer: `DrawGlow`, `DrawFocusRing`, `DrawAmberSlider`, `DrawBrandMar
 Kernprinzip: **Format-Pille zustandsstabil**, Status wandert in Punkt+Wort+Kante.
 
 ## Umsetzungsreihenfolge (Quick Wins zuerst)
-Jede Phase: 140 Tests grün · Smoke-Test · Checkpoint. Native Titelleisten-Chrome braucht the maintainer's HW-Bestätigung.
+Jede Phase: Tests grün · Smoke-Test · Zwischenstand festhalten. Native Titelleisten-Chrome braucht eine
+Bestätigung am laufenden Build auf einem echten Bildschirm.
 
 ### Phase 0 — Quick Wins (Stunden, null Funktionsrisiko)
 - **Weißer Rand weg (2 Ursachen):** `DwmChrome.cs:43` DWM-Border `AmberDim` → `Ink`. TabControl-Body-Kante: Quick-Fix überpinseln (voll: Phase 3).
@@ -79,11 +81,11 @@ PerMonitorV2-DPI (`Program.cs`) · Protokoll als farbcodierte Konsole · `Speake
 
 ## Umsetzungsstand (2026-07-05)
 Alle Phasen **0–5 umgesetzt & committet** auf Branch `redesign/premium-ui` (7 Commits; master unberührt).
-Jede Phase: Build 0 Fehler + 140 Tests grün; Full-Solution-Build grün.
+Jede Phase: Build 0 Fehler + Testsuite grün; Full-Solution-Build grün.
 
 **Bewusste Abweichungen / offene visuelle Iteration:**
-- **Pille zustandsabhängig** (Format beim Spielen, sonst bereit/Gruppe/erneut verbinden) — folgt dem verbindlichen
-  `UI Konzept.png` (nicht der „immer Format"-Vereinfachung des Konzept-Boards).
+- **Pille zustandsabhängig** (Format beim Spielen, sonst bereit/Gruppe/erneut verbinden) — folgt dem
+  Referenz-Mockup, nicht der „immer Format"-Vereinfachung des Konzept-Boards.
 - **Phase 3 Header:** globales VU raus + Vokabular gefixt; der tiefe Umbau (eine form-level Zeile + owner-drawn
   Tab-Deck, Filter/Suche in den Kopf) ist **für die visuelle Iteration zurückgestellt** — blind zu riskant.
 - **Phase 4 Einstellungen:** Toggles + Dark-Selects via Subclassing (alle Bindungen erhalten). Der vollständige
@@ -91,7 +93,7 @@ Jede Phase: Build 0 Fehler + 140 Tests grün; Full-Solution-Build grün.
 - **Karten-Copy** (Status/Untertitel) noch als DE-Literale — RESX-Lokalisierung (EN/FR) ist Folgeschritt.
 - **Protokoll** noch Roh-Konsole — farbcodierte Konsole = Folgeschritt.
 
-**Braucht the maintainer's Auge (Sandbox hat kein Display):** weißer Rand weg?, Titelleiste als nahtloser Block?,
+**Braucht ein Augenpaar am laufenden Build (die Entwicklungsumgebung hat keinen Bildschirm):** weißer Rand weg?, Titelleiste als nahtloser Block?,
 Karten-Zustände/Glow/Fokus?, Toggles + Combo-Chevron in den Einstellungen?, DPI-Schärfe.
 
 ## Visueller Pass (2026-09-04) — Tab-Deck, Fensterrand, Einstellungen
@@ -163,10 +165,12 @@ schrumpfte beim Ziehen der Fensterkante gegen 0), toter Idempotenz-Guard in `Set
 Combo-Höhe im Feld-Well, Ctrl+Tab-Navigation (kam vorher vom `TabControl`), Karten-Captions bei Sprachwechsel,
 Font-Leak in `PillButton`.
 
-## Release 1.0 (2026-09-04) — 24 Sprachen, Installer, Raum & Modell
+## Erste Veröffentlichung (2026-09-04) — 24 Sprachen, Installer, Raum & Modell
 
-**Version & Signatur.** `1.0.0`, Fußzeile „Version 1.0", Credit „Neo & Trinity · 2026". Die Anzeige kürzt
-`Major.Minor`, solange die Patch-Stelle 0 ist — das angehängte „.0" ist auf einer About-Zeile nur Rauschen.
+**Version & Signatur.** Die erste veröffentlichte Version ist `0.0.1`; die Fußzeile zeigt sie an, der
+Credit lautet „Neo & Trinity · 2026". Die drei Stellen, die zusammenpassen müssen, sind
+`Source/KlangHub/KlangHub.csproj`, `Source/KlangHub/Properties/AssemblyInfo.cs` und
+`installer/KlangHub.iss`.
 
 **Standard ab Werk: WAV 16-bit, 10 s Puffer.** CD-Qualität, unkomprimiert, und das Format, das *jeder*
 Cast-Empfänger anstandslos nimmt — der sichere Boden, nicht die Decke: 24-bit und FLAC sitzen einen Klick
@@ -196,7 +200,7 @@ gezeichnet (`Classes/ArtworkRenderer`), aus denselben Tokens wie die App, mit de
 je Sprache einmal gerendert und gecacht; ein Sprachwechsel verwirft den Cache. Das eingebettete PNG bleibt
 Fallback.
 
-**Installer** (`installer/KlangHub.iss`, Inno Setup, Ausgabe `dist/KlangHub-1.0-Setup.exe`, ~6 MB).
+**Installer** (`installer/KlangHub.iss`, Inno Setup, Ausgabe `dist/KlangHub-0.0.1-Setup.exe`).
 - Erkennt die Windows-Sprache und spricht sie (21 der 24 EU-Sprachen haben eine Inno-Übersetzung; für
   Irisch und Maltesisch läuft das Setup englisch, die App selbst trotzdem in ihrer Sprache).
 - **Die Sprachfrage steht auf der ersten Wizard-Seite**, nicht im nackten System-Dialog davor — sie bestimmt,
@@ -208,9 +212,9 @@ Fallback.
   führt — weder `Font.Color` noch eine RTF-Farbtabelle überlebten dort das Laden, der Text blieb fast schwarz
   auf Tinte. MIT verlangt ohnehin keine Zustimmung, sondern dass die Lizenz *mitgeliefert* wird: `LICENSE.txt`
   und `THIRD-PARTY-LICENSES.md` werden jetzt neben der App installiert, wo man sie auch lesen kann.
-- **Prüft die .NET Desktop Runtime** und lädt sie bei Bedarf automatisch von Microsoft (`aka.ms`), bevor
-  installiert wird; Microsofts Installer holt sich die Rechte selbst, weshalb das Setup ohne Adminrechte
-  auskommt (Installation pro Benutzer, kein UAC, kein grauer Modus-Dialog).
+- **Bringt die Laufzeit mit.** Der eingepackte Build wird self-contained veröffentlicht
+  (`dotnet publish -c Release -r win-x64 --self-contained true`), Installer-Nutzer müssen also nichts
+  vorher installieren. Das Setup kommt ohne Adminrechte aus (Installation pro Benutzer, kein UAC).
 
 ## Räume als Struktur (2026-09-04) — Vorauswahl, Gruppierung, Raum-Fader
 
@@ -248,9 +252,10 @@ Cast-Logo minutenlang auf dem Bildschirm stehen. Jetzt folgt beim bewussten Stop
 beendet; der Fernseher geht zurück in Menü, Eingang oder Bildschirmschoner. Bei Pause passiert das
 absichtlich nicht — pausiert heißt verbunden.
 
-**Der Raum-Fader ist jetzt proportional, nicht additiv.** the maintainer's Beispiel ist die Vorgabe: TV 13 %,
-Soundbar 11 %, Google Home 20 % müssen sich im *Verhältnis* bewegen. Der Fader skaliert deshalb mit einem
-Faktor (26/22/40 beim Verdoppeln) statt alle um dieselben Punkte zu verschieben. Zwei Fälle haben kein
+**Der Raum-Fader ist jetzt proportional, nicht additiv.** Die Vorgabe: Stehen in einem Raum drei Geräte
+mit unterschiedlichen Pegeln, müssen sie sich im *Verhältnis* bewegen. Der Fader skaliert deshalb mit
+einem Faktor — beim Verdoppeln wird aus jedem Pegel sein doppelter — statt alle um dieselben Punkte zu
+verschieben. Zwei Fälle haben kein
 Verhältnis und sind ausdrücklich entschieden: Ein stummer Raum hat keinen Bezug — alle gehen auf den
 Zielwert; ein einzelner stummer Lautsprecher in einem spielenden Raum bliebe sonst für immer bei 0 und wird
 auf das Raumniveau gehoben. Die Rechnung liegt in `Classes/RoomVolume`, getrennt von der Oberfläche, und ist
