@@ -25,10 +25,27 @@ namespace KlangHub.Platform.Audio
         private System.Timers.Timer? dataAvailableTimer;
         private System.Timers.Timer? getDevicesTimer;
         private readonly ILogger logger;
-        private Thread? eventThread;
         private BufferBlock bufferCaptured = null!, bufferSend = null!;
         private readonly object bufferSwapSync = new();
         private AudioCaptureSettings settings = null!;
+
+        /// <summary>
+        /// Serialises everything that starts or stops a recorder. Without it two threads build a recorder
+        /// at the same time - which is not theoretical: Start() used to enable the 15-second scan timer and
+        /// THEN run the first scan inline on the UI thread, and that first scan takes longer than 15 seconds
+        /// on this machine (device enumeration, the silence player, and Apply() from AddRecordingDevices).
+        /// </summary>
+        private readonly object startSync = new();
+
+        /// <summary>The single drain loop and its stop flag. See <see cref="EnsureEventLoop"/>.</summary>
+        private sealed class EventLoopState
+        {
+            public volatile bool Run = true;
+            public int Active;
+        }
+
+        private EventLoopState? eventLoop;
+        private int eventLoopStarted;
 
         public event EventHandler<AudioFrame>? DataAvailable;
         public event EventHandler<byte[]>? LevelSampled;
@@ -47,6 +64,12 @@ namespace KlangHub.Platform.Audio
 
             settings = settingsIn;
 
+            EnsureEventLoop();
+
+            // The first scan runs BEFORE the periodic one is armed. The other way round, a first scan that
+            // outlasts the interval is re-entered by the timer thread while the UI thread is still inside it.
+            DoStart(null, null);
+
             getDevicesTimer = new System.Timers.Timer
             {
                 Interval = 15000,
@@ -54,26 +77,44 @@ namespace KlangHub.Platform.Audio
             };
             getDevicesTimer.Elapsed += new ElapsedEventHandler(DoStart);
             getDevicesTimer.Start();
-
-            DoStart(null, null);
         }
 
+        /// <summary>
+        /// One scan: refresh the endpoint list, and start capture if none is running.
+        ///
+        /// Never re-entered. A periodic scan that arrives while another one is still working is SKIPPED, not
+        /// queued - the next one is only fifteen seconds away, and a queue of scans is how two recorders end
+        /// up being built for the same endpoint.
+        /// </summary>
         private void DoStart(object? sender, ElapsedEventArgs? e)
         {
-            ScanDevices();
-            if (!isRecording)
+            if (!Monitor.TryEnter(startSync))
+                return;
+
+            try
             {
-                StartRecording();
+                ScanDevices();
+                if (!isRecording)
+                {
+                    StartRecording();
+                }
+            }
+            finally
+            {
+                Monitor.Exit(startSync);
             }
         }
 
         private void StartRecording()
         {
-            if (isRecording)
-                return;
+            lock (startSync)
+            {
+                if (isRecording)
+                    return;
 
-            StartSilenceCheckTimer();
-            StartConfiguredDevice();
+                StartSilenceCheckTimer();
+                StartConfiguredDevice();
+            }
         }
 
         /// <summary>Switch capture to the given settings (device / format / stereo change).</summary>
@@ -82,10 +123,13 @@ namespace KlangHub.Platform.Audio
             if (settingsIn == null)
                 return false;
 
-            settings = settingsIn;
-            StopRecording();
-            StartSilenceCheckTimer();
-            return StartConfiguredDevice();
+            lock (startSync)
+            {
+                settings = settingsIn;
+                StopRecording();
+                StartSilenceCheckTimer();
+                return StartConfiguredDevice();
+            }
         }
 
         /// <summary>
@@ -205,15 +249,15 @@ namespace KlangHub.Platform.Audio
                 logger.Log($"Capture latency {soundIn.LatencyMilliseconds:F1} ms, MMCSS \"Pro Audio\"");
 
                 var bytesPerSecond = soundIn.WaveFormat.SampleRate * soundIn.WaveFormat.Channels * (soundIn.WaveFormat.BitsPerSample / 8);
-                bufferCaptured = new BufferBlock() { Data = new byte[bytesPerSecond / 2] };
-                bufferSend = new BufferBlock() { Data = new byte[bytesPerSecond / 2] };
-
-                eventThread = new Thread(EventThread)
+                lock (bufferSwapSync)
                 {
-                    Name = "Loopback Event Thread",
-                    IsBackground = true
-                };
-                eventThread.Start(new WeakReference<LoopbackCaptureEngine>(this));
+                    bufferCaptured = new BufferBlock() { Data = new byte[bytesPerSecond / 2] };
+                    bufferSend = new BufferBlock() { Data = new byte[bytesPerSecond / 2] };
+                }
+
+                // NOT started here. The drain loop belongs to the engine, not to one recorder - starting it
+                // per capture is what put two of them on the same encoder. See EnsureEventLoop.
+                EnsureEventLoop();
 
                 return true;
             }
@@ -316,12 +360,61 @@ namespace KlangHub.Platform.Audio
             _ => AudioFlow.All
         };
 
-        private static void EventThread(object? param)
+        /// <summary>How many drain loops are running. Must never exceed one; see the tests.</summary>
+        internal int ActiveEventLoops
         {
-            var thisRef = (WeakReference<LoopbackCaptureEngine>)param!;
+            get
+            {
+                var state = eventLoop;
+                return state == null ? 0 : Volatile.Read(ref state.Active);
+            }
+        }
+
+        /// <summary>
+        /// Start the one drain loop this engine ever has, if it is not already running.
+        ///
+        /// It used to be created inside TryStartCapture, so every restart added another and the old one kept
+        /// going: it only exited when isRecording was false, and a restart set that back to true within
+        /// milliseconds. Two loops then pushed frames into the SAME stateful encoder from two threads. FLAKE
+        /// writes its blocks through unsafe pointers, so that is not a garbled stream but writes past the end
+        /// of managed arrays - the 2026-09-05 dump has two of these stacks inside FlacEncoder.Encode and a
+        /// heap with 21 corrupted objects, which is the access violation observed seconds after the sound
+        /// broke off.
+        ///
+        /// Idempotent and safe from any thread.
+        /// </summary>
+        internal void EnsureEventLoop()
+        {
+            if (Interlocked.CompareExchange(ref eventLoopStarted, 1, 0) != 0)
+                return;
+
+            var state = new EventLoopState();
+            eventLoop = state;
+
+            new Thread(EventLoopBody)
+            {
+                Name = "Loopback Event Thread",
+                IsBackground = true
+            }.Start(Tuple.Create(new WeakReference<LoopbackCaptureEngine>(this), state));
+        }
+
+        /// <summary>Ends the drain loop. The engine cannot be restarted afterwards; only Dispose calls it.</summary>
+        private void StopEventLoop()
+        {
+            var state = eventLoop;
+            if (state != null)
+                state.Run = false;
+        }
+
+        private static void EventLoopBody(object? param)
+        {
+            var carrier = (Tuple<WeakReference<LoopbackCaptureEngine>, EventLoopState>)param!;
+            var thisRef = carrier.Item1;
+            var state = carrier.Item2;
+            Interlocked.Increment(ref state.Active);
             try
             {
-                while (true)
+                while (state.Run)
                 {
                     if (!thisRef.TryGetTarget(out LoopbackCaptureEngine? engine) || engine == null)
                     {
@@ -329,9 +422,13 @@ namespace KlangHub.Platform.Audio
                         return;
                     }
 
-                    if (!engine.isRecording)
+                    // The loop now outlives an individual recorder, so idle between captures is normal and
+                    // must not end it - a restart would otherwise have nothing draining its buffers.
+                    if (!engine.isRecording || engine.bufferSend == null)
                     {
-                        return;
+                        engine = null;
+                        Thread.Sleep(10);
+                        continue;
                     }
 
                     engine.SwapBuffer();
@@ -346,6 +443,8 @@ namespace KlangHub.Platform.Audio
                         engine.LevelSampled?.Invoke(engine, bytes);
                     }
 
+                    // Drop the strong reference before sleeping, so a disposed engine can still be collected.
+                    engine = null;
                     Thread.Sleep(1);
                 }
             }
@@ -357,6 +456,10 @@ namespace KlangHub.Platform.Audio
                 {
                     Debugger.Break();
                 }
+            }
+            finally
+            {
+                Interlocked.Decrement(ref state.Active);
             }
         }
 
@@ -442,7 +545,7 @@ namespace KlangHub.Platform.Audio
         /// and MainForm_Load applies the saved settings milliseconds later. Measured on this machine,
         /// three starts out of six froze in exactly that spot, with the UI thread parked in Thread.Join
         /// inside Form.OnLoad - no device list, no reaction to the close button, nothing left but the
-        /// Task Manager. That is the "App ist gecrasht beim Start" the maintainer reported.
+        /// Task Manager. That is the "App ist gecrasht beim Start" reported from a real desktop.
         ///
         /// Two defences, because neither alone is enough:
         ///   the stop is re-issued until the recorder reports itself stopped, which defeats the lost
@@ -499,13 +602,19 @@ namespace KlangHub.Platform.Audio
 
         public void Restart()
         {
-            StopRecording();
-            DoStart(null, null);
+            lock (startSync)
+            {
+                StopRecording();
+                ScanDevices();
+                if (!isRecording)
+                    StartRecording();
+            }
         }
 
         public void Dispose()
         {
             StopRecording();
+            StopEventLoop();
             dataAvailableTimer?.Close();
             dataAvailableTimer?.Dispose();
             getDevicesTimer?.Close();

@@ -37,7 +37,15 @@ namespace KlangHub.Discover
         /// Relying on a library to keep our objects alive was wrong regardless of which version does it.
         /// </summary>
         private readonly List<ServiceBrowser> browsers = new();
+        private bool browsing;
         private readonly ILogger? logger;
+
+        /// <summary>How many browsers are live. Must not grow with the number of scans; see the tests.</summary>
+        internal int BrowserCount => browsers.Count;
+
+        /// <summary>Seam so tests can exercise the browser bookkeeping without opening a socket.</summary>
+        internal virtual void StartBrowser(ServiceBrowser browser, string serviceType)
+            => browser.StartBrowse(serviceType);
 
         // IPv4 recovery for a device that announces its _googlecast IPv6-only in a scan (see Ipv4Recovery).
         private readonly Ipv4Recovery ipv4Recovery = new Ipv4Recovery();
@@ -57,17 +65,25 @@ namespace KlangHub.Discover
                 return;
 
             onDiscovered = onDiscoveredIn;
-            discoveredDevices = new List<DiscoveredDevice>();
-            timer = new Timer
+
+            // ScanForDevices calls this per scan and on every IP change. Only the first call builds the
+            // queue, the drain timer and the browsers; the later ones would otherwise throw away a queue
+            // that announcements are still being written into and leave the old timer running beside the
+            // new one, each delivering the same devices.
+            if (timer == null)
             {
-                Interval = 500,
-                Enabled = true
-            };
-            timer.Elapsed += new ElapsedEventHandler(OnAddDevice);
-            timer.Start();
+                discoveredDevices = new List<DiscoveredDevice>();
+                timer = new Timer
+                {
+                    Interval = 500,
+                    Enabled = true
+                };
+                timer.Elapsed += new ElapsedEventHandler(OnAddDevice);
+                timer.Start();
+                msdnIps = new List<MsdnIps>();
+            }
 
             // MDNS search
-            msdnIps = new List<MsdnIps>();
             MdnsSearch();
         }
 
@@ -76,13 +92,22 @@ namespace KlangHub.Discover
         /// </summary>
         public void MdnsSearch()
         {
+            // Idempotent, like MdnsDiscovery on the other side of the app. mDNS browsing is CONTINUOUS: once
+            // a browser runs it keeps announcing and receiving, so a second scan needs no second set. While
+            // the browsers were local variables the extra ones were simply collected and nobody noticed; now
+            // that they are held for the life of this object (so the GC cannot take them mid-search), every
+            // scan would add four more live browsers with a socket on every interface - for the whole session.
+            if (browsing)
+                return;
+            browsing = true;
+
             foreach (var type in new[] { serviceType, serviceTypeEmbedded })
             {
                 var browser = new ServiceBrowser();
                 browser.ServiceAdded += OnServiceAdded;
                 browser.ServiceRemoved += OnServiceRemoved;
                 browser.ServiceChanged += OnServiceChanged;
-                browser.StartBrowse(type);
+                StartBrowser(browser, type);
                 browsers.Add(browser);
             }
 
@@ -100,7 +125,7 @@ namespace KlangHub.Discover
                 var correlationBrowser = new ServiceBrowser();
                 correlationBrowser.ServiceAdded += OnCorrelationService;
                 correlationBrowser.ServiceChanged += OnCorrelationService;
-                correlationBrowser.StartBrowse(coLocated);
+                StartBrowser(correlationBrowser, coLocated);
                 browsers.Add(correlationBrowser);
             }
         }
@@ -214,7 +239,12 @@ namespace KlangHub.Discover
                 && (discoveredDevice.Protocol.IndexOf(serviceType) >= 0
                     || discoveredDevice.Protocol.IndexOf(serviceTypeEmbedded) >= 0))
             {
-                discoveredDevices.Add(discoveredDevice);
+                // Announcements arrive on Tmds.MDns's own threads while the drain timer reads the queue.
+                // The reader has always locked; the writer did not, so the list could be resized underneath it.
+                lock (discoveredDevices)
+                {
+                    discoveredDevices.Add(discoveredDevice);
+                }
             }
         }
 
