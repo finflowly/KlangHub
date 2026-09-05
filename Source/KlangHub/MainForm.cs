@@ -425,7 +425,10 @@ namespace KlangHub
                 {
                     if (chkLogDeviceCommunication.Checked)
                     {
-                        message += "\r\n\r\n";
+                        // Stamped and levelled here, in one place, rather than at the hundred call sites:
+                        // a log without times cannot be correlated, and that is exactly what a stranger's
+                        // report needs. See KlangHub.Core.Diagnostics.LogLine.
+                        message = KlangHub.Core.Diagnostics.LogLine.Format(message, DateTime.Now) + "\r\n";
                         txtLog.AppendText(message);
                         log.Append(message);
 
@@ -773,6 +776,51 @@ namespace KlangHub
             previousIpAddress = ipAddress;
         }
 
+        /// <summary>
+        /// What was running, on what, configured how - the block that turns a stranger's log into
+        /// something diagnosable. Written once at startup and prepended to every copied log.
+        ///
+        /// Deliberately narrow: nothing here identifies the user. Device names come from the log below
+        /// anyway (the owner chose them), but no account, no location, no network credentials.
+        /// </summary>
+        private string BuildDiagnosticsHeader()
+        {
+            try
+            {
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                string? address = null;
+                try { address = cmbIP4AddressUsed?.SelectedItem?.ToString(); } catch (InvalidOperationException) { }
+                string? buffer = null;
+                try { buffer = cmbBufferInSeconds?.SelectedItem?.ToString(); } catch (InvalidOperationException) { }
+
+                var fields = new List<KeyValuePair<string, string?>>
+                {
+                    new("KlangHub", version?.ToString()),
+                    new("Windows", System.Runtime.InteropServices.RuntimeInformation.OSDescription),
+                    new("Architecture", System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString()),
+                    new(".NET", System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription),
+                    new("Language", System.Globalization.CultureInfo.CurrentUICulture.Name),
+                    new("Audio format", SafeFormatName()),
+                    new("Extra buffer", buffer == null ? null : buffer + " s"),
+                    new("Stream address", address),
+                    new("Receiver app id", GetReceiverAppId()),
+                };
+
+                return KlangHub.Core.Diagnostics.DiagnosticsHeader.Build(fields, DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+                // A header that cannot be built must never cost the log itself.
+                return $"=== KlangHub diagnostics unavailable: {ex.Message} ==={Environment.NewLine}";
+            }
+        }
+
+        private string? SafeFormatName()
+        {
+            try { return GetSelectedStreamFormat().ToString(); }
+            catch (InvalidOperationException) { return null; }
+        }
+
         private void BtnClipboardCopy_Click(object sender, EventArgs e)
         {
             if (log == null)
@@ -782,7 +830,10 @@ namespace KlangHub
             {
                 try
                 {
-                    Clipboard.SetText(log.ToString());
+                    // The header goes along every time. It is written once at startup, but the buffer is
+                    // cleared when it grows too large and a user may copy hours later - and a report whose
+                    // version and audio format are unknown is barely worth reading.
+                    Clipboard.SetText(BuildDiagnosticsHeader() + log);
                 }
                 catch (Exception ex)
                 {

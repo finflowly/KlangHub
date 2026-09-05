@@ -559,15 +559,32 @@ namespace KlangHub.Application
             OnRecordingDataAvailable(silence, new AudioFormat(44100, 16, 2), 1000, SupportedStreamFormat.Mp3_320);
         }
 
+        /// <summary>Keeps the periodic eureka refresh from running on every single poll - see
+        /// <see cref="GetDeviceInformation"/>.</summary>
+        private readonly DiscoveryThrottle deviceInformationThrottle =
+            new(System.TimeSpan.FromMinutes(2));
+
         /// <summary>
-        /// Get the information of the device.
+        /// Re-read the device's own description (its name, address and MAC).
+        ///
+        /// This used to run on EVERY status poll: four devices meant four HTTP requests to :8008 every
+        /// fifteen seconds, forever, including while those devices were decoding audio - 240 requests an
+        /// hour per speaker to learn a name that practically never changes. Twice a minute is plenty:
+        /// a device that is genuinely renamed or moved announces itself over mDNS, and THAT path refetches
+        /// immediately (see Devices.OnDeviceAvailable).
         /// </summary>
         private void GetDeviceInformation()
         {
-            if (!IsGroup())
-            {
-                startTask(DeviceInformation.GetDeviceInformation(discoveredDevice, SetDeviceInformation, null, logger), null);
-            }
+            if (IsGroup())
+                return;
+
+            var key = discoveredDevice?.Id;
+            if (string.IsNullOrEmpty(key))
+                key = $"{discoveredDevice?.IPAddress}:{discoveredDevice?.Port}";
+            if (!deviceInformationThrottle.ShouldAct(key, null, System.DateTime.Now))
+                return;
+
+            startTask(DeviceInformation.GetDeviceInformation(discoveredDevice, SetDeviceInformation, null, logger), null);
         }
 
         /// <summary>
