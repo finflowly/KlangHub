@@ -23,6 +23,20 @@ namespace KlangHub.Discover
         private List<DiscoveredDevice>? discoveredDevices;
         private Timer? timer;
         private List<MsdnIps>? msdnIps;
+
+        /// <summary>
+        /// The browsers, held for the life of this object.
+        ///
+        /// They used to be local variables: StartBrowse was called and the method returned, leaving nothing
+        /// referencing them. That worked only because the mDNS library happened to root them internally -
+        /// and when Tmds.MDns 0.9.1 changed exactly that ("robustness improvements to the root timer to
+        /// prevent garbage collection"), the browsers were collected mid-run and discovery went silent:
+        /// "Suche nach Geräten..." forever, no tiles, nothing in the log. MdnsDiscovery on the other side
+        /// of the app always kept its own list, which is why only this path broke.
+        ///
+        /// Relying on a library to keep our objects alive was wrong regardless of which version does it.
+        /// </summary>
+        private readonly List<ServiceBrowser> browsers = new();
         private readonly ILogger? logger;
 
         // IPv4 recovery for a device that announces its _googlecast IPv6-only in a scan (see Ipv4Recovery).
@@ -62,17 +76,15 @@ namespace KlangHub.Discover
         /// </summary>
         public void MdnsSearch()
         {
-            ServiceBrowser serviceBrowser = new ServiceBrowser();
-            serviceBrowser.ServiceAdded += OnServiceAdded;
-            serviceBrowser.ServiceRemoved += OnServiceRemoved;
-            serviceBrowser.ServiceChanged += OnServiceChanged;
-            serviceBrowser.StartBrowse(serviceType);
-
-            ServiceBrowser serviceBrowserEmbedded = new ServiceBrowser();
-            serviceBrowserEmbedded.ServiceAdded += OnServiceAdded;
-            serviceBrowserEmbedded.ServiceRemoved += OnServiceRemoved;
-            serviceBrowserEmbedded.ServiceChanged += OnServiceChanged;
-            serviceBrowserEmbedded.StartBrowse(serviceTypeEmbedded);
+            foreach (var type in new[] { serviceType, serviceTypeEmbedded })
+            {
+                var browser = new ServiceBrowser();
+                browser.ServiceAdded += OnServiceAdded;
+                browser.ServiceRemoved += OnServiceRemoved;
+                browser.ServiceChanged += OnServiceChanged;
+                browser.StartBrowse(type);
+                browsers.Add(browser);
+            }
 
             // Cross-service IPv4 bridge. A Chromecast-built-in speaker that flaps its _googlecast IPv6-only (the
             // Harman Kardon Enchant) usually still advertises an IPv4 on its CO-LOCATED _airplay/_raop service
@@ -89,6 +101,7 @@ namespace KlangHub.Discover
                 correlationBrowser.ServiceAdded += OnCorrelationService;
                 correlationBrowser.ServiceChanged += OnCorrelationService;
                 correlationBrowser.StartBrowse(coLocated);
+                browsers.Add(correlationBrowser);
             }
         }
 
