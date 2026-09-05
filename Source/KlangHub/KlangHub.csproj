@@ -55,13 +55,13 @@
          ships in-box via Microsoft.VisualBasic.Forms under net10.0-windows WinForms), and the legacy
          System.Memory / System.Numerics.Vectors / System.Runtime.CompilerServices.Unsafe /
          System.Threading.Tasks.Extensions polyfills are all part of the shared framework now — dropped. -->
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="10.0.11" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
     <!-- net10: System.Text.Json is provided in-box by the shared framework (SDK NU1510) — no package ref needed. -->
-    <PackageReference Include="Tmds.MDns" Version="0.8.0" />
+    <PackageReference Include="Tmds.MDns" Version="0.9.1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.json" />
