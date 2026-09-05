@@ -193,6 +193,7 @@ namespace KlangHub.Application
             else
             {
                 logger.Log($"Connection closed from {streamingConnection.GetRemoteEndPoint()} after {streamingConnection.Carried()}");
+                NoteRepeatedDrop();
                 // Disposed, not just dropped. Dispose sets LingerState(true, 0) so the socket is reset
                 // rather than closed gracefully - without it, bytes still queued can be read by a
                 // keep-alive receiver as the headers of whatever comes next, and the rebuild below opens
@@ -206,6 +207,28 @@ namespace KlangHub.Application
                 // it took 23 seconds instead of six. The gate inside keeps this from racing the poll.
                 ResumeAfterConnectionLoss();
             }
+        }
+
+        private int dropCount;
+
+        /// <summary>
+        /// Names the pattern once it is a pattern.
+        ///
+        /// A receiver that stops on its own is normal enough to happen to anyone; a receiver that does it
+        /// again and again while another speaker reads the SAME bytes without trouble is a property of that
+        /// device, and the person reading the log should be told so rather than left to count the entries.
+        /// Measured here on 2026-09-05: an Enchant gave up three times in an hour after 6, 18 and 15
+        /// minutes, while a soundbar ran 55 minutes on one connection.
+        /// </summary>
+        private void NoteRepeatedDrop()
+        {
+            dropCount++;
+            if (dropCount != 3)
+                return;   // said once, at the point it stops being a coincidence
+
+            logger.Log($"[{GetHost()}] has now dropped the audio stream {dropCount} times this session. " +
+                       "If other speakers are playing the same stream without trouble, this is the device, " +
+                       "not the network - a lighter format (16-bit, or a lower buffer) is the thing to try.");
         }
 
         /// <summary>
