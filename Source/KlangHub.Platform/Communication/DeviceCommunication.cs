@@ -309,15 +309,16 @@ namespace KlangHub.Communication
             return DeviceState.LoadCancelled;
         }
 
+        /// <summary>
+        /// True when the device has said nothing for longer than this many seconds. The arithmetic lives in
+        /// <see cref="ContactSilence"/>, where it is tested - it used to read the seconds component of the
+        /// difference and could therefore never report more than 59, which silently disabled both callers.
+        /// </summary>
         private bool NoContactFor(int nrSeconds)
         {
-            return HadContact() && (DateTime.Now - lastReceivedMessage).Seconds > nrSeconds;
+            return ContactSilence.LongerThan(lastReceivedMessage, DateTime.Now, TimeSpan.FromSeconds(nrSeconds));
         }
 
-        private bool HadContact()
-        {
-            return lastReceivedMessage != DateTime.MinValue;
-        }
 
         /// <summary>
         /// Get the status text returned by the device.
