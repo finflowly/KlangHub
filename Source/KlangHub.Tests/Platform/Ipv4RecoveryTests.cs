@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using KlangHub.Discover;
@@ -8,7 +8,7 @@ namespace KlangHub.Tests.Platform
 {
     // Locks IPv4-recovery for a Chromecast device that announces its _googlecast IPv6-only in a scan (the
     // Harman Kardon Enchant): recover its IPv4 from a prior self-advertised IPv4 (by id=) or from the dual-
-    // stack "the multi-room group" group it hosts (the shared IPv6 host donates the IPv4), so it stays reachable
+    // stack multi-room group it hosts (the shared IPv6 host donates the IPv4), so it stays reachable
     // over IPv4 without any IPv6 eureka/TLS path.
     public class Ipv4RecoveryTests
     {
@@ -37,7 +37,7 @@ namespace KlangHub.Tests.Platform
         public void Recovers_ipv4_from_the_hosted_group_via_shared_ipv6_host()
         {
             var r = new Ipv4Recovery();
-            // The "the multi-room group" group the Enchant hosts announces IPv4 + the same IPv6 host.
+            // The multi-room group the Enchant hosts announces IPv4 + the same IPv6 host.
             r.Record("group-id", "192.168.1.154", Addrs("192.168.1.154", EnchantIpv6));
 
             // The Enchant's own IPv6-only announcement: different id, same IPv6 host, carrying a %zone.

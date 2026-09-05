@@ -231,7 +231,7 @@ namespace KlangHub.Application
             }
 
             // No id match: dedup by IP:port, not IP alone. A speaker and the multizone group it HOSTS share an
-            // IP - e.g. the Enchant at .154:8009 fronts the "the multi-room group" group at .154:32223. IP-only dedup
+            // IP - e.g. the Enchant at .154:8009 fronts the multi-room group at .154:32223. IP-only dedup
             // collapsed the speaker into the group (update branch, no onAddDeviceCallback) so it never got a
             // tile. IP:port keeps them distinct and matches ChromecastDeviceId.From, which already keys
             // placeholder-MAC devices on IP:port (so list-dedup and session-id agree).

@@ -1,0 +1,17 @@
+#!/bin/sh
+# Refuses a commit that would put private data into this public repository.
+#
+# Install once per clone (hooks are not versioned, so they do not travel with a checkout):
+#     git config core.hooksPath .githooks
+#
+# See tools/check-no-private-data.ps1 for what it checks and why. The test suite carries the same
+# checks (RepositoryPrivacyTests), so a commit made with --no-verify still gets caught before a push.
+
+if command -v powershell >/dev/null 2>&1; then
+    powershell -NoProfile -ExecutionPolicy Bypass -File "tools/check-no-private-data.ps1" -Staged || exit 1
+elif command -v pwsh >/dev/null 2>&1; then
+    pwsh -NoProfile -File "tools/check-no-private-data.ps1" -Staged || exit 1
+else
+    echo "pre-commit: no PowerShell found - the privacy check did not run."
+    echo "            RepositoryPrivacyTests still covers it on the next test run."
+fi

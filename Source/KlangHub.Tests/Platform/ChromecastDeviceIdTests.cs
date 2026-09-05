@@ -1,4 +1,4 @@
-using KlangHub.Discover;
+﻿using KlangHub.Discover;
 using KlangHub.Platform.Casting.Chromecast;
 using Xunit;
 
@@ -30,12 +30,12 @@ namespace KlangHub.Tests.Platform
             var id = ChromecastDeviceId.From(new DiscoveredDevice
             {
                 Usn = null!,
-                MACAddress = "AA:BB:CC:DD:EE:FF",
+                MACAddress = "A4:B1:C2:D3:E4:F5",
                 IPAddress = "192.168.1.201",
                 Port = 8009,
             });
 
-            Assert.Equal("AA:BB:CC:DD:EE:FF", id);
+            Assert.Equal("A4:B1:C2:D3:E4:F5", id);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace KlangHub.Tests.Platform
             var id = ChromecastDeviceId.From(new DiscoveredDevice
             {
                 Usn = "host.local",
-                MACAddress = "AA:BB:CC:DD:EE:FF",
+                MACAddress = "A4:B1:C2:D3:E4:F5",
             });
 
             Assert.Equal("host.local", id);
