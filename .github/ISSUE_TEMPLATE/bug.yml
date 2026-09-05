@@ -1,0 +1,104 @@
+name: Bug report
+description: Something does not work the way it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you fill this in, one request that matters more here than in most projects.
+
+        **Do not paste a device log, a screenshot or an address into this issue.** A KlangHub log
+        contains the addresses of every speaker in your house and what was played on them; a
+        screenshot usually contains at least one of those plus a window title. Replace addresses and
+        device names with example values, and describe what a picture would have shown.
+
+        Found a security problem? Do not open an issue at all — see
+        [SECURITY.md](../blob/master/SECURITY.md).
+
+  - type: input
+    id: version
+    attributes:
+      label: KlangHub version
+      description: Settings → the version is shown in the application, or the installer file name.
+      placeholder: "0.0.1"
+    validations:
+      required: true
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version and build
+      description: "`winver` shows it, e.g. Windows 11 23H2, build 22631.4169."
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Which device
+      description: >
+        Product name and whether it is a single speaker or a Google Cast group. Product names are
+        exactly what helps here — a room name of your own is not.
+      placeholder: "Google Nest Audio, single device / a group of three"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: source
+    attributes:
+      label: Audio source
+      options:
+        - Desktop output (loopback)
+        - Microphone or line-in
+        - Not relevant to this problem
+    validations:
+      required: true
+
+  - type: dropdown
+    id: format
+    attributes:
+      label: Sound quality setting
+      options:
+        - "FLAC (the default)"
+        - "WAV 16-bit"
+        - "WAV 24-bit"
+        - "WAV 32-bit"
+        - "MP3 128"
+        - "MP3 320"
+        - "Not relevant to this problem"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened instead
+      description: >
+        Including how long it took. "Silent from the start" and "played for about a minute, then
+        stopped" are different faults with different causes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to reproduce it
+      description: The shortest sequence that shows the problem. If it is intermittent, say how often.
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Relevant lines from the Log tab
+      description: >
+        Optional. **Redact first** — replace every address and device name with an example value.
+        A few lines around the failure are worth more than the whole file.
+      render: text

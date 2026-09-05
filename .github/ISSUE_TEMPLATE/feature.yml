@@ -1,0 +1,48 @@
+name: Feature request
+description: Something KlangHub should be able to do
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the **problem**, not the feature you have already designed. The best requests here
+        have been the ones that said what was in the way; the solution was usually somewhere else.
+
+        Two things are already answered and do not need an issue:
+
+        - **AirPlay 2 and Snapcast** are on the roadmap. Both are discovered today and neither can
+          play. Adding "+1" does not move them.
+        - **Spotify Connect and Tidal Connect are not planned**, and that will not change.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is in the way
+      description: >
+        What were you trying to do, and where did KlangHub stop being useful? Concrete beats general:
+        one situation you actually had is worth more than a category.
+    validations:
+      required: true
+
+  - type: textarea
+    id: today
+    attributes:
+      label: What you do about it today
+      description: The workaround, if there is one — including "give up and use something else".
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: How you imagine it working
+      description: Optional. If you have a shape in mind, this is the place for it.
+
+  - type: input
+    id: hardware
+    attributes:
+      label: Devices this concerns
+      description: >
+        Optional, but decisive for anything about protocols or grouping. Product names only — a room
+        name of your own tells us nothing and tells everyone else something.
+      placeholder: "Harman Kardon Enchant, Samsung soundbar"
