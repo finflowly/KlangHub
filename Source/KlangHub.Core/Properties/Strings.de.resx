@@ -239,6 +239,12 @@
   <data name="Tab_Options_Text" xml:space="preserve">
     <value>Einstellungen</value>
   </data>
+  <data name="Tray_StillRunning_Title" xml:space="preserve">
+    <value>KlangHub läuft weiter</value>
+  </data>
+  <data name="Tray_StillRunning_Text" xml:space="preserve">
+    <value>KlangHub spielt im Infobereich weiter. Zum Beenden dort mit der rechten Maustaste auf das Symbol klicken.</value>
+  </data>
   <data name="TrayIcon_Close" xml:space="preserve">
     <value>Beenden</value>
   </data>

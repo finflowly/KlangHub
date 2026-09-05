@@ -239,6 +239,12 @@
   <data name="Tab_Options_Text" xml:space="preserve">
     <value>Issettjar</value>
   </data>
+  <data name="Tray_StillRunning_Title" xml:space="preserve">
+    <value>KlangHub għadu jaħdem</value>
+  </data>
+  <data name="Tray_StillRunning_Text" xml:space="preserve">
+    <value>KlangHub għadu jdoqq fiż-żona tan-notifiki. Biex toħroġ, agħfas bil-lemin fuq l-ikona.</value>
+  </data>
   <data name="TrayIcon_Close" xml:space="preserve">
     <value>Oħroġ</value>
   </data>

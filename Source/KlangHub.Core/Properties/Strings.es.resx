@@ -239,6 +239,12 @@
   <data name="Tab_Options_Text" xml:space="preserve">
     <value>Ajustes</value>
   </data>
+  <data name="Tray_StillRunning_Title" xml:space="preserve">
+    <value>KlangHub sigue en marcha</value>
+  </data>
+  <data name="Tray_StillRunning_Text" xml:space="preserve">
+    <value>KlangHub sigue reproduciendo en el área de notificación. Haz clic derecho en su icono para salir.</value>
+  </data>
   <data name="TrayIcon_Close" xml:space="preserve">
     <value>Salir</value>
   </data>

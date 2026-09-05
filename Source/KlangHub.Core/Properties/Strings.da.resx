@@ -239,6 +239,12 @@
   <data name="Tab_Options_Text" xml:space="preserve">
     <value>Indstillinger</value>
   </data>
+  <data name="Tray_StillRunning_Title" xml:space="preserve">
+    <value>KlangHub kører videre</value>
+  </data>
+  <data name="Tray_StillRunning_Text" xml:space="preserve">
+    <value>KlangHub spiller videre i meddelelsesområdet. Højreklik på ikonet der for at afslutte.</value>
+  </data>
   <data name="TrayIcon_Close" xml:space="preserve">
     <value>Afslut</value>
   </data>

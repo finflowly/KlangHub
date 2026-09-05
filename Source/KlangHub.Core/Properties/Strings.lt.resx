@@ -239,6 +239,12 @@
   <data name="Tab_Options_Text" xml:space="preserve">
     <value>Nustatymai</value>
   </data>
+  <data name="Tray_StillRunning_Title" xml:space="preserve">
+    <value>„KlangHub“ tebeveikia</value>
+  </data>
+  <data name="Tray_StillRunning_Text" xml:space="preserve">
+    <value>„KlangHub“ toliau groja pranešimų srityje. Norėdami išeiti, dešiniuoju pelės mygtuku spustelėkite piktogramą.</value>
+  </data>
   <data name="TrayIcon_Close" xml:space="preserve">
     <value>Baigti</value>
   </data>

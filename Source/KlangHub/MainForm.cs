@@ -265,6 +265,11 @@ namespace KlangHub
                 applicationLogic.SaveSettings();
                 Hide();
                 e.Cancel = true;
+
+                // Raised after the close is finished with, not from inside it: the tray is the shell's,
+                // and a balloon posted while WinForms is still unwinding a FormClosing has nothing to
+                // gain from being early.
+                BeginInvoke(new Action(applicationLogic.NotifyMinimizedToTray));
             }
             else
             {

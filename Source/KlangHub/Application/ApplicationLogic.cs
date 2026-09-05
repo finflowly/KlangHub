@@ -431,6 +431,36 @@ namespace KlangHub.Application
             Dispose(true);
         }
 
+        private bool trayHintShown;
+
+        /// <summary>
+        /// Says out loud what the close button just did.
+        ///
+        /// With "minimize to tray" on, the X hides the window and the app keeps running - which from the
+        /// outside is indistinguishable from an app that refuses to close. the maintainer hit exactly that and
+        /// ended up killing KlangHub in the Task Manager. One balloon, once per run, turns a program that
+        /// looks stuck into one that told you where it went.
+        /// </summary>
+        public void NotifyMinimizedToTray()
+        {
+            if (trayHintShown || notifyIcon == null)
+                return;
+
+            trayHintShown = true;
+            try
+            {
+                notifyIcon.ShowBalloonTip(
+                    7000,
+                    Properties.Strings.Tray_StillRunning_Title,
+                    Properties.Strings.Tray_StillRunning_Text,
+                    ToolTipIcon.Info);
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex, "ApplicationLogic.NotifyMinimizedToTray");
+            }
+        }
+
         public void SetLagThreshold(int lagThresholdIn) => orchestrator.SetLagThreshold(lagThresholdIn);
 
         /// <summary>

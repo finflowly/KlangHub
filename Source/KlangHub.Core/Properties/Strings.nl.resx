@@ -239,6 +239,12 @@
   <data name="Tab_Options_Text" xml:space="preserve">
     <value>Instellingen</value>
   </data>
+  <data name="Tray_StillRunning_Title" xml:space="preserve">
+    <value>KlangHub draait nog</value>
+  </data>
+  <data name="Tray_StillRunning_Text" xml:space="preserve">
+    <value>KlangHub speelt verder in het systeemvak. Klik daar met de rechtermuisknop op het pictogram om af te sluiten.</value>
+  </data>
   <data name="TrayIcon_Close" xml:space="preserve">
     <value>Afsluiten</value>
   </data>

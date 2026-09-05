@@ -12,6 +12,9 @@ namespace KlangHub.Application.Interfaces
     public interface IApplicationLogic : ICastHost
     {
         void Initialize();
+
+        /// <summary>Tells the user, once per run, that the close button left the app in the tray.</summary>
+        void NotifyMinimizedToTray();
         void SetLagThreshold(int lagThreshold);
         void OnRecordingDataAvailable(AudioFrame frame);
         void OnStreamingRequestConnect(Socket handlerSocket, string httpRequest);

@@ -239,6 +239,12 @@
   <data name="Tab_Options_Text" xml:space="preserve">
     <value>Настройки</value>
   </data>
+  <data name="Tray_StillRunning_Title" xml:space="preserve">
+    <value>KlangHub продължава да работи</value>
+  </data>
+  <data name="Tray_StillRunning_Text" xml:space="preserve">
+    <value>KlangHub продължава да свири в областта за известия. За изход щракнете с десния бутон върху иконата там.</value>
+  </data>
   <data name="TrayIcon_Close" xml:space="preserve">
     <value>Изход</value>
   </data>

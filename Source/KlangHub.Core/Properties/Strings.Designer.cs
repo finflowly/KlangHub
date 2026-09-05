@@ -718,6 +718,24 @@ namespace KlangHub.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to KlangHub is still running.
+        /// </summary>
+        public static string Tray_StillRunning_Title {
+            get {
+                return ResourceManager.GetString("Tray_StillRunning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to KlangHub keeps playing in the notification area. Right-click its icon there to quit.
+        /// </summary>
+        public static string Tray_StillRunning_Text {
+            get {
+                return ResourceManager.GetString("Tray_StillRunning_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
         public static string TrayIcon_Close {
