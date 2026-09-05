@@ -6,8 +6,9 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>KlangHub</RootNamespace>
     <AssemblyName>KlangHub</AssemblyName>
-    <Product>KlangHub</Product>
-    <Version>0.0.1</Version>
+    <!-- Product and Version are not repeated here: Directory.Build.props sets both for every project.
+         A second copy is a second thing to remember on a release, and the last time these two drifted the
+         installer shipped a program that said 0.0.1 beside two DLLs that said 1.0.0.0. -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>

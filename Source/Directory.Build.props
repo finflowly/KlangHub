@@ -15,5 +15,12 @@
     <Company>Neo &amp; Trinity</Company>
     <Product>KlangHub</Product>
     <Copyright>Copyright © 2026 Neo &amp; Trinity</Copyright>
+
+    <!-- Where this build came from, stamped into every assembly. The application already asks
+         api.github.com/repos/finflowly/KlangHub for the latest release; a DLL pulled out of an installer
+         on somebody else's machine could not say the same, and "which repository is this from" is the
+         first question anyone holding one asks. -->
+    <RepositoryUrl>https://github.com/finflowly/KlangHub</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 </Project>
