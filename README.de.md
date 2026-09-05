@@ -92,7 +92,8 @@ selbst baut, braucht das SDK.
 
 ## Installation
 
-`KlangHub-0.0.1-Setup.exe` (Inno Setup) installiert pro Benutzer und verlangt keine
+Das Setup liegt beim **[neuesten Release](https://github.com/finflowly/KlangHub/releases/latest)** —
+die Datei heißt dort `KlangHub-0.0.1-Setup.exe`. Sie installiert pro Benutzer und verlangt keine
 Administratorrechte.
 
 **Windows wird warnen — das ist zu erwarten.** Das Setup ist **nicht signiert**; ein

@@ -93,7 +93,8 @@ source needs the SDK.
 
 ## Install
 
-`KlangHub-0.0.1-Setup.exe` (Inno Setup) installs per user and needs no administrator rights.
+Download the setup from the **[latest release](https://github.com/finflowly/KlangHub/releases/latest)**
+— the file is `KlangHub-0.0.1-Setup.exe`. It installs per user and needs no administrator rights.
 
 **Windows will warn, and that is expected.** The setup is not code-signed; a certificate costs money
 this project does not spend. SmartScreen shows *"Windows protected your PC"* — the way through is

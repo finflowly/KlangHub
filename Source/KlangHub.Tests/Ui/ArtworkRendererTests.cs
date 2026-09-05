@@ -87,7 +87,12 @@ namespace KlangHub.Tests.Ui
                     continue;
 
                 var culture = CultureInfo.GetCultureInfo(code);
-                using var set = KlangHub.Properties.Strings.ResourceManager.GetResourceSet(culture, true, false);
+
+                // NOT disposed. The set belongs to the ResourceManager, which caches it - disposing it here
+                // closes the manager's own copy, and every later lookup in the same test run throws
+                // ObjectDisposedException. It cost a run to find, because nothing failed until a second test
+                // class started reading the same resources afterwards.
+                var set = KlangHub.Properties.Strings.ResourceManager.GetResourceSet(culture, true, false);
                 Assert.True(set?.GetString("Artwork_Tagline_Text") != null,
                     $"'{code}' has no Artwork_Tagline_Text of its own and is falling back");
             }

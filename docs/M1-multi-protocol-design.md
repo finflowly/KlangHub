@@ -1,5 +1,10 @@
 # M1 — Multi-Protocol Preparation: Technical Analysis & Design
 
+> Status in 0.0.1: this is a design note, not a shipping protocol.
+> AirPlay and Snapcast are discovery-only. CreateSession throws.
+> KlangHub does not send AirPlay audio and will not ship an AirPlay sender
+> without a licensed path. Do not read this document as a product claim.
+
 Status: **design / analysis** (Phase M, sprint M1). No production code changes.
 
 > Historical note: this analysis was written while the app still targeted .NET 8. The .NET 10 move

@@ -439,7 +439,7 @@
     <value>Inconnu</value>
   </data>
   <data name="Label_Credit_Text" xml:space="preserve">
-    <value>Développé dans la Matrice par Neo &amp; Trinity · 2026</value>
+    <value>Developed in the Matrix by Neo &amp; Trinity · 2026</value>
   </data>
   <data name="Label_RoomSummarySubtitle_Text" xml:space="preserve">
     <value>{0} · diffusion dans toute la maison</value>
