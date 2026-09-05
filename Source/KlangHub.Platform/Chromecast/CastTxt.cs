@@ -56,10 +56,31 @@ namespace KlangHub.Application
                     return parsed;
             }
 
-            return headers.Split(new[] { '"', ',', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            return headers.Split(new[] { '"', ',', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static string? Value(string? headers, string key)
             => Parse(headers).TryGetValue(key, out var v) && v.Length != 0 ? v : null;
+
+        /// <summary>The fields that say WHICH device this is, in a stable order.</summary>
+        private static readonly string[] IdentityKeys = { "id", "md", "fn", "ca", "ve", "ic" };
+
+        /// <summary>
+        /// What identifies a device across announcements, leaving out everything that merely describes its
+        /// current activity.
+        ///
+        /// The whole TXT record is the wrong thing to compare. It carries "rs" (the receiver's status text)
+        /// and "st" (whether an app is running), which change the moment KlangHub starts casting to a
+        /// speaker - so a record-wide comparison found every announcement "new" for exactly the devices
+        /// that were busy decoding audio, and left the idle ones throttled. The opposite of the intent.
+        /// </summary>
+        public static string IdentityFingerprint(string? headers)
+        {
+            var txt = Parse(headers);
+            var parts = new List<string>(IdentityKeys.Length);
+            foreach (var key in IdentityKeys)
+                parts.Add(txt.TryGetValue(key, out var value) ? value : string.Empty);
+            return string.Join("|", parts);
+        }
     }
 }

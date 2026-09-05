@@ -44,7 +44,9 @@ namespace KlangHub.Communication
         {
             applicationLogic = applicationLogicIn;
             logger = loggerIn;
-            chromeCastMessages = new ChromeCastMessages { ReceiverAppId = CastReceiver.AppId };
+            // No id copied in here: ChromeCastMessages reads CastReceiver.AppId when it builds the LAUNCH,
+            // so a device discovered before the user pasted an id still launches the right receiver.
+            chromeCastMessages = new ChromeCastMessages();
             chromeCastDestination = string.Empty;
             chromeCastSource = string.Format("client-8{0}", new Random().Next(10000, 99999));
             requestId = 0;
@@ -499,7 +501,7 @@ namespace KlangHub.Communication
             if (device == null || IsDisposed || userMode != UserMode.Playing)
                 return;
 
-            if (!reconnectGate.TryEnter(DateTime.Now))
+            if (!reconnectGate.TryEnter())
                 return;
 
             ResumePlaying();
@@ -517,6 +519,8 @@ namespace KlangHub.Communication
             var cancellationTokenSource = new CancellationTokenSource();
             applicationLogic.StartTask(() =>
             {
+                try
+                {
                 Task.Delay(2000).Wait();
                 var deviceState = device.GetDeviceState();
                 if (deviceState == DeviceState.Playing ||
@@ -547,6 +551,14 @@ namespace KlangHub.Communication
                     device.OnGetStatus();
                     if (device.IsStatusTextBlank())
                         WaitDeviceConnected(PlayStop, 50);
+                }
+                }
+                finally
+                {
+                    // However this attempt ended - connected, cancelled, or turned away by a state guard -
+                    // the next reason to reconnect may act immediately. Leaving the gate to time out made
+                    // the fast-recovery paths wait out the remainder of a rebuild that was already over.
+                    reconnectGate.Leave();
                 }
             }, cancellationTokenSource);
         }

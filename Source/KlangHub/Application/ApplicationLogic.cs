@@ -261,8 +261,11 @@ namespace KlangHub.Application
                 mainForm.SetKeyboardHooks(settings.UseKeyboardShortCuts ?? false);
                 mainForm.SetIP4AddressUsed(settings.Ip4AddressUsed ?? string.Empty);
                 mainForm.SetStreamFormat(settings.StreamFormat ?? SupportedStreamFormat.Wav_16bit);
-                // a --lang= from the installer wins for this first start, then the stored choice takes over
-                mainForm.SetCulture(Classes.StartupOptions.Culture ?? settings.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                // A stored choice always wins. The installer's --lang= is a FIRST-RUN hint, and it used to
+                // win on every launch instead - so a user who installed in English, switched the app to
+                // German, then ran an upgrade was put back into English and had it written to disk on
+                // close. The setup language is only consulted when nothing has been chosen yet.
+                mainForm.SetCulture(settings.Culture ?? Classes.StartupOptions.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 mainForm.SetLogDeviceCommunication(settings.LogDeviceCommunication ?? false);
                 mainForm.SetLagValue(settings.LagControlValue ?? 1000);
                 mainForm.SetStartApplicationWhenWindowsStarts(settings.StartApplicationWhenWindowsStarts ?? false);
@@ -391,6 +394,11 @@ namespace KlangHub.Application
             mainForm.SetExtraBufferInSeconds(settings.ExtraBufferInSeconds.Value);
             mainForm.SetRecordingDeviceID(settings.RecordingDeviceID);
             mainForm.SetAutoMute(settings.AutoMute.Value);
+            // Every other setting above is pushed back into the form; this one was cleared in the object
+            // and nowhere else, so "reset settings" left the old receiver id in the field AND in
+            // CastReceiver.AppId - and SaveSettings wrote it straight back on close. Somebody who pasted a
+            // broken id had no way out through the UI.
+            mainForm.SetReceiverAppId(settings.ReceiverAppId);
             mainForm.SetMinimizeToTray(settings.MinimizeToTray.Value);
             mainForm.SetGroupByRoom(settings.GroupByRoom ?? false);
             mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo.Value);

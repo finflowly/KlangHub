@@ -193,6 +193,11 @@ namespace KlangHub.Application
             else
             {
                 logger.Log($"Connection closed from {streamingConnection.GetRemoteEndPoint()} after {streamingConnection.Carried()}");
+                // Disposed, not just dropped. Dispose sets LingerState(true, 0) so the socket is reset
+                // rather than closed gracefully - without it, bytes still queued can be read by a
+                // keep-alive receiver as the headers of whatever comes next, and the rebuild below opens
+                // the next connection into exactly that state.
+                streamingConnection.Dispose();
                 streamingConnection = null;
 
                 // The other half of yesterday's fix. That one caught a FAILED SEND; this catches the case
@@ -378,9 +383,16 @@ namespace KlangHub.Application
                 GetDeviceState() == DeviceState.Idle) &&
                 MatchesAddress(remoteAddress))
             {
-                streamingConnection = new StreamingConnection();
-                streamingConnection.SetDependencies(socket, this, logger);
-                streamingConnection.SendStartStreamingResponse(streamFormat);
+                // Built fully, then published. Assigning the field first left a window in which the capture
+                // thread - which runs about fifty times a second - could see a connection whose socket was
+                // not attached yet, read IsConnected() as false, log "Connection closed from " with no
+                // endpoint to name, null the field and (since the fast-recovery change) tear down and
+                // relaunch the whole Cast session. SetDependencies then finished wiring an object nobody
+                // held any more: a silent speaker and a spurious LAUNCH, once per reconnect.
+                var connection = new StreamingConnection();
+                connection.SetDependencies(socket, this, logger);
+                connection.SendStartStreamingResponse(streamFormat);
+                streamingConnection = connection;
                 return true;
             }
 
@@ -587,7 +599,7 @@ namespace KlangHub.Application
             var key = discoveredDevice.Id;
             if (string.IsNullOrEmpty(key))
                 key = $"{discoveredDevice.IPAddress}:{discoveredDevice.Port}";
-            if (!deviceInformationThrottle.ShouldAct(key, null, System.DateTime.Now))
+            if (!deviceInformationThrottle.ShouldAct(key, null))
                 return;
 
             startTask(DeviceInformation.GetDeviceInformation(discoveredDevice, SetDeviceInformation, null, logger), null);

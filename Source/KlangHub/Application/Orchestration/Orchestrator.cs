@@ -154,6 +154,9 @@ namespace KlangHub.Application.Orchestration
             if (devices == null || castProvider == null)
                 return;
 
+            // The user pressing "Scan again" means "look properly this time" - restarting mDNS while the
+            // throttle still recognises every device would make the button do nothing visible.
+            devices.ForgetDiscoveryThrottle();
             castProvider.Discovery.Start();
         }
 

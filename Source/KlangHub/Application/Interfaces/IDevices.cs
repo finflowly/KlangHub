@@ -20,6 +20,9 @@ namespace KlangHub.Application
         void Stop(bool changeUserMode = false);
         void SetSettings(UserSettings settings);
         void SetCallback(Action<Device> onAddDeviceCallbackIn);
+
+        /// <summary>Forget what discovery has already acted on, so a fresh scan really rescans.</summary>
+        void ForgetDiscoveryThrottle();
         void SetRemoveCallback(Action<IDevice> onRemoveDeviceCallbackIn);
         void Dispose();
         void SetDependencies(IMainForm mainFormIn, IApplicationLogic applicationLogicIn);

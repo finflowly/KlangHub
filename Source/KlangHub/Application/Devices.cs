@@ -63,11 +63,16 @@ namespace KlangHub.Application
                 // re-reading the device for, so a moved or renamed device is still picked up at once - the
                 // DHCP-move reconciliation depends on that - while the five duplicates of one scan are not
                 // five more HTTP requests to a speaker in the middle of a stream.
-                var fingerprint = $"{discoveredDevice.IPAddress}:{discoveredDevice.Port}|{discoveredDevice.Headers}";
+                // Identity only. The full TXT record contains the receiver's status text and its
+                // app-running flag, both of which change the moment we cast to a device - so comparing the
+                // whole record throttled the idle speakers and let the busy ones through, which is exactly
+                // backwards.
+                var fingerprint = $"{discoveredDevice.IPAddress}:{discoveredDevice.Port}|" +
+                                  CastTxt.IdentityFingerprint(discoveredDevice.Headers);
                 var key = !string.IsNullOrEmpty(discoveredDevice.Id)
                     ? discoveredDevice.Id
                     : $"{discoveredDevice.IPAddress}:{discoveredDevice.Port}";
-                if (!discoveryThrottle.ShouldAct(key, fingerprint, DateTime.Now))
+                if (!discoveryThrottle.ShouldAct(key, fingerprint))
                     return;
 
                 logger?.Log($"Discovery: '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) - fetching eureka_info.");
@@ -106,6 +111,15 @@ namespace KlangHub.Application
                 }
             }
         }
+
+        /// <summary>
+        /// Drops the discovery throttle's memory, so the next announcement from every device is acted on.
+        ///
+        /// This is what "Scan again" has to mean. Restarting mDNS alone left the throttle holding the
+        /// identical key and fingerprint, so a user whose speaker had not appeared pressed the button and
+        /// nothing happened - not even a line in the log they would be asked to send.
+        /// </summary>
+        public void ForgetDiscoveryThrottle() => discoveryThrottle.ForgetAll();
 
         /// <summary>
         /// If device is a group, stop devices in the group.

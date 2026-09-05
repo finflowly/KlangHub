@@ -2143,8 +2143,8 @@ namespace KlangHub
             if (txtReceiverAppId != null && txtReceiverAppId.Text != appId)
                 txtReceiverAppId.Text = appId;
 
-            // The platform layer reads it from here when a device connects, so a pasted id takes effect on
-            // the next cast without a restart.
+            // The platform layer reads this at LAUNCH time (ChromeCastMessages.ReceiverAppId), so a pasted
+            // id takes effect on the next cast for every speaker - including the ones discovered before.
             Communication.CastReceiver.AppId = appId;
         }
 

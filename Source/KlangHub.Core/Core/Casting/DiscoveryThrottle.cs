@@ -21,7 +21,9 @@ namespace KlangHub.Core.Casting
 
         private readonly TimeSpan quietPeriod;
         private readonly object sync = new();
-        private readonly Dictionary<string, (DateTime When, string Fingerprint)> seen = new(StringComparer.OrdinalIgnoreCase);
+        /// <summary>Keyed by device; the time is a monotonic millisecond count, never the wall clock - a
+        /// backward clock step (the end of summer time) would otherwise suppress announcements for an hour.</summary>
+        private readonly Dictionary<string, (long WhenMs, string Fingerprint)> seen = new(StringComparer.OrdinalIgnoreCase);
 
         public DiscoveryThrottle(TimeSpan? quietPeriod = null)
             => this.quietPeriod = quietPeriod ?? DefaultQuietPeriod;
@@ -30,7 +32,11 @@ namespace KlangHub.Core.Casting
         /// when it announces none.</param>
         /// <param name="fingerprint">Everything that would make this announcement worth acting on again:
         /// address, port, TXT record.</param>
-        public bool ShouldAct(string? key, string? fingerprint, DateTime now)
+        public bool ShouldAct(string? key, string? fingerprint)
+            => ShouldAct(key, fingerprint, Environment.TickCount64);
+
+        /// <summary>Testable overload: <paramref name="nowMs"/> is a monotonic millisecond count.</summary>
+        public bool ShouldAct(string? key, string? fingerprint, long nowMs)
         {
             if (string.IsNullOrEmpty(key))
                 return true;   // nothing to recognise it by - never swallow it
@@ -39,12 +45,20 @@ namespace KlangHub.Core.Casting
             {
                 if (seen.TryGetValue(key!, out var last)
                     && string.Equals(last.Fingerprint, fingerprint ?? string.Empty, StringComparison.Ordinal)
-                    && now - last.When < quietPeriod)
+                    && nowMs - last.WhenMs < (long)quietPeriod.TotalMilliseconds)
                     return false;
 
-                seen[key!] = (now, fingerprint ?? string.Empty);
+                seen[key!] = (nowMs, fingerprint ?? string.Empty);
                 return true;
             }
+        }
+
+        /// <summary>Forgets everything, so the next announcement from any device is acted on. What the user
+        /// means by pressing "Scan again": without it the button was a silent no-op for up to the quiet
+        /// period, leaving no trace in the very log they are asked to send.</summary>
+        public void ForgetAll()
+        {
+            lock (sync) { seen.Clear(); }
         }
 
         public void Forget(string? key)

@@ -67,8 +67,19 @@ namespace KlangHub.Communication
         /// The receiver application to launch. Empty means Google's default; an eight-character id from the
         /// Cast Developer Console launches KlangHub's own receiver instead, which is what puts our name and
         /// our colours on the television (see receiver/README.md).
+        ///
+        /// Read at LAUNCH time, not when this object was made. It used to be copied in at construction,
+        /// which happens when a device is discovered - so a pasted id reached only speakers found after the
+        /// paste. The others kept launching Google's default while the settings field and the diagnostics
+        /// header both claimed otherwise, and a house ended up running two different receivers at once.
         /// </summary>
-        public string ReceiverAppId { get; set; } = DefaultReceiverAppId;
+        public string ReceiverAppId
+        {
+            get => receiverAppId ?? CastReceiver.AppId;
+            set => receiverAppId = value;
+        }
+
+        private string? receiverAppId;
 
         public CastMessage GetLaunchMessage(int requestId)
         {

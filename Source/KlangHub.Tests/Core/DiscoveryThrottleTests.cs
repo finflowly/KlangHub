@@ -1,4 +1,4 @@
-using System;
+using KlangHub.Application;
 using KlangHub.Core.Casting;
 using Xunit;
 
@@ -6,7 +6,7 @@ namespace KlangHub.Tests.Core
 {
     public class DiscoveryThrottleTests
     {
-        private static readonly DateTime T0 = new(2026, 9, 5, 8, 8, 53, DateTimeKind.Utc);
+        private const long T0 = 4_000_000;   // a monotonic tick count, not a wall clock
         private const string Soundbar = "b66d62a40abc22dafc6b319c8347d54e";
         private const string Fingerprint = "192.168.8.198:8009|md=Q995GD";
 
@@ -16,7 +16,7 @@ namespace KlangHub.Tests.Core
             var throttle = new DiscoveryThrottle();
             int acted = 0;
             for (int i = 0; i < 6; i++)
-                if (throttle.ShouldAct(Soundbar, Fingerprint, T0.AddMilliseconds(i * 80)))
+                if (throttle.ShouldAct(Soundbar, Fingerprint, T0 + i * 80))
                     acted++;
 
             Assert.Equal(1, acted);
@@ -27,14 +27,13 @@ namespace KlangHub.Tests.Core
         {
             var throttle = new DiscoveryThrottle();
             Assert.True(throttle.ShouldAct(Soundbar, Fingerprint, T0));
-            Assert.True(throttle.ShouldAct(Soundbar, "192.168.8.204:8009|md=Q995GD", T0.AddSeconds(1)));
+            Assert.True(throttle.ShouldAct(Soundbar, "192.168.8.204:8009|md=Q995GD", T0 + 1_000));
         }
 
         [Fact]
         public void A_device_never_seen_before_goes_through_at_once()
         {
-            var throttle = new DiscoveryThrottle();
-            Assert.True(throttle.ShouldAct("brand-new", Fingerprint, T0));
+            Assert.True(new DiscoveryThrottle().ShouldAct("brand-new", Fingerprint, T0));
         }
 
         [Fact]
@@ -50,8 +49,8 @@ namespace KlangHub.Tests.Core
         {
             var throttle = new DiscoveryThrottle();
             Assert.True(throttle.ShouldAct(Soundbar, Fingerprint, T0));
-            Assert.False(throttle.ShouldAct(Soundbar, Fingerprint, T0.AddSeconds(29)));
-            Assert.True(throttle.ShouldAct(Soundbar, Fingerprint, T0 + DiscoveryThrottle.DefaultQuietPeriod));
+            Assert.False(throttle.ShouldAct(Soundbar, Fingerprint, T0 + 29_000));
+            Assert.True(throttle.ShouldAct(Soundbar, Fingerprint, T0 + (long)DiscoveryThrottle.DefaultQuietPeriod.TotalMilliseconds));
         }
 
         [Fact]
@@ -69,6 +68,46 @@ namespace KlangHub.Tests.Core
             Assert.True(throttle.ShouldAct(Soundbar, Fingerprint, T0));
             throttle.Forget(Soundbar);
             Assert.True(throttle.ShouldAct(Soundbar, Fingerprint, T0));
+        }
+
+        [Fact]
+        public void Scan_again_forgets_every_device_so_the_button_is_not_a_no_op()
+        {
+            var throttle = new DiscoveryThrottle();
+            Assert.True(throttle.ShouldAct(Soundbar, Fingerprint, T0));
+            Assert.True(throttle.ShouldAct("enchant", "x", T0));
+
+            throttle.ForgetAll();
+
+            Assert.True(throttle.ShouldAct(Soundbar, Fingerprint, T0));
+            Assert.True(throttle.ShouldAct("enchant", "x", T0));
+        }
+
+        [Fact]
+        public void A_casting_device_is_throttled_just_like_an_idle_one()
+        {
+            // The TXT record's "rs" and "st" change the moment we cast to a speaker. Comparing the whole
+            // record made every announcement look new for exactly the devices that were busy decoding
+            // audio - the ones this class exists to leave alone.
+            const string idle = "id=b66d;cd=X;rm=;ve=05;md=Q995GD;fn=Soundbar;ca=199172;st=0;rs=";
+            const string casting = "id=b66d;cd=X;rm=;ve=05;md=Q995GD;fn=Soundbar;ca=199172;st=1;rs=Casting: KlangHub";
+
+            Assert.Equal(CastTxt.IdentityFingerprint(idle), CastTxt.IdentityFingerprint(casting));
+
+            var throttle = new DiscoveryThrottle();
+            Assert.True(throttle.ShouldAct(Soundbar, CastTxt.IdentityFingerprint(idle), T0));
+            Assert.False(throttle.ShouldAct(Soundbar, CastTxt.IdentityFingerprint(casting), T0 + 100));
+        }
+
+        [Fact]
+        public void A_device_that_was_renamed_or_moved_still_comes_through_at_once()
+        {
+            const string before = "id=b66d;ve=05;md=Q995GD;fn=Soundbar;ca=199172";
+            const string renamed = "id=b66d;ve=05;md=Q995GD;fn=Wohnzimmer;ca=199172";
+
+            var throttle = new DiscoveryThrottle();
+            Assert.True(throttle.ShouldAct(Soundbar, CastTxt.IdentityFingerprint(before), T0));
+            Assert.True(throttle.ShouldAct(Soundbar, CastTxt.IdentityFingerprint(renamed), T0 + 100));
         }
     }
 }
