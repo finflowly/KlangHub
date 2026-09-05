@@ -56,6 +56,15 @@ namespace KlangHub
         void SetMinimizeToTray(bool minimizeToTray);
         void SetGroupByRoom(bool groupByRoom);
         void SetReceiverAppId(string appId);
+
+        /// <summary>The metadata switches and the now-playing file path, as the user left them.</summary>
+        bool GetReadFileTags();
+
+        bool GetReadWindowsNowPlaying();
+
+        string GetNowPlayingFilePath();
+
+        void SetNowPlayingSettings(bool readFileTags, bool readWindowsNowPlaying, string filePath);
         string GetReceiverAppId();
         bool GetGroupByRoom();
         bool GetMinimizeToTray();

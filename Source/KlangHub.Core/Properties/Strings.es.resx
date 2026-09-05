@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Inaccesible</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Confirmar en el dispositivo</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>LO QUE SUENA</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Leer los títulos del archivo de música</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Usar la información de reproducción de Windows</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Archivo de reproducción actual</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Si tu reproductor no envía títulos al televisor, KlangHub muestra el artista y la canción desde este archivo o desde la información de reproducción de Windows.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Examinar…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>listo</value>
   </data>

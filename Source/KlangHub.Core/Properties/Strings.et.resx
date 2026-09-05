@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Kättesaamatu</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Kinnitage seadmes</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>MIS PRAEGU MÄNGIB</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Loe pealkirjad muusikafailist</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Kasuta Windowsi esitusteavet</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Praegu mängib-fail</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Kui su mängija ei saada pealkirju telerisse, näitab KlangHub esitajat ja lugu sellest failist või Windowsi esitusteabest.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Sirvi…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>valmis</value>
   </data>

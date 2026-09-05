@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Nem érhető el</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Erősítse meg az eszközön</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>MI SZÓL ÉPPEN</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Címek olvasása a zenefájlból</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>A Windows lejátszási adatainak használata</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Most szól fájl</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Ha a lejátszód nem küld címeket a tévének, a KlangHub ebből a fájlból vagy a Windows lejátszási adataiból mutatja az előadót és a dalt.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Tallózás…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>kész</value>
   </data>

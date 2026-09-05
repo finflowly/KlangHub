@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Dorochtana</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Deimhnigh ar an ngléas</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>CAD ATÁ Á SEINM</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Léigh teidil ón gcomhad ceoil</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Úsáid taispeáint sheinnte Windows</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Comhad an amhráin reatha</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Mura seolann do sheinnteoir teidil chuig an teilifís, taispeánann KlangHub an t-ealaíontóir agus an t-amhrán ón gcomhad seo nó ó thaispeáint sheinnte Windows.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Brabhsáil…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>réidh</value>
   </data>

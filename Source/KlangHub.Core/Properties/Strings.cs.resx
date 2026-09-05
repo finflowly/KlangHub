@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Nedostupné</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Potvrďte na zařízení</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>CO PRÁVĚ HRAJE</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Číst názvy z hudebního souboru</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Používat informace o přehrávání ve Windows</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Soubor s právě hraným</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Pokud váš přehrávač neposílá názvy do televize, KlangHub zobrazí interpreta a skladbu z tohoto souboru nebo z informací o přehrávání ve Windows.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Procházet…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>připraveno</value>
   </data>

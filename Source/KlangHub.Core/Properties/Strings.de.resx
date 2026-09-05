@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Nicht erreichbar</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Am Gerät bestätigen</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>WAS GERADE LÄUFT</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Titel aus der Musikdatei lesen</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Windows-Titelanzeige verwenden</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Now-Playing-Datei</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Wenn dein Player keine Titel an den Fernseher schickt, zeigt KlangHub Künstler und Song aus dieser Datei oder aus der Windows-Titelanzeige.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Durchsuchen…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>bereit</value>
   </data>

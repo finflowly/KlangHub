@@ -30,3 +30,11 @@ original authorship and license terms are gratefully acknowledged here.
 
 - **Purpose:** mDNS / DNS-SD discovery.
 - **License:** MIT · **Source:** https://github.com/tmds/Tmds.MDns
+
+## z440.atl.core (ATL)
+
+- **Purpose:** reading ID3, Vorbis, MP4 and FLAC tags plus embedded cover art, so the television can show
+  the artist, the title and the album of a track KlangHub is only hearing as loopback audio.
+- **License:** MIT · **Source:** https://github.com/Zeugma440/atldotnet · NuGet `z440.atl.core`
+- **Why not TagLib#:** TagLib# is LGPL. The project already carries one LGPL exception (the FLAC encoder
+  above) and deliberately does not add a second one for a job an MIT library does just as well.

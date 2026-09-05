@@ -801,7 +801,7 @@ namespace KlangHub.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Made with ♥ by Neo & Trinity — 2026.
+        ///   Looks up a localized string similar to Developed in the Matrix by Neo &amp; Trinity · 2026.
         /// </summary>
         public static string Label_Credit_Text
         {
@@ -1113,6 +1113,62 @@ namespace KlangHub.Properties {
             get
             {
                 return ResourceManager.GetString("Card_Status_Error_Text", resourceCulture);
+            }
+        }
+
+        public static string Card_Status_AwaitingApproval_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Status_AwaitingApproval_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_Section_NowPlaying_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_Section_NowPlaying_Text", resourceCulture);
+            }
+        }
+
+        public static string Check_ReadFileTags_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Check_ReadFileTags_Text", resourceCulture);
+            }
+        }
+
+        public static string Check_ReadWindowsNowPlaying_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Check_ReadWindowsNowPlaying_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_NowPlayingFile_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_NowPlayingFile_Text", resourceCulture);
+            }
+        }
+
+        public static string Label_NowPlayingHint_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Label_NowPlayingHint_Text", resourceCulture);
+            }
+        }
+
+        public static string Button_BrowseNowPlaying_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Button_BrowseNowPlaying_Text", resourceCulture);
             }
         }
 

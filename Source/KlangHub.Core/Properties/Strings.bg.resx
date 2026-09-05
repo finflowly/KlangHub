@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Недостъпно</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Потвърдете на устройството</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>КАКВО СВИРИ</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Четене на заглавия от музикалния файл</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Използване на информацията за възпроизвеждане на Windows</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Файл „сега свири“</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Ако плейърът ви не изпраща заглавия към телевизора, KlangHub показва изпълнителя и песента от този файл или от информацията за възпроизвеждане на Windows.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Преглед…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>готово</value>
   </data>

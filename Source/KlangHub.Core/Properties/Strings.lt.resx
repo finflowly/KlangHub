@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Nepasiekiama</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Patvirtinkite įrenginyje</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>KAS GROJA</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Skaityti pavadinimus iš muzikos failo</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Naudoti Windows grojimo informaciją</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Dabar grojančio failas</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Jei jūsų grotuvas nesiunčia pavadinimų į televizorių, KlangHub rodo atlikėją ir dainą iš šio failo arba iš Windows grojimo informacijos.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Naršyti…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>parengta</value>
   </data>

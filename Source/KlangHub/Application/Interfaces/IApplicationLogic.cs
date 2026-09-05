@@ -27,6 +27,13 @@ namespace KlangHub.Application.Interfaces
         void SetStreamFormat(SupportedStreamFormat format);
         void SetCulture(string culture);
         void SetStreamTitle(string title);
+
+        /// <summary>
+        /// Re-read the metadata settings and start the now-playing sources over with them. Called when the
+        /// user changes a switch or the file path, so a correction takes effect while the music is running
+        /// rather than at the next start.
+        /// </summary>
+        void ApplyNowPlayingOptions();
         bool WasPlaying(DiscoveredDevice discoveredDevice);
         void ClearMp3Buffer();
         void SaveSettings();

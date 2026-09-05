@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Mhux disponibbli</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Ikkonferma fuq l-apparat</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>DAK LI QED JINDAQQ</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Aqra t-titli mill-fajl tal-mużika</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Uża l-informazzjoni tad-daqq ta' Windows</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Fajl ta' dak li qed jindaqq</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Jekk il-player tiegħek ma jibgħatx titli lit-televiżjoni, KlangHub juri l-artist u l-kanzunetta minn dan il-fajl jew mill-informazzjoni tad-daqq ta Windows.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Fittex…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>lest</value>
   </data>

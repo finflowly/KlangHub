@@ -495,6 +495,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Unreachable</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Approve on device</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>WHAT IS PLAYING</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Read titles from the music file</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Use the Windows now-playing display</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Now-playing file</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>If your player sends no titles to the television, KlangHub shows the artist and song from this file or from the Windows now-playing display.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Browse…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>ready</value>
   </data>

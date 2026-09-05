@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Μη προσβάσιμο</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Επιβεβαίωση στη συσκευή</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>ΤΙ ΠΑΙΖΕΙ</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Ανάγνωση τίτλων από το αρχείο μουσικής</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Χρήση των πληροφοριών αναπαραγωγής των Windows</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Αρχείο τρέχουσας αναπαραγωγής</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Αν η εφαρμογή αναπαραγωγής δεν στέλνει τίτλους στην τηλεόραση, το KlangHub δείχνει τον καλλιτέχνη και το τραγούδι από αυτό το αρχείο ή από τις πληροφορίες αναπαραγωγής των Windows.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Αναζήτηση…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>έτοιμο</value>
   </data>

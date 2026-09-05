@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Nedostupno</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Potvrdite na uređaju</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>ŠTO SVIRA</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Čitaj naslove iz glazbene datoteke</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Koristi Windowsov prikaz reprodukcije</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Datoteka trenutne reprodukcije</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Ako vaš reproduktor ne šalje naslove televizoru, KlangHub prikazuje izvođača i pjesmu iz ove datoteke ili iz Windowsova prikaza reprodukcije.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Pregledaj…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>spremno</value>
   </data>

@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- Windows SDK version required for Windows.Media.Control (SMTC): the now-playing session
+         Windows itself keeps, which is how KlangHub learns what an external player is playing. -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <!-- xunit v3 runs on Microsoft.Testing.Platform, which `dotnet test` reaches through this bridge.
          The newer MTP v2 (xunit.v3 4.x) needs a .NET SDK past the one installed here: the test executable

@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Inaccesibil</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Confirmați pe dispozitiv</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>CE SE AUDE</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Citește titlurile din fișierul muzical</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Folosește informațiile de redare din Windows</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Fișier „se redă acum”</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Dacă playerul tău nu trimite titluri către televizor, KlangHub afișează artistul și piesa din acest fișier sau din informațiile de redare din Windows.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Răsfoiește…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>gata</value>
   </data>

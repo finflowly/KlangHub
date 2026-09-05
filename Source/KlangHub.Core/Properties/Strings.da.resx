@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Utilgængelig</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Bekræft på enheden</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>HVAD DER SPILLER</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Læs titler fra musikfilen</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Brug Windows' afspilningsvisning</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Now playing-fil</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Hvis din afspiller ikke sender titler til fjernsynet, viser KlangHub kunstner og sang fra denne fil eller fra Windows' afspilningsvisning.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Gennemse…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>klar</value>
   </data>

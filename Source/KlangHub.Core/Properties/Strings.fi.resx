@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Ei tavoiteta</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Vahvista laitteella</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>MITÄ NYT SOI</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Lue tiedot musiikkitiedostosta</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Käytä Windowsin toistotietoja</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Nyt soi -tiedosto</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Jos soittimesi ei lähetä kappaletietoja televisioon, KlangHub näyttää esittäjän ja kappaleen tästä tiedostosta tai Windowsin toistotiedoista.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Selaa…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>valmis</value>
   </data>

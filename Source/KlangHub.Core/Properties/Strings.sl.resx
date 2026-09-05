@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Nedosegljivo</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Potrdite na napravi</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>KAJ SE PREDVAJA</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Beri naslove iz glasbene datoteke</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Uporabi Windowsov prikaz predvajanja</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Datoteka trenutnega predvajanja</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Če vaš predvajalnik televizorju ne pošilja naslovov, KlangHub prikaže izvajalca in skladbo iz te datoteke ali iz Windowsovega prikaza predvajanja.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Prebrskaj…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>pripravljeno</value>
   </data>

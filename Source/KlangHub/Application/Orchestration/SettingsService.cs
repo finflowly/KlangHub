@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -38,6 +38,18 @@ namespace KlangHub.Application.Orchestration
         }
 
         public void Save() => settings.Save();
+
+        /// <summary>
+        /// Which ways of finding out what is playing the user allows. Everything is on unless it was
+        /// deliberately switched off: a listener who has not been to the settings should get the fullest
+        /// screen KlangHub can manage, not the emptiest.
+        /// </summary>
+        public Platform.NowPlaying.NowPlayingOptions GetNowPlayingOptions() => new()
+        {
+            UseFileTags = settings.ReadFileTags ?? true,
+            UseSystemMediaControls = settings.ReadWindowsNowPlaying ?? true,
+            NowPlayingFilePath = settings.NowPlayingFilePath ?? string.Empty
+        };
 
         /// <summary>Merge the currently discovered hosts into the saved device list (the SaveSettings loop).</summary>
         public void MergeDiscoveredHosts(IDevices devices)

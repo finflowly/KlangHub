@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- Windows SDK version required for Windows.Media.Control (SMTC): the now-playing session
+         Windows itself keeps, which is how KlangHub learns what an external player is playing. -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <RootNamespace>KlangHub</RootNamespace>
     <UseWindowsForms>false</UseWindowsForms>
   </PropertyGroup>
@@ -13,6 +15,9 @@
          72 KB generated file plus a Google.ProtocolBuffers.dll from 2013 - unmaintained for over a decade,
          and impossible to update. Now the .proto IS the source, and protoc runs as part of the build. -->
     <Protobuf Include="ProtocolBuffer/CastChannel.proto" GrpcServices="None" />
+    <!-- Clementine's network remote. Apache-2.0, reduced and re-stated in proto3 - see the file's own
+         header for why, and docs/THIRD-PARTY-LICENSES.md for the attribution. -->
+    <Protobuf Include="ProtocolBuffer/ClementineRemote.proto" GrpcServices="None" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.36.1" />
@@ -25,6 +30,7 @@
     <PackageReference Include="Tmds.MDns" Version="0.9.1" />
     <!-- net10: System.Text.Json is provided in-box by the shared framework (SDK NU1510) — no package ref needed. -->
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="10.0.11" />
+    <PackageReference Include="z440.atl.core" Version="7.16.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KlangHub.Core\KlangHub.Core.csproj" />

@@ -362,5 +362,51 @@ namespace KlangHub.Classes
                 this[nameof(StreamTitle)] = value;
             }
         }
+
+        /// <summary>Read the tags of the played file. Null means yes - the best source there is.</summary>
+        [UserScopedSetting()]
+        public bool? ReadFileTags
+        {
+            get
+            {
+                return (bool?)this[nameof(ReadFileTags)];
+            }
+            set
+            {
+                this[nameof(ReadFileTags)] = value;
+            }
+        }
+
+        /// <summary>Read Windows' own now-playing session. Null means yes.</summary>
+        [UserScopedSetting()]
+        public bool? ReadWindowsNowPlaying
+        {
+            get
+            {
+                return (bool?)this[nameof(ReadWindowsNowPlaying)];
+            }
+            set
+            {
+                this[nameof(ReadWindowsNowPlaying)] = value;
+            }
+        }
+
+        /// <summary>
+        /// Path to a now-playing text file a player or a small helper keeps up to date. Empty by default:
+        /// this is the escape hatch for players that publish nothing at all, and it only helps somebody who
+        /// has set such a file up.
+        /// </summary>
+        [UserScopedSetting()]
+        public string NowPlayingFilePath
+        {
+            get
+            {
+                return (string)this[nameof(NowPlayingFilePath)];
+            }
+            set
+            {
+                this[nameof(NowPlayingFilePath)] = value;
+            }
+        }
     }
 }

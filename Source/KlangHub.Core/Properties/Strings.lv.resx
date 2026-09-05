@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Nav sasniedzams</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Apstipriniet ierīcē</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>KAS TIEK ATSKAŅOTS</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Lasīt nosaukumus no mūzikas faila</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Izmantot Windows atskaņošanas informāciju</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Pašlaik atskaņotā fails</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Ja jūsu atskaņotājs nesūta nosaukumus uz televizoru, KlangHub rāda izpildītāju un dziesmu no šī faila vai no Windows atskaņošanas informācijas.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Pārlūkot…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>gatavs</value>
   </data>

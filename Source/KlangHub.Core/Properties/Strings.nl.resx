@@ -437,6 +437,27 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Onbereikbaar</value>
   </data>
+  <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
+    <value>Bevestig op apparaat</value>
+  </data>
+  <data name="Label_Section_NowPlaying_Text" xml:space="preserve">
+    <value>WAT ER NU SPEELT</value>
+  </data>
+  <data name="Check_ReadFileTags_Text" xml:space="preserve">
+    <value>Titels uit het muziekbestand lezen</value>
+  </data>
+  <data name="Check_ReadWindowsNowPlaying_Text" xml:space="preserve">
+    <value>Windows-titelweergave gebruiken</value>
+  </data>
+  <data name="Label_NowPlayingFile_Text" xml:space="preserve">
+    <value>Now playing-bestand</value>
+  </data>
+  <data name="Label_NowPlayingHint_Text" xml:space="preserve">
+    <value>Als je speler geen titels naar de televisie stuurt, toont KlangHub artiest en nummer uit dit bestand of uit de Windows-titelweergave.</value>
+  </data>
+  <data name="Button_BrowseNowPlaying_Text" xml:space="preserve">
+    <value>Bladeren…</value>
+  </data>
   <data name="Card_Pill_Ready_Text" xml:space="preserve">
     <value>gereed</value>
   </data>
