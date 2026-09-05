@@ -216,15 +216,33 @@ namespace KlangHub.UserControls
         /// to preserve (everyone goes to the target), and a speaker at 0 would stay at 0 forever, so it is
         /// lifted along with the room.
         /// </summary>
+        /// <summary>
+        /// The mix as it was before the room was pulled to silence, so it can be restored on the way back up.
+        ///
+        /// Arithmetic alone cannot do this: at zero there are no ratios left, so a room dragged to 0 and
+        /// back came up flat - 13/11/20 became 15/15/15 and the balance the owner had set was gone for good.
+        /// The bar remembers it instead, which is where that knowledge belongs; RoomVolume stays a pure
+        /// function of what it is handed.
+        /// </summary>
+        private int[]? mixBeforeSilence;
+
         public void SetLevel(int target)
         {
             var list = Members;
             if (list.Count == 0) return;
 
-            var scaled = RoomVolume.Scale(
-                list.Select(d => d.VolumePercent).ToArray(),
-                list.Select(d => d.MaxVolumePercent).ToArray(),
-                target);
+            var current = list.Select(d => d.VolumePercent).ToArray();
+            var caps = list.Select(d => d.MaxVolumePercent).ToArray();
+
+            // Coming back up from a silenced room: scale the remembered mix, not the row of zeroes.
+            var basis = current;
+            if (current.All(v => v <= 0) && target > 0
+                && mixBeforeSilence != null && mixBeforeSilence.Length == current.Length)
+                basis = mixBeforeSilence;
+            else if (current.Any(v => v > 0))
+                mixBeforeSilence = current;
+
+            var scaled = RoomVolume.Scale(basis, caps, target);
 
             for (int i = 0; i < list.Count; i++)
                 list[i].SetVolumePercent(scaled[i]);

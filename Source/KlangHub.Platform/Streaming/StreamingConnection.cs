@@ -19,6 +19,14 @@ namespace KlangHub.Streaming
         private readonly IAudioHeader audioHeader;
         private bool isAudioHeaderSent;
         private int reduceLagCounter = 0;
+        /// <summary>
+        /// The size of each send block. Anything handed over in one piece must fit, because BufferBlock.Add
+        /// is all-or-nothing: a block that does not fit is dropped whole. The startup cushion is the one
+        /// caller that can approach this size, so it clamps against this constant rather than a number of
+        /// its own (see ApplicationBuffer.MaxStartupBytes).
+        /// </summary>
+        public const int StreamBufferBytes = 10_000_000;
+
         private readonly Thread streamThread;
         private long bytesSent;
         private readonly DateTime startedAt = DateTime.Now;
@@ -29,8 +37,8 @@ namespace KlangHub.Streaming
         {
             audioHeader = new AudioHeader();
             isAudioHeaderSent = false;
-            bufferCaptured = new BufferBlock() { Data = new byte[10000000] };
-            bufferSend = new BufferBlock() { Data = new byte[10000000] };
+            bufferCaptured = new BufferBlock() { Data = new byte[StreamBufferBytes] };
+            bufferSend = new BufferBlock() { Data = new byte[StreamBufferBytes] };
 
             streamThread = new Thread(StreamThread)
             {

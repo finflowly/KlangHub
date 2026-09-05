@@ -25,6 +25,15 @@ namespace KlangHub.Classes
         /// </summary>
         private const double MaxStartupWaitSeconds = 4.0;
 
+        /// <summary>
+        /// The largest cushion that can actually be delivered. StreamingConnection hands a block to a
+        /// fixed-size buffer whose Add is all-or-nothing, so a cushion bigger than that block is not merely
+        /// trimmed - it is dropped entirely, and the receiver starts with nothing at all. That is the
+        /// "spinner goes round, then it reloads" symptom, arrived at from the opposite direction.
+        /// Twelve seconds of stereo 24-bit is 3.5 MB and fits easily; 5.1 at 32-bit would not.
+        /// </summary>
+        private const double MaxStartupBytes = KlangHub.Streaming.StreamingConnection.StreamBufferBytes * 0.8;
+
         private const double BufferSizeInBytesDefault = 350000;
         private double BufferSizeInBytes = BufferSizeInBytesDefault;
         private int ExtraBufferInSeconds = 0;
@@ -91,11 +100,16 @@ namespace KlangHub.Classes
         /// meant two seconds of WAV - and thirty-two seconds of MP3 128, which no receiver waits for.
         /// </summary>
         private void SetBufferSize()
+            => BufferSizeInBytes = StartupBufferBytes(waveFormat, streamFormatSelected, ExtraBufferInSeconds);
+
+        /// <summary>Pure, so the floor and the ceiling can be tested without a device.</summary>
+        internal static double StartupBufferBytes(AudioFormat format, SupportedStreamFormat streamFormat, int extraSeconds)
         {
-            double seconds = ExtraBufferInSeconds + BaseBufferSeconds;
-            BufferSizeInBytes = Math.Max(
+            double wanted = StreamRate.BytesForSeconds(format, streamFormat, extraSeconds + BaseBufferSeconds);
+            return Math.Clamp(
+                wanted,
                 BufferSizeInBytesDefault / 4,   // a floor, so a tiny format still buffers something
-                StreamRate.BytesForSeconds(waveFormat, streamFormatSelected, seconds));
+                MaxStartupBytes);               // a ceiling, so what we build can actually be delivered
         }
 
         /// <summary>
