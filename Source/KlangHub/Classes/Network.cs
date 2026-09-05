@@ -64,12 +64,18 @@ namespace KlangHub.Classes
         /// <returns>true if it's a local IP address, or false</returns>
         public static bool IsInLocalIpRange(IPAddress address)
         {
-            if (address == null)
+            if (address == null || address.AddressFamily != AddressFamily.InterNetwork)
                 return false;
 
-            return address.ToString().StartsWith("192.168.")
-                || address.ToString().StartsWith("10.")
-                || address.ToString().StartsWith("172.");
+            // Compared as numbers, not as text. The middle RFC 1918 block is 172.16.0.0/12 - the first
+            // sixteen of the 172 networks, not all 256 - and the prefix test this replaces accepted the
+            // rest of them too, 172.217 among them, which is ordinary public space that is very much in
+            // use. An adapter on such an address would have been offered to the speakers as local.
+            var octets = address.GetAddressBytes();
+
+            return (octets[0] == 192 && octets[1] == 168)
+                || octets[0] == 10
+                || (octets[0] == 172 && octets[1] >= 16 && octets[1] <= 31);
         }
 
         /// <summary>

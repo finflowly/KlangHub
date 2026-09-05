@@ -250,8 +250,10 @@ namespace KlangHub.Streaming
 
             // Remember what a second of this stream weighs, so the health watch can tell a shortfall from a
             // busy moment - and can tell that it must not try, which is the answer for FLAC.
-            if (format != null)
-                expectedBytesPerSecond = StreamCodec.WireBytesPerSecond(streamFormat, format.SampleRate, format.Channels, format.BitsPerSample);
+            // No null test here: the guard at the top of the method already returned for a null format.
+            // Testing again made the compiler treat everything after it as possibly-null again, which is
+            // what CS8604 was reporting three lines further down - a warning about a check, not a bug.
+            expectedBytesPerSecond = StreamCodec.WireBytesPerSecond(streamFormat, format.SampleRate, format.Channels, format.BitsPerSample);
 
             // Send the audio header before the first data - which for MP3 and FLAC means sending nothing,
             // because those streams already carry their own (see AudioHeader.GetStreamHeader).

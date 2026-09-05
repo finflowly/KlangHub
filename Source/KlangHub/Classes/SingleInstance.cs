@@ -40,11 +40,19 @@ namespace KlangHub.Classes
         /// <summary>True when no other KlangHub was already running for this user.</summary>
         public bool IsOnlyInstance { get; }
 
-        public static SingleInstance TryAcquire()
+        public static SingleInstance TryAcquire() => TryAcquire(Name);
+
+        /// <summary>
+        /// Claim a named instance. The application always claims <see cref="Name"/>; the parameter exists
+        /// so a test can claim something of its own. Sharing the real name with the tests meant that
+        /// installing KlangHub and then running the suite turned two tests red - on a build server, where
+        /// the application is never running, they passed and hid it.
+        /// </summary>
+        public static SingleInstance TryAcquire(string name)
         {
             try
             {
-                var mutex = new Mutex(initiallyOwned: true, Name, out var createdNew);
+                var mutex = new Mutex(initiallyOwned: true, name, out var createdNew);
                 if (createdNew)
                     return new SingleInstance(mutex, true);
 

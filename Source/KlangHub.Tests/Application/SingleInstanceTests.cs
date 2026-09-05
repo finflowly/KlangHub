@@ -1,3 +1,4 @@
+using System;
 using KlangHub.Classes;
 using Xunit;
 
@@ -15,23 +16,34 @@ namespace KlangHub.Tests.Application
     /// </summary>
     public class SingleInstanceTests
     {
+        /// <summary>
+        /// A name of this test run's own. Claiming the real one would mean the suite fails on any machine
+        /// where KlangHub happens to be running - which is every machine where somebody just installed it
+        /// to try it out, and no build server, so the failure would look like a mystery.
+        /// </summary>
+        private static string AnUnusedName() => @"Local\KlangHub-test-" + Guid.NewGuid().ToString("N");
+
         [Fact]
         public void The_first_copy_gets_it_and_the_second_does_not()
         {
-            using var first = SingleInstance.TryAcquire();
+            var name = AnUnusedName();
+
+            using var first = SingleInstance.TryAcquire(name);
             Assert.True(first.IsOnlyInstance);
 
-            using var second = SingleInstance.TryAcquire();
+            using var second = SingleInstance.TryAcquire(name);
             Assert.False(second.IsOnlyInstance);
         }
 
         [Fact]
         public void The_next_copy_may_start_once_the_first_has_gone()
         {
-            using (var first = SingleInstance.TryAcquire())
+            var name = AnUnusedName();
+
+            using (var first = SingleInstance.TryAcquire(name))
                 Assert.True(first.IsOnlyInstance);
 
-            using var next = SingleInstance.TryAcquire();
+            using var next = SingleInstance.TryAcquire(name);
             Assert.True(next.IsOnlyInstance);
         }
 

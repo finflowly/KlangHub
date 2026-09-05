@@ -667,8 +667,12 @@ namespace KlangHub.Communication
 
             Connected = true;
 
-            if (mediaStatusMessage?.status?.First()?.volume?.controlType != null && 
-                mediaStatusMessage?.status?.First()?.volume?.stepInterval > 0)
+            // Both status paths now hand the volume over on the same terms. The `stepInterval > 0` test
+            // that stood here existed to keep a step of 0 away from a loop that added the step to the
+            // level until it reached the target - with 0 that loop never ended. The loop is gone, and the
+            // test had become actively harmful: a device whose volume is fixed reports exactly step 0, so
+            // this discarded the very messages that would have told the card it is fixed.
+            if (mediaStatusMessage?.status?.FirstOrDefault()?.volume != null)
                 device.OnVolumeUpdate(mediaStatusMessage.status.First().volume);
 
             chromeCastMediaSessionId = mediaStatusMessage!.status.Any() ? mediaStatusMessage.status.First().mediaSessionId : 1;

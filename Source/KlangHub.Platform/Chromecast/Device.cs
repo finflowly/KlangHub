@@ -28,8 +28,16 @@ namespace KlangHub.Application
         private readonly IDeviceConnection deviceConnection;
         private readonly DiscoveredDevice discoveredDevice;
         private Volume volumeSetting;
-        private DateTime latestVolumeChange;
-        private float latestVolumeSet;
+
+        /// <summary>
+        /// The level we asked for and have not been told about yet, or null when nothing is outstanding.
+        /// <para>
+        /// Nullable rather than the 0 that stood here before: 0 is a level somebody can ask for, and
+        /// using it as "nothing pending" meant a request to silence a speaker was never tracked.
+        /// </para>
+        /// </summary>
+        private float? pendingVolume;
+        private DateTime pendingVolumeSince;
         private readonly ILogger logger;
         private DateTime lastGetStatus;
         private bool devicePlayedWhenStopped;
@@ -330,47 +338,66 @@ namespace KlangHub.Application
         /// Set the volume on the device
         /// </summary>
         /// <param name="level"></param>
-        public void VolumeSet(float level)
+        public void VolumeSet(float level) => VolumeSet(level, DateTime.UtcNow);
+
+        /// <summary>
+        /// Ask the device for a level. The clock is a parameter for the same reason it is one in
+        /// <see cref="ShouldRunPoll"/>: so the behaviour can be tested without waiting for it.
+        /// <para>
+        /// There was a guard here that dropped any change arriving less than 1000 <em>ticks</em> - a
+        /// hundred microseconds - after the last one. It has been removed rather than corrected to the
+        /// second it was presumably meant to be: it never once had an effect, so nothing depends on it,
+        /// and a real one-second gate would break dragging the slider, which is the one thing that sends
+        /// volume changes in a stream. The flood it was meant to stop is already stopped a level up,
+        /// where <c>DeviceControl</c> sends only when the whole percent changes.
+        /// </para>
+        /// </summary>
+        internal void VolumeSet(float level, DateTime now)
         {
             if (deviceCommunication == null || volumeSetting == null || isDisposed)
                 return;
 
-            if (DateTime.Now.Ticks - latestVolumeChange.Ticks < 1000)
+            // A device that cannot change its volume is not asked to. Anything that waits for the level
+            // to move would otherwise wait for ever, and ask again every time it was disappointed.
+            if (VolumeLevel.IsFixed(volumeSetting.controlType))
                 return;
 
-            latestVolumeChange = DateTime.Now;
-
-            if (volumeSetting.level > level)
-                while (volumeSetting.level > level) volumeSetting.level -= volumeSetting.stepInterval;
-            if (volumeSetting.level < level)
-                while (volumeSetting.level < level) volumeSetting.level += volumeSetting.stepInterval;
-            if (level > 1) { level = 1; volumeSetting.level = level; }
-            if (level < 0) { level = 0; volumeSetting.level = level; }
+            var wanted = VolumeLevel.Quantise(level, volumeSetting.stepInterval);
+            volumeSetting.level = wanted;
 
             deviceCommunication.VolumeSet(volumeSetting);
-            latestVolumeSet = level;
+            pendingVolume = wanted;
+            pendingVolumeSince = now;
         }
 
+        /// <summary>The device's own step, or the protocol default when it has not said.</summary>
+        private float VolumeStep => volumeSetting is { stepInterval: > 0f } ? volumeSetting.stepInterval : 0.05f;
+
         /// <summary>
-        /// Volume up.
+        /// Volume up, by the step this device works in - not the fixed 0.05 that stood here, which moved
+        /// a television five of its own steps at a time.
         /// </summary>
-        public void VolumeUp()
+        public void VolumeUp() => VolumeUp(DateTime.UtcNow);
+
+        internal void VolumeUp(DateTime now)
         {
             if (volumeSetting == null || isDisposed)
                 return;
 
-            VolumeSet(volumeSetting.level + 0.05f);
+            VolumeSet(volumeSetting.level + VolumeStep, now);
         }
 
         /// <summary>
-        /// Volume down.
+        /// Volume down, by the device's own step.
         /// </summary>
-        public void VolumeDown()
+        public void VolumeDown() => VolumeDown(DateTime.UtcNow);
+
+        internal void VolumeDown(DateTime now)
         {
             if (volumeSetting == null || isDisposed)
                 return;
 
-            VolumeSet(volumeSetting.level - 0.05f);
+            VolumeSet(volumeSetting.level - VolumeStep, now);
         }
 
         /// <summary>
@@ -585,34 +612,55 @@ namespace KlangHub.Application
         /// A volume update from the device.
         /// </summary>
         /// <param name="volume">the volume on the device</param>
-        public void OnVolumeUpdate(Volume volume)
+        public void OnVolumeUpdate(Volume volume) => OnVolumeUpdate(volume, DateTime.UtcNow);
+
+        internal void OnVolumeUpdate(Volume volume, DateTime now)
         {
-            if (isDisposed)
+            if (isDisposed || volume == null)
                 return;
 
-            var tmpLevel = volume.level;
+            var reported = volume.level;
             volumeSetting = volume;
-            if (volume.level != latestVolumeSet && latestVolumeSet != 0)
+
+            if (pendingVolume is float wanted)
             {
-                volume.level = latestVolumeSet;
-                if (LevelIsOk(tmpLevel))
+                // Compared with a tolerance, not with `!=` on a float. The level we sent was rounded to
+                // the device's step and the level it reports comes back through its own arithmetic, so
+                // the two are near-guaranteed to differ in the last digits and never in a way anyone
+                // could hear. The tolerance used to be stepInterval - which a fixed-volume device
+                // reports as 0, making it no tolerance at all for exactly the devices that need one.
+                if (VolumeLevel.Same(reported, wanted))
                 {
-                    latestVolumeSet = 0;
+                    pendingVolume = null;
                 }
-            }
-            else if (LevelIsOk(tmpLevel))
-            {
-                latestVolumeSet = 0;
+                else if (now - pendingVolumeSince > PendingVolumePatience)
+                {
+                    // It has had long enough. Whatever it says now is the truth, even if it is not what
+                    // was asked for - a card showing a level the speaker is not at is worse than a card
+                    // showing a request that did not take.
+                    pendingVolume = null;
+                }
+                else
+                {
+                    // Still outstanding: keep showing what was asked for, so the slider does not jump
+                    // back under the user's finger while the device catches up.
+                    volumeSetting.level = wanted;
+                }
             }
 
             // 2.2b-4.5: DeviceControl observes volume via VolumeChanged (no direct push).
-            VolumeChanged?.Invoke(this, new VolumeStatus(volumeSetting.level, volumeSetting.muted, volumeSetting.stepInterval));
+            VolumeChanged?.Invoke(this, CurrentVolume());
         }
 
-        private bool LevelIsOk(float level)
-        {
-            return Math.Abs(level - latestVolumeSet) <= volumeSetting.stepInterval;
-        }
+        /// <summary>
+        /// How long a device is given to report the level it was asked for before its own answer is
+        /// believed instead.
+        /// </summary>
+        internal static readonly TimeSpan PendingVolumePatience = TimeSpan.FromSeconds(3);
+
+        private VolumeStatus CurrentVolume()
+            => new VolumeStatus(volumeSetting.level, volumeSetting.muted, volumeSetting.stepInterval,
+                                VolumeLevel.IsFixed(volumeSetting.controlType));
 
         /// <summary>
         /// Send silence to the device.
@@ -822,7 +870,9 @@ namespace KlangHub.Application
 
         string IPlaybackSession.StatusText => GetStatusText() ?? string.Empty;
 
-        VolumeStatus IPlaybackSession.Volume => new(volumeSetting?.level ?? 0f, volumeSetting?.muted ?? false, volumeSetting?.stepInterval ?? 0.05f);
+        VolumeStatus IPlaybackSession.Volume => new(volumeSetting?.level ?? 0f, volumeSetting?.muted ?? false,
+                                                    volumeSetting?.stepInterval ?? 0.05f,
+                                                    VolumeLevel.IsFixed(volumeSetting?.controlType));
 
         // 2.2b-M2: control methods are Task-returning on the contract; Chromecast's work is synchronous
         // (DeviceCommunication state machine), so each does its work and returns a completed Task.

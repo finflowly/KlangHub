@@ -6,6 +6,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using KlangHub.Core.Casting;
 using KlangHub.Application;
 using KlangHub.Classes;
 using KlangHub.Communication;
@@ -155,6 +156,10 @@ namespace KlangHub.UserControls
             Invalidate();
         }
 
+        /// <summary>How many times this card has already asked the speaker to come back under its cap,
+        /// since the last time it was under it. See <see cref="VolumeLevel.ShouldPushDownToCap"/>.</summary>
+        private int capPushAttempts;
+
         private void OnSessionVolumeChanged(object? sender, VolumeStatus v) => RenderVolume(v);
 
         private void RenderVolume(VolumeStatus v)
@@ -164,11 +169,26 @@ namespace KlangHub.UserControls
 
             int reported = (int)Math.Round(v.Level * 100);
             // Hard cap: if the endpoint reports a level above the per-speaker maximum, push it back down.
-            if (reported > maxVolume)
+            //
+            // With a count, and never at a device that cannot change its volume. This ran on every status
+            // message with neither, and a speaker that could not comply - a television on a fixed output,
+            // or one clamping to a maximum of its own - answered every SET_VOLUME with the same level and
+            // was sent another. The log filled up for as long as the program ran.
+            if (VolumeLevel.ShouldPushDownToCap(reported, maxVolume, v.IsFixed, capPushAttempts))
             {
+                capPushAttempts++;
                 reported = maxVolume;
                 TryOnSession(s => s.SetVolume(maxVolume / 100f));
             }
+            else if (reported <= maxVolume)
+            {
+                capPushAttempts = 0;   // back inside the cap: the next excursion starts fresh
+            }
+            else
+            {
+                reported = Math.Min(reported, maxVolume);   // show the cap even where we stopped insisting
+            }
+
             volume = reported;
             muted = v.Muted;
             stepPercent = Math.Max(1, (int)Math.Round(v.StepInterval * 100));
@@ -714,6 +734,7 @@ namespace KlangHub.UserControls
                 SpeakerPrefs.SetRoom(descriptor?.Id, popup.Room);
                 if (volume > maxVolume)
                 {
+                    capPushAttempts = 0;   // a new cap is a new question, whatever the device said to the old one
                     // The card's own figure has to come down too, not just the device. TryOnSession
                     // swallows the exception for a speaker with no live session, so for an idle device
                     // nothing happened at all and VolumePercent kept reporting a level above the cap - a

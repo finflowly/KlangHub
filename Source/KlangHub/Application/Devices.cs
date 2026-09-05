@@ -457,7 +457,17 @@ namespace KlangHub.Application
                 logger.Log(ex, "Devices.OnGetStatus");
             }
 
-            foreach (var device in deviceList)
+            // A snapshot, for the same reason SendStageUpdate takes one just below: discovery adds to this
+            // list from whichever thread the mDNS or eureka_info reply arrives on, while this runs on the
+            // poll timer. Walking it directly ended a poll round with "Collection was modified" the moment
+            // a device turned up during one - and polling is what notices that a device has gone.
+            IDevice[] snapshot;
+            lock (deviceList)
+            {
+                snapshot = deviceList.ToArray();
+            }
+
+            foreach (var device in snapshot)
             {
                 device.OnGetStatus();
             }
