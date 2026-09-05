@@ -25,6 +25,10 @@ namespace KlangHub.Application
         private bool isMuted;
         private List<string> ignoreIpAddresses = null!;
 
+        /// <summary>One mDNS scan reports every device several times over; without this, each repetition
+        /// sent another eureka_info request to a speaker that is busy decoding audio.</summary>
+        private readonly DiscoveryThrottle discoveryThrottle = new();
+
         public Devices()
         {
 
@@ -55,6 +59,17 @@ namespace KlangHub.Application
 
             if (!discoveredDevice.AddedByDeviceInfo && !discoveredDevice.IsGroup)
             {
+                // Only when this announcement says something new. The fingerprint carries everything worth
+                // re-reading the device for, so a moved or renamed device is still picked up at once - the
+                // DHCP-move reconciliation depends on that - while the five duplicates of one scan are not
+                // five more HTTP requests to a speaker in the middle of a stream.
+                var fingerprint = $"{discoveredDevice.IPAddress}:{discoveredDevice.Port}|{discoveredDevice.Headers}";
+                var key = !string.IsNullOrEmpty(discoveredDevice.Id)
+                    ? discoveredDevice.Id
+                    : $"{discoveredDevice.IPAddress}:{discoveredDevice.Port}";
+                if (!discoveryThrottle.ShouldAct(key, fingerprint, DateTime.Now))
+                    return;
+
                 logger?.Log($"Discovery: '{discoveredDevice.Name}' ({discoveredDevice.IPAddress}) - fetching eureka_info.");
                 var mdnsId = discoveredDevice.Id;
                 var mdnsTxt = discoveredDevice.Headers;
