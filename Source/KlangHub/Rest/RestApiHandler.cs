@@ -2,6 +2,7 @@
 using KlangHub.Application.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -11,12 +12,12 @@ namespace KlangHub.Rest
 {
     public static class RestApiHandler
     {
-        private const string responseOK = "HTTP/1.1 200 OK\r\nContent-Length: {1}\r\nContent-Type: text/json\r\nConnection: Closed\r\n\r\n{0}";
-        private const string responseNotOK = "HTTP/1.1 400 Bad Request\r\nContent-Length: {1}\r\nContent-Type: text/json\r\nConnection: Closed\r\n\r\n{0}";
-        private const string errorBadRequest = "{\"errors\": { \"status\": \"400 Bad Request\", \"id\": \"1\" } }";
-        private const string errorNotSupported = "{\"errors\": { \"status\": \"400 Bad Request\", \"id\": \"2\", \"title\": \"Action not supported\" } }";
-        private const string errorDeviceNotFound = "{\"errors\": { \"status\": \"404 Not Found\", \"id\": \"3\", \"title\": \"Device not found\" } }";
-        private const string errorWrongVolume = "{\"errors\": { \"status\": \"400 Bad Request\", \"id\": \"3\", \"title\": \"Volume should be an integer between 0 and 100 (/volume/<device>/<volume>)\" } }";
+        // Bodies and framing are built in RestPayload, which escapes what it is given and counts the
+        // length in bytes. Both used to happen here, by concatenation, and both were wrong for it.
+        private static readonly string errorBadRequest = RestPayload.Error("400 Bad Request", "1");
+        private static readonly string errorNotSupported = RestPayload.Error("400 Bad Request", "2", "Action not supported");
+        private static readonly string errorDeviceNotFound = RestPayload.Error("404 Not Found", "3", "Device not found");
+        private static readonly string errorWrongVolume = RestPayload.Error("400 Bad Request", "3", "Volume should be an integer between 0 and 100 (/volume/<device>/<volume>)");
         
         public static void Process(Socket socket, string request, IDevices devices, ILogger logger, Action restartRecording,
             Func<IDevice, IPlaybackSession> resolveSession)
@@ -52,45 +53,31 @@ namespace KlangHub.Rest
                 else
                     response = errorNotSupported;
 
-                if (response.IndexOf("{\"errors") == 0)
-                    socket.Send(Encoding.UTF8.GetBytes(string.Format(responseNotOK, response, response.Length)));
-                else
-                    socket.Send(Encoding.UTF8.GetBytes(string.Format(responseOK, response, response.Length)));
+                socket.Send(RestPayload.Http(ok: !response.StartsWith("{\"errors"), response));
             }
             catch (Exception ex)
             {
                 logger.Log(ex.Message);
-                response = errorBadRequest;
-                socket.Send(Encoding.UTF8.GetBytes(string.Format(responseNotOK, response, response.Length)));
+                socket.Send(RestPayload.Http(ok: false, errorBadRequest));
             }
         }
 
         private static string RestartRecording(Action restartRecording)
         {
             restartRecording?.Invoke();
-            var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/restartrecording\" } } }";
-            return response;
+            return RestPayload.Done("/restartrecording");
         }
 
         private static string List(IDevices devices)
         {
-            var deviceList = devices.GetDeviceList();
-            List<string> list = new List<string>();
-            foreach (var device in deviceList)
-            {
-                list.Add("{ \"type\": \"device\", " +
-                    "\"attributes\": " +
-                    "{ " +
-                    "\"name\": \"" + device.GetFriendlyName() + "\", " +
-                    "\"state\": \"" + device.GetDeviceState().ToString() + "\", " +
-                    "\"volume\": \"" + device.GetVolumeLevel() + "\", " +
-                    "\"ip\": \"" + device.GetHost() + "\", " +
-                    "\"port\": \"" + device.GetPort() + "\", " +
-                    "\"isgroup\": \"" + device.IsGroup() + "\"" +
-                    " } }");
-            }
-            var response = string.Format("{{\"data\": [{0}] }}", string.Join(",", list));
-            return response;
+            // The friendly name is whatever the device announced over mDNS: data, not syntax.
+            return RestPayload.DeviceList(devices.GetDeviceList().Select(device => new RestDevice(
+                device.GetFriendlyName(),
+                device.GetDeviceState().ToString(),
+                device.GetVolumeLevel().ToString(),
+                device.GetHost(),
+                device.GetPort().ToString(),
+                device.IsGroup().ToString())));
         }
 
         private static string ToggleMute(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
@@ -112,8 +99,7 @@ namespace KlangHub.Rest
                 Control(device, resolveSession, s => s.SetMuted(!s.Volume.Muted), d => d.VolumeMute());
             }
 
-            var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/togglemute" + action + "\" } } }";
-            return response;
+            return RestPayload.Done("/togglemute" + action);
         }
 
         private static string Volume(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
@@ -134,8 +120,7 @@ namespace KlangHub.Rest
 
             Control(device, resolveSession, s => s.SetVolume(level / 100.0f), d => d.VolumeSet(level / 100.0f));
 
-            var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/volume" + action + "\" } } }";
-            return response;
+            return RestPayload.Done("/volume" + action);
         }
 
         private static string Stop(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
@@ -154,8 +139,7 @@ namespace KlangHub.Rest
                 Control(device, resolveSession, s => s.Stop(), d => d.Stop(true));
             }
 
-            var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/stop" + action + "\" } } }";
-            return response;
+            return RestPayload.Done("/stop" + action);
         }
 
         private static string Start(string action, IDevices devices, Func<IDevice, IPlaybackSession> resolveSession)
@@ -174,8 +158,7 @@ namespace KlangHub.Rest
                 Control(device, resolveSession, s => s.TogglePlayStop(), d => d.OnClickPlayStop());
             }
 
-            var response = "{\"data\": { \"type\": \"done\", \"id\": \"1\", \"attributes\": { \"action\": \"/start" + action + "\" } } }";
-            return response;
+            return RestPayload.Done("/start" + action);
         }
 
         // 2.2b-4.4f: route one device's control action through the neutral session, with fallbacks.
