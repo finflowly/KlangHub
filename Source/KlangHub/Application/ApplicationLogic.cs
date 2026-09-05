@@ -503,7 +503,7 @@ namespace KlangHub.Application
 
                 notifyIcon = new NotifyIcon();
                 System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-                notifyIcon.Icon = Classes.Theme.LoadAppIcon() ?? (Icon?)resources.GetObject("$this.Icon");
+                notifyIcon.Icon = Classes.Theme.LoadTrayIcon() ?? (Icon?)resources.GetObject("$this.Icon");
                 notifyIcon.Visible = true;
                 notifyIcon.Text = Properties.Strings.MainForm_Text;
                 notifyIcon.ContextMenuStrip = contextMenuStrip;

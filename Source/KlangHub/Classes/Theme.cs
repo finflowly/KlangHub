@@ -293,6 +293,24 @@ namespace KlangHub.Classes
             catch { return null; }
         }
 
+        /// <summary>
+        /// The brand mark at the size the notification area actually draws, rather than the icon's default
+        /// size scaled down by the shell.
+        ///
+        /// KlangHub.ico carries a frame drawn for every size Windows asks for - the small ones are drawn
+        /// with one bold ring instead of three, because three rings at 16 px are a smudge. Handing the tray
+        /// a 32-px frame throws that work away: the shell resamples it and the mark goes back to being an
+        /// indistinct dark square. Asking for SmallIconSize picks the right frame, and follows the user's
+        /// DPI, where a hard-coded 16 would not.
+        /// </summary>
+        public static Icon? LoadTrayIcon()
+        {
+            var icon = LoadAppIcon();
+            if (icon == null) return null;
+            try { return new Icon(icon, SystemInformation.SmallIconSize); }
+            catch { return icon; }
+        }
+
         private static bool HasFamily(string name)
         {
             try { using var f = new Font(name, 9f); return string.Equals(f.Name, name, StringComparison.OrdinalIgnoreCase); }
