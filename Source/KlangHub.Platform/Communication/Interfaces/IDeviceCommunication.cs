@@ -28,5 +28,11 @@ namespace KlangHub.Communication.Interfaces
         void ResumeAfterConnectionLoss();
         void Dispose();
         UserMode GetUserMode();
+
+        /// <summary>Tell KlangHub's own receiver what is playing. Ignored by Google's default receiver.</summary>
+        void SendStageUpdate(KlangHub.Core.NowPlaying.StageUpdate update);
+
+        /// <summary>Tell the stage whether the music is running or held.</summary>
+        void SendStageState(bool playing);
     }
 }

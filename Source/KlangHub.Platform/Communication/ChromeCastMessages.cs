@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Google.Protobuf;
 using KlangHub.ProtocolBuffer;
 using KlangHub.Communication.Classes;
+using KlangHub.Core.NowPlaying;
 using KlangHub.Communication.Interfaces;
 using System.Text.Json;
 
@@ -174,6 +175,75 @@ namespace KlangHub.Communication
         {
             var message = new MessageQuitApplication { type = "STOP", sessionId = sessionId, requestId = requestId };
             return GetCastMessage(message, namespaceReceiver);
+        }
+
+        /// <summary>
+        /// KlangHub's own channel to KlangHub's own receiver. Must match the namespace the receiver
+        /// registers character for character: a mismatch fails silently on both ends - the device simply
+        /// never delivers the message, with nothing logged anywhere to say so.
+        /// </summary>
+        public const string namespaceStage = "urn:x-cast:de.klanghub.stage";
+
+        /// <summary>
+        /// Null fields are dropped rather than written as null, because on the receiving side "absent"
+        /// means "no news, keep what you have" while a null would read as "clear this line".
+        /// </summary>
+        private static readonly JsonSerializerOptions stageJson = new()
+        {
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        };
+
+        /// <summary>
+        /// A new piece, or a correction to the one playing. This is what makes a track change possible
+        /// without a fresh LOAD - and a LOAD on a loopback stream is one to three seconds of silence.
+        /// </summary>
+        public CastMessage GetStageTrackMessage(StageUpdate update, string sourceId, string destinationId)
+        {
+            var message = new MessageStageTrack
+            {
+                type = "track",
+                title = update.Title,
+                artist = update.Artist,
+                album = update.Album,
+                zone = update.Zone,
+                cover = update.Cover,
+                quality = update.Quality,
+                duration = update.Duration,
+                newTrack = update.NewTrack
+            };
+
+            return GetStageMessage(message, sourceId, destinationId);
+        }
+
+        public CastMessage GetStagePositionMessage(double position, double? duration, string sourceId, string destinationId)
+        {
+            var message = new MessageStagePosition { type = "position", position = position, duration = duration };
+            return GetStageMessage(message, sourceId, destinationId);
+        }
+
+        public CastMessage GetStageStateMessage(bool playing, string sourceId, string destinationId)
+        {
+            var message = new MessageStageState { type = "state", playing = playing };
+            return GetStageMessage(message, sourceId, destinationId);
+        }
+
+        /// <summary>
+        /// Addressed to the receiver application, never to sender-0/receiver-0. That pair is the device's
+        /// own platform channel; our receiver lives at the transport id the RECEIVER_STATUS handed back,
+        /// and a stage message sent to the platform is simply dropped.
+        /// </summary>
+        private CastMessage GetStageMessage(PayloadMessageBase message, string sourceId, string destinationId)
+        {
+            var json = JsonSerializer.Serialize(message, message.GetType(), stageJson);
+            return new CastMessage
+            {
+                ProtocolVersion = CastMessage.Types.ProtocolVersion.Castv210,
+                SourceId = sourceId,
+                DestinationId = destinationId,
+                PayloadType = CastMessage.Types.PayloadType.String,
+                Namespace = namespaceStage,
+                PayloadUtf8 = json
+            };
         }
 
         public CastMessage GetCastMessage(PayloadMessageBase message, string msgNamespace, string? sourceId = null, string? destinationId = null)

@@ -146,6 +146,53 @@ namespace KlangHub.Communication.Classes
     }
 
     /// <summary>
+    /// What KlangHub tells its own receiver over its own namespace.
+    /// <para>
+    /// Every field is optional and null ones are left off the wire entirely (see the serializer options in
+    /// ChromeCastMessages). That is not tidiness: the stage merges what it is given and keeps the rest, so
+    /// a key arriving as null would wipe a line the television is currently showing correctly - which is
+    /// exactly the flickering the metadata cascade exists to prevent.
+    /// </para>
+    /// </summary>
+    public class MessageStageTrack : PayloadMessageBase
+    {
+        public string? title { get; set; }
+        public string? artist { get; set; }
+        public string? album { get; set; }
+        public string? zone { get; set; }
+        public string? cover { get; set; }
+        public string? quality { get; set; }
+        public double? duration { get; set; }
+        public bool newTrack { get; set; }
+    }
+
+    /// <summary>Where we are in the piece. Small on purpose - it goes out every few seconds.</summary>
+    public class MessageStagePosition : PayloadMessageBase
+    {
+        public double position { get; set; }
+        public double? duration { get; set; }
+    }
+
+    /// <summary>Playing or held. The stage dims rather than clears when the music is paused.</summary>
+    public class MessageStageState : PayloadMessageBase
+    {
+        public bool playing { get; set; }
+    }
+
+    /// <summary>
+    /// A device that holds a LAUNCH back until somebody allows it at the device answers with this rather
+    /// than with a RECEIVER_STATUS. Note <c>launchRequestId</c>: it is deliberately not <c>requestId</c>,
+    /// so matching this message by request number - the way every other answer is matched - never works.
+    /// Observed on a Harman Kardon Enchant on 2026-09-05:
+    /// <c>{"launchRequestId":25,"status":"USER_ALLOWED","type":"LAUNCH_STATUS"}</c>.
+    /// </summary>
+    public class MessageLaunchStatus : PayloadMessageBase
+    {
+        public int launchRequestId { get; set; }
+        public string? status { get; set; }
+    }
+
+    /// <summary>
     /// After a 'LAUNCH' you get this message from the device, or when you request the device for it.
     /// type = 'RECEIVER_STATUS'
     /// </summary>

@@ -15,6 +15,12 @@ namespace KlangHub.Application
         void Initialize(DiscoveredDevice discoveredDevice, Action<DeviceEureka> deviceInformationCallback, Action<IDevice> stopGroup, Action<Action, CancellationTokenSource?> startTaskIn, Func<IDevice, bool> isGroupStatusBlankIn, Action<bool> autoMuteIn);
         bool AddStreamingConnection(string remoteAddress, Socket socket, SupportedStreamFormat streamFormat);
         void OnGetStatus();
+
+        /// <summary>Tell this device's stage what is playing. A device without our own receiver ignores it.</summary>
+        void SendStageUpdate(KlangHub.Core.NowPlaying.StageUpdate update);
+
+        /// <summary>Tell this device's stage whether the music is running or held.</summary>
+        void SendStageState(bool playing);
         void OnRecordingDataAvailable(byte[] dataToSend, AudioFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat);
         void OnClickPlayPause(object sender, EventArgs e);
         string GetUsn();

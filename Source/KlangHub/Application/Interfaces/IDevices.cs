@@ -11,6 +11,9 @@ namespace KlangHub.Application
     {
         void AddStreamingConnection(Socket socket, string httpRequest, SupportedStreamFormat streamFormat);
         void OnGetStatus();
+
+        /// <summary>Tell every device's stage what is playing now.</summary>
+        void SendStageUpdate(KlangHub.Core.NowPlaying.StageUpdate update);
         void OnRecordingDataAvailable(byte[] dataToSend, AudioFormat format, int reduceLagThreshold, SupportedStreamFormat streamFormat);
         void OnDeviceAvailable(DiscoveredDevice discoveredDevice);
         void VolumeUp();

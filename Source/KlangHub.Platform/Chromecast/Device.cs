@@ -232,6 +232,29 @@ namespace KlangHub.Application
         }
 
         /// <summary>
+        /// Passes what is playing on to the stage on this device's screen. Silent for a device that is
+        /// running Google's receiver, or one with no screen at all - a speaker is not a failure here.
+        /// </summary>
+        public void SendStageUpdate(KlangHub.Core.NowPlaying.StageUpdate update)
+        {
+            if (deviceCommunication == null || isDisposed)
+                return;
+
+            // The zone is filled in here rather than by the sender: one message goes out to every device,
+            // but each stage names the room it is standing in. "Wohnzimmer" on the television in the
+            // living room, whatever the kitchen speaker is called on the kitchen one.
+            deviceCommunication.SendStageUpdate(update with { Zone = GetFriendlyName() });
+        }
+
+        public void SendStageState(bool playing)
+        {
+            if (deviceCommunication == null || isDisposed)
+                return;
+
+            deviceCommunication.SendStageState(playing);
+        }
+
+        /// <summary>
         /// Get the device status.
         /// </summary>
         public void OnGetStatus()

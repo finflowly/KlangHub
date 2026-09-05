@@ -217,6 +217,13 @@ namespace KlangHub.Application.Orchestration
             // /artwork.png would keep showing the language of the first cast for the rest of the session.
             var lang = Classes.ArtworkRenderer.Culture.TwoLetterISOLanguageName;
             var path = "artwork.png?lang=" + lang;
+
+            // The cover's fingerprint rides along for the same reason the language does: receivers cache by
+            // URL, so without an address that changes with the picture, the first cover of the evening would
+            // stay on screen for the rest of the album.
+            var cover = Platform.NowPlaying.CurrentCover.Fingerprint;
+            if (!string.IsNullOrEmpty(cover))
+                path += "&cover=" + cover;
             return baseUrl.EndsWith("/") ? baseUrl + path : baseUrl + "/" + path;
         }
 

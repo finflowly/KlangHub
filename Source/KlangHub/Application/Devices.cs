@@ -464,6 +464,36 @@ namespace KlangHub.Application
         }
 
         /// <summary>
+        /// Tells every device's stage what is playing. Every device, not just the ones with a screen:
+        /// which of them can show anything is decided further down, where it is actually known, and a
+        /// speaker that quietly ignores the message costs nothing.
+        /// </summary>
+        public void SendStageUpdate(KlangHub.Core.NowPlaying.StageUpdate update)
+        {
+            if (deviceList == null || update == null)
+                return;
+
+            try
+            {
+                IDevice[] snapshot;
+                lock (deviceList)
+                {
+                    snapshot = deviceList.ToArray();
+                }
+
+                foreach (var device in snapshot)
+                {
+                    device.SendStageUpdate(update);
+                }
+            }
+            catch (Exception ex)
+            {
+                // A television that cannot be told what is playing is never a reason to disturb the music.
+                logger.Log(ex, "Devices.SendStageUpdate");
+            }
+        }
+
+        /// <summary>
         /// Set the value to auto start a device right after it has been added.
         /// </summary>
         /// <param name="autoStartIn"></param>

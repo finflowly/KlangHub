@@ -22,5 +22,12 @@ namespace KlangHub.Communication.Interfaces
         CastMessage GetReceiverStatusMessage(int requestId);
         CastMessage GetMediaStatusMessage(int requestId, string chromeCastSource, string chromeCastDestination);
         byte[] MessageToByteArray(CastMessage castMessage);
+
+        /// <summary>A new piece, or a correction, on KlangHub's own namespace.</summary>
+        CastMessage GetStageTrackMessage(KlangHub.Core.NowPlaying.StageUpdate update, string sourceId, string destinationId);
+
+        CastMessage GetStagePositionMessage(double position, double? duration, string sourceId, string destinationId);
+
+        CastMessage GetStageStateMessage(bool playing, string sourceId, string destinationId);
     }
 }

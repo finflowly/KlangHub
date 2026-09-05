@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using KlangHub.Streaming;
 using Xunit;
 
@@ -51,5 +51,51 @@ namespace KlangHub.Tests.Platform
             }
             return -1;
         }
+
+        [Fact]
+        public void A_jpeg_cover_is_served_as_a_jpeg()
+        {
+            // Album art off a disc is usually JPEG. Announcing it as image/png is how a receiver ends up
+            // showing nothing at all where a cover should be.
+            var jpeg = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+            var response = System.Text.Encoding.ASCII.GetString(ArtworkHttp.BuildImageResponse(jpeg));
+
+            Assert.Contains("Content-Type: image/jpeg", response);
+        }
+
+        [Fact]
+        public void The_rendered_artwork_is_still_served_as_a_png()
+        {
+            var png = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 0 };
+
+            var response = System.Text.Encoding.ASCII.GetString(ArtworkHttp.BuildImageResponse(png));
+
+            Assert.Contains("Content-Type: image/png", response);
+        }
+
+        [Fact]
+        public void Anything_unrecognised_is_still_called_a_png()
+        {
+            // The rendered fallback is always a PNG, so that is the safe thing to claim when in doubt.
+            var response = System.Text.Encoding.ASCII.GetString(ArtworkHttp.BuildImageResponse(new byte[] { 1, 2, 3 }));
+
+            Assert.Contains("Content-Type: image/png", response);
+        }
+
+
+        [Fact]
+        public void The_artwork_may_be_read_pixel_by_pixel_by_the_receiver()
+        {
+            // The stage takes its colour from the cover, which means drawing the image into a canvas and
+            // reading it back. Without this header the browser marks that canvas tainted and the read
+            // throws - the television would fall back to a flat grey and the whole "cover gives the
+            // colour" idea would quietly stop working, with nothing on screen to say why.
+            var response = System.Text.Encoding.ASCII.GetString(
+                ArtworkHttp.BuildImageResponse(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0, 0, 0, 0, 0, 0, 0, 0 }));
+
+            Assert.Contains("Access-Control-Allow-Origin: *", response);
+        }
+
     }
 }

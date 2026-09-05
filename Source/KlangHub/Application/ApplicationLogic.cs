@@ -44,6 +44,11 @@ namespace KlangHub.Application
         private readonly ILogger logger;
         private Size defaultSize = new Size(850, 550);
 
+        // What is actually playing, gathered from the file tags, Windows' now-playing session and a
+        // now-playing text file. The loopback stream itself carries none of that - it is an endless tone -
+        // so without this the television is told "KlangHub / Live from your PC" and nothing else.
+        private readonly Platform.NowPlaying.NowPlayingService nowPlaying;
+
         public ApplicationLogic(IDevices devicesIn, IDiscoverDevices discoverDevicesIn
             , IConfiguration configurationIn
             , IStreamingRequestsListener streamingRequestListenerIn, IDeviceStatusTimer deviceStatusTimerIn
@@ -57,6 +62,7 @@ namespace KlangHub.Application
             logger = loggerIn;
             castProvider = castProviderIn;
             settingsService = new Orchestration.SettingsService(loggerIn);
+            nowPlaying = new Platform.NowPlaying.NowPlayingService(loggerIn.Log);
             orchestrator = new Orchestration.Orchestrator(devicesIn, streamingRequestListenerIn, castProviderIn, deviceStatusTimerIn, loggerIn);
             // 2.2b-H4b-2: the orchestrator owns the device add/remove flow and raises neutral events; the
             // tray shell reacts here (create/remove menu items + mainForm add/remove).
@@ -73,6 +79,7 @@ namespace KlangHub.Application
             LoadSettings();
             configuration.Load(ApplyConfiguration, logger);
             orchestrator.Start(mainForm.RestartRecording);
+            StartNowPlaying();
         }
 
         /// <summary>
@@ -286,6 +293,12 @@ namespace KlangHub.Application
                 mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo ?? false);
                 mainForm.SetDarkMode(settings.DarkMode ?? true);
                 mainForm.SetStreamTitle(settings.StreamTitle ?? Properties.Strings.ChromeCast_StreamTitle);
+                // Both readers default to on: somebody who never opens the settings should get the fullest
+                // screen KlangHub can manage, not the emptiest.
+                mainForm.SetNowPlayingSettings(
+                    settings.ReadFileTags ?? true,
+                    settings.ReadWindowsNowPlaying ?? true,
+                    settings.NowPlayingFilePath ?? string.Empty);
                 settingsService.StartDeviceChecks(devices, orchestrator.StartTask);
             }
             catch (ConfigurationErrorsException ex)
@@ -331,6 +344,9 @@ namespace KlangHub.Application
             settings.ConvertMultiChannelToStereo = mainForm.GetConvertMultiChannelToStereo();
             settings.DarkMode = mainForm.GetDarkMode();
             settings.StreamTitle = mainForm.GetStreamTitle();
+            settings.ReadFileTags = mainForm.GetReadFileTags();
+            settings.ReadWindowsNowPlaying = mainForm.GetReadWindowsNowPlaying();
+            settings.NowPlayingFilePath = mainForm.GetNowPlayingFilePath();
 
             settingsService.Save();
         }
@@ -375,6 +391,9 @@ namespace KlangHub.Application
             settings.MinimizeToTray = false;
             settings.GroupByRoom = false;
             settings.ReceiverAppId = string.Empty;
+            settings.ReadFileTags = true;
+            settings.ReadWindowsNowPlaying = true;
+            settings.NowPlayingFilePath = string.Empty;
             settings.ConvertMultiChannelToStereo = false;
             settings.DarkMode = true;   // premium "hi-fi console" dark theme is the out-of-box default
             devices.SetSettings(settings);
@@ -399,6 +418,8 @@ namespace KlangHub.Application
             // CastReceiver.AppId - and SaveSettings wrote it straight back on close. Somebody who pasted a
             // broken id had no way out through the UI.
             mainForm.SetReceiverAppId(settings.ReceiverAppId);
+            mainForm.SetNowPlayingSettings(
+                settings.ReadFileTags!.Value, settings.ReadWindowsNowPlaying!.Value, settings.NowPlayingFilePath);
             mainForm.SetMinimizeToTray(settings.MinimizeToTray.Value);
             mainForm.SetGroupByRoom(settings.GroupByRoom ?? false);
             mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo.Value);
@@ -437,7 +458,7 @@ namespace KlangHub.Application
         /// Says out loud what the close button just did.
         ///
         /// With "minimize to tray" on, the X hides the window and the app keeps running - which from the
-        /// outside is indistinguishable from an app that refuses to close. the maintainer hit exactly that and
+        /// outside is indistinguishable from an app that refuses to close. Reported from a real desktop, and
         /// ended up killing KlangHub in the Task Manager. One balloon, once per run, turns a program that
         /// looks stuck into one that told you where it went.
         /// </summary>
@@ -482,6 +503,7 @@ namespace KlangHub.Application
             if (notifyIcon != null) notifyIcon.Visible = false;
             notifyIcon?.Dispose();
             mainForm?.Dispose();
+            nowPlaying?.Dispose();
             orchestrator?.DisposeTaskList();
         }
 
@@ -499,18 +521,78 @@ namespace KlangHub.Application
         /// full-bleed artwork served from our own HTTP server) plus the codec-aware MIME type.</summary>
         public CastMediaMetadata GetStreamMediaInfo()
         {
-            var title = orchestrator.GetStreamTitle();
+            // What is really playing wins over the stream title. Anything the cascade does not know keeps
+            // the branded fallback, so a device that is told nothing still gets a finished-looking screen.
+            var track = nowPlaying.Cascade.Current;
+
+            var title = track.Title;
+            if (string.IsNullOrWhiteSpace(title))
+                title = orchestrator.GetStreamTitle();
             if (string.IsNullOrWhiteSpace(title))
                 title = "KlangHub";
+
+            var subtitle = track.Artist;
+            if (string.IsNullOrWhiteSpace(subtitle))
+                subtitle = Properties.Strings.Media_Subtitle ?? string.Empty;
+
+            var album = track.Album;
+            if (string.IsNullOrWhiteSpace(album))
+                album = "KlangHub";
 
             return new CastMediaMetadata
             {
                 Title = title,
-                Subtitle = Properties.Strings.Media_Subtitle ?? string.Empty,
-                Album = "KlangHub",
+                Subtitle = subtitle,
+                Album = album,
                 ImageUrl = orchestrator.GetArtworkUrl(),
                 ContentType = StreamCodec.ContentType(orchestrator.GetStreamFormat())
             };
+        }
+
+        /// <summary>
+        /// Starts gathering what is playing.
+        /// <para>
+        /// Note what deliberately does NOT happen here: a track change does not reload the receivers. On a
+        /// loopback stream a fresh LOAD means tearing the connection down and refilling the buffer - one to
+        /// three seconds of silence, on every single track. That is the opposite of the soft change the
+        /// stage is supposed to make. Until the live transport over our own namespace can update the screen
+        /// without touching the audio, the metadata gathered here reaches a device when playback starts.
+        /// </para>
+        /// </summary>
+        private void StartNowPlaying()
+        {
+            nowPlaying.TrackChanged += OnNowPlayingTrackChanged;
+            nowPlaying.Changed += OnNowPlayingChanged;
+            nowPlaying.Start(settingsService.GetNowPlayingOptions());
+        }
+
+        private void OnNowPlayingTrackChanged(object? sender, Core.NowPlaying.NowPlayingTrack track)
+        {
+            logger.Log($"now-playing: {track.Artist ?? "(unknown artist)"} - {track.Title ?? "(unknown title)"}");
+            PushToStages(track, isNewTrack: true);
+        }
+
+        /// <summary>
+        /// A correction rather than a new piece - the artist arriving a moment after the title. The stage
+        /// merges it in place and does not cut, which is what makes metadata trickling in from four
+        /// different sources look like one screen rather than a slideshow.
+        /// </summary>
+        private void OnNowPlayingChanged(object? sender, Core.NowPlaying.NowPlayingTrack track)
+        {
+            PushToStages(track, isNewTrack: false);
+        }
+
+        private void PushToStages(Core.NowPlaying.NowPlayingTrack track, bool isNewTrack)
+        {
+            var update = Core.NowPlaying.StageUpdate.For(track, zone: null, coverUrl: orchestrator.GetArtworkUrl(), isNewTrack);
+            if (update != null)
+                devices.SendStageUpdate(update);
+        }
+
+        /// <summary>Re-reads the metadata settings and starts the sources over with them.</summary>
+        public void ApplyNowPlayingOptions()
+        {
+            nowPlaying.Start(settingsService.GetNowPlayingOptions());
         }
 
         #region private helpers

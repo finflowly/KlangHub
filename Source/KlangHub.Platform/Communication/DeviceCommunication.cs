@@ -5,6 +5,7 @@ using KlangHub.ProtocolBuffer;
 using KlangHub.Communication.Interfaces;
 using System.Threading.Tasks;
 using KlangHub.Application;
+using KlangHub.Core.NowPlaying;
 using System.Threading;
 using System.Text.Json;
 
@@ -35,6 +36,9 @@ namespace KlangHub.Communication
         private bool pendingStatusMessage = false;
         private DateTime lastReceivedMessage = DateTime.MinValue;
         private string? statusText;
+        /// <summary>When the device said it was waiting for somebody to allow the launch, or null when it
+        /// is not waiting. Read by <see cref="GetStatus"/> to end a wait nobody is going to answer.</summary>
+        private DateTime? awaitingApprovalSince;
         // Reconnect backoff (PDF §3): grows the "still stuck launching" wait 5s -> 10 -> 20 -> 30 (+jitter) so a
         // device that won't come up isn't re-launched every poll. base=5s so it is never faster than the old
         // flat 5s wait. Reset when the device reaches Playing.
@@ -261,38 +265,48 @@ namespace KlangHub.Communication
                     pendingStatusMessage = false;
             }
 
-            // Keep trying to play when in playing mode.
+            deviceState = GiveUpOnAnApprovalNobodyAnswered(deviceState);
+
+            // Keep trying to play when in playing mode. Which states deserve a nudge and which must be left
+            // alone lives in ResumeDecision, where it can be stated as a fact and tested without a device.
             if (userMode == UserMode.Playing)
             {
-                switch (deviceState)
+                switch (ResumeDecision.ForState(deviceState))
                 {
-                    case DeviceState.NotConnected:
-                    case DeviceState.Disposed:
-                    case DeviceState.ConnectError:
-                    case DeviceState.LoadFailed:
-                    case DeviceState.LoadCancelled:
-                    case DeviceState.InvalidRequest:
-                    case DeviceState.Closed:
-                    case DeviceState.Connected:
+                    case ResumeAction.Reconnect:
                         ResumeAfterConnectionLoss();
                         break;
-                    case DeviceState.LaunchingApplication:
-                    case DeviceState.LaunchedApplication:
-                    case DeviceState.Idle:
+                    case ResumeAction.RelaunchAfterBackoff:
                         var deviceStateBefore = deviceState;
                         Task.Delay(reconnectBackoff.NextDelay()).Wait();
                         if (device.GetDeviceState() == deviceStateBefore)
                             ResumePlaying();
                         break;
-                    case DeviceState.LoadingMedia:
-                    case DeviceState.LoadingMediaCheckFirewall:
-                    case DeviceState.Buffering:
-                    case DeviceState.Playing:
-                    case DeviceState.Paused:
+                    case ResumeAction.None:
                     default:
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// A prompt that appeared on a television nobody was watching would otherwise hold the card at
+        /// "approve on device" until the app is restarted. After <see cref="LaunchApproval.ApprovalWindow"/>
+        /// the wait ends and the device is treated as a cancelled launch, which lets the normal reconnect
+        /// path try again.
+        /// </summary>
+        private DeviceState GiveUpOnAnApprovalNobodyAnswered(DeviceState deviceState)
+        {
+            if (deviceState != DeviceState.AwaitingUserApproval || awaitingApprovalSince == null)
+                return deviceState;
+
+            if (!LaunchApproval.HasWaitedTooLong(DateTime.Now - awaitingApprovalSince.Value))
+                return deviceState;
+
+            logger.Log($"[{device.GetHost()}:{device.GetPort()}] no answer to the launch prompt within {LaunchApproval.ApprovalWindow.TotalMinutes:0} minutes - giving up on it");
+            awaitingApprovalSince = null;
+            device.SetDeviceState(DeviceState.LoadCancelled, null);
+            return DeviceState.LoadCancelled;
         }
 
         private bool NoContactFor(int nrSeconds)
@@ -448,9 +462,84 @@ namespace KlangHub.Communication
                 case "LAUNCH_ERROR":
                     device.SetDeviceState(DeviceState.LoadCancelled, null);
                     break;
+                case "LAUNCH_STATUS":
+                    OnReceiveLaunchStatus(JsonSerializer.Deserialize<MessageLaunchStatus>(castMessage.PayloadUtf8, options));
+                    break;
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Tells the stage on the television what is playing now.
+        /// <para>
+        /// Only reaches KlangHub's own receiver: Google's default receiver knows nothing about this
+        /// namespace and would drop the message, and there is no point building it for a device that
+        /// cannot show it. Nothing here may throw or block - it runs on whatever thread noticed the
+        /// track change, and a television that cannot be told is not a reason to stop the music.
+        /// </para>
+        /// </summary>
+        public void SendStageUpdate(StageUpdate update)
+        {
+            if (update == null || !CanReachOurStage())
+                return;
+
+            try
+            {
+                SendMessage(chromeCastMessages.GetStageTrackMessage(update, chromeCastSource, chromeCastDestination));
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex, "DeviceCommunication.SendStageUpdate");
+            }
+        }
+
+        /// <summary>Playing or held - the stage dims rather than clears when the music is paused.</summary>
+        public void SendStageState(bool playing)
+        {
+            if (!CanReachOurStage())
+                return;
+
+            try
+            {
+                SendMessage(chromeCastMessages.GetStageStateMessage(playing, chromeCastSource, chromeCastDestination));
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex, "DeviceCommunication.SendStageState");
+            }
+        }
+
+        /// <summary>
+        /// True only when our own receiver is up and addressable. Both halves matter: an empty application
+        /// id means the device is running Google's receiver, and an empty destination means no application
+        /// has answered yet - either way the message would go nowhere.
+        /// </summary>
+        private bool CanReachOurStage() =>
+            !IsDisposed
+            && device != null
+            && Connected
+            && !string.IsNullOrWhiteSpace(CastReceiver.AppId)
+            && !string.IsNullOrWhiteSpace(chromeCastDestination);
+
+        /// <summary>
+        /// Handle a LAUNCH_STATUS: the device is telling us the launch is waiting on a person, was allowed,
+        /// or was refused. Without this, a device that asks for approval answers nothing we understand and
+        /// KlangHub launches again every poll - which replaces the very prompt the listener is walking over
+        /// to answer. Nine launches in five minutes, observed on the Enchant.
+        /// </summary>
+        private void OnReceiveLaunchStatus(MessageLaunchStatus? launchStatusMessage)
+        {
+            if (device == null || IsDisposed)
+                return;
+
+            var approval = LaunchApproval.Parse(launchStatusMessage?.status);
+            var nextState = LaunchApproval.NextState(approval);
+            if (nextState == null)
+                return;
+
+            awaitingApprovalSince = approval == LaunchApprovalStatus.Pending ? DateTime.Now : null;
+            device.SetDeviceState(nextState.Value, null);
         }
 
         /// <summary>
@@ -650,7 +739,10 @@ namespace KlangHub.Communication
 
             if (receiverStatusMessage != null && receiverStatusMessage.status != null && receiverStatusMessage.status.applications != null)
             {
-                var deviceApplication = receiverStatusMessage.status.applications.Where(a => a.appId.Equals("CC1AD845"));
+                // Not a hard-coded default-receiver id: the LAUNCH already honours whatever id the user
+                // pasted, so matching the answer against Google's would throw away the reply that carries
+                // the transport id and session - our receiver would start and never be given anything to play.
+                var deviceApplication = receiverStatusMessage.status.applications.Where(a => CastReceiver.IsOurApplication(a.appId));
                 if (deviceApplication.Any())
                 {
                     chromeCastDestination = deviceApplication.First().transportId;
