@@ -64,7 +64,7 @@ namespace KlangHub.Communication
 
             try
             {
-                var castMessage = CastMessage.ParseFrom(message);
+                var castMessage = CastMessage.Parser.ParseFrom(message);
                 onReceiveMessage?.Invoke(castMessage);
             }
             catch (Exception)

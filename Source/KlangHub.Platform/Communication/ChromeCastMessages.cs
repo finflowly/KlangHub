@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using Google.Protobuf;
 using KlangHub.ProtocolBuffer;
 using KlangHub.Communication.Classes;
 using KlangHub.Communication.Interfaces;
@@ -181,15 +182,19 @@ namespace KlangHub.Communication
             if (string.IsNullOrWhiteSpace(destinationId)) destinationId = "receiver-0";
 
             string jsonMessage = JsonSerializer.Serialize(message, message.GetType());
-            return new CastMessage.Builder
+            // No builder in the modern runtime - the message itself is mutable until it is sent. The two
+            // enum fields are assigned explicitly rather than left at their default, because the .proto
+            // declares every field `optional`: what is assigned is what goes on the wire, and a Cast
+            // receiver requires both of them to be there.
+            return new CastMessage
             {
-                ProtocolVersion = 0,
+                ProtocolVersion = CastMessage.Types.ProtocolVersion.Castv210,
                 SourceId = sourceId,
                 DestinationId = destinationId,
-                PayloadType = 0,
+                PayloadType = CastMessage.Types.PayloadType.String,
                 Namespace = msgNamespace,
                 PayloadUtf8 = jsonMessage
-            }.Build();
+            };
         }
 
         public byte[] MessageToByteArray(CastMessage message)
@@ -197,9 +202,7 @@ namespace KlangHub.Communication
             if (message == null)
                 return new byte[0];
 
-            var messageStream = new MemoryStream();
-            message.WriteTo(messageStream);
-            var bufMsg = messageStream.ToArray();
+            var bufMsg = message.ToByteArray();
 
             var bufLen = new byte[4];
             bufLen = BitConverter.GetBytes(bufMsg.Length);

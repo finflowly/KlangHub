@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <RootNamespace>KlangHub</RootNamespace>
@@ -9,11 +9,14 @@
     <InternalsVisibleTo Include="KlangHub.Tests" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Google.ProtocolBuffers">
-      <HintPath>ProtocolBuffer\Google.ProtocolBuffers.dll</HintPath>
-    </Reference>
+    <!-- The Cast wire format, compiled from its own definition at build time. It used to be a checked-in
+         72 KB generated file plus a Google.ProtocolBuffers.dll from 2013 - unmaintained for over a decade,
+         and impossible to update. Now the .proto IS the source, and protoc runs as part of the build. -->
+    <Protobuf Include="ProtocolBuffer/CastChannel.proto" GrpcServices="None" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.36.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.83.0" PrivateAssets="all" />
     <PackageReference Include="NAudio" Version="3.0.1" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
     <!-- Managed FLAC (FLAKE) encoder for lossless live streaming. LGPL-3.0: shipped as a separate,

@@ -1,0 +1,85 @@
+// The Google Cast wire format: the frame every message between a sender and a receiver travels in.
+//
+// Rewritten from the original proto2 definition for the modern C# runtime, which does not support proto2.
+// The wire format is unchanged - field numbers and types are what a Chromecast reads, and they are
+// identical. Two things had to be got right for that to hold:
+//
+//   Every field is `optional`. In proto3 a plain field with its default value is simply not written, and
+//   protocol_version (CASTV2_1_0 = 0) and payload_type (STRING = 0) are exactly that - so a plain proto3
+//   translation would have dropped both from every message we send, while the receiver requires them.
+//   `optional` restores explicit presence: set is set, and set is written.
+//
+//   Enum values keep their numbers, because those are the wire representation.
+//
+// Only CastMessage is used by KlangHub; the authentication messages are kept so the definition stays a
+// faithful copy of the protocol rather than a fragment of it.
+
+syntax = "proto3";
+
+option csharp_namespace = "KlangHub.ProtocolBuffer";
+
+package cast_channel;
+
+message CastMessage {
+  // Always pass a version of the protocol for future compatibility requirements.
+  enum ProtocolVersion {
+    CASTV2_1_0 = 0;
+  }
+  optional ProtocolVersion protocol_version = 1;
+
+  // source and destination ids identify the origin and destination of the message. They are used to route
+  // messages between endpoints that share a device-to-device channel.
+  //
+  // For messages between applications:
+  //   - The sender application id is a unique identifier generated on behalf of the sender application.
+  //   - The receiver id is always the session id for the application.
+  //
+  // For messages to or from the sender or receiver platform, the special ids 'sender-0' and 'receiver-0'
+  // can be used. For messages intended for all endpoints using a given channel, the wildcard
+  // destination_id '*' can be used.
+  optional string source_id = 2;
+  optional string destination_id = 3;
+
+  // This is the core multiplexing key. All messages are sent on a namespace and endpoints sharing a
+  // channel listen on one or more namespaces. The namespace defines the protocol and semantics of the
+  // message.
+  optional string namespace = 4;
+
+  // What type of data do we have in this message.
+  enum PayloadType {
+    STRING = 0;
+    BINARY = 1;
+  }
+  optional PayloadType payload_type = 5;
+
+  // Depending on payload_type, exactly one of the following fields will always be set.
+  optional string payload_utf8 = 6;
+  optional bytes payload_binary = 7;
+}
+
+// Messages for the authentication protocol between a sender and a receiver. KlangHub does not use them -
+// they are part of the protocol and are kept so this file describes it completely.
+message AuthChallenge {
+}
+
+message AuthResponse {
+  optional bytes signature = 1;
+  optional bytes client_auth_certificate = 2;
+  repeated bytes client_ca = 3;
+}
+
+message AuthError {
+  enum ErrorType {
+    INTERNAL_ERROR = 0;
+    NO_TLS = 1;  // The underlying connection is not TLS
+  }
+  optional ErrorType error_type = 1;
+}
+
+message DeviceAuthMessage {
+  // Request fields
+  optional AuthChallenge challenge = 1;
+  // Response fields
+  optional AuthResponse response = 2;
+  optional AuthError error = 3;
+}
