@@ -126,7 +126,7 @@ First cast, network requirements and the errors that show up first:
 | `Source/KlangHub.Core` | Contracts and rules. No Windows, no UI, no protocol. |
 | `Source/KlangHub.Platform` | Chromecast, audio capture and encoding, Windows services. |
 | `Source/KlangHub` | The WinForms shell, orchestration and the composition root. |
-| `Source/KlangHub.Tests` | 734 tests across all three, including a privacy check over everything git tracks. |
+| `Source/KlangHub.Tests` | 737 tests across all three, including a privacy check over everything git tracks. |
 | `receiver/` | The custom CAF v3 web receiver for the television. |
 | `installer/` | The Inno Setup script and its wizard images. |
 | `docs/` | Architecture, getting started, casting, and the hard-won notes. |

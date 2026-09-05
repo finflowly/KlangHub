@@ -128,7 +128,7 @@ Erstes Casten, Netzwerkvoraussetzungen und die Fehler, die zuerst auftreten:
 | `Source/KlangHub.Core` | Verträge und Regeln. Kein Windows, keine Oberfläche, kein Protokoll. |
 | `Source/KlangHub.Platform` | Chromecast, Audioaufnahme und -kodierung, Windows-Dienste. |
 | `Source/KlangHub` | Die WinForms-Shell, die Orchestrierung und der Kompositionswurzelpunkt. |
-| `Source/KlangHub.Tests` | 734 Tests über alle drei, samt Datenschutzprüfung über alles, was git trackt. |
+| `Source/KlangHub.Tests` | 737 Tests über alle drei, samt Datenschutzprüfung über alles, was git trackt. |
 | `receiver/` | Der eigene CAF-v3-Web-Receiver für den Fernseher. |
 | `installer/` | Das Inno-Setup-Skript und seine Assistentenbilder. |
 | `docs/` | Architektur, Einstieg, Casting — und die teuer bezahlten Notizen. |

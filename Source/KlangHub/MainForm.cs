@@ -1483,12 +1483,21 @@ namespace KlangHub
                 return RestoreBounds.Top;
         }
 
+        /// <summary>
+        /// Where "Help and documentation" goes. It used to be the fork's wiki with an "#options" anchor -
+        /// a page this project never wrote, so the second click a new user makes landed on an empty wiki.
+        /// A document committed beside the code can be checked; a wiki lives in a repository that is not
+        /// cloned with this one and cannot. HelpLinkTests holds this URL against the actual file.
+        /// </summary>
+        public const string HelpUrl =
+            "https://github.com/finflowly/KlangHub/blob/master/docs/GETTING-STARTED.md";
+
         private void LinkHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (e == null)
                 return;
 
-            OpenUrl("https://github.com/finflowly/KlangHub/wiki#options");
+            OpenUrl(HelpUrl);
         }
 
         private void OpenUrl(string url)

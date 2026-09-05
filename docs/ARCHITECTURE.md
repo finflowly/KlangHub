@@ -10,7 +10,7 @@ Source/
   KlangHub.Core/       net10.0                        contracts and rules, no Windows
   KlangHub.Platform/   net10.0-windows10.0.19041.0    Chromecast, audio, Windows services
   KlangHub/            net10.0-windows10.0.19041.0    WinForms shell and composition
-  KlangHub.Tests/      net10.0-windows10.0.19041.0    734 tests over all three
+  KlangHub.Tests/      net10.0-windows10.0.19041.0    737 tests over all three
 ```
 
 The rule that decides where a file goes is a single question: **does it need Windows to be true?**

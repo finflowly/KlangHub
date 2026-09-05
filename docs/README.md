@@ -1,7 +1,13 @@
 # Dokumentation
 
-Was hier liegt und wofür man es liest. Die Sprache steht dabei — der öffentliche Einstieg ist
-englisch, die gewachsene Arbeitsdokumentation deutsch.
+Was hier liegt und wofür man es liest.
+
+Die **englischen** Dokumente sind der Einstieg: Architektur, erste Schritte, der Weg zum Chromecast,
+die Release-Notes. Wer das Projekt verstehen oder benutzen will, liest diese.
+
+Die **deutschen** sind gewachsene Arbeitsnotizen — teuer bezahlte Messungen, Designentscheidungen und
+Fallen aus der Entwicklung. Sie stehen im Repository, weil ihr Inhalt sonst verloren ginge, nicht als
+Teil des Produkteinstiegs. Wer sie liest, weiß bereits, wonach er sucht.
 
 | Dokument | Sprache | Wofür |
 |---|---|---|
@@ -17,6 +23,5 @@ englisch, die gewachsene Arbeitsdokumentation deutsch.
 | [release-notes/v0.0.1.md](release-notes/v0.0.1.md) | EN | Die Release-Notes zu 0.0.1. |
 | [assets/README.md](assets/README.md) | DE | Welche Bilder das Repository braucht, in welchen Maßen — und was vor jedem Screenshot zu prüfen ist. |
 
-Die Arbeitsregeln des Projekts — Datenschutz im öffentlichen Repository, Versionierung, Bauen und
-Testen — stehen in [CLAUDE.md](../CLAUDE.md) im Wurzelverzeichnis; wie man mitarbeitet, in
-[CONTRIBUTING.md](../CONTRIBUTING.md).
+Die Arbeitsregeln des Projekts — Datenschutz im öffentlichen Repository, Test zuerst, neue Texte in
+allen 24 Sprachen — stehen in [CONTRIBUTING.md](../CONTRIBUTING.md).
