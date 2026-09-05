@@ -1,4 +1,4 @@
-using KlangHub.Communication;
+﻿using KlangHub.Communication;
 using KlangHub.Core.Casting;
 using KlangHub.Platform.Casting.Chromecast;
 using Xunit;
@@ -17,6 +17,10 @@ namespace KlangHub.Tests.Platform
         [InlineData(DeviceState.LoadCancelled, PlaybackState.Idle)]
         [InlineData(DeviceState.LaunchingApplication, PlaybackState.Connecting)]
         [InlineData(DeviceState.LaunchedApplication, PlaybackState.Connecting)]
+        // Waiting for someone to allow the launch is neither the "Unknown" that made the tile claim the
+        // device was unreachable, nor the "Connecting" that hides the one thing the listener must be told:
+        // the device is waiting for them.
+        [InlineData(DeviceState.AwaitingUserApproval, PlaybackState.AwaitingApproval)]
         [InlineData(DeviceState.LoadingMedia, PlaybackState.Loading)]
         [InlineData(DeviceState.LoadingMediaCheckFirewall, PlaybackState.Loading)]
         [InlineData(DeviceState.Buffering, PlaybackState.Buffering)]

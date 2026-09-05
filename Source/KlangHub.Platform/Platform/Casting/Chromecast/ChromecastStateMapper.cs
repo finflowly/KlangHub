@@ -1,4 +1,4 @@
-using KlangHub.Communication;
+﻿using KlangHub.Communication;
 
 namespace KlangHub.Platform.Casting.Chromecast
 {
@@ -21,6 +21,12 @@ namespace KlangHub.Platform.Casting.Chromecast
             DeviceState.LoadCancelled => PlaybackState.Idle,          // a cancellation, not a failure
             DeviceState.LaunchingApplication => PlaybackState.Connecting,
             DeviceState.LaunchedApplication => PlaybackState.Connecting,
+            // Held at the device until a person allows it. Mapping it to Error or Unknown is what told
+            // the user the device was unreachable while it was answering every status request it got - but
+            // Connecting is not right either: after five silent minutes of "connecting" the app looks hung
+            // when in truth it is waiting for the listener to walk over and press allow. Its own state is
+            // the only thing that can say that on the tile.
+            DeviceState.AwaitingUserApproval => PlaybackState.AwaitingApproval,
             DeviceState.LoadingMedia => PlaybackState.Loading,
             DeviceState.LoadingMediaCheckFirewall => PlaybackState.Loading,
             DeviceState.Buffering => PlaybackState.Buffering,

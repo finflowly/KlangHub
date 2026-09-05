@@ -18,6 +18,13 @@
         InvalidRequest,
         Closed,
         Connected,
-        LoadingMediaCheckFirewall
+        LoadingMediaCheckFirewall,
+
+        /// <summary>
+        /// The device is healthy and answering, but it is holding the launch until somebody allows it
+        /// on the device itself. Deliberately not an error state: nothing is broken, and nothing the
+        /// sender does will speed it up.
+        /// </summary>
+        AwaitingUserApproval
     };
 }
