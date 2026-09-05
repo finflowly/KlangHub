@@ -37,6 +37,33 @@ namespace KlangHub.Core.Models
             return IsWav(format) || IsFlac(format);
         }
 
+        /// <summary>
+        /// How many bytes one second of this stream weighs on the wire, or <c>0</c> when that cannot be
+        /// known.
+        /// <para>
+        /// Uncompressed audio weighs exactly what its format says. A constant-bitrate MP3 weighs its
+        /// bitrate whatever the music. FLAC weighs whatever the music allows it to - which is why it
+        /// answers zero rather than an upper bound. Judging a FLAC stream against the uncompressed size
+        /// produced a shortfall warning every second of a perfectly healthy evening: four devices, seventy
+        /// to eighty-five per cent, all night. Zero means "do not judge this stream by its size", not
+        /// "expect nothing".
+        /// </para>
+        /// </summary>
+        public static int WireBytesPerSecond(SupportedStreamFormat format, int sampleRate, int channels, int bitsPerSample)
+        {
+            if (format == SupportedStreamFormat.Mp3_128)
+                return 128_000 / 8;
+            if (format == SupportedStreamFormat.Mp3_320)
+                return 320_000 / 8;
+            if (!IsWav(format))
+                return 0;
+
+            if (sampleRate <= 0 || channels <= 0 || bitsPerSample <= 0)
+                return 0;
+
+            return sampleRate * channels * (bitsPerSample / 8);
+        }
+
         /// <summary>The MIME type sent both in the streaming server's HTTP header and the Cast LOAD payload.</summary>
         public static string ContentType(SupportedStreamFormat format)
         {

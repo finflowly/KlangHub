@@ -22,6 +22,9 @@ namespace KlangHub.Tests.Platform
         /// <summary>FLAC of 48 kHz / 24-bit stereo, roughly what the measured runs carried.</summary>
         private const int ExpectedBytesPerSecond = 250_000;
 
+        /// <summary>What a compressing codec reports: no figure to be measured against.</summary>
+        private const int RateUnknown = 0;
+
         [Fact]
         public void A_healthy_second_is_not_worth_a_word()
         {
@@ -60,9 +63,60 @@ namespace KlangHub.Tests.Platform
         }
 
         [Fact]
-        public void A_second_with_nothing_at_all_is_reported()
+        public void A_connection_that_has_never_carried_anything_says_nothing()
         {
+            // The send loop runs whenever a connection is open, including while a device sits idle or
+            // paused. Reporting "0 % of what the music needed" there was a complaint about silence that
+            // nobody asked for - and it filled the log of an evening in which nothing was wrong.
             var health = new StreamHealth(ExpectedBytesPerSecond);
+
+            Assert.Null(health.Report(TimeSpan.FromSeconds(1)));
+        }
+
+        [Fact]
+        public void Music_that_stops_arriving_mid_stream_is_reported()
+        {
+            // The same empty second means something entirely different once audio has been flowing.
+            var health = new StreamHealth(ExpectedBytesPerSecond);
+            health.Sent(ExpectedBytesPerSecond, TimeSpan.FromMilliseconds(4));
+            health.Report(TimeSpan.FromSeconds(1));
+
+            Assert.NotNull(health.Report(TimeSpan.FromSeconds(1)));
+        }
+
+        [Fact]
+        public void A_stream_with_no_knowable_rate_is_not_judged_by_its_size()
+        {
+            // FLAC compresses by however much the music allows. Measured on 2026-09-05: four healthy
+            // devices sat between seventy and eighty-five per cent of the uncompressed size for a whole
+            // evening, each writing a line every second. There is no threshold that fixes that, because
+            // there is no expected figure to have a threshold around.
+            var health = new StreamHealth(RateUnknown);
+            health.Sent(ExpectedBytesPerSecond / 3, TimeSpan.FromMilliseconds(4));
+
+            Assert.Null(health.Report(TimeSpan.FromSeconds(1)));
+        }
+
+        [Fact]
+        public void A_blocked_send_is_reported_even_when_the_rate_is_unknown()
+        {
+            // The measurement that survives compression: how long the far end made us wait.
+            var health = new StreamHealth(RateUnknown);
+            health.Sent(1000, TimeSpan.FromMilliseconds(900));
+
+            var report = health.Report(TimeSpan.FromSeconds(1));
+
+            Assert.NotNull(report);
+            Assert.Contains("900", report);
+            Assert.DoesNotContain("%", report);
+        }
+
+        [Fact]
+        public void Music_that_stops_arriving_is_reported_even_when_the_rate_is_unknown()
+        {
+            var health = new StreamHealth(RateUnknown);
+            health.Sent(50_000, TimeSpan.FromMilliseconds(4));
+            health.Report(TimeSpan.FromSeconds(1));
 
             Assert.NotNull(health.Report(TimeSpan.FromSeconds(1)));
         }

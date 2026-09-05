@@ -166,13 +166,12 @@ namespace KlangHub.Streaming
         }
 
         /// <summary>
-        /// What one second of this stream weighs, remembered from the capture format the sender hands over
-        /// with the audio. It matters that this is the real format rather than an assumption: WAV at
-        /// 48 kHz/24-bit is nearly three times what MP3 is, and a threshold set for one would be
-        /// meaningless for the other. FLAC compresses, so the figure is an upper bound - which is why the
-        /// shortfall threshold leaves room below it.
+        /// What one second of this stream weighs on the wire, or <c>0</c> when the codec makes that
+        /// unknowable. Worked out by <see cref="StreamCodec.WireBytesPerSecond"/> from the real capture
+        /// format the sender hands over with the audio, never from an assumption: WAV at 48 kHz/24-bit and
+        /// a 128 kbit MP3 differ by more than a factor of fifteen, and FLAC has no fixed answer at all.
         /// </summary>
-        private volatile int expectedBytesPerSecond = 250_000;
+        private volatile int expectedBytesPerSecond;
 
         private DateTime lastDropReport = DateTime.MinValue;
         private long pendingDroppedBytes;
@@ -249,10 +248,10 @@ namespace KlangHub.Streaming
                 }
             }
 
-            // Remember what a second of this stream weighs, so the health watch can tell a shortfall from
-            // a busy moment. Uncompressed size; FLAC comes out below it, which the threshold allows for.
-            if (format != null && format.SampleRate > 0 && format.Channels > 0 && format.BitsPerSample > 0)
-                expectedBytesPerSecond = format.SampleRate * format.Channels * (format.BitsPerSample / 8);
+            // Remember what a second of this stream weighs, so the health watch can tell a shortfall from a
+            // busy moment - and can tell that it must not try, which is the answer for FLAC.
+            if (format != null)
+                expectedBytesPerSecond = StreamCodec.WireBytesPerSecond(streamFormat, format.SampleRate, format.Channels, format.BitsPerSample);
 
             // Send the audio header before the first data - which for MP3 and FLAC means sending nothing,
             // because those streams already carry their own (see AudioHeader.GetStreamHeader).
