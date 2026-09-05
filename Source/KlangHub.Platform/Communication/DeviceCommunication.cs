@@ -395,7 +395,10 @@ namespace KlangHub.Communication
             var byteMessage = chromeCastMessages.MessageToByteArray(castMessage);
             sendMessage?.Invoke(byteMessage);
 
-            logger.Log($"{Properties.Strings.Log_Out} [{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
+            // "out"/"in" stay English, like every other line we write. The log is a technical artefact
+            // meant to be read by whoever is asked to diagnose it - a French user's log saying "entrée"
+            // and "sortie" is harder to read and slips past the tooling that parses these lines.
+            logger.Log($"out [{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
         }
 
         /// <summary>
@@ -407,7 +410,7 @@ namespace KlangHub.Communication
             if (castMessage == null || device == null || IsDisposed)
                 return;
 
-            logger.Log($"{Properties.Strings.Log_In} [{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
+            logger.Log($"in [{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var message = JsonSerializer.Deserialize<PayloadMessageBase>(castMessage.PayloadUtf8, options)!;
