@@ -1116,6 +1116,14 @@ namespace KlangHub.Properties {
             }
         }
 
+        public static string Card_Status_Disconnected_Text
+        {
+            get
+            {
+                return ResourceManager.GetString("Card_Status_Disconnected_Text", resourceCulture);
+            }
+        }
+
         public static string Card_Status_AwaitingApproval_Text
         {
             get

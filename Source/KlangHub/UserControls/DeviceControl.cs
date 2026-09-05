@@ -423,8 +423,15 @@ namespace KlangHub.UserControls
         /// The word on the status row. Every state a listener can tell apart gets its own - in particular
         /// the connecting moment, which used to be indistinguishable from "connected" even though nothing
         /// was playing yet.
+        /// <para>
+        /// The catch-all used to answer "connected", which made the card lie about the one state that
+        /// matters most: <see cref="PlaybackState.Unknown"/> is what a device becomes when it stops
+        /// answering. A television behind a VPN with no route to the local network showed a red dot beside
+        /// the word "connected", alternating every fifteen seconds. Every state now names itself, and a new
+        /// one added without a word here fails a test rather than quietly claiming to be connected.
+        /// </para>
         /// </summary>
-        private static string StatusWord(PlaybackState s) => s switch
+        internal static string StatusWord(PlaybackState s) => s switch
         {
             PlaybackState.Playing => KlangHub.Properties.Strings.Card_Status_Playing_Text,
             PlaybackState.Buffering => KlangHub.Properties.Strings.Card_Status_Buffering_Text,
@@ -435,7 +442,11 @@ namespace KlangHub.UserControls
             // somebody allows it there. "Connecting" would be true and useless - after five silent minutes
             // it reads as a hang instead of as "walk over and press allow".
             PlaybackState.AwaitingApproval => KlangHub.Properties.Strings.Card_Status_AwaitingApproval_Text,
-            _ => KlangHub.Properties.Strings.Card_Status_Connected_Text,
+            // Reached, connected, nothing playing. The only two states the word "connected" describes.
+            PlaybackState.Connected or PlaybackState.Idle => KlangHub.Properties.Strings.Card_Status_Connected_Text,
+            // "We lost it" and "we never knew" are the same fact to a listener, and neither is a fault to
+            // report: the device is simply not there.
+            _ => KlangHub.Properties.Strings.Card_Status_Disconnected_Text,
         };
 
         // ---------- drawing helpers ----------

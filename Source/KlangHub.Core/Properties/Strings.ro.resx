@@ -437,6 +437,9 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Inaccesibil</value>
   </data>
+  <data name="Card_Status_Disconnected_Text" xml:space="preserve">
+    <value>Neconectat</value>
+  </data>
   <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
     <value>Confirmați pe dispozitiv</value>
   </data>

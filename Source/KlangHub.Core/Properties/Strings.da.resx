@@ -437,6 +437,9 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Utilgængelig</value>
   </data>
+  <data name="Card_Status_Disconnected_Text" xml:space="preserve">
+    <value>Ikke forbundet</value>
+  </data>
   <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
     <value>Bekræft på enheden</value>
   </data>

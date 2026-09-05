@@ -437,6 +437,9 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Niedostępne</value>
   </data>
+  <data name="Card_Status_Disconnected_Text" xml:space="preserve">
+    <value>Nie połączono</value>
+  </data>
   <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
     <value>Potwierdź na urządzeniu</value>
   </data>

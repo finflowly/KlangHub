@@ -437,6 +437,9 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Nedosegljivo</value>
   </data>
+  <data name="Card_Status_Disconnected_Text" xml:space="preserve">
+    <value>Ni povezave</value>
+  </data>
   <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
     <value>Potrdite na napravi</value>
   </data>

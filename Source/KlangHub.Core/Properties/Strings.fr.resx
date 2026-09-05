@@ -495,6 +495,9 @@
   <data name="Card_Status_Error_Text" xml:space="preserve">
     <value>Injoignable</value>
   </data>
+  <data name="Card_Status_Disconnected_Text" xml:space="preserve">
+    <value>Non connecté</value>
+  </data>
   <data name="Card_Status_AwaitingApproval_Text" xml:space="preserve">
     <value>Confirmer sur l'appareil</value>
   </data>
