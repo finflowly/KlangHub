@@ -115,6 +115,52 @@ Filename: "{app}\{#AppExe}"; Parameters: "--lang={code:SelectedAppLanguage}"; \
 Type: filesandordirs; Name: "{localappdata}\{#AppName}"
 
 [CustomMessages]
+; Shown instead of Inno's "Preparing to Install" page when KlangHub is running - one sentence
+; that says what will happen, rather than a list of applications and two radio buttons.
+en.ClosingTitle=KlangHub is running
+en.ClosingText=KlangHub is still running. Setup will close it now, install the update and start it again afterwards.
+de.ClosingTitle=KlangHub läuft noch
+de.ClosingText=KlangHub läuft noch. Setup beendet die App jetzt, installiert die Aktualisierung und startet sie danach wieder.
+fr.ClosingTitle=KlangHub est en cours d’exécution
+fr.ClosingText=KlangHub est encore ouvert. Le programme d’installation va le fermer, installer la mise à jour et le relancer ensuite.
+es.ClosingTitle=KlangHub está en ejecución
+es.ClosingText=KlangHub sigue abierto. El instalador lo cerrará ahora, instalará la actualización y volverá a abrirlo después.
+it.ClosingTitle=KlangHub è in esecuzione
+it.ClosingText=KlangHub è ancora aperto. L’installazione lo chiuderà ora, installerà l’aggiornamento e lo riavvierà al termine.
+nl.ClosingTitle=KlangHub is nog actief
+nl.ClosingText=KlangHub is nog actief. Setup sluit de app nu, installeert de update en start de app daarna opnieuw.
+pt.ClosingTitle=O KlangHub está em execução
+pt.ClosingText=O KlangHub ainda está aberto. A instalação vai fechá-lo, instalar a atualização e voltar a abri-lo no fim.
+pl.ClosingTitle=KlangHub jest uruchomiony
+pl.ClosingText=KlangHub jest nadal uruchomiony. Instalator zamknie aplikację, zainstaluje aktualizację i uruchomi ją ponownie.
+sv.ClosingTitle=KlangHub körs
+sv.ClosingText=KlangHub körs fortfarande. Setup stänger appen nu, installerar uppdateringen och startar den igen efteråt.
+da.ClosingTitle=KlangHub kører
+da.ClosingText=KlangHub kører stadig. Setup lukker appen nu, installerer opdateringen og starter den igen bagefter.
+fi.ClosingTitle=KlangHub on käynnissä
+fi.ClosingText=KlangHub on yhä käynnissä. Asennus sulkee sovelluksen, asentaa päivityksen ja käynnistää sen sitten uudelleen.
+et.ClosingTitle=KlangHub töötab
+et.ClosingText=KlangHub on veel avatud. Häälestus sulgeb rakenduse, paigaldab uuenduse ja käivitab selle seejärel uuesti.
+lv.ClosingTitle=KlangHub darbojas
+lv.ClosingText=KlangHub joprojām darbojas. Uzstādīšana to aizvērs, instalēs atjauninājumu un pēc tam palaidīs no jauna.
+lt.ClosingTitle=„KlangHub“ veikia
+lt.ClosingText=„KlangHub“ vis dar veikia. Diegimo programa uždarys programą, įdiegs naujinį ir paskui ją paleis iš naujo.
+el.ClosingTitle=Το KlangHub εκτελείται
+el.ClosingText=Το KlangHub εκτελείται ακόμη. Η εγκατάσταση θα το κλείσει τώρα, θα εγκαταστήσει την ενημέρωση και θα το ανοίξει ξανά.
+cs.ClosingTitle=KlangHub běží
+cs.ClosingText=KlangHub je stále spuštěný. Instalace aplikaci nyní zavře, nainstaluje aktualizaci a poté ji znovu spustí.
+sk.ClosingTitle=KlangHub je spustený
+sk.ClosingText=KlangHub je stále spustený. Inštalácia aplikáciu teraz zavrie, nainštaluje aktualizáciu a potom ju znova spustí.
+sl.ClosingTitle=KlangHub se izvaja
+sl.ClosingText=KlangHub še vedno teče. Namestitev bo aplikacijo zdaj zaprla, namestila posodobitev in jo nato znova zagnala.
+hr.ClosingTitle=KlangHub je pokrenut
+hr.ClosingText=KlangHub je još uvijek pokrenut. Instalacija će aplikaciju sada zatvoriti, instalirati ažuriranje i zatim je ponovno pokrenuti.
+hu.ClosingTitle=A KlangHub fut
+hu.ClosingText=A KlangHub még fut. A telepítő most bezárja az alkalmazást, telepíti a frissítést, majd újraindítja.
+ro.ClosingTitle=KlangHub rulează
+ro.ClosingText=KlangHub rulează încă. Programul de instalare îl va închide acum, va instala actualizarea și îl va porni din nou.
+bg.ClosingTitle=KlangHub работи
+bg.ClosingText=KlangHub все още работи. Инсталацията ще затвори приложението, ще инсталира обновлението и ще го стартира отново.
 ; The wizard's own language page. One line per installer language - Inno needs the active language covered.
 en.LangPageTitle=Language
 en.LangPageSubtitle=Which language should KlangHub speak?
@@ -563,11 +609,61 @@ begin
     Result := SuppressibleMsgBox(ExpandConstant('{cm:RuntimeFailed}'), mbError, MB_OKCANCEL, IDOK) = IDOK;
 end;
 
+{ Is KlangHub running? Asked of the process list rather than a window title, so it also finds an
+  instance that has hidden itself in the notification area. }
+function KlangHubIsRunning: Boolean;
+var
+  code: Integer;
+begin
+  Result := Exec(ExpandConstant('{cmd}'),
+                 '/C tasklist /FI "IMAGENAME eq {#AppExe}" /NH | find /I "{#AppExe}" >nul',
+                 '', SW_HIDE, ewWaitUntilTerminated, code) and (code = 0);
+end;
+
+{
+  Closes a running KlangHub before the files are replaced.
+
+  Inno's own restart manager asks the window to close, which a KlangHub set to "minimize to tray"
+  answers by hiding - so the close fails and the user is shown the "Preparing to Install" page: a list
+  of applications, an error icon and two radio buttons, in front of somebody who only wanted the
+  update. This does the job first, and says in one sentence what it is doing.
+
+  Polite first: taskkill without /F posts WM_CLOSE, which ends an ordinary KlangHub properly - stopping
+  its Cast sessions on the way out, so no television is left sitting on the Cast logo. Only an instance
+  that is still there after that is ended the hard way.
+}
+procedure CloseRunningKlangHub;
+var
+  code, waited: Integer;
+begin
+  Exec(ExpandConstant('{cmd}'), '/C taskkill /IM "{#AppExe}" >nul 2>&1', '', SW_HIDE,
+       ewWaitUntilTerminated, code);
+
+  waited := 0;
+  while (waited < 5000) and KlangHubIsRunning do
+  begin
+    Sleep(250);
+    waited := waited + 250;
+  end;
+
+  if KlangHubIsRunning then
+    Exec(ExpandConstant('{cmd}'), '/C taskkill /F /IM "{#AppExe}" >nul 2>&1', '', SW_HIDE,
+         ewWaitUntilTerminated, code);
+end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
   if CurPageID = wpReady then
+  begin
+    if KlangHubIsRunning then
+    begin
+      { Told, not asked: there is only one sensible answer, and the wizard already has a Cancel button. }
+      MsgBox(ExpandConstant('{cm:ClosingText}'), mbInformation, MB_OK);
+      CloseRunningKlangHub;
+    end;
     Result := EnsureRuntime;
+  end;
 end;
 
 procedure InitializeWizard();
