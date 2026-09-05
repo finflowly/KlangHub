@@ -23,6 +23,9 @@ namespace KlangHub.Communication.Interfaces
         void Stop(bool changeUserMode = false);
         void OnPlayStop_Click();
         void ResumePlaying();
+
+        /// <summary>Rebuild the session after the connection was lost; only one rebuild at a time.</summary>
+        void ResumeAfterConnectionLoss();
         void Dispose();
         UserMode GetUserMode();
     }

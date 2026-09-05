@@ -573,6 +573,14 @@ namespace KlangHub.Application
         /// <summary>
         /// Resume playing.
         /// </summary>
+        public void ResumeAfterConnectionLoss()
+        {
+            if (isDisposed)
+                return;
+
+            deviceCommunication.ResumeAfterConnectionLoss();
+        }
+
         public void ResumePlaying()
         {
             if (deviceCommunication == null || isDisposed)

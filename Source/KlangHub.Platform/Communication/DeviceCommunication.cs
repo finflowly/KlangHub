@@ -28,6 +28,10 @@ namespace KlangHub.Communication
         private bool Connected = false;
         private bool IsDisposed = false;
         private UserMode userMode = UserMode.Stopped;
+
+        /// <summary>Keeps two rebuilds of the same session from running at once - see
+        /// <see cref="ResumeAfterConnectionLoss"/>.</summary>
+        private readonly ReconnectGate reconnectGate = new();
         private bool pendingStatusMessage = false;
         private DateTime lastReceivedMessage = DateTime.MinValue;
         private string? statusText;
@@ -268,7 +272,7 @@ namespace KlangHub.Communication
                     case DeviceState.InvalidRequest:
                     case DeviceState.Closed:
                     case DeviceState.Connected:
-                        ResumePlaying();
+                        ResumeAfterConnectionLoss();
                         break;
                     case DeviceState.LaunchingApplication:
                     case DeviceState.LaunchedApplication:
@@ -483,6 +487,24 @@ namespace KlangHub.Communication
         /// <summary>
         /// Try to resume playing.
         /// </summary>
+        /// <summary>
+        /// Rebuild the session because the connection was lost, not because the user asked for anything.
+        ///
+        /// The loss can be noticed by the audio socket failing, by the status poll finding the device in an
+        /// error state, or by a CLOSE message arriving - whichever comes first should act, and the rest
+        /// should stand down. A direct <see cref="ResumePlaying"/> from the user is never held back here.
+        /// </summary>
+        public void ResumeAfterConnectionLoss()
+        {
+            if (device == null || IsDisposed || userMode != UserMode.Playing)
+                return;
+
+            if (!reconnectGate.TryEnter(DateTime.Now))
+                return;
+
+            ResumePlaying();
+        }
+
         public void ResumePlaying()
         {
             if (device == null || IsDisposed)

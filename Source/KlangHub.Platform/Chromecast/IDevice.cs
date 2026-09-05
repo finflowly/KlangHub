@@ -35,6 +35,11 @@ namespace KlangHub.Application
         bool IsConnected();
         void OnVolumeUpdate(Volume volume);
         void ResumePlaying();
+
+        /// <summary>Rebuild the session after the connection to this device was lost. Does nothing unless
+        /// the user actually wants playback, and lets only one rebuild run at a time - a loss can be noticed
+        /// from several places at once.</summary>
+        void ResumeAfterConnectionLoss();
         DeviceEureka GetEureka();
         void StartTask(Action action);
         void Dispose();

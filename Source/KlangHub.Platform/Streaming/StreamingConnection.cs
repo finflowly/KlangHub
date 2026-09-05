@@ -81,6 +81,16 @@ namespace KlangHub.Streaming
                                 streamer.logger.Log(ex, $"[{DateTime.Now.ToLongTimeString()}] [{streamer.device!.GetHost()}:{streamer.device.GetPort()}] Disconnected Send");
                                 streamer.device?.SetDeviceState(DeviceState.ConnectError);
                                 streamer.device?.CloseConnection();
+
+                                // Rebuild the session NOW instead of leaving it to the 15 s status poll.
+                                // Measured on 2026-09-05: a soundbar dropped the audio socket at 08:09:16
+                                // and only came back at 08:09:59 - 37 of those 43 seconds were spent
+                                // waiting, because setting the state and closing the connection asks
+                                // nobody to do anything. The rebuild itself takes about six seconds.
+                                // ResumeAfterConnectionLoss does nothing unless the user wants playback,
+                                // and its gate makes sure the poll landing on top of this does not start
+                                // a second LAUNCH.
+                                streamer.device?.ResumeAfterConnectionLoss();
                             }
                         }
                     }
