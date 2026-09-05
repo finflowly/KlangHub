@@ -1,13 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <IsPackable>false</IsPackable>
+    <!-- xunit v3 runs on Microsoft.Testing.Platform, which `dotnet test` reaches through this bridge.
+         The newer MTP v2 (xunit.v3 4.x) needs a .NET SDK past the one installed here: the test executable
+         itself runs fine, but `dotnet test` finds no tests at all, which is worse than a version behind.
+         Revisit when the SDK moves. -->
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <!-- xunit v3 test projects are executables: each one hosts its own runner rather than being loaded
+         into a shared host process. -->
+    <OutputType>Exe</OutputType>
     <!-- references the WinForms app + platform, so target net8.0-windows with WinForms available -->
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
-    <PackageReference Include="xunit" Version="2.9.3" />
+    <!-- A v3 test project is self-executing: it hosts Microsoft.Testing.Platform itself, so the VSTest
+         host (Microsoft.NET.Test.Sdk) is no longer part of the picture. The Visual Studio adapter stays
+         so the Test Explorer keeps working. -->
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0" />
     <PackageReference Include="NSubstitute" Version="6.2.0" />
   </ItemGroup>
