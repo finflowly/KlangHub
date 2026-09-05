@@ -192,7 +192,7 @@ namespace KlangHub.Application
             }
             else
             {
-                logger.Log($"Connection closed from {streamingConnection.GetRemoteEndPoint()}");
+                logger.Log($"Connection closed from {streamingConnection.GetRemoteEndPoint()} after {streamingConnection.Carried()}");
                 streamingConnection = null;
 
                 // The other half of yesterday's fix. That one caught a FAILED SEND; this catches the case

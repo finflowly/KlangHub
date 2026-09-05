@@ -11,6 +11,9 @@ namespace KlangHub.Streaming.Interfaces
         bool IsConnected();
         void SetDependencies(Socket socketIn, IDevice deviceIn, ILogger loggerIn);
         string GetRemoteEndPoint();
+
+        /// <summary>How much audio this connection carried and for how long, for the log.</summary>
+        string Carried();
         void Dispose();
     }
 }

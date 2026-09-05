@@ -20,6 +20,8 @@ namespace KlangHub.Streaming
         private bool isAudioHeaderSent;
         private int reduceLagCounter = 0;
         private readonly Thread streamThread;
+        private long bytesSent;
+        private readonly DateTime startedAt = DateTime.Now;
         private BufferBlock bufferCaptured, bufferSend;
         readonly object bufferSwapSync = new();
 
@@ -71,6 +73,7 @@ namespace KlangHub.Streaming
                         try
                         {
                             streamer.Socket?.Send(streamer.bufferSend.Data, 0, count, SocketFlags.None);
+                            streamer.bytesSent += count;
                         }
                         catch (Exception ex)
                         {
@@ -80,7 +83,7 @@ namespace KlangHub.Streaming
                                 deviceState == DeviceState.Paused)
                             {
                                 streamer.Dispose();
-                                streamer.logger.Log(ex, $"[{DateTime.Now.ToLongTimeString()}] [{streamer.device!.GetHost()}:{streamer.device.GetPort()}] Disconnected Send");
+                                streamer.logger.Log(ex, $"[{streamer.device!.GetHost()}:{streamer.device.GetPort()}] Disconnected Send after {streamer.Carried()}");
                                 streamer.device?.SetDeviceState(DeviceState.ConnectError);
                                 streamer.device?.CloseConnection();
 
@@ -266,6 +269,22 @@ namespace KlangHub.Streaming
             Socket?.Close();
             Socket?.Dispose();
             Socket = null;
+        }
+
+        /// <summary>
+        /// What this connection carried, in the form a log reader needs.
+        ///
+        /// When a receiver stops with a decode error, the first question is whether it hit some limit -
+        /// so the answer has to be in the line that reports the loss. With two speakers reading the SAME
+        /// stream, comparing their totals says at once whether the stream is at fault or the device: on
+        /// 2026-09-05 a soundbar failed twice while an Enchant read the identical bytes for half an hour.
+        /// </summary>
+        public string Carried()
+        {
+            var seconds = (DateTime.Now - startedAt).TotalSeconds;
+            var megabytes = bytesSent / (1024.0 * 1024.0);
+            return $"{megabytes.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)} MB in " +
+                   $"{seconds.ToString("F0", System.Globalization.CultureInfo.InvariantCulture)} s";
         }
 
         /// <summary>
