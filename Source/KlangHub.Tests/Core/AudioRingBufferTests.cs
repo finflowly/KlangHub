@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using KlangHub.Core.Streaming;
@@ -101,7 +101,7 @@ namespace KlangHub.Tests.Core
         }
 
         [Fact]
-        public void Reading_while_writing_never_hands_back_a_torn_block()
+        public async Task Reading_while_writing_never_hands_back_a_torn_block()
         {
             // The capture thread adds while a device joining reads. A half-copied array would be audible.
             var buffer = new AudioRingBuffer(64 * 1024);
@@ -111,7 +111,7 @@ namespace KlangHub.Tests.Core
             {
                 while (!stop.IsCancellationRequested)
                     buffer.Add(Block(9, 1024));
-            });
+            }, TestContext.Current.CancellationToken);
 
             var reads = 0;
             while (!stop.IsCancellationRequested && reads < 500)
@@ -122,7 +122,7 @@ namespace KlangHub.Tests.Core
             }
 
             stop.Cancel();
-            writing.Wait(TimeSpan.FromSeconds(5));
+            await writing;
         }
     }
 }

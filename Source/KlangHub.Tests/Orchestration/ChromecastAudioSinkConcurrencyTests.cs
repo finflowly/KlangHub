@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using KlangHub.Application;                 // IDevices
@@ -46,7 +46,7 @@ namespace KlangHub.Tests.Orchestration
         }
 
         [Fact]
-        public void Write_never_enters_the_encoder_from_two_threads_at_once()
+        public async Task Write_never_enters_the_encoder_from_two_threads_at_once()
         {
             var probe = new ReentrancyProbeEncoder();
             var sink = new ChromecastAudioSink(Substitute.For<IDevices>(), Substitute.For<ILogger>())
@@ -63,21 +63,24 @@ namespace KlangHub.Tests.Orchestration
             {
                 writers[t] = Task.Run(() =>
                 {
-                    start.Wait();
+                    start.Wait(TestContext.Current.CancellationToken);
                     for (int i = 0; i < 50; i++)
                         sink.Write(new AudioFrame(pcm, 48000, 16, 2));
-                });
+                }, TestContext.Current.CancellationToken);
             }
 
             start.Set();
-            Task.WaitAll(writers);
+
+            // With a limit. Task.WaitAll with no timeout turns a deadlock in the code being tested into
+            // a test run that hangs, which says far less than one that fails.
+            Assert.True(await WaitForAll(writers), "the writers did not finish - the sink is deadlocked");
 
             Assert.Equal(100, probe.Calls);
             Assert.Equal(0, probe.Overlaps);
         }
 
         [Fact]
-        public void Write_creates_exactly_one_encoder_even_under_concurrent_first_calls()
+        public async Task Write_creates_exactly_one_encoder_even_under_concurrent_first_calls()
         {
             var created = 0;
             var sink = new ChromecastAudioSink(Substitute.For<IDevices>(), Substitute.For<ILogger>())
@@ -97,15 +100,31 @@ namespace KlangHub.Tests.Orchestration
             {
                 writers[t] = Task.Run(() =>
                 {
-                    start.Wait();
+                    start.Wait(TestContext.Current.CancellationToken);
                     sink.Write(new AudioFrame(pcm, 48000, 16, 2));
-                });
+                }, TestContext.Current.CancellationToken);
             }
 
             start.Set();
-            Task.WaitAll(writers);
+
+            // With a limit. Task.WaitAll with no timeout turns a deadlock in the code being tested into
+            // a test run that hangs, which says far less than one that fails.
+            Assert.True(await WaitForAll(writers), "the writers did not finish - the sink is deadlocked");
 
             Assert.Equal(1, created);
+        }
+
+        /// <summary>All of them finished, or false if they were still going after a generous wait.</summary>
+        private static async Task<bool> WaitForAll(Task[] tasks)
+        {
+            var all = Task.WhenAll(tasks);
+            var finished = await Task.WhenAny(all, Task.Delay(TimeSpan.FromSeconds(10),
+                                                             TestContext.Current.CancellationToken));
+            if (finished != all)
+                return false;
+
+            await all;   // so a failure inside a writer is reported as itself
+            return true;
         }
     }
 }

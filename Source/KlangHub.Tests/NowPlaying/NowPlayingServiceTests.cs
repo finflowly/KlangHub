@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -98,7 +98,7 @@ namespace KlangHub.Tests.NowPlaying
             announced.Reset();
             service.Contribute(MetadataSource.NowPlayingFile, new NowPlayingTrack { FilePath = second });
 
-            Assert.True(announced.Wait(TimeSpan.FromSeconds(2)));
+            Assert.True(announced.Wait(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken));
             Assert.Equal("Xtal", newTrack?.Title);
             Assert.Equal("Aphex Twin", newTrack?.Artist);
             // Rule 5 across the whole service: nothing of the previous album may cling to the new piece.

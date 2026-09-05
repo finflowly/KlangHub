@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using KlangHub.Core.NowPlaying;
 using Xunit;
 
@@ -17,13 +17,14 @@ namespace KlangHub.Tests.NowPlaying
             var update = StageUpdate.For(
                 new NowPlayingTrack { Title = "Teardrop", Artist = "Massive Attack", Album = "Mezzanine" },
                 zone: "Wohnzimmer", coverUrl: "http://host/artwork.png", isNewTrack: true);
+            Assert.NotNull(update);
 
-            Assert.Equal("Teardrop", update.Title);
-            Assert.Equal("Massive Attack", update.Artist);
-            Assert.Equal("Mezzanine", update.Album);
-            Assert.Equal("Wohnzimmer", update.Zone);
-            Assert.Equal("http://host/artwork.png", update.Cover);
-            Assert.True(update.NewTrack);
+            Assert.Equal("Teardrop", update!.Title);
+            Assert.Equal("Massive Attack", update!.Artist);
+            Assert.Equal("Mezzanine", update!.Album);
+            Assert.Equal("Wohnzimmer", update!.Zone);
+            Assert.Equal("http://host/artwork.png", update!.Cover);
+            Assert.True(update!.NewTrack);
         }
 
         [Fact]
@@ -32,11 +33,12 @@ namespace KlangHub.Tests.NowPlaying
             // Null, not "". An empty string would be an instruction to clear a line the stage may already
             // be showing correctly from an earlier, better source.
             var update = StageUpdate.For(new NowPlayingTrack { Title = "Teardrop" }, null, null, false);
+            Assert.NotNull(update);
 
-            Assert.Null(update.Artist);
-            Assert.Null(update.Album);
-            Assert.Null(update.Zone);
-            Assert.Null(update.Cover);
+            Assert.Null(update!.Artist);
+            Assert.Null(update!.Album);
+            Assert.Null(update!.Zone);
+            Assert.Null(update!.Cover);
         }
 
         [Fact]
@@ -45,8 +47,9 @@ namespace KlangHub.Tests.NowPlaying
             var update = StageUpdate.For(
                 new NowPlayingTrack { Title = "Teardrop", Format = "FLAC", BitDepth = 24, SampleRate = 96000 },
                 null, null, false);
+            Assert.NotNull(update);
 
-            Assert.Equal("FLAC · 24 Bit · 96 kHz", update.Quality);
+            Assert.Equal("FLAC · 24 Bit · 96 kHz", update!.Quality);
         }
 
         [Fact]
@@ -54,16 +57,18 @@ namespace KlangHub.Tests.NowPlaying
         {
             var update = StageUpdate.For(
                 new NowPlayingTrack { Title = "Teardrop", Format = "MP3" }, null, null, false);
+            Assert.NotNull(update);
 
-            Assert.Equal("MP3", update.Quality);
+            Assert.Equal("MP3", update!.Quality);
         }
 
         [Fact]
         public void No_quality_mark_at_all_when_nothing_is_known()
         {
             var update = StageUpdate.For(new NowPlayingTrack { Title = "Teardrop" }, null, null, false);
+            Assert.NotNull(update);
 
-            Assert.Null(update.Quality);
+            Assert.Null(update!.Quality);
         }
 
         [Theory]
@@ -76,8 +81,9 @@ namespace KlangHub.Tests.NowPlaying
             // "44100 Hz" is a number out of a datasheet; "44,1 kHz" is what is printed on the sleeve.
             var update = StageUpdate.For(
                 new NowPlayingTrack { Title = "Teardrop", SampleRate = hertz }, null, null, false);
+            Assert.NotNull(update);
 
-            Assert.Equal(expected, update.Quality);
+            Assert.Equal(expected, update!.Quality);
         }
 
         [Fact]
@@ -87,9 +93,12 @@ namespace KlangHub.Tests.NowPlaying
                 new NowPlayingTrack { Title = "Teardrop", Duration = TimeSpan.FromSeconds(330) }, null, null, false);
             var unknown = StageUpdate.For(new NowPlayingTrack { Title = "Teardrop" }, null, null, false);
 
-            Assert.Equal(330, known.Duration);
+            Assert.NotNull(known);
+            Assert.NotNull(unknown);
+
+            Assert.Equal(330, known!.Duration);
             // A loopback stream has no end. Sending zero would draw a finished progress line under it.
-            Assert.Null(unknown.Duration);
+            Assert.Null(unknown!.Duration);
         }
 
         [Fact]

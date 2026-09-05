@@ -45,7 +45,6 @@ namespace KlangHub.Application
         private DeviceEureka eureka = null!;
         private Action<DeviceEureka> setDeviceInformationCallback = null!;
         private Action<Action, CancellationTokenSource?> startTask = null!;
-        //private Action<IDevice> stopGroup;
         private Func<IDevice, bool> isGroupStatusBlank = null!;
         private Action<bool> autoMute = null!;
         private DateTime? lastLoadMessageTime;
@@ -89,7 +88,6 @@ namespace KlangHub.Application
             , Action<bool> autoMuteIn)
         {
             setDeviceInformationCallback = setDeviceInformationCallbackIn;
-            //stopGroup = stopGroupIn;
             startTask = startTaskIn;
             isGroupStatusBlank = isGroupStatusBlankIn;
             autoMute = autoMuteIn;

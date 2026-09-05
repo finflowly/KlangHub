@@ -15,9 +15,7 @@
   <PropertyGroup>
     <ApplicationIcon>KlangHub.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup Label="MultilingualAppToolkit">
-    <MultilingualAppToolkitVersion>4.0</MultilingualAppToolkitVersion>
-    <MultilingualFallbackLanguage>en</MultilingualFallbackLanguage>
+  <PropertyGroup>
     <TranslationReport Condition="'$(Configuration)' == 'Release'">true</TranslationReport>
     <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
     <DebugType>full</DebugType>
@@ -46,12 +44,6 @@
   <ItemGroup>
     <EmbeddedResource Include="UserControls\Stop.png" />
   </ItemGroup>
-  <ItemGroup>
-    <XliffResource Include="MultilingualResources\KlangHub.fr.xlf" />
-  </ItemGroup>
-  <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets')" Label="MultilingualAppToolkit">
-    <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
-  </Target>
   <ItemGroup>
     <!-- net10 bump: Microsoft.CSharp (no `dynamic` usage), Microsoft.VisualBasic (WindowsFormsApplicationBase
          ships in-box via Microsoft.VisualBasic.Forms under net10.0-windows WinForms), and the legacy

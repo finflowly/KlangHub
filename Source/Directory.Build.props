@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <!-- Tier2-B: shared MSBuild properties for all KlangHub projects (net10). The target framework stays
        per-project (net10.0 for Core vs net10.0-windows for Platform/App/Tests). <Nullable> is enabled
        here in Tier2-C. -->
@@ -7,5 +7,13 @@
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
     <Nullable>enable</Nullable>
+
+    <!-- One version for every assembly. It used to live only in KlangHub.csproj, so KlangHub.Core.dll
+         and KlangHub.Platform.dll went into the installer stamped 1.0.0.0 while the program beside them
+         said 0.0.1 - and a bug report quoting a DLL version would have named a release that never was. -->
+    <Version>0.0.1</Version>
+    <Company>Neo &amp; Trinity</Company>
+    <Product>KlangHub</Product>
+    <Copyright>Copyright © 2026 Neo &amp; Trinity</Copyright>
   </PropertyGroup>
 </Project>

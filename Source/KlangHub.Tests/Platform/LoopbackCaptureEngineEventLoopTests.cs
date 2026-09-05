@@ -1,3 +1,4 @@
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using KlangHub.Core.Diagnostics;            // ILogger
@@ -42,7 +43,7 @@ namespace KlangHub.Tests.Platform
         }
 
         [Fact]
-        public void EnsureEventLoop_starts_exactly_one_loop_when_called_from_many_threads_at_once()
+        public async Task EnsureEventLoop_starts_exactly_one_loop_when_called_from_many_threads_at_once()
         {
             var engine = NewEngine();
             try
@@ -53,13 +54,19 @@ namespace KlangHub.Tests.Platform
                 {
                     callers[t] = Task.Run(() =>
                     {
-                        start.Wait();
+                        start.Wait(TestContext.Current.CancellationToken);
                         engine.EnsureEventLoop();
-                    });
+                    }, TestContext.Current.CancellationToken);
                 }
 
                 start.Set();
-                Task.WaitAll(callers);
+
+                // With a limit: WaitAll on its own turns a deadlock in the engine into a test run that
+                // hangs rather than one that fails, and a hang says far less.
+                var all = Task.WhenAll(callers);
+                Assert.Same(all, await Task.WhenAny(all, Task.Delay(TimeSpan.FromSeconds(10),
+                                                                   TestContext.Current.CancellationToken)));
+                await all;
 
                 Assert.Equal(1, WaitForLoops(engine, 1));
             }

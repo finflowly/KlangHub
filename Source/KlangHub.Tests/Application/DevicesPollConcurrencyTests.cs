@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -43,7 +43,7 @@ namespace KlangHub.Tests.Application
         }
 
         [Fact]
-        public void Polling_survives_a_device_appearing_while_the_list_is_walked()
+        public async Task Polling_survives_a_device_appearing_while_the_list_is_walked()
         {
             var devices = new Devices();
             var list = ListInside(devices);
@@ -72,7 +72,7 @@ namespace KlangHub.Tests.Application
                 {
                     discoveryFailure = ex;
                 }
-            });
+            }, TestContext.Current.CancellationToken);
 
             var polls = 0;
             while (!stop.IsCancellationRequested && polls < 2000)
@@ -82,7 +82,7 @@ namespace KlangHub.Tests.Application
             }
 
             stop.Cancel();
-            discovering.Wait(TimeSpan.FromSeconds(5));
+            await discovering;
 
             Assert.Null(discoveryFailure);
             Assert.True(polls > 0, "the poll never ran");
