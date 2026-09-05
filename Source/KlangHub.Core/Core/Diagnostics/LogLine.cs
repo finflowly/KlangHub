@@ -57,7 +57,8 @@ namespace KlangHub.Core.Diagnostics
             if (text.StartsWith("ex ", StringComparison.Ordinal) || text.StartsWith("ex:", StringComparison.Ordinal))
                 return Severity.Error;
 
-            if (text.Contains("\"type\":\"ERROR\"", StringComparison.Ordinal))
+            if (text.Contains("\"type\":\"ERROR\"", StringComparison.Ordinal)
+                || text.StartsWith("NO AUDIO", StringComparison.Ordinal))
                 return Severity.Error;
 
             if (text.Contains("[ConnectError]", StringComparison.Ordinal)

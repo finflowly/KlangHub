@@ -112,6 +112,12 @@ namespace KlangHub.Platform.Audio
                     return true;
             }
 
+            // Nothing captured, from any endpoint. Every individual failure was logged as an exception,
+            // but the CONSEQUENCE was not - and the consequence is total silence on every speaker while
+            // the tiles still say "playing", because the Cast side is perfectly healthy and simply has
+            // nothing to send. Anyone reading a log needs to see that in one line.
+            logger.Log($"NO AUDIO: capture could not be started on any of the {devices.Count} endpoints. " +
+                       "Nothing will be streamed until this succeeds - see the errors above for why.");
             return false;
         }
 
@@ -168,15 +174,18 @@ namespace KlangHub.Platform.Audio
                     default:
                         break;
                 }
+                // No WithLowLatency here, and it is not an oversight. IAudioClient3 low-latency capture
+                // requires no loopback and a capture format identical to the device mix format - and this
+                // app is loopback by definition (it streams what the PC plays) and asks for a format of its
+                // own (48 kHz 24-bit from a 96 kHz float mix). Neither condition can be met, so the
+                // low-latency path is unreachable here in principle. Asking for it as REQUIRED threw on
+                // every start and left the app with no capture at all: silence on every speaker.
                 var builder = new WasapiRecorderBuilder()
                     .WithDevice(recordingDevice)
                     .WithFormat(captureFormat)
-                    // The engine's minimum period instead of a fixed buffer. Everything downstream already
-                    // buffers for the receiver's sake; what this removes is latency at the very START of
-                    // the chain, which is the part multi-room synchronisation can never win back later.
-                    .WithLowLatency(true)
-                    // The capture thread is the one thread in this app that must not be preempted: a missed
-                    // packet here is a hole in the stream for every speaker at once.
+                    // This one does apply, and is the real gain: the capture thread is the one thread here
+                    // that must not be preempted, because a packet missed at this end is a hole in the
+                    // stream for every speaker at once.
                     .WithMmcssThreadPriority("Pro Audio");
 
                 if (recordingDevice.DataFlow == DataFlow.Render)
@@ -191,11 +200,9 @@ namespace KlangHub.Platform.Audio
                 soundIn.StartRecording();
                 isRecording = true;
 
-                // Said out loud because it is not guaranteed: low latency needs IAudioClient3 and a format
-                // the engine can take at its minimum period, and it silently falls back when it cannot.
-                logger.Log(soundIn.LowLatencyActive
-                    ? $"Capture latency {soundIn.LatencyMilliseconds:F1} ms (IAudioClient3 low-latency mode)"
-                    : $"Capture latency {soundIn.LatencyMilliseconds:F1} ms (standard mode: {soundIn.LowLatencyUnavailableReason})");
+                // Worth a line even though the mode is now fixed: it is the first number in the chain, and
+                // the one a multi-room delay is measured from.
+                logger.Log($"Capture latency {soundIn.LatencyMilliseconds:F1} ms, MMCSS \"Pro Audio\"");
 
                 var bytesPerSecond = soundIn.WaveFormat.SampleRate * soundIn.WaveFormat.Channels * (soundIn.WaveFormat.BitsPerSample / 8);
                 bufferCaptured = new BufferBlock() { Data = new byte[bytesPerSecond / 2] };
