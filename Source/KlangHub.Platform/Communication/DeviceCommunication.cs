@@ -26,14 +26,19 @@ namespace KlangHub.Communication
         private int requestId;
         private VolumeSetItem? lastVolumeSetItem;
         private VolumeSetItem? nextVolumeSetItem;
-        private bool Connected = false;
-        private bool IsDisposed = false;
+
+        /// <summary>Guards the pair above, which the interface writes and the receive thread clears.</summary>
+        private readonly object volumeGate = new object();
+        // Read and written from the receive thread, the poll timer, the interface thread and reconnect
+        // tasks. volatile is what stops one of them going on reading a value another has already changed.
+        private volatile bool Connected = false;
+        private volatile bool IsDisposed = false;
         private UserMode userMode = UserMode.Stopped;
 
         /// <summary>Keeps two rebuilds of the same session from running at once - see
         /// <see cref="ResumeAfterConnectionLoss"/>.</summary>
         private readonly ReconnectGate reconnectGate = new();
-        private bool pendingStatusMessage = false;
+        private volatile bool pendingStatusMessage = false;
         private DateTime lastReceivedMessage = DateTime.MinValue;
         private string? statusText;
         /// <summary>When the device said it was waiting for somebody to allow the launch, or null when it
@@ -193,15 +198,26 @@ namespace KlangHub.Communication
             if (!Connected)
                 return;
 
-            if ((nextVolumeSetItem != null && lastVolumeSetItem == null)
-                || (lastVolumeSetItem != null && DateTime.Now.Subtract(lastVolumeSetItem.SendAt) > new TimeSpan(0, 0, 1)))
+            VolumeSetItem sending;
+            lock (volumeGate)
             {
-                lastVolumeSetItem = nextVolumeSetItem!;
-                lastVolumeSetItem.RequestId = GetNextRequestId();
-                lastVolumeSetItem.SendAt = DateTime.Now;
-                SendMessage(chromeCastMessages.GetVolumeSetMessage(lastVolumeSetItem.Setting, lastVolumeSetItem.RequestId));
+                var readyForTheNextOne = lastVolumeSetItem == null
+                    || DateTime.UtcNow.Subtract(lastVolumeSetItem.SendAt) > TimeSpan.FromSeconds(1);
+
+                // Both halves are now checked. The old condition could reach the body with
+                // nextVolumeSetItem null - the `!` said otherwise - and the very next line dereferenced
+                // it. That is a NullReferenceException on the thread that reads from the device.
+                if (nextVolumeSetItem == null || !readyForTheNextOne)
+                    return;
+
+                sending = nextVolumeSetItem;
+                sending.RequestId = GetNextRequestId();
+                sending.SendAt = DateTime.UtcNow;
+                lastVolumeSetItem = sending;
                 nextVolumeSetItem = null;
             }
+
+            SendMessage(chromeCastMessages.GetVolumeSetMessage(sending.Setting, sending.RequestId));
         }
 
         /// <summary>
@@ -389,7 +405,11 @@ namespace KlangHub.Communication
         /// <returns></returns>
         public int GetNextRequestId()
         {
-            return ++requestId;
+            // Not `++requestId`: that is a read, an add and a write, and four threads send messages.
+            // Two of them landing together handed two different messages the same id, and the reply to
+            // one was then matched to the other - which is how a volume request could be marked answered
+            // by a status message that had nothing to do with it.
+            return Interlocked.Increment(ref requestId);
         }
 
         /// <summary>

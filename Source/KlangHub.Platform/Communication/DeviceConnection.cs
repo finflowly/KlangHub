@@ -1,4 +1,4 @@
-using KlangHub.Core.Models;
+﻿using KlangHub.Core.Models;
 ﻿using System;
 using System.Linq;
 using System.Net;
@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using KlangHub.Discover;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
 using System.Threading;
 using KlangHub.Communication.Interfaces;
 using KlangHub.ProtocolBuffer;
@@ -26,10 +27,29 @@ namespace KlangHub.Communication
         private TcpClient? tcpClient;
         private SslStream sslStream = null!;
         private byte[]? receiveBuffer;
-        private DeviceConnectionState state;
-        private IAsyncResult currentAynchResult = null!;
-        private byte[]? sendBuffer;
-        private bool IsDisposed = false;
+        private volatile DeviceConnectionState state;
+        private IAsyncResult currentAsyncResult = null!;
+        private volatile bool IsDisposed = false;
+
+        /// <summary>
+        /// Messages waiting to go out, and the gate that serialises writing them.
+        /// <para>
+        /// This was a single field holding the last message, written from whichever thread happened to
+        /// call: the heartbeat reply from the receive thread, a volume change from the interface, a
+        /// status poll from the timer, a reconnect from a pool task. Two of them arriving together meant
+        /// one simply overwrote the other and was never sent - and two threads reaching
+        /// <c>sslStream.Write</c> at once meant the device was handed two half-frames plaited together.
+        /// A queue and one gate fix both: nothing is lost, and one message goes out at a time.
+        /// </para>
+        /// </summary>
+        private readonly object sendGate = new object();
+        private readonly Queue<byte[]> pendingSends = new Queue<byte[]>();
+
+        /// <summary>
+        /// A device that is not taking messages must not make us hold them all. Cast control messages are
+        /// status and volume: the newest is what matters, so the oldest goes over the side.
+        /// </summary>
+        private const int MostPendingSends = 64;
 
         public DeviceConnection(ILogger loggerIn)
         {
@@ -55,18 +75,14 @@ namespace KlangHub.Communication
                 var port = getPort();
 
                 BeginConnectTo(host, port);
-                WaitHandle wh = currentAynchResult.AsyncWaitHandle;
-                try
+
+                // The wait handle is not ours to close. It used to be closed in a finally, which on the
+                // timeout path disposed the handle of a BeginConnect that was still running - and the
+                // callback then reached for it and got an ObjectDisposedException instead of a connection.
+                if (!currentAsyncResult.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(5), false))
                 {
-                    if (!currentAynchResult.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(5), false))
-                    {
-                        CloseConnection();
-                        throw new TimeoutException();
-                    }
-                }
-                finally
-                {
-                    wh.Close();
+                    CloseConnection();
+                    throw new TimeoutException();
                 }
             }
             catch (Exception ex)
@@ -81,7 +97,7 @@ namespace KlangHub.Communication
                 }
                 catch (Exception innerEx)
                 {
-                    Console.WriteLine($"Connect:{innerEx.Message}");
+                    logger.Log($"ex: Connect (while handling a failure) {innerEx.Message}");
                 }
             }
         }
@@ -101,13 +117,13 @@ namespace KlangHub.Communication
 
                 tcpClient = new TcpClient(address.AddressFamily);
                 tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-                currentAynchResult = tcpClient.BeginConnect(address, port, new AsyncCallback(ConnectCallback), tcpClient);
+                currentAsyncResult = tcpClient.BeginConnect(address, port, new AsyncCallback(ConnectCallback), tcpClient);
             }
             else
             {
                 tcpClient = new TcpClient();
                 tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-                currentAynchResult = tcpClient.BeginConnect(host, port, new AsyncCallback(ConnectCallback), tcpClient);
+                currentAsyncResult = tcpClient.BeginConnect(host, port, new AsyncCallback(ConnectCallback), tcpClient);
             }
         }
 
@@ -128,7 +144,7 @@ namespace KlangHub.Communication
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Connect:{ex.Message}");
+                logger.Log($"ex: Close {ex.Message}");
             }
         }
 
@@ -143,7 +159,7 @@ namespace KlangHub.Communication
 
             try
             {
-                if (ar == currentAynchResult)
+                if (ar == currentAsyncResult)
                 {
                     tcpClient.EndConnect(ar);
                     sslStream = new SslStream(tcpClient.GetStream(), false, new RemoteCertificateValidationCallback(DontValidateServerCertificate), null);
@@ -166,7 +182,7 @@ namespace KlangHub.Communication
                 }
                 catch (Exception innerEx)
                 {
-                    Console.WriteLine($"ConnectCallback:{innerEx.Message}");
+                    logger.Log($"ex: ConnectCallback (while handling a failure) {innerEx.Message}");
                 }
             }
         }
@@ -186,8 +202,17 @@ namespace KlangHub.Communication
         /// <param name="send">the message</param>
         public void SendMessage(byte[] send)
         {
+            if (send == null || send.Length == 0)
+                return;
+
             startTask(() => {
-                sendBuffer = send;
+                lock (sendGate)
+                {
+                    if (pendingSends.Count >= MostPendingSends)
+                        pendingSends.Dequeue();
+                    pendingSends.Enqueue(send);
+                }
+
                 if (tcpClient != null &&
                     tcpClient.Client != null &&
                     tcpClient.Connected &&
@@ -211,25 +236,42 @@ namespace KlangHub.Communication
         /// </summary>
         private void DoSendMessage()
         {
-            if (tcpClient == null || tcpClient.Client == null || !tcpClient.Connected || sendBuffer == null)
+            if (tcpClient == null || tcpClient.Client == null || !tcpClient.Connected)
                 return;
 
-            try
+            // One writer at a time. Two threads inside SslStream.Write hand the device two frames
+            // interleaved, which it cannot parse and does not complain about - it simply stops answering.
+            lock (sendGate)
             {
-                if (state == DeviceConnectionState.Connected)
+                while (pendingSends.Count > 0)
                 {
-                    sslStream.Write(sendBuffer);
-                    sslStream.Flush();
+                    if (state != DeviceConnectionState.Connected || IsDisposed)
+                        return;
+
+                    var message = pendingSends.Dequeue();
+                    try
+                    {
+                        sslStream.Write(message);
+                        sslStream.Flush();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Logged, not swallowed into a console this application does not have. The
+                        // message is already off the queue: retrying a write to a stream that just
+                        // failed is how a send loop starts.
+                        logger.Log($"ex [{SafeHost()}]: DoSendMessage {ex.Message}");
+                        CloseConnection();
+                        return;
+                    }
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DoSendMessage: {ex.Message}");
-            }
-            finally
-            {
-                sendBuffer = null;
-            }
+        }
+
+        /// <summary>The device's address for a log line, without letting the lookup itself throw.</summary>
+        private string SafeHost()
+        {
+            try { return getHost?.Invoke() ?? "?"; }
+            catch (Exception) { return "?"; }
         }
 
         /// <summary>
@@ -247,7 +289,7 @@ namespace KlangHub.Communication
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"StartReceive: {ex.Message}");
+                logger.Log($"ex [{SafeHost()}]: StartReceive {ex.Message}");
                 CloseConnection();
             }
         }
@@ -268,17 +310,25 @@ namespace KlangHub.Communication
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.Log($"ex [{SafeHost()}]: DataReceived {ex.Message}");
                 CloseConnection();
             }
+            if (byteCount == 0)
+            {
+                // Zero from EndRead is the device closing the connection properly - it was switched off,
+                // or it dropped us. Nothing here treated that as anything: it slept half a second on an
+                // I/O completion thread and read again, for ever, while `state` stayed Connected and
+                // IsConnected() went on telling the rest of the program the device was there.
+                logger.Log($"in [{SafeHost()}]: the device closed the connection.");
+                state = DeviceConnectionState.Disconnected;
+                setDeviceState?.Invoke(DeviceState.Closed, null!);
+                CloseConnection();
+                return;
+            }
+
             if (byteCount > 0)
-            {
                 deviceReceiveBuffer.OnReceive(receiveBuffer.Take(byteCount).ToArray());
-            }
-            else
-            {
-                Thread.Sleep(500);
-            }
+
             StartReceive();
         }
 
@@ -324,7 +374,7 @@ namespace KlangHub.Communication
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Dispose:{ex.Message}");
+                logger.Log($"ex: Dispose {ex.Message}");
             }
         }
 
