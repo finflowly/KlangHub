@@ -1,4 +1,4 @@
-; KlangHub setup — Inno Setup script
+﻿; KlangHub setup — Inno Setup script
 ;
 ; Builds a single installer that carries every European language it can and picks the right one by itself:
 ; Inno matches the user's Windows UI language against the [Languages] list below and only asks when it
@@ -52,6 +52,13 @@ ArchitecturesInstallIn64BitMode=x64compatible
 ; page (see [Code]), in the app's palette, and that answer is what KlangHub is started with.
 ShowLanguageDialog=no
 LanguageDetectionMethod=uilanguage
+; A running KlangHub is closed and started again afterwards, without asking. The alternative is the
+; "Preparing to Install" page with its list of applications and two radio buttons - a question whose only
+; sensible answer is yes, in front of somebody who just wants the update. The app cooperates: since the
+; close handler honours CloseReason, the restart manager's request ends the process properly (stopping the
+; Cast sessions) instead of being swallowed by "minimize to tray" and then killed.
+CloseApplications=force
+RestartApplications=yes
 
 [Languages]
 ; The language NAME is the ISO code on purpose - {language} is passed straight to KlangHub as --lang=.
@@ -578,6 +585,23 @@ begin
   { pages build their controls lazily - re-apply so nothing shows up in Windows grey }
   ThemeAll(WizardForm);
   StyleHeadings;
+
+  { The "preparing" page should never appear now that CloseApplications=force does the job silently. If it
+    ever does - a process that will not close - it must at least be readable: its radio buttons and list
+    are created by Inno itself and came out in Windows grey on ink. }
+  if CurPageID = wpPreparing then
+  begin
+    WizardForm.PreparingLabel.Font.Color := clIvory;
+    WizardForm.PreparingYesRadio.Font.Color := clIvory;
+    WizardForm.PreparingNoRadio.Font.Color := clIvory;
+    WizardForm.PreparingYesRadio.Color := clInk;
+    WizardForm.PreparingNoRadio.Color := clInk;
+    PlainTheme(WizardForm.PreparingYesRadio);
+    PlainTheme(WizardForm.PreparingNoRadio);
+    WizardForm.PreparingMemo.Color := clInk2;
+    WizardForm.PreparingMemo.Font.Color := clIvory;
+    DarkScrollbars(WizardForm.PreparingMemo);
+  end;
 end;
 
 procedure InitializeUninstallProgressForm();

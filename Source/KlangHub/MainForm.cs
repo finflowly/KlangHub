@@ -255,7 +255,12 @@ namespace KlangHub
             if (applicationLogic == null)
                 return;
 
-            if (GetMinimizeToTray())
+            // Hiding into the tray is what the CLOSE BUTTON should do - and only that. Windows shutting
+            // down, the installer's restart manager asking us to step aside, or the app exiting itself are
+            // not invitations to stay resident: refusing them blocked a Windows shutdown outright, and left
+            // the installer to kill the process instead of letting it stop its Cast sessions (which is how
+            // a television ends up sitting on the Cast logo).
+            if (GetMinimizeToTray() && e.CloseReason == CloseReason.UserClosing)
             {
                 applicationLogic.SaveSettings();
                 Hide();
