@@ -254,7 +254,7 @@ namespace KlangHub.Communication
             }
             else
             {
-                logger.Log($"[{DateTime.Now.ToLongTimeString()}] [{device.GetHost()}:{device.GetPort()}] Last received message: {lastReceivedMessage}");
+                logger.Log($"[{device.GetHost()}:{device.GetPort()}] Last received message: {lastReceivedMessage}");
                 device.SetDeviceState(DeviceState.Undefined);
                 device.CloseConnection();
                 if (NoContactFor(15 * 60))
@@ -395,7 +395,7 @@ namespace KlangHub.Communication
             var byteMessage = chromeCastMessages.MessageToByteArray(castMessage);
             sendMessage?.Invoke(byteMessage);
 
-            logger.Log($"{Properties.Strings.Log_Out} [{DateTime.Now.ToLongTimeString()}][{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
+            logger.Log($"{Properties.Strings.Log_Out} [{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
         }
 
         /// <summary>
@@ -407,7 +407,7 @@ namespace KlangHub.Communication
             if (castMessage == null || device == null || IsDisposed)
                 return;
 
-            logger.Log($"{Properties.Strings.Log_In} [{DateTime.Now.ToLongTimeString()}] [{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
+            logger.Log($"{Properties.Strings.Log_In} [{device.GetHost()}:{device.GetPort()}] [{device.GetDeviceState()}]: {castMessage.PayloadUtf8}");
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var message = JsonSerializer.Deserialize<PayloadMessageBase>(castMessage.PayloadUtf8, options)!;
@@ -512,7 +512,7 @@ namespace KlangHub.Communication
             if (device == null || IsDisposed)
                 return;
 
-            logger.Log($"[{DateTime.Now.ToLongTimeString()}] [{device.GetHost()}:{device.GetPort()}] ResumePlaying");
+            logger.Log($"[{device.GetHost()}:{device.GetPort()}] ResumePlaying");
             userMode = UserMode.Playing;
             pendingStatusMessage = false;
 

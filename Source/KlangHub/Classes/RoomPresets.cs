@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -51,23 +51,51 @@ namespace KlangHub.Classes
             return parts.Length == Ids.Length ? parts : EnglishFallback;
         }
 
+        /// <summary>
+        /// Every preset name in every shipped language, mapped to its id. Built once.
+        ///
+        /// It used to be a linear sweep: 24 cultures, each re-read from its satellite assembly, re-split
+        /// and re-trimmed, then up to 20 culture-aware comparisons - about a thousand string allocations
+        /// for one 14-pixel glyph. DrawIcon is called from three OnPaint paths, one of which repaints
+        /// eleven times a second per playing card, so five rooms cost tens of thousands of allocations a
+        /// second on the UI thread while audio was streaming.
+        ///
+        /// Invariant comparison, not current-culture: under a Turkish locale the dotless i makes
+        /// "Wohnzimmer" fail to match itself, and the room silently loses its icon.
+        /// </summary>
+        private static Dictionary<string, string>? labelToId;
+
+        /// <summary>Drops the cached name-to-id map. Called when the language changes, alongside the
+        /// artwork's own invalidation - the map is built from satellite resources.</summary>
+        public static void Invalidate() => labelToId = null;
+
+        private static Dictionary<string, string> LabelToId()
+        {
+            var map = labelToId;
+            if (map != null)
+                return map;
+
+            map = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var culture in MainForm.SupportedCultures)
+            {
+                var labels = Labels(CultureInfo.GetCultureInfo(culture));
+                for (int i = 0; i < labels.Length && i < Ids.Length; i++)
+                    map.TryAdd(labels[i], Ids[i]);   // first language to claim a name keeps it
+            }
+
+            labelToId = map;
+            return map;
+        }
+
         /// <summary>The identity behind a room name, or null when the user typed their own.</summary>
         public static string? IdFor(string? roomName)
         {
             if (string.IsNullOrWhiteSpace(roomName))
                 return null;
 
-            var name = roomName!.Trim();
-            // Match against every shipped language, not just the current one: a room named while the app was
-            // German keeps its icon after switching to English.
-            foreach (var culture in MainForm.SupportedCultures)
-            {
-                var labels = Labels(CultureInfo.GetCultureInfo(culture));
-                for (int i = 0; i < labels.Length && i < Ids.Length; i++)
-                    if (string.Equals(labels[i], name, StringComparison.CurrentCultureIgnoreCase))
-                        return Ids[i];
-            }
-            return null;
+            // Matched against every shipped language, not just the current one: a room named while the app
+            // was German keeps its icon after switching to English.
+            return LabelToId().TryGetValue(roomName!.Trim(), out var id) ? id : null;
         }
 
         /// <summary>

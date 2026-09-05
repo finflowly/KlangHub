@@ -697,7 +697,16 @@ namespace KlangHub.UserControls
                 maxVolume = popup.MaxVolume;
                 SpeakerPrefs.SetMaxVolume(descriptor?.Id, maxVolume);
                 SpeakerPrefs.SetRoom(descriptor?.Id, popup.Room);
-                if (volume > maxVolume) TryOnSession(s => s.SetVolume(maxVolume / 100f));
+                if (volume > maxVolume)
+                {
+                    // The card's own figure has to come down too, not just the device. TryOnSession
+                    // swallows the exception for a speaker with no live session, so for an idle device
+                    // nothing happened at all and VolumePercent kept reporting a level above the cap - a
+                    // phantom the room bar then averaged into its level, moving OTHER speakers to
+                    // compensate and jumping under the user's finger when it re-read itself.
+                    volume = maxVolume;
+                    TryOnSession(s => s.SetVolume(maxVolume / 100f));
+                }
                 Invalidate();
                 if (!string.Equals(roomBefore ?? string.Empty, popup.Room, StringComparison.CurrentCultureIgnoreCase))
                     RoomChanged?.Invoke(this, EventArgs.Empty);

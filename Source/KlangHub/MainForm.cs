@@ -809,7 +809,10 @@ namespace KlangHub
                     new("Extra buffer", buffer == null ? null : buffer + " s"),
                     // Belongs here because it changes how the audio itself is treated: below 1000 the app
                     // drops blocks to reduce lag, and a reader must know that before judging a stream fault.
-                    new("Lag control", LagValue() is int lag && lag < 1000 ? lag + " (dropping blocks)" : "off"),
+                    // Says what it actually does: since the lag control was narrowed to uncompressed audio,
+                    // a low setting has no effect at all on FLAC or MP3, and a header that claimed
+                    // otherwise would send a reader after the wrong cause.
+                    new("Lag control", LagDescription()),
                     new("Stream address", address),
                     new("Receiver app id", GetReceiverAppId()),
                 };
@@ -827,6 +830,23 @@ namespace KlangHub
         {
             try { return trbLag?.Value; }
             catch (InvalidOperationException) { return null; }
+        }
+
+        private string LagDescription()
+        {
+            if (LagValue() is not int lag || lag >= 1000)
+                return "off";
+
+            bool uncompressed = StreamCodec.IsWav(SafeFormat());
+            return uncompressed
+                ? lag + " (dropping blocks)"
+                : lag + " (set, but ignored - only applies to WAV)";
+        }
+
+        private SupportedStreamFormat SafeFormat()
+        {
+            try { return GetSelectedStreamFormat(); }
+            catch (InvalidOperationException) { return SupportedStreamFormat.Wav_16bit; }
         }
 
         private string? SafeFormatName()
@@ -1060,6 +1080,7 @@ namespace KlangHub
             CultureInfo.DefaultThreadCurrentCulture = ci;
             CultureInfo.DefaultThreadCurrentUICulture = ci;
             Classes.ArtworkRenderer.Invalidate();   // the TV screen is drawn in this language too
+            Classes.RoomPresets.Invalidate();      // and the room names it maps to icons
             ApplyLocalization();
             applicationLogic.SetCulture(culture);
         }
@@ -1133,8 +1154,12 @@ namespace KlangHub
                                 var responseBody = response.Content.ReadAsStringAsync();
 
                                 var doc = JsonDocument.Parse(responseBody.Result);
-                                var latestRelease = doc.RootElement.GetProperty("tag_name").GetString()!.Replace("v", "");
-                                if (latestRelease.CompareTo(currentVersion) > 0)
+                                var tag = doc.RootElement.GetProperty("tag_name").GetString();
+                                var latestRelease = (tag ?? string.Empty).TrimStart('v', 'V');
+                                // Compared as versions, not as text: "1.0.0" is greater than "1.0" as a
+                                // string, so a conventional tag would have offered the running build back
+                                // to the user on every start - and "1.10" would have sorted below "1.9".
+                                if (KlangHub.Core.Diagnostics.ReleaseVersion.IsNewer(tag, currentVersion))
                                 {
                                     var latestReleaseUrl = doc.RootElement.GetProperty("html_url").GetString()!;
                                     ShowLatestRelease(latestRelease, latestReleaseUrl);
@@ -2470,10 +2495,18 @@ namespace KlangHub
                 using (var accent = new SolidBrush(Classes.Theme.Amber))
                     e.Graphics.FillRectangle(accent, bounds.X, bounds.Y, 3, bounds.Height);
 
-            if (e.Index >= 0)
+            // The closed field shows the control's TEXT, not an item at an index. The index is -1 while the
+            // list is being refilled and for anything typed by hand, and drawing nothing in that case is
+            // what left settings fields blank - the same fault DarkComboBox was fixed for, still living
+            // here in the shared handler.
+            string text = isField
+                ? cb.Text ?? string.Empty
+                : e.Index >= 0 && e.Index < cb.Items.Count ? cb.GetItemText(cb.Items[e.Index]) ?? string.Empty : string.Empty;
+
+            if (text.Length > 0)
             {
                 var r = new Rectangle(bounds.X + 11, bounds.Y, bounds.Width - (isField ? 40 : 20), bounds.Height);
-                TextRenderer.DrawText(e.Graphics, cb.GetItemText(cb.Items[e.Index]), cb.Font, r, fg,
+                TextRenderer.DrawText(e.Graphics, text, cb.Font, r, fg,
                     TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis
                     | TextFormatFlags.NoPrefix);
             }
@@ -2532,16 +2565,32 @@ namespace KlangHub
             if (pnlDevices == null || WindowState != FormWindowState.Normal) return;
             if (pnlDevices.Width <= 0 || pnlDevices.Height <= 0) return;
 
+            // Measured from a real card, not from two numbers kept in step by hand. Those were last
+            // corrected when the card grew from 152 to 172 pixels; they were also plain pixels, so under
+            // per-monitor DPI the window came out too small on a scaled display.
             int count = 0;
+            UserControls.DeviceControl? sample = null;
+            int roomBarHeight = 0;
             foreach (var c in pnlDevices.Controls)
-                if (c is UserControls.DeviceControl dc && dc.Visible) count++;
-            if (count == 0) return;
+            {
+                if (c is UserControls.DeviceControl dc && dc.Visible)
+                {
+                    count++;
+                    sample ??= dc;
+                }
+                // Grouping by room inserts a full-width bar above each group; without counting those the
+                // window came up one bar too short for every room.
+                else if (c is UserControls.RoomBarControl bar && bar.Visible)
+                    roomBarHeight += bar.Height + bar.Margin.Vertical;
+            }
+            if (count == 0 || sample == null) return;
 
             int cols = count <= 1 ? 1 : count > 6 ? 3 : 2;
             int rows = (count + cols - 1) / cols;
-            const int cellW = 322 + 14, cellH = 172 + 14;   // card + margins
+            int cellW = sample.Width + sample.Margin.Horizontal;
+            int cellH = sample.Height + sample.Margin.Vertical;
             int needPnlW = cols * cellW + 20;                // + scrollbar / inner padding
-            int needPnlH = rows * cellH + 10;
+            int needPnlH = rows * cellH + roomBarHeight + 10;
 
             int chromeW = ClientSize.Width - pnlDevices.Width;   // everything that isn't the device viewport
             int chromeH = ClientSize.Height - pnlDevices.Height;

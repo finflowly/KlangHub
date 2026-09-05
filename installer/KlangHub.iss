@@ -58,7 +58,10 @@ LanguageDetectionMethod=uilanguage
 ; close handler honours CloseReason, the restart manager's request ends the process properly (stopping the
 ; Cast sessions) instead of being swallowed by "minimize to tray" and then killed.
 CloseApplications=force
-RestartApplications=yes
+; NOT restarted by the restart manager: the [Run] entry below already starts KlangHub, and with the
+; language setup just chose. Doing both left two instances running after every upgrade - and the restart
+; manager's copy would carry the OLD command line, so they would not even agree on the language.
+RestartApplications=no
 
 [Languages]
 ; The language NAME is the ISO code on purpose - {language} is passed straight to KlangHub as --lang=.
