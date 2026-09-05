@@ -592,6 +592,25 @@ namespace KlangHub
             devices.VolumeMute();
         }
 
+        /// <summary>
+        /// A second KlangHub was started and left again, asking this one to show itself. Without this the
+        /// desktop icon would appear to do nothing at all once the window is hidden in the notification
+        /// area - which is exactly the moment someone reaches for it.
+        /// </summary>
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Classes.SingleInstance.ShowWindowMessage && Classes.SingleInstance.ShowWindowMessage != 0)
+            {
+                Show();
+                if (WindowState == FormWindowState.Minimized)
+                    WindowState = FormWindowState.Normal;
+                Activate();
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
+
         public async void SetWindowVisibility(bool visible)
         {
             if (chkShowWindowOnStart == null)
