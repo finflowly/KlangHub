@@ -64,7 +64,7 @@ namespace KlangHub.Platform.Clementine
         /// Anything that is not a local file - an internet radio, most obviously - yields nothing, because
         /// handing a stream URL to a tag reader is nonsense rather than a near miss.
         /// </summary>
-        private static string? LocalPath(string? url)
+        internal static string? LocalPath(string? url)
         {
             if (string.IsNullOrWhiteSpace(url))
                 return null;
@@ -72,7 +72,17 @@ namespace KlangHub.Platform.Clementine
             try
             {
                 var uri = new Uri(url);
-                return uri.IsFile ? uri.LocalPath.Replace('/', '\\') : null;
+                if (!uri.IsFile)
+                    return null;
+
+                // IsFile is true for a UNC path too, so "file://somewhere-else/share/x.flac" used to
+                // arrive here as a path on another machine. Whatever answers on the Clementine port then
+                // chooses which host this one opens an SMB connection to, and Windows offers the signed-in
+                // user's credentials to it on the way. Local files only.
+                if (uri.IsUnc)
+                    return null;
+
+                return uri.LocalPath.Replace('/', '\\');
             }
             catch (Exception)
             {

@@ -85,20 +85,64 @@ namespace KlangHub
                         , castProvider);
                 System.Windows.Forms.Application.Run(mainForm);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                // This used to be an empty catch around the whole of startup. On a machine where KlangHub
+                // failed to start - and a first release will find such machines - the user double-clicked
+                // the icon and nothing whatever happened: no window, no message, no log line, nothing to
+                // send anybody. It was the worst possible first impression, and it cost us the only bug
+                // report that would have explained it.
+                ReportAndRecord("KlangHub could not start.", ex);
             }
         }
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern bool SetProcessDPIAware();
-
         private static void UnhandledHandler(object sender, System.UnhandledExceptionEventArgs e)
         {
-#if DEBUG
-            Exception exception = (Exception)e.ExceptionObject;
-            MessageBox.Show(exception.Message);
-#endif
+            // Not behind #if DEBUG. A release build is exactly where this matters: it is the last thing
+            // that runs before the process disappears, and without it the disappearance has no witness.
+            ReportAndRecord("KlangHub has to close.", e.ExceptionObject as Exception);
+        }
+
+        /// <summary>
+        /// Write the failure somewhere it can be found again, then say so once, plainly.
+        /// <para>
+        /// The file comes first and on its own: the message box needs a message pump, and by the time
+        /// this runs there may not be one left.
+        /// </para>
+        /// </summary>
+        private static void ReportAndRecord(string headline, Exception? ex)
+        {
+            var detail = ex?.ToString() ?? "No further detail.";
+
+            var crashFile = string.Empty;
+            try
+            {
+                var folder = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KlangHub");
+                System.IO.Directory.CreateDirectory(folder);
+                crashFile = System.IO.Path.Combine(folder, "startup-error.txt");
+                System.IO.File.WriteAllText(crashFile,
+                    $"{DateTimeOffset.Now:u}{Environment.NewLine}{headline}{Environment.NewLine}{detail}{Environment.NewLine}");
+            }
+            catch (Exception)
+            {
+                // Nowhere to write it. The message below is then all there is, which is still more than
+                // the silence this replaces.
+            }
+
+            try
+            {
+                var where = string.IsNullOrEmpty(crashFile)
+                    ? string.Empty
+                    : $"{Environment.NewLine}{Environment.NewLine}Written to:{Environment.NewLine}{crashFile}";
+
+                MessageBox.Show($"{headline}{Environment.NewLine}{Environment.NewLine}{ex?.Message}{where}",
+                    "KlangHub", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception)
+            {
+                // No message pump left to show it on. The file is written; that was the important half.
+            }
         }
     }
 }

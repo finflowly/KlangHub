@@ -1260,7 +1260,10 @@ namespace KlangHub
                         var url = "https://api.github.com/repos/finflowly/KlangHub/releases/latest";
                         using (var handler = new HttpClientHandler())
                         {
-                            handler.UseDefaultCredentials = true;
+                            // No default credentials. They were being offered to GitHub, which does
+                            // not want them and has no use for them - but a redirect to somewhere else
+                            // would have had this machine hand over the signed-in user's Windows
+                            // credentials to whatever was at the other end, unasked.
                             handler.UseProxy = false;
 
                             using (var client = new HttpClient(handler))
@@ -1271,9 +1274,9 @@ namespace KlangHub
                                 var response = await client.GetAsync(new Uri(url));
                                 response.EnsureSuccessStatusCode();
 
-                                var responseBody = response.Content.ReadAsStringAsync();
+                                var responseBody = await response.Content.ReadAsStringAsync();
 
-                                var doc = JsonDocument.Parse(responseBody.Result);
+                                var doc = JsonDocument.Parse(responseBody);
                                 var tag = doc.RootElement.GetProperty("tag_name").GetString();
                                 var latestRelease = (tag ?? string.Empty).TrimStart('v', 'V');
                                 // Compared as versions, not as text: "1.0.0" is greater than "1.0" as a
@@ -1469,9 +1472,19 @@ namespace KlangHub
 
         private void OpenUrl(string url)
         {
+            // Only http and https. UseShellExecute hands the string to Windows to decide what opens it,
+            // and this one arrives in the JSON of a release feed - so without this test, any protocol
+            // registered on the machine could be started by changing that field.
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var parsed)
+                || (parsed.Scheme != Uri.UriSchemeHttp && parsed.Scheme != Uri.UriSchemeHttps))
+            {
+                logger.Log($"OpenUrl: refused a link that is not http or https.");
+                return;
+            }
+
             ProcessStartInfo psInfo = new ProcessStartInfo
             {
-                FileName = url,
+                FileName = parsed.AbsoluteUri,
                 UseShellExecute = true
             };
             try

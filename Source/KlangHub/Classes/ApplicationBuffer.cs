@@ -8,7 +8,8 @@ namespace KlangHub.Classes
 {
     public class ApplicationBuffer
     {
-        private readonly List<ApplicationBufferItem> applicationBuffer = new List<ApplicationBufferItem>();
+        private readonly KlangHub.Core.Streaming.AudioRingBuffer applicationBuffer =
+            new KlangHub.Core.Streaming.AudioRingBuffer((long)BufferSizeInBytesDefault);
         private AudioFormat waveFormat = new AudioFormat(44100, 16, 2);
         private int reduceLagThreshold;
         private SupportedStreamFormat streamFormatSelected;
@@ -120,10 +121,7 @@ namespace KlangHub.Classes
             if (applicationBuffer == null)
                 return;
 
-            lock (applicationBuffer)
-            {
-                applicationBuffer.Clear();
-            }
+            applicationBuffer.Clear();
             startBufferSend = false;
         }
 
@@ -136,15 +134,8 @@ namespace KlangHub.Classes
             if (applicationBuffer == null)
                 return;
 
-            lock (applicationBuffer)
-            {
-                applicationBuffer.Insert(0, new ApplicationBufferItem { Data = dataToSend });
-
-                while (applicationBuffer.Sum(x => x.Data.Length) - applicationBuffer.Last().Data.Length > BufferSizeInBytes)
-                {
-                    applicationBuffer.RemoveAt(applicationBuffer.Count - 1);
-                }
-            }
+            applicationBuffer.CapacityBytes = (long)BufferSizeInBytes;
+            applicationBuffer.Add(dataToSend);
         }
 
         /// <summary>
@@ -155,16 +146,7 @@ namespace KlangHub.Classes
             if (applicationBuffer == null)
                 return new byte[0];
 
-            IEnumerable<byte> buffer = new List<byte>();
-            lock (applicationBuffer)
-            {
-                for (int i = applicationBuffer.Count - 1; i >= 0; i--)
-                {
-                    buffer = buffer.Concat(applicationBuffer[i].Data);
-                }
-            }
-
-            return buffer.ToArray();
+            return applicationBuffer.ToArray();
         }
     }
 }

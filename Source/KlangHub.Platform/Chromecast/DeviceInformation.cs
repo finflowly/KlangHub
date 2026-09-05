@@ -1,4 +1,4 @@
-using KlangHub.Discover;
+﻿using KlangHub.Discover;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,19 +16,41 @@ namespace KlangHub.Application
     /// </summary>
     public static class DeviceInformation
     {
+        /// <summary>
+        /// One client for the whole program, not one per request.
+        /// <para>
+        /// A new HttpClient was built for every device on every fifteen-second poll and never disposed.
+        /// Each one opens its own connection and leaves it in TIME_WAIT: six speakers came to some
+        /// fourteen hundred sockets an hour, which is the well-worn path to a machine that runs out of
+        /// ports and cannot open any connection at all.
+        /// </para>
+        /// <para>
+        /// MaxResponseContentBufferSize is the other half. The reply is read whole into memory, and it
+        /// comes from a device on the network: without a limit, something that answers on port 8008 and
+        /// never stops answering takes the process's memory with it.
+        /// </para>
+        /// </summary>
+        private static readonly HttpClient Http = new HttpClient(new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(2),   // so a device that moves to a new address is noticed
+            AllowAutoRedirect = false,                            // a setup endpoint has no business redirecting us
+        })
+        {
+            Timeout = TimeSpan.FromSeconds(5),
+            MaxResponseContentBufferSize = 1024 * 1024,
+        };
+
+        /// <summary>The setup endpoint, which both callers below ask for.</summary>
+        private static string EurekaUrl(string? ipAddress)
+            => $"http://{UrlHost(ipAddress)}:8008/setup/eureka_info?params=version,audio,name,build_info,detail,device_info,net,wifi,setup,settings,opt_in,opencast,multizone,proxy,night_mode_params,user_eq,room_equalizer&options=detail";
+
         public static Action GetDeviceInformation(DiscoveredDevice discoveredDevice, Action<DeviceEureka> callback, Action? onFailed, ILogger logger)
         {
             return (async () => {
                 try
                 {
-                    var http = new HttpClient
-                    {
-                        Timeout = new TimeSpan(0, 0, 5)
-                    };
-                    var response = await http.GetAsync($"http://{UrlHost(discoveredDevice.IPAddress)}:8008/setup/eureka_info?params=version,audio,name,build_info,detail,device_info,net,wifi,setup,settings,opt_in,opencast,multizone,proxy,night_mode_params,user_eq,room_equalizer&options=detail");
-                    var receiveStream = await response.Content.ReadAsStreamAsync();
-                    var readStream = new StreamReader(receiveStream, Encoding.UTF8);
-                    var eurekaInfo = readStream.ReadToEnd();
+                    var response = await Http.GetAsync(EurekaUrl(discoveredDevice.IPAddress));
+                    var eurekaInfo = await response.Content.ReadAsStringAsync();
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
                         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
@@ -64,11 +86,7 @@ namespace KlangHub.Application
                 try
                 {
                     // Check if the device is on.
-                    var http = new HttpClient
-                    {
-                        Timeout = new TimeSpan(0, 0, 5)
-                    };
-                    var response = await http.GetAsync($"http://{UrlHost(ipAddress)}:8008/setup/eureka_info?params=version,audio,name,build_info,detail,device_info,net,wifi,setup,settings,opt_in,opencast,multizone,proxy,night_mode_params,user_eq,room_equalizer&options=detail");
+                    var response = await Http.GetAsync(EurekaUrl(ipAddress));
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
                         discoveredDevice.AddedByDeviceInfo = false;

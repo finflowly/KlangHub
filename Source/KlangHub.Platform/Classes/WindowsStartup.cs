@@ -15,7 +15,13 @@ namespace KlangHub.Classes
             rk.DeleteValue("Desktop Audio Streamer", false);
 
             if (enable)
-                rk.SetValue(valueName, exePath);
+                // Quoted. Without the quotes, CreateProcess treats every space in the path as a possible
+                // end of the program name and tries each prefix in turn, adding ".exe" - so for anyone
+                // whose profile folder contains a space, Windows looks for a program named after the
+                // first word of it before it looks for ours. On a machine whose permissions have been
+                // loosened over the years, that is somebody else's program started as this user at every
+                // sign-in, and nobody would ever think to look there.
+                rk.SetValue(valueName, "\"" + exePath + "\"");
             else
                 rk.DeleteValue(valueName, false);
         }
