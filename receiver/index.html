@@ -34,47 +34,66 @@
       --glow: #2A2118;
       --glow-soft: #1A1611;
       --accent: #C9BFAE;
+
+      --stage-h: 720px;
+      --stage-w: 1280px;
+
+      --safe-x: calc(var(--stage-w) * 6.5 / 100);
+      --safe-y: calc(var(--stage-h) * 9 / 100);
     }
 
     * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
-      height: 100%;
+      padding: 0;
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      inset: 0;
+      overflow: hidden;
       background: var(--void);
       color: var(--ivory);
-      overflow: hidden;
       font-family: "Inter Tight", "Segoe UI", system-ui, sans-serif;
-      --safe-x: 6.5vw;
-      --safe-y: 9vh;
     }
 
-    cast-media-player { position: absolute; left: -9999px; width: 1px; height: 1px; }
+    cast-media-player {
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      --background-color: transparent;
+      --background-image: none;
+      --splash-image: none;
+      --splash-size: 0;
+      --logo-image: none;
+      --watermark-image: none;
+      --playback-logo-image: none;
+      --progress-color: transparent;
+      --progress-bar-color: transparent;
+      --theme-hue: 0;
+      --font-family: "Inter Tight", sans-serif;
+    }
 
     #wash {
-      position: absolute;
+      position: fixed;
       top: -12%; right: -12%; bottom: -12%; left: -12%;
       inset: -12%;
+      z-index: 1;
       background-size: cover;
       background-position: center;
       filter: blur(90px) saturate(140%) brightness(.42);
       opacity: 0;
-      transform: scale(1.06);
-      transition: opacity 1.6s ease, background-image 0s;
-      animation: drift 90s ease-in-out infinite alternate;
-      will-change: transform;
+      transition: opacity 1.6s ease;
     }
     body.has-cover #wash { opacity: 1; }
 
-    @keyframes drift {
-      from { transform: scale(1.06) translate3d(0, 0, 0); }
-      to   { transform: scale(1.14) translate3d(-1.2%, -1%, 0); }
-    }
-
     #veil {
-      position: absolute;
+      position: fixed;
       top: 0; right: 0; bottom: 0; left: 0;
       inset: 0;
+      z-index: 2;
       background:
         radial-gradient(58% 70% at 22% 46%, rgba(42, 33, 24, .55) 0%, transparent 70%),
         radial-gradient(70% 90% at 88% 88%, rgba(26, 22, 17, .70) 0%, transparent 65%),
@@ -87,46 +106,51 @@
     }
 
     #stage {
-      position: absolute;
-      top: 0; right: 0; bottom: 0; left: 0;
-      inset: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--stage-w);
+      height: var(--stage-h);
+      z-index: 3;
+      overflow: hidden;
       display: grid;
       grid-template-columns: auto 1fr;
-      align-content: center;
-      align-items: center;
-      gap: 6vw;
+      align-items: start;
+      align-content: start;
+      gap: calc(var(--stage-w) * 6 / 100);
       padding: var(--safe-y) var(--safe-x);
     }
 
     #art {
       position: relative;
-      width: 60vh;
-      height: 60vh;
-      flex: none;
-      border-radius: .8vh;
+      width: calc(var(--stage-h) * 52 / 100);
+      width: min(calc(var(--stage-h) * 52 / 100), calc(var(--stage-w) * 38 / 100));
+      height: calc(var(--stage-h) * 52 / 100);
+      height: min(calc(var(--stage-h) * 52 / 100), calc(var(--stage-w) * 38 / 100));
+      border-radius: calc(var(--stage-h) * .8 / 100);
       box-shadow:
-        0 3vh 7vh rgba(0, 0, 0, .65),
-        0 0 14vh rgba(201, 191, 174, .18);
+        0 calc(var(--stage-h) * 3 / 100) calc(var(--stage-h) * 7 / 100) rgba(0, 0, 0, .65),
+        0 0 calc(var(--stage-h) * 14 / 100) rgba(201, 191, 174, .18);
       box-shadow:
-        0 3vh 7vh rgba(0, 0, 0, .65),
-        0 0 14vh color-mix(in srgb, var(--accent) 18%, transparent);
+        0 calc(var(--stage-h) * 3 / 100) calc(var(--stage-h) * 7 / 100) rgba(0, 0, 0, .65),
+        0 0 calc(var(--stage-h) * 14 / 100) color-mix(in srgb, var(--accent) 18%, transparent);
       overflow: hidden;
-      animation: breathe 26s ease-in-out infinite alternate;
       transition: opacity .9s ease;
-      will-change: transform;
     }
     #art img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      animation: breathe 26s ease-in-out infinite alternate;
+      will-change: transform;
     }
     #art.empty { box-shadow: none; background: transparent; }
     #art.empty img { display: none; }
 
     @keyframes breathe {
-      from { transform: translate3d(0, -.5vh, 0) scale(1); }
-      to   { transform: translate3d(0, .5vh, 0) scale(1.012); }
+      from { transform: scale(1); }
+      to   { transform: scale(1.035); }
     }
 
     #rings { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; display: none; }
@@ -137,7 +161,7 @@
       border-radius: 50%;
     }
     #rings i:nth-child(1) { width: 12%; height: 12%; background: var(--amber); border: none;
-                            box-shadow: 0 0 5vh rgba(232, 182, 90, .4); }
+                            box-shadow: 0 0 calc(var(--stage-h) * 5 / 100) rgba(232, 182, 90, .4); }
     #rings i:nth-child(2) { width: 26%; height: 26%; border-color: rgba(232, 182, 90, .55); }
     #rings i:nth-child(3) { width: 44%; height: 44%; border-color: rgba(232, 182, 90, .26); }
     #rings i:nth-child(4) { width: 64%; height: 64%; }
@@ -150,9 +174,9 @@
       font-family: "Fraunces", Georgia, serif;
       font-variation-settings: "opsz" 72;
       font-weight: 400;
-      font-size: 8.4vh;
-      font-size: clamp(3rem,  8.4vh,  9rem);
+      font-size: calc(var(--stage-h) * 8.4 / 100);
       line-height: 1.04;
+      min-height: 2.08em;
       letter-spacing: -.015em;
       margin: 0;
       display: -webkit-box;
@@ -164,11 +188,10 @@
     #artist {
       font-family: "Fraunces", Georgia, serif;
       font-variation-settings: "opsz" 60;
-      font-weight: 300;
-      font-size: 3.4vh;
-      font-size: clamp(1.3rem,  3.4vh,  3rem);
+      font-weight: 400;
+      font-size: calc(var(--stage-h) * 3.4 / 100);
       line-height: 1.2;
-      margin: 1.6vh 0 0;
+      margin: calc(var(--stage-h) * 1.6 / 100) 0 0;
       color: #DCD3C4;
       color: color-mix(in srgb, var(--accent) 82%, var(--ivory));
       white-space: nowrap;
@@ -178,19 +201,25 @@
     }
 
     #album {
-      font-size: 1.75vh;
-      font-size: clamp(.8rem,  1.75vh,  1.4rem);
+      font-size: calc(var(--stage-h) * 1.75 / 100);
       font-weight: 400;
       color: var(--slate);
-      margin: 2.4vh 0 0;
+      margin: calc(var(--stage-h) * 2.4 / 100) 0 0;
+      min-height: 1.3em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       opacity: .85;
     }
 
-    #progress { margin-top: 5vh; max-width: 32vw; display: none; }
-    body.has-progress #progress { display: block; }
+    #progress {
+      margin-top: calc(var(--stage-h) * 5 / 100);
+      max-width: calc(var(--stage-w) * 32 / 100);
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+    body.has-progress #progress { visibility: visible; opacity: 1; }
 
     #track {
       position: relative;
@@ -208,8 +237,9 @@
     #head {
       position: absolute;
       top: 50%;
-      width: .8vh; height: .8vh;
-      margin: -.4vh 0 0 -.4vh;
+      width: calc(var(--stage-h) * .8 / 100);
+      height: calc(var(--stage-h) * .8 / 100);
+      margin: calc(var(--stage-h) * -.4 / 100) 0 0 calc(var(--stage-h) * -.4 / 100);
       border-radius: 50%;
       background: var(--ivory);
       left: 0;
@@ -218,46 +248,47 @@
     #times {
       display: flex;
       justify-content: space-between;
-      margin-top: 1.6vh;
-      font-size: 1.5vh;
-      font-size: clamp(.7rem,  1.5vh,  1.2rem);
+      margin-top: calc(var(--stage-h) * 1.6 / 100);
+      font-size: calc(var(--stage-h) * 1.5 / 100);
       color: var(--slate);
       font-variant-numeric: tabular-nums;
     }
 
     #quality {
-      position: absolute;
+      position: fixed;
       top: var(--safe-y);
       right: var(--safe-x);
-      font-size: 1.5vh;
-      font-size: clamp(.7rem,  1.5vh,  1.15rem);
+      z-index: 4;
+      font-size: calc(var(--stage-h) * 1.5 / 100);
       letter-spacing: .04em;
       color: var(--slate);
-      opacity: .7;
-      display: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .8s ease;
     }
-    body.has-quality #quality { display: block; }
+    body.has-quality #quality { opacity: .7; visibility: visible; }
+
+    #zone, #wordmark {
+      position: fixed;
+      top: calc(var(--stage-h) - var(--safe-y));
+      transform: translateY(-100%);
+      z-index: 4;
+    }
 
     #zone {
-      position: absolute;
       left: var(--safe-x);
-      bottom: var(--safe-y);
-      font-size: 1.5vh;
-      font-size: clamp(.7rem,  1.5vh,  1.15rem);
+      font-size: calc(var(--stage-h) * 1.5 / 100);
       color: var(--slate);
       opacity: .55;
     }
 
     #wordmark {
-      position: absolute;
       right: var(--safe-x);
-      bottom: var(--safe-y);
       text-align: right;
       font-family: "Fraunces", Georgia, serif;
       font-variation-settings: "opsz" 40;
       font-weight: 400;
-      font-size: 1.9vh;
-      font-size: clamp(.85rem,  1.9vh,  1.5rem);
+      font-size: calc(var(--stage-h) * 1.9 / 100);
       color: var(--amber);
       opacity: .42;
       line-height: 1.25;
@@ -274,14 +305,15 @@
     }
 
     #clock {
-      position: absolute;
+      position: fixed;
       right: var(--safe-x);
-      top: 50%;
+      top: calc(var(--stage-h) / 2);
       transform: translateY(-50%);
+      z-index: 4;
       font-family: "Fraunces", Georgia, serif;
       font-variation-settings: "opsz" 72;
       font-weight: 400;
-      font-size: 11vh;
+      font-size: calc(var(--stage-h) * 11 / 100);
       color: var(--ivory);
       opacity: 0;
       transition: opacity 1.2s ease;
@@ -298,15 +330,14 @@
     #stage, #quality, #zone, #wordmark { transition: filter 1.4s ease; }
 
     body.idle #quality, body.idle #zone { opacity: 0; }
-    body.idle #words { display: none; }
-    body.idle #stage { grid-template-columns: 1fr; justify-items: center; }
-    #quality, #zone { transition: opacity .8s ease; }
+    body.idle #words { visibility: hidden; }
+    body.idle #stage { align-content: center; justify-items: center; }
     #words { transition: opacity .8s ease; }
 
     body.changing #art, body.changing #words { opacity: 0; }
 
     @media (prefers-reduced-motion: reduce) {
-      #wash, #art { animation: none; }
+      #art img { animation: none; }
     }
   </style>
 </head>
@@ -390,118 +421,40 @@
       ? function () { return performance.now(); }
       : function () { return Date.now(); };
 
-    var watch = {
-      frames: 0,
-      gapLongest: 0,
-      timerLatest: 0,
-      cutLatest: 0,
-      tracks: 0,
-      reported: 0
-    };
+    function pinViewport() {
+      var vv = window.visualViewport;
+      var h = Math.min(
+        (vv && vv.height) || Infinity,
+        (window.screen && window.screen.height) || Infinity,
+        window.innerHeight || Infinity
+      );
+      var w = Math.min(
+        (vv && vv.width) || Infinity,
+        (window.screen && window.screen.width) || Infinity,
+        window.innerWidth || Infinity
+      );
 
-    var FRAME_GAP_WORTH_SAYING = 70;
-    var TIMER_LATENESS_WORTH_SAYING = 250;
+      if (!isFinite(h) || h < 240) h = 720;
+      if (!isFinite(w) || w < 320) w = 1280;
 
-    var lastFrameAt = nowMs();
-    function frame() {
-      var at = nowMs();
-      var gap = at - lastFrameAt;
-      lastFrameAt = at;
-      if (gap > watch.gapLongest) watch.gapLongest = gap;
-      watch.frames++;
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-
-    var lastTickAt = nowMs();
-    var bottomRowNudge = 0;
-    var lastZoneBottom = null;
-
-    function bottomOfTheBottomRow() {
-      try {
-        if (!el.zone || !el.zone.getBoundingClientRect) return null;
-        return el.zone.getBoundingClientRect().bottom;
-      } catch (e) {
-        return null;
-      }
+      var root = document.documentElement.style;
+      root.setProperty('--stage-h', Math.round(h) + 'px');
+      root.setProperty('--stage-w', Math.round(w) + 'px');
     }
 
-    function visibleHeight() {
-      return window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 0;
+    var pinPending = 0;
+
+    function pinSoon() {
+      if (pinPending) return;
+      pinPending = setTimeout(function () { pinPending = 0; pinViewport(); }, 500);
     }
 
-    function holdTheBottomRow() {
-      var seen = bottomOfTheBottomRow();
-      var height = visibleHeight();
-      if (seen === null || !height) return;
-
-      var below = seen - height;
-      if (below <= -4) return;
-
-      bottomRowNudge -= Math.ceil(below) + 8;
-      var shift = 'translateY(' + bottomRowNudge + 'px)';
-      try {
-        el.zone.style.transform = shift;
-        if (el.wordmark) el.wordmark.style.transform = shift;
-      } catch (e) {}
-    }
-
-    function noteTick() {
-      var at = nowMs();
-      var late = (at - lastTickAt) - 1000;
-      lastTickAt = at;
-      if (late > watch.timerLatest) watch.timerLatest = late;
-    }
-
-    function sayIfWorthSaying(force) {
-      var measured = bottomOfTheBottomRow();
-      var seenAt = measured === null ? -1 : Math.round(measured);
-      var height = visibleHeight();
-      var moved = measured !== null && lastZoneBottom !== null && Math.abs(seenAt - lastZoneBottom) > 2;
-      if (measured !== null) lastZoneBottom = seenAt;
-
-      var worth = force
-        || moved
-        || (measured !== null && height && seenAt - height > -8)
-        || watch.gapLongest > FRAME_GAP_WORTH_SAYING
-        || watch.timerLatest > TIMER_LATENESS_WORTH_SAYING
-        || watch.cutLatest > FRAME_GAP_WORTH_SAYING;
-
-      var below = (measured === null || !height) ? 0 : Math.round(measured - height);
-
-      var said = {
-        type: 'stage-report',
-        token: sessionToken,
-        zoneBottom: seenAt,
-        zoneBelowEdge: below,
-        zoneNudge: bottomRowNudge,
-        viewport: Math.round(height),
-        screen: (window.screen ? window.screen.height : 0),
-        frames: watch.frames,
-        gapLongest: Math.round(watch.gapLongest),
-        timerLatest: Math.round(watch.timerLatest),
-        cutLatest: Math.round(watch.cutLatest),
-        tracks: watch.tracks,
-        visibility: document.visibilityState,
-        hidden: !!document.hidden,
-        reported: ++watch.reported
-      };
-
-      watch.frames = 0; watch.gapLongest = 0; watch.timerLatest = 0; watch.cutLatest = 0;
-
-      if (!worth) return;
-      sayToSender(said);
-    }
-
-    function sayToSender(message) {
-      if (!sessionToken) return;
-      try {
-        if (window.cast && cast.framework) {
-          cast.framework.CastReceiverContext.getInstance().sendCustomMessage(NAMESPACE, undefined, message);
-        }
-      } catch (e) {
-      }
-    }
+    pinViewport();
+    window.addEventListener('resize', pinSoon);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', pinSoon);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) pinViewport();
+    });
 
     function paletteFrom(img) {
       try {
@@ -671,7 +624,6 @@
       pending = null;
       if (landing.timer) clearTimeout(landing.timer);
 
-      watch.cutLatest = Math.max(watch.cutLatest, nowMs() - landing.due);
       render(landing.update, true);
       el.body.classList.remove('changing');
     }
@@ -687,18 +639,7 @@
       return (h ? h + ':' : '') + mm + ':' + (s < 10 ? '0' + s : s);
     }
 
-    var REPORT_EVERY_TICKS = 30;
-    var ticks = 0;
-    var helloAtTick = 5;
-
     function tick() {
-      noteTick();
-      settleIfOverdue();
-      holdTheBottomRow();
-      ticks++;
-      if (helloAtTick && ticks >= helloAtTick && sessionToken) { helloAtTick = 0; sayIfWorthSaying(true); }
-      else if (ticks % REPORT_EVERY_TICKS === 0) sayIfWorthSaying(false);
-
       if (duration > 0) {
         var at = position + (playing ? (Date.now() - positionAt) / 1000 : 0);
         if (at > duration) at = duration;
@@ -790,7 +731,6 @@
         settleIfOverdue();
 
         if (d.type === 'track') {
-          watch.tracks++;
           d.newTrack ? change(d) : render(d, false);
         } else if (d.type === 'position') {
           render({ position: d.position, duration: d.duration }, false);
