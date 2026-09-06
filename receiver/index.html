@@ -5,45 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>KlangHub</title>
 
-  <!--
-    KlangHub — Cast Web Receiver: the stage
-    ================================================================================================
-    What a television shows while KlangHub streams to it. Registered in the Cast Developer Console as
-    a Custom Receiver; the application id it hands back goes into KlangHub under
-    Einstellungen → Cast-Empfänger. Hosted from this repository via GitHub Pages, which is why the
-    whole thing is one self-contained file plus four images: no build step, no dependencies.
-
-    The idea in one sentence: the television is not a status display, it is the stage the listening
-    happens on. Cover large, everything else quiet, the colour taken from the record itself, and
-    motion so slow it is felt rather than seen.
-
-    What is deliberately NOT here, and why:
-      - no visualiser bars. The audio arrives at the built-in player; there is no reliable spectrum
-        to read from it, and a fake one is a toy. Motion that reacts to sound comes later, from
-        analysis Windows sends over the custom namespace (stage "Pulse").
-      - no controls, no progress scrubber, no "Try saying…". Nobody should reach for a remote to
-        make this screen stop being in the way.
-      - no heavy effects. A Chromecast stick has a small GPU; one blurred layer and two slow
-        transforms is the budget, and staying inside it is why this holds 60 Hz on cheap hardware.
-
-    The audio is still played by the built-in CAF player - queue, gapless, voice and the hardware
-    remote all keep working. Only the picture is ours.
-
-    This file also runs in an ordinary browser: with no Cast SDK present it shows a demonstration
-    track, which is how the design is reviewed without a television in the room.
-  -->
-
-  <!--
-    No subresource integrity hash on purpose: this is Google's own Cast SDK, served from gstatic and
-    updated by Google under a stable v3 URL. Pinning a hash would break every receiver the moment they
-    ship a patch - and the script is not optional, the device cannot run a receiver without it.
-  -->
-  <!--
-    A content policy, as a meta tag because GitHub Pages serves no headers of its own. It says what
-    this page is allowed to load: the Cast SDK from gstatic, the two font hosts, and pictures from
-    anywhere - the cover art comes from whichever machine is casting, on an address nobody can know in
-    advance. Everything else, and inline script in particular, is refused.
-  -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'none';
                  script-src https://www.gstatic.com 'unsafe-inline';
@@ -56,10 +17,6 @@
                  form-action 'none';
                  frame-ancestors 'none'">
 
-  <!-- https, spelled out. It was protocol-relative, which is the same thing when this page is served
-       over https - and plain http when it is opened locally for a design review, which the comment
-       above invites. On that path anything on the network could have replaced the SDK, and the SDK is
-       what runs this receiver. -->
   <script type="text/javascript"
           src="https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
 
@@ -69,15 +26,11 @@
 
   <style>
     :root {
-      /* True black, not a tinted near-black: on an OLED panel these pixels are genuinely off, and
-         the cover is supposed to be the only light in the room. */
       --void: #000000;
       --ivory: #F3ECDD;
       --slate: #8A9AA6;
       --amber: #E8B65A;
 
-      /* Taken from the cover at run time. The values here are what a record with no readable colour
-         falls back to - a deep warm neutral, never a stock purple gradient. */
       --glow: #2A2118;
       --glow-soft: #1A1611;
       --accent: #C9BFAE;
@@ -92,21 +45,12 @@
       color: var(--ivory);
       overflow: hidden;
       font-family: "Inter Tight", "Segoe UI", system-ui, sans-serif;
-      /* TV panels overscan; nothing important may sit in the outer 3%. */
       --safe-x: 6.5vw;
       --safe-y: 6vh;
     }
 
-    /* The built-in player still does the work; it is simply not what anyone looks at. Audio has no
-       picture, so the element is kept out of sight rather than removed - removing it would take the
-       playback machinery with it. */
     cast-media-player { position: absolute; left: -9999px; width: 1px; height: 1px; }
 
-    /* ---------------------------------------------------------------- background */
-
-    /* The cover again, vast and out of focus, tinted by its own palette. One blurred layer, held
-       still enough that a cheap stick never has to redraw it - the slow scale is a compositor
-       transform, not a repaint. */
     #wash {
       position: absolute;
       inset: -12%;
@@ -126,8 +70,6 @@
       to   { transform: scale(1.14) translate3d(-1.2%, -1%, 0); }
     }
 
-    /* Two washes of the record's own colour, and a vignette so the corners of a large panel fall
-       away instead of glowing. */
     #veil {
       position: absolute;
       inset: 0;
@@ -137,8 +79,6 @@
         radial-gradient(120% 120% at 50% 50%, transparent 42%, rgba(0,0,0,.72) 100%);
       transition: background 1.6s ease;
     }
-
-    /* ---------------------------------------------------------------- stage */
 
     #stage {
       position: absolute;
@@ -157,7 +97,6 @@
       height: 60vh;
       flex: none;
       border-radius: .8vh;
-      /* The cover is the light source: it sits above its own soft shadow rather than in a frame. */
       box-shadow:
         0 3vh 7vh rgba(0, 0, 0, .65),
         0 0 14vh color-mix(in srgb, var(--accent) 18%, transparent);
@@ -169,12 +108,9 @@
     #art img {
       width: 100%;
       height: 100%;
-      /* Never distort a cover. A square crop of a square picture is a no-op; anything else keeps its
-         proportions and loses a sliver rather than being squashed. */
       object-fit: cover;
       display: block;
     }
-    /* A record with no picture at all: the brand's ring band, drawn rather than fetched. */
     #art.empty { box-shadow: none; background: transparent; }
     #art.empty img { display: none; }
 
@@ -198,8 +134,6 @@
     #rings i:nth-child(5) { width: 84%; height: 84%; }
     #rings i:nth-child(6) { width: 100%; height: 100%; }
 
-    /* ---------------------------------------------------------------- words */
-
     #words { min-width: 0; }
 
     #title {
@@ -210,8 +144,6 @@
       line-height: 1.04;
       letter-spacing: -.015em;
       margin: 0;
-      /* Two lines for a long title, then it gives up gracefully rather than pushing the artist off
-         the bottom of a 16:9 panel. */
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -243,9 +175,6 @@
       opacity: .85;
     }
 
-    /* The progress line: information, not a video recorder. One hairline, one dot, two times. */
-    /* Deliberately shorter than the words above it. A line stretched across the panel reads as a
-       transport control somebody is meant to operate; this one is only telling you where you are. */
     #progress { margin-top: 5vh; max-width: 32vw; display: none; }
     body.has-progress #progress { display: block; }
 
@@ -280,10 +209,6 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* ---------------------------------------------------------------- edges */
-
-    /* Quality mark, top right. Present only when the sender actually knows these facts - an invented
-       "FLAC" would be worse than saying nothing. */
     #quality {
       position: absolute;
       top: var(--safe-y);
@@ -309,15 +234,26 @@
       position: absolute;
       right: var(--safe-x);
       bottom: var(--safe-y);
+      text-align: right;
       font-family: "Fraunces", Georgia, serif;
       font-variation-settings: "opsz" 40;
       font-weight: 400;
       font-size: clamp(.85rem, 1.9vh, 1.5rem);
       color: var(--amber);
       opacity: .42;
+      line-height: 1.25;
+    }
+    #wordmark i {
+      display: block;
+      font-family: "Inter Tight", "Segoe UI", system-ui, sans-serif;
+      font-style: normal;
+      font-size: .52em;
+      letter-spacing: .22em;
+      color: var(--ivory);
+      opacity: .5;
+      margin-top: .3em;
     }
 
-    /* The clock only appears while the music is held, and only then. */
     #clock {
       position: absolute;
       right: var(--safe-x);
@@ -335,8 +271,6 @@
     }
     body.paused #clock { opacity: .22; }
 
-    /* Held, not stopped: the picture stays, the room simply dims. The edge markings dim with it -
-       they sit outside the stage in the markup but they are in the same room. */
     body.paused #stage,
     body.paused #quality,
     body.paused #zone,
@@ -344,16 +278,12 @@
     body.paused #wash { filter: blur(90px) saturate(120%) brightness(.24); }
     #stage, #quality, #zone, #wordmark { transition: filter 1.4s ease; }
 
-    /* Nothing playing: the words go and the brand's own mark stands alone in the middle. The text
-       block is removed from the grid rather than merely made transparent - left in place it keeps
-       its column, and the mark ends up hanging off-centre with no visible reason. */
     body.idle #quality, body.idle #zone { opacity: 0; }
     body.idle #words { display: none; }
     body.idle #stage { grid-template-columns: 1fr; justify-items: center; }
     #quality, #zone { transition: opacity .8s ease; }
     #words { transition: opacity .8s ease; }
 
-    /* The one moment of motion with meaning: a new piece arrives. */
     body.changing #art, body.changing #words { opacity: 0; }
 
     @media (prefers-reduced-motion: reduce) {
@@ -388,7 +318,8 @@
 
   <div id="quality"></div>
   <div id="zone"></div>
-  <div id="wordmark">KlangHub</div>
+
+  <div id="wordmark">KlangHub<i>ONE MUSIC · EVERY ROOM</i></div>
   <div id="clock"></div>
 
   <script>
@@ -396,6 +327,24 @@
     'use strict';
 
     var NAMESPACE = 'urn:x-cast:de.klanghub.stage';
+
+    var sessionToken = null;
+
+    var SHORTEST_TOKEN = 8;
+
+    function rememberToken(custom) {
+      var given = custom && custom.stageToken;
+      sessionToken = (typeof given === 'string' && given.length >= SHORTEST_TOKEN) ? given : null;
+    }
+
+    function fromUs(data) {
+      var given = data && data.token;
+      if (!sessionToken || typeof given !== 'string' || given.length !== sessionToken.length) return false;
+
+      var difference = 0;
+      for (var i = 0; i < given.length; i++) difference |= given.charCodeAt(i) ^ sessionToken.charCodeAt(i);
+      return difference === 0;
+    }
 
     var el = {
       body: document.body,
@@ -407,6 +356,7 @@
       album: document.getElementById('album'),
       quality: document.getElementById('quality'),
       zone: document.getElementById('zone'),
+      wordmark: document.getElementById('wordmark'),
       clock: document.getElementById('clock'),
       elapsed: document.getElementById('elapsed'),
       head: document.getElementById('head'),
@@ -414,16 +364,102 @@
       total: document.getElementById('total')
     };
 
-    // What is on screen. Kept here rather than read back out of the DOM so that a partial update -
-    // the artist arriving two seconds after the title - can be merged instead of blanking the rest.
     var shown = { title: '', artist: '', album: '', cover: '', quality: '', zone: '' };
     var duration = 0, position = 0, positionAt = 0, playing = false;
 
-    /* ------------------------------------------------------------------ colour */
+    var nowMs = (window.performance && performance.now)
+      ? function () { return performance.now(); }
+      : function () { return Date.now(); };
 
-    // The record gives the room its colour. Averaging the whole cover yields mud, so this takes the
-    // most saturated pixels it can find and darkens them hard: the wash behind a stage is meant to
-    // be a suggestion of the record, never a lit surface competing with it.
+    var watch = {
+      frames: 0,
+      gapLongest: 0,
+      timerLatest: 0,
+      cutLatest: 0,
+      tracks: 0,
+      reported: 0
+    };
+
+    var FRAME_GAP_WORTH_SAYING = 70;
+    var TIMER_LATENESS_WORTH_SAYING = 250;
+
+    var lastFrameAt = nowMs();
+    function frame() {
+      var at = nowMs();
+      var gap = at - lastFrameAt;
+      lastFrameAt = at;
+      if (gap > watch.gapLongest) watch.gapLongest = gap;
+      watch.frames++;
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    var lastTickAt = nowMs();
+    var bottomRowNudge = 0;
+
+    function holdTheBottomRow() {
+      var below = el.zone.getBoundingClientRect().bottom - window.innerHeight;
+      if (below <= -4) return;
+
+      bottomRowNudge -= Math.ceil(below) + 8;
+      var shift = 'translateY(' + bottomRowNudge + 'px)';
+      el.zone.style.transform = shift;
+      el.wordmark.style.transform = shift;
+    }
+
+    function noteTick() {
+      var at = nowMs();
+      var late = (at - lastTickAt) - 1000;
+      lastTickAt = at;
+      if (late > watch.timerLatest) watch.timerLatest = late;
+    }
+
+    function sayIfWorthSaying(force) {
+      var drifted = el.zone.getBoundingClientRect().bottom - window.innerHeight > -8;
+
+      var worth = force
+        || drifted
+        || watch.gapLongest > FRAME_GAP_WORTH_SAYING
+        || watch.timerLatest > TIMER_LATENESS_WORTH_SAYING
+        || watch.cutLatest > FRAME_GAP_WORTH_SAYING;
+
+      var box = el.zone.getBoundingClientRect();
+      var below = Math.round(box.bottom - window.innerHeight);
+
+      var said = {
+        type: 'stage-report',
+        token: sessionToken,
+        zoneBottom: Math.round(box.bottom),
+        zoneBelowEdge: below,
+        zoneNudge: bottomRowNudge,
+        viewport: Math.round(window.innerHeight),
+        screen: (window.screen ? window.screen.height : 0),
+        frames: watch.frames,
+        gapLongest: Math.round(watch.gapLongest),
+        timerLatest: Math.round(watch.timerLatest),
+        cutLatest: Math.round(watch.cutLatest),
+        tracks: watch.tracks,
+        visibility: document.visibilityState,
+        hidden: !!document.hidden,
+        reported: ++watch.reported
+      };
+
+      watch.frames = 0; watch.gapLongest = 0; watch.timerLatest = 0; watch.cutLatest = 0;
+
+      if (!worth) return;
+      sayToSender(said);
+    }
+
+    function sayToSender(message) {
+      if (!sessionToken) return;
+      try {
+        if (window.cast && cast.framework) {
+          cast.framework.CastReceiverContext.getInstance().sendCustomMessage(NAMESPACE, undefined, message);
+        }
+      } catch (e) {
+      }
+    }
+
     function paletteFrom(img) {
       try {
         var size = 36;
@@ -441,16 +477,12 @@
 
           var max = Math.max(r, g, b), min = Math.min(r, g, b);
           var chroma = max - min;
-          // Favour colour that is actually coloured and not already black: a score of chroma times
-          // mid-brightness picks the record's hue rather than its darkest corner.
           var score = chroma * (1 - Math.abs((max + min) / 2 / 255 - 0.55));
           if (score > bestScore) { bestScore = score; best = [r, g, b]; }
         }
         if (!n) return null;
 
         var average = [sum[0] / n, sum[1] / n, sum[2] / n];
-        // A cover with no colour in it at all (a black-and-white sleeve) keeps its own grey rather
-        // than being tinted something it is not.
         var hue = bestScore > 12 ? best : average;
         return {
           glow: rgb(scale(hue, .30)),
@@ -458,15 +490,12 @@
           accent: rgb(lift(hue))
         };
       } catch (e) {
-        // A cover served without the cross-origin header taints the canvas and the read throws. The
-        // stage simply keeps its warm neutral - it must never go blank over a colour.
         return null;
       }
     }
 
     function scale(c, f) { return [c[0] * f, c[1] * f, c[2] * f]; }
 
-    // Pull a colour up to something readable as text without letting it turn neon.
     function lift(c) {
       var max = Math.max(c[0], c[1], c[2]) || 1;
       var f = Math.min(2.6, 205 / max);
@@ -490,11 +519,6 @@
       root.setProperty('--accent', p.accent);
     }
 
-    /* ------------------------------------------------------------------ painting */
-
-    // Counts the cover requests. A picture arrives whenever the network feels like it, and by then the
-    // track may have moved on or the music may have stopped - without this the finished download of a
-    // cover nobody asked for any more puts the previous record back on screen.
     var coverRequest = 0;
 
     function setCover(url) {
@@ -512,9 +536,6 @@
         return;
       }
 
-      // http and https only, and never a bare word that the browser would resolve against this page.
-      // The cover URL arrives in a Cast message, and Cast does not authenticate senders: anything on
-      // the network can send one to a running session.
       if (!/^https?:\/\//i.test(url)) {
         el.art.classList.add('empty');
         el.body.classList.remove('has-cover');
@@ -527,7 +548,6 @@
       img.onload = function () {
         if (mine !== coverRequest) return;
         el.cover.src = url;
-        // encodeURI, so a quotation mark in the URL cannot end the url() and start another one.
         el.wash.style.backgroundImage = 'url("' + encodeURI(url) + '")';
         el.art.classList.remove('empty');
         el.body.classList.add('has-cover');
@@ -535,12 +555,20 @@
       };
       img.onerror = function () {
         if (mine !== coverRequest) return;
-        // The picture did not arrive. The words are what matter; the stage carries on without it.
         el.art.classList.add('empty');
         el.body.classList.remove('has-cover');
         applyPalette(null);
       };
       img.src = url;
+    }
+
+    function albumWorthPrinting() {
+      var album = (shown.album || '').trim();
+      if (!album) return '';
+
+      var plain = function (s) { return (s || '').trim().toLowerCase(); };
+      if (plain(album) === plain(shown.title) || plain(album) === plain(shown.artist)) return '';
+      return album;
     }
 
     function text(node, value) {
@@ -549,25 +577,19 @@
       return next;
     }
 
-    // Merge, never replace: a field that arrives empty leaves what was already known standing. This
-    // is the same rule the sender's cascade follows, and it is what keeps placeholders from
-    // flickering on a four-metre screen while sources answer at their own pace.
     function render(update, isNewTrack) {
       if (isNewTrack) {
         shown = { title: '', artist: '', album: '', cover: '', quality: '', zone: shown.zone };
-        // The clock restarts with the piece. Without stamping the moment as well, the line would sit
-        // at zero until the next position message arrived - visibly stuck under music that is playing.
         duration = 0; position = 0; positionAt = Date.now();
       }
 
       ['title', 'artist', 'album', 'quality', 'zone'].forEach(function (key) {
         if (update[key]) shown[key] = update[key];
       });
-      if (update.cover) shown.cover = shown.cover;
 
       text(el.title, shown.title || 'KlangHub');
       text(el.artist, shown.artist);
-      text(el.album, shown.album);
+      text(el.album, albumWorthPrinting());
       text(el.quality, shown.quality);
       text(el.zone, shown.zone);
 
@@ -581,17 +603,39 @@
       el.body.classList.toggle('has-progress', duration > 0);
     }
 
-    // A new piece is the one cut this screen is allowed to make, and even that is a breath: out over
-    // half a second, in over the same. A hard swap reads like a slideshow.
+    var CUT_MS = 520;
+    var pending = null;
+
     function change(update) {
+      settle();
+
+      pending = { update: update, due: nowMs() + CUT_MS, timer: 0 };
       el.body.classList.add('changing');
-      setTimeout(function () {
-        render(update, true);
-        el.body.classList.remove('changing');
-      }, 520);
+      pending.timer = setTimeout(settle, CUT_MS);
+      requestAnimationFrame(awaitCut);
     }
 
-    /* ------------------------------------------------------------------ time */
+    function awaitCut() {
+      if (!pending) return;
+      if (nowMs() >= pending.due) { settle(); return; }
+      requestAnimationFrame(awaitCut);
+    }
+
+    function settle() {
+      if (!pending) return;
+
+      var landing = pending;
+      pending = null;
+      if (landing.timer) clearTimeout(landing.timer);
+
+      watch.cutLatest = Math.max(watch.cutLatest, nowMs() - landing.due);
+      render(landing.update, true);
+      el.body.classList.remove('changing');
+    }
+
+    function settleIfOverdue() {
+      if (pending && nowMs() >= pending.due) settle();
+    }
 
     function clock(seconds) {
       if (!(seconds >= 0)) return '';
@@ -600,7 +644,18 @@
       return (h ? h + ':' : '') + mm + ':' + (s < 10 ? '0' + s : s);
     }
 
+    var REPORT_EVERY_TICKS = 30;
+    var ticks = 0;
+    var helloAtTick = 5;
+
     function tick() {
+      noteTick();
+      settleIfOverdue();
+      holdTheBottomRow();
+      ticks++;
+      if (helloAtTick && ticks >= helloAtTick && sessionToken) { helloAtTick = 0; sayIfWorthSaying(true); }
+      else if (ticks % REPORT_EVERY_TICKS === 0) sayIfWorthSaying(false);
+
       if (duration > 0) {
         var at = position + (playing ? (Date.now() - positionAt) / 1000 : 0);
         if (at > duration) at = duration;
@@ -616,8 +671,6 @@
     }
     setInterval(tick, 1000);
     tick();
-
-    /* ------------------------------------------------------------------ cast */
 
     function fromMedia(media) {
       var m = (media && media.metadata) || {};
@@ -643,7 +696,14 @@
       var context = cast.framework.CastReceiverContext.getInstance();
       var playerManager = context.getPlayerManager();
 
+      playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, function (request) {
+        var media = request && request.media;
+        rememberToken((media && media.customData) || (request && request.customData));
+        return request;
+      });
+
       playerManager.addEventListener(cast.framework.events.EventType.LOAD_START, function (event) {
+        if (!sessionToken) rememberToken(event.media && event.media.customData);
         change(fromMedia(event.media));
       });
 
@@ -664,17 +724,18 @@
           playing = false;
           el.body.classList.add('idle');
           el.body.classList.remove('paused');
-          // The piece is over; its picture is not the room's wallpaper.
           setCover('');
         });
       });
 
-      // The live channel back to Windows. A track change during a session arrives here rather than
-      // as a fresh LOAD, because a LOAD on a loopback stream means tearing the audio down and
-      // refilling the buffer - seconds of silence on every single track.
       context.addCustomMessageListener(NAMESPACE, function (event) {
         var d = event.data || {};
+        if (!fromUs(d)) return;
+
+        settleIfOverdue();
+
         if (d.type === 'track') {
+          watch.tracks++;
           d.newTrack ? change(d) : render(d, false);
         } else if (d.type === 'position') {
           render({ position: d.position, duration: d.duration }, false);
@@ -687,14 +748,9 @@
       var options = new cast.framework.CastReceiverOptions();
       options.customNamespaces = {};
       options.customNamespaces[NAMESPACE] = cast.framework.system.MessageType.JSON;
-      // While a session is alive the screen stays ours: no ambient photos, no weather, no "Try
-      // saying…". The device is free to go home once the sender stops.
       options.disableIdleTimeout = false;
       context.start(options);
     } else {
-      // No Cast SDK: this is a browser, and somebody is looking at the design. Show a record.
-      // ?demo=paused and ?demo=idle show the other two states, which are otherwise only reachable
-      // with a television in the room.
       var demo = (location.search.match(/demo=(\w+)/) || [])[1];
       el.body.classList.remove('idle');
       playing = true;
@@ -710,9 +766,6 @@
       }, true);
       positionAt = Date.now();
 
-      // The everyday case for a listener on internet radio: a title, an artist and a cover, and
-      // genuinely nothing else - no album, no length, no quality mark. The stage has to look finished
-      // like this, not like a screen with three things missing.
       if (demo === 'radio') {
         shown = { title: '', artist: '', album: '', cover: '', quality: '', zone: '' };
         duration = 0;
@@ -730,8 +783,6 @@
       tick();
     }
 
-    // A drawn stand-in so the browser preview has a real picture to take its colour from, without
-    // shipping somebody's album art in the repository.
     function demoCover() {
       var c = document.createElement('canvas');
       c.width = c.height = 600;
