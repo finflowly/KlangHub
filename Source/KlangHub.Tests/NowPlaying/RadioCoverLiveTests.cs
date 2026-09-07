@@ -130,7 +130,7 @@ namespace KlangHub.Tests.NowPlaying
 
         private static async Task<string> AskCatalogue(HttpClient client, string question)
         {
-            for (var attempt = 1; attempt <= 3; attempt++)
+            for (var attempt = 1; attempt <= 5; attempt++)
             {
                 await Task.Delay(Politeness * attempt, TestContext.Current.CancellationToken);
 
@@ -141,7 +141,7 @@ namespace KlangHub.Tests.NowPlaying
                     if (response.IsSuccessStatusCode)
                         return await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-                    if (response.StatusCode is not (HttpStatusCode.ServiceUnavailable or HttpStatusCode.TooManyRequests))
+                    if ((int)response.StatusCode < 500 && response.StatusCode != HttpStatusCode.TooManyRequests)
                         Assert.Fail($"The catalogue answered {(int)response.StatusCode} to {question}");
                 }
                 catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or TimeoutException)
@@ -151,7 +151,7 @@ namespace KlangHub.Tests.NowPlaying
                 }
             }
 
-            Assert.Skip("The catalogue would not answer three times over. That is its day, not our code.");
+            Assert.Skip("The catalogue would not answer, five tries and half a minute apart. That is its day, not our code.");
             return string.Empty;
         }
 
