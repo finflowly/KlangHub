@@ -42,7 +42,7 @@ namespace KlangHub.Core.NowPlaying
                 Forget();
 
             Accept(ref title, source, contribution.Title);
-            Accept(ref artist, source, contribution.Artist);
+            AcceptArtist(ref artist, source, contribution.Artist, title, contribution.Title);
             Accept(ref album, source, contribution.Album);
             Accept(ref filePath, source, contribution.FilePath);
             Accept(ref format, source, contribution.Format);
@@ -103,6 +103,19 @@ namespace KlangHub.Core.NowPlaying
             duration = default;
             sampleRate = default;
             bitDepth = default;
+        }
+
+        private static void AcceptArtist(ref FieldValue<string> field, MetadataSource source, string? value,
+                                         FieldValue<string> heldTitle, string? offeredTitle)
+        {
+            if (source < heldTitle.Source &&
+                field.Source == MetadataSource.None &&
+                !string.IsNullOrWhiteSpace(offeredTitle) &&
+                !string.Equals(offeredTitle.Trim(), (heldTitle.Value ?? string.Empty).Trim(),
+                               StringComparison.OrdinalIgnoreCase))
+                return;
+
+            Accept(ref field, source, value);
         }
 
         /// <summary>

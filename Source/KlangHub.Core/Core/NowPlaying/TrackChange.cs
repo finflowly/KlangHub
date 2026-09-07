@@ -31,17 +31,38 @@ namespace KlangHub.Core.NowPlaying
             if (Contradicts(previous.FilePath, next.FilePath, PathsDiffer))
                 return true;
 
-            if (Contradicts(previous.Title, next.Title, TextDiffers))
-                return true;
+            if (!OneLineReadTwoWays(previous, next))
+            {
+                if (Contradicts(previous.Title, next.Title, TextDiffers))
+                    return true;
 
-            if (Contradicts(previous.Artist, next.Artist, TextDiffers))
-                return true;
+                if (Contradicts(previous.Artist, next.Artist, TextDiffers))
+                    return true;
+            }
 
             if (previous.Duration != null && next.Duration != null &&
                 (previous.Duration.Value - next.Duration.Value).Duration() > LengthWobble)
                 return true;
 
             return false;
+        }
+
+        private static bool OneLineReadTwoWays(NowPlayingTrack previous, NowPlayingTrack next)
+        {
+            var before = AsOneLine(previous);
+            var after = AsOneLine(next);
+
+            return before.Length > 0 && string.Equals(before, after, StringComparison.Ordinal);
+        }
+
+        private static string AsOneLine(NowPlayingTrack track)
+        {
+            var title = (track.Title ?? string.Empty).Trim();
+            if (title.Length == 0)
+                return string.Empty;
+
+            var artist = (track.Artist ?? string.Empty).Trim();
+            return Normalise(artist.Length == 0 ? title : artist + " - " + title);
         }
 
         /// <summary>
