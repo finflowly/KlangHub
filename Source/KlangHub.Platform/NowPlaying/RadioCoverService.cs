@@ -23,8 +23,10 @@ namespace KlangHub.Platform.NowPlaying
         private static readonly TimeSpan Politeness = TimeSpan.FromMilliseconds(1100);
         private static readonly TimeSpan BackOff = TimeSpan.FromMinutes(5);
         private const int MostRemembered = 400;
+        private const int MostTried = 4;
 
         private readonly Func<string, CancellationToken, Task<string?>> ask;
+        private readonly Func<string, CancellationToken, Task<bool?>>? hasPicture;
         private readonly Action<string> log;
         private readonly TimeSpan politeness;
         private readonly string? remembered;
@@ -39,19 +41,26 @@ namespace KlangHub.Platform.NowPlaying
         private bool disposed;
 
         public RadioCoverService(Action<string> logIn)
-            : this(logIn, Over(new HttpClient { Timeout = TimeSpan.FromSeconds(12) }), Politeness, RememberedAt())
+            : this(logIn, Talking())
+        {
+        }
+
+        private RadioCoverService(Action<string> logIn, HttpClient client)
+            : this(logIn, Over(client), Politeness, RememberedAt(), Reachable(client))
         {
         }
 
         public RadioCoverService(Action<string> logIn,
                                  Func<string, CancellationToken, Task<string?>> askIn,
                                  TimeSpan politenessIn,
-                                 string? rememberedIn)
+                                 string? rememberedIn,
+                                 Func<string, CancellationToken, Task<bool?>>? hasPictureIn = null)
         {
             log = logIn;
             ask = askIn;
             politeness = politenessIn;
             remembered = rememberedIn;
+            hasPicture = hasPictureIn;
             Recall();
         }
 
@@ -120,10 +129,15 @@ namespace KlangHub.Platform.NowPlaying
                 var answer = await ask(MusicBrainzAnswer.Question(question.Artist, question.Title), closing.Token)
                     .ConfigureAwait(false);
 
-                var release = MusicBrainzAnswer.ReleaseId(answer, question.Artist, question.Title);
-                var url = release == null ? string.Empty : MusicBrainzAnswer.FrontCover(release);
+                var found = await FirstWithAPicture(
+                    MusicBrainzAnswer.ReleaseIds(answer, question.Artist, question.Title)).ConfigureAwait(false);
 
-                Remember(question.Key, url);
+                var url = found.Url;
+
+                if (found.Certain)
+                    Remember(question.Key, url);
+                else
+                    log("radio cover: the archive did not say either way; this track is not written off");
 
                 if (url.Length == 0)
                 {
@@ -158,6 +172,37 @@ namespace KlangHub.Platform.NowPlaying
             }
         }
 
+        private readonly record struct Picture(string Url, bool Certain);
+
+        private async Task<Picture> FirstWithAPicture(IReadOnlyList<string> releases)
+        {
+            var tried = 0;
+
+            foreach (var release in releases)
+            {
+                if (tried++ >= MostTried)
+                {
+                    log($"radio cover: {releases.Count} releases to try, stopped after {MostTried}");
+                    break;
+                }
+
+                var url = MusicBrainzAnswer.FrontCover(release);
+
+                if (hasPicture == null)
+                    return new Picture(url, true);
+
+                var there = await hasPicture(url, closing.Token).ConfigureAwait(false);
+
+                if (there == true)
+                    return new Picture(url, true);
+
+                if (there == null)
+                    return new Picture(url, false);
+            }
+
+            return new Picture(string.Empty, true);
+        }
+
         private void Remember(string key, string url)
         {
             lock (gate)
@@ -171,10 +216,36 @@ namespace KlangHub.Platform.NowPlaying
             Write();
         }
 
+        private static HttpClient Talking()
+        {
+            var client = new HttpClient { Timeout = TimeSpan.FromSeconds(12) };
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+            return client;
+        }
+
+        private static Func<string, CancellationToken, Task<bool?>> Reachable(HttpClient client) =>
+            async (url, token) =>
+            {
+                try
+                {
+                    using var request = new HttpRequestMessage(HttpMethod.Head, url);
+                    using var response = await client.SendAsync(request, token).ConfigureAwait(false);
+
+                    if (response.IsSuccessStatusCode)
+                        return true;
+
+                    return response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.Gone
+                        ? false
+                        : (bool?)null;
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            };
+
         private static Func<string, CancellationToken, Task<string?>> Over(HttpClient client)
         {
-            client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
-
             return async (url, token) =>
             {
                 using var response = await client.GetAsync(url, token).ConfigureAwait(false);

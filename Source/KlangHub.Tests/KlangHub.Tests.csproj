@@ -24,6 +24,9 @@
     <PackageReference Include="NSubstitute" Version="6.2.0" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Fixtures\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\KlangHub.Core\KlangHub.Core.csproj" />
     <ProjectReference Include="..\KlangHub.Platform\KlangHub.Platform.csproj" />
     <ProjectReference Include="..\KlangHub\KlangHub.csproj" />

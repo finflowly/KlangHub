@@ -14,15 +14,25 @@ namespace KlangHub.Core.NowPlaying
 
         public static string? ReleaseId(string? json, string artist, string title)
         {
+            var candidates = ReleaseIds(json, artist, title);
+            return candidates.Count == 0 ? null : candidates[0];
+        }
+
+        public static IReadOnlyList<string> ReleaseIds(string? json, string artist, string title)
+        {
             if (string.IsNullOrWhiteSpace(json))
-                return null;
+                return Array.Empty<string>();
+
+            var albums = new List<string>();
+            var official = new List<string>();
+            var rest = new List<string>();
 
             try
             {
                 using var document = JsonDocument.Parse(json);
                 if (!document.RootElement.TryGetProperty("recordings", out var recordings) ||
                     recordings.ValueKind != JsonValueKind.Array)
-                    return null;
+                    return Array.Empty<string>();
 
                 foreach (var recording in recordings.EnumerateArray())
                 {
@@ -32,17 +42,48 @@ namespace KlangHub.Core.NowPlaying
                     if (!CoverMatch.Same(CreditedArtist(recording), artist))
                         continue;
 
-                    var release = BestRelease(recording);
-                    if (release != null)
-                        return release;
+                    Sort(recording, albums, official, rest);
                 }
             }
             catch (JsonException)
             {
-                return null;
+                return Array.Empty<string>();
             }
 
-            return null;
+            var ordered = new List<string>(albums.Count + official.Count + rest.Count);
+            var already = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (var group in new[] { albums, official, rest })
+                foreach (var id in group)
+                    if (already.Add(id))
+                        ordered.Add(id);
+
+            return ordered;
+        }
+
+        private static void Sort(JsonElement recording, List<string> albums, List<string> official, List<string> rest)
+        {
+            if (!recording.TryGetProperty("releases", out var releases) || releases.ValueKind != JsonValueKind.Array)
+                return;
+
+            foreach (var release in releases.EnumerateArray())
+            {
+                var id = Text(release, "id");
+                if (id.Length == 0)
+                    continue;
+
+                if (!string.Equals(Text(release, "status"), "Official", StringComparison.OrdinalIgnoreCase))
+                {
+                    rest.Add(id);
+                    continue;
+                }
+
+                if (release.TryGetProperty("release-group", out var group) &&
+                    string.Equals(Text(group, "primary-type"), "Album", StringComparison.OrdinalIgnoreCase))
+                    albums.Add(id);
+                else
+                    official.Add(id);
+            }
         }
 
         private static string CreditedArtist(JsonElement recording)
@@ -62,35 +103,6 @@ namespace KlangHub.Core.NowPlaying
             }
 
             return names.Count == 0 ? string.Empty : names[0];
-        }
-
-        private static string? BestRelease(JsonElement recording)
-        {
-            if (!recording.TryGetProperty("releases", out var releases) || releases.ValueKind != JsonValueKind.Array)
-                return null;
-
-            string? fallback = null;
-            string? official = null;
-
-            foreach (var release in releases.EnumerateArray())
-            {
-                var id = Text(release, "id");
-                if (id.Length == 0)
-                    continue;
-
-                fallback ??= id;
-
-                if (!string.Equals(Text(release, "status"), "Official", StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                official ??= id;
-
-                if (release.TryGetProperty("release-group", out var group) &&
-                    string.Equals(Text(group, "primary-type"), "Album", StringComparison.OrdinalIgnoreCase))
-                    return id;
-            }
-
-            return official ?? fallback;
         }
 
         private static string Text(JsonElement element, string name) =>

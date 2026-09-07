@@ -14,6 +14,9 @@ namespace KlangHub.Tests.NowPlaying
         [InlineData("Song feat. Someone", "Song")]
         [InlineData("Song ft. Someone", "song")]
         [InlineData("Rock'n'Roll", "Rock n Roll")]
+        [InlineData("T.N.T.", "TNT")]
+        [InlineData("R.E.M.", "REM")]
+        [InlineData("Lovesong", "Love Song")]
         public void The_same_song_under_a_different_spelling_is_still_the_same_song(string one, string other)
         {
             Assert.True(CoverMatch.Same(one, other));

@@ -6,8 +6,19 @@ namespace KlangHub.Core.NowPlaying
 {
     public static class CoverMatch
     {
-        public static bool Same(string? one, string? other) =>
-            Normalise(one).Length > 0 && string.Equals(Normalise(one), Normalise(other), StringComparison.Ordinal);
+        public static bool Same(string? one, string? other)
+        {
+            var a = Normalise(one);
+            var b = Normalise(other);
+
+            if (a.Length == 0 || b.Length == 0)
+                return false;
+
+            return string.Equals(a, b, StringComparison.Ordinal) ||
+                   string.Equals(Tight(a), Tight(b), StringComparison.Ordinal);
+        }
+
+        private static string Tight(string value) => value.Replace(" ", string.Empty, StringComparison.Ordinal);
 
         public static string Normalise(string? value)
         {
