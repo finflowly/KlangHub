@@ -471,8 +471,11 @@ namespace KlangHub.Application
         private void PushToStages(Core.NowPlaying.NowPlayingTrack track, bool isNewTrack)
         {
             var update = Core.NowPlaying.StageUpdate.For(track, zone: null, coverUrl: StageCoverUrl(), isNewTrack);
-            if (update != null)
-                devices.SendStageUpdate(update);
+            if (update == null)
+                return;
+
+            logger.Log(update.Describe());
+            devices.SendStageUpdate(update);
         }
 
         public void ApplyNowPlayingOptions()

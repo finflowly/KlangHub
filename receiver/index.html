@@ -541,23 +541,31 @@
         return;
       }
 
-      var img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = function () {
+      applyPalette(null);
+
+      var picture = new Image();
+      picture.onload = function () {
         if (mine !== coverRequest) return;
         el.cover.src = url;
         el.wash.style.backgroundImage = 'url("' + encodeURI(url) + '")';
         el.art.classList.remove('empty');
         el.body.classList.add('has-cover');
-        applyPalette(paletteFrom(img));
       };
-      img.onerror = function () {
+      picture.onerror = function () {
         if (mine !== coverRequest) return;
         el.art.classList.add('empty');
         el.body.classList.remove('has-cover');
-        applyPalette(null);
       };
-      img.src = url;
+      picture.src = url;
+
+      var tint = new Image();
+      tint.crossOrigin = 'anonymous';
+      tint.onload = function () {
+        if (mine !== coverRequest) return;
+        applyPalette(paletteFrom(tint));
+      };
+      tint.onerror = function () {};
+      tint.src = url;
     }
 
     function albumWorthPrinting() {
@@ -577,7 +585,7 @@
 
     function render(update, isNewTrack) {
       if (isNewTrack) {
-        shown = { title: '', artist: '', album: '', cover: '', quality: '', zone: shown.zone };
+        shown = { title: '', artist: '', album: '', cover: shown.cover, quality: '', zone: shown.zone };
         duration = 0; position = 0; positionAt = Date.now();
       }
 
@@ -682,10 +690,19 @@
       return '';
     }
 
-    if (window.cast && window.cast.framework) {
-      var context = cast.framework.CastReceiverContext.getInstance();
-      var playerManager = context.getPlayerManager();
+    function readStage(data) {
+      var d = data;
 
+      if (typeof d === 'string') {
+        try { d = JSON.parse(d); } catch (e) { return null; }
+      }
+
+      return (d && typeof d === 'object') ? d : null;
+    }
+
+    var stageSeen = 0;
+
+    function wireStage(framework, context, playerManager) {
       var loadedMedia = null;
 
       function mediaWorthShowing(preferred) {
@@ -697,31 +714,31 @@
         return loadedMedia || preferred;
       }
 
-      playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, function (request) {
+      playerManager.setMessageInterceptor(framework.messages.MessageType.LOAD, function (request) {
         var media = request && request.media;
         if (media) loadedMedia = media;
         rememberToken((media && media.customData) || (request && request.customData));
         return request;
       });
 
-      playerManager.addEventListener(cast.framework.events.EventType.LOAD_START, function (event) {
+      playerManager.addEventListener(framework.events.EventType.LOAD_START, function (event) {
         if (!sessionToken) rememberToken(event.media && event.media.customData);
         change(fromMedia(mediaWorthShowing(event.media)));
       });
 
-      playerManager.addEventListener(cast.framework.events.EventType.PLAYING, function () {
+      playerManager.addEventListener(framework.events.EventType.PLAYING, function () {
         playing = true;
         el.body.classList.remove('paused', 'idle');
       });
 
-      playerManager.addEventListener(cast.framework.events.EventType.PAUSE, function () {
+      playerManager.addEventListener(framework.events.EventType.PAUSE, function () {
         playing = false;
         positionAt = Date.now();
         el.body.classList.add('paused');
       });
 
-      [cast.framework.events.EventType.MEDIA_FINISHED,
-       cast.framework.events.EventType.ERROR].forEach(function (type) {
+      [framework.events.EventType.MEDIA_FINISHED,
+       framework.events.EventType.ERROR].forEach(function (type) {
         playerManager.addEventListener(type, function () {
           playing = false;
           el.body.classList.add('idle');
@@ -731,8 +748,11 @@
       });
 
       context.addCustomMessageListener(NAMESPACE, function (event) {
-        var d = event.data || {};
+        var d = readStage(event.data);
+        if (!d) return;
         if (!fromUs(d)) return;
+
+        console.log('stage: ' + (++stageSeen) + ' ' + (d.type || '?'));
 
         settleIfOverdue();
 
@@ -745,6 +765,18 @@
           el.body.classList.toggle('paused', !d.playing);
         }
       });
+    }
+
+    var asked = /[?&]demo=/.test(location.search);
+    var demo = (location.search.match(/demo=(\w+)/) || [])[1];
+
+    if (asked && demo === 'lab') {
+      runLab((location.search.match(/device=(\w+)/) || [])[1] || 'tcl');
+    } else if (!asked && window.cast && window.cast.framework) {
+      var context = cast.framework.CastReceiverContext.getInstance();
+      var playerManager = context.getPlayerManager();
+
+      wireStage(cast.framework, context, playerManager);
 
       var options = new cast.framework.CastReceiverOptions();
       options.customNamespaces = {};
@@ -752,7 +784,6 @@
       options.disableIdleTimeout = false;
       context.start(options);
     } else {
-      var demo = (location.search.match(/demo=(\w+)/) || [])[1];
       el.body.classList.remove('idle');
       playing = true;
       render({
@@ -760,7 +791,7 @@
         artist: 'Massive Attack',
         album: 'Mezzanine',
         quality: 'FLAC · 24 Bit · 96 kHz',
-        zone: 'Wohnzimmer + Küche',
+        zone: 'the multiroom group',
         duration: 330,
         position: 134
       }, true);
@@ -771,7 +802,7 @@
         render({
           title: 'Broken Nights',
           artist: 'Patiotic',
-          zone: 'Wohnzimmer + Küche'
+          zone: 'the multiroom group'
         }, true);
       }
 
@@ -807,6 +838,116 @@
       x.fillStyle = 'rgba(232,182,90,.9)';
       x.beginPath(); x.arc(300, 300, 22, 0, Math.PI * 2); x.fill();
       return c.toDataURL();
+    }
+
+    function fakeCast(device) {
+      var listeners = {}, custom = {}, interceptors = {}, information = null;
+
+      var framework = {
+        messages: { MessageType: { LOAD: 'LOAD' } },
+        events: {
+          EventType: {
+            LOAD_START: 'LOAD_START', PLAYING: 'PLAYING', PAUSE: 'PAUSE',
+            MEDIA_FINISHED: 'MEDIA_FINISHED', ERROR: 'ERROR'
+          }
+        },
+        system: { MessageType: { JSON: 'JSON', STRING: 'STRING' } }
+      };
+
+      var playerManager = {
+        setMessageInterceptor: function (type, handler) { interceptors[type] = handler; },
+        addEventListener: function (type, handler) { (listeners[type] = listeners[type] || []).push(handler); },
+        getMediaInformation: function () { return information; }
+      };
+
+      var context = {
+        addCustomMessageListener: function (name, handler) { custom[name] = handler; }
+      };
+
+      function raise(type, event) {
+        (listeners[type] || []).forEach(function (handler) { handler(event); });
+      }
+
+      var streamer = device === 'streamer';
+
+      return {
+        framework: framework,
+        context: context,
+        playerManager: playerManager,
+
+        load: function (media) {
+          if (interceptors.LOAD) interceptors.LOAD({ media: media });
+
+          information = streamer ? null : media;
+          raise('LOAD_START', { media: streamer ? undefined : media });
+          information = media;
+          raise('PLAYING', {});
+        },
+
+        stage: function (message) {
+          if (!custom[NAMESPACE]) return;
+          custom[NAMESPACE]({ data: streamer ? JSON.stringify(message) : message });
+        }
+      };
+    }
+
+    function runLab(device) {
+      var fake = fakeCast(device);
+      wireStage(fake.framework, fake.context, fake.playerManager);
+
+      var asked = (location.search.match(/cover=([^&]+)/) || [])[1];
+      var picture = asked ? decodeURIComponent(asked) : (location.origin + '/assets/icon-512.png');
+      var token = 'lab-token-0001';
+
+      var steps = [
+        function () {
+          console.log('lab: 1 a file that brings its own cover');
+          fake.load({
+            contentType: 'audio/flac',
+            customData: { stageToken: token },
+            metadata: {
+              title: 'Teardrop', artist: 'Massive Attack', albumName: 'Mezzanine',
+              images: [{ url: picture }]
+            }
+          });
+        },
+        function () {
+          console.log('lab: 2 the radio starts, and it has no cover');
+          fake.load({
+            contentType: 'audio/mpeg',
+            customData: { stageToken: token },
+            metadata: { title: 'Broken Nights', artist: 'Patiotic', images: [] }
+          });
+        },
+        function () {
+          console.log('lab: 3 the icy title changes, and the words must not pay for a cut');
+          fake.stage({
+            type: 'track', token: token, newTrack: true,
+            title: 'Get Lucky', artist: 'Daft Punk', zone: 'the multiroom group'
+          });
+        },
+        function () {
+          console.log('lab: 4 the cover is found afterwards and merged in');
+          fake.stage({
+            type: 'track', token: token, newTrack: false,
+            title: 'Get Lucky', artist: 'Daft Punk', cover: picture
+          });
+        },
+        function () {
+          console.log('lab: 5 the next icy title brings no cover, and the sender omits the field');
+          fake.stage({
+            type: 'track', token: token, newTrack: true,
+            title: 'Blinding Lights', artist: 'The Weeknd'
+          });
+        }
+      ];
+
+      el.body.classList.remove('idle');
+      playing = true;
+
+      steps.forEach(function (step, at) { setTimeout(step, 1200 + at * 2000); });
+      setTimeout(function () { console.log('lab: done after ' + stageSeen + ' stage messages'); },
+                 1400 + steps.length * 2000);
     }
   })();
   </script>

@@ -56,6 +56,28 @@ namespace KlangHub.Core.NowPlaying
             };
         }
 
+        public string Describe()
+        {
+            var who = OneLine(Artist);
+            var what = OneLine(Title);
+
+            var named = who.Length > 0 && what.Length > 0
+                ? who + " - " + what
+                : who + what;
+
+            return "stage: " + (named.Length > 0 ? named : "(nothing named)") +
+                   ", " + (NewTrack ? "new track" : "same track") +
+                   ", " + (string.IsNullOrWhiteSpace(Cover) ? "no cover" : "with a cover");
+        }
+
+        private static string OneLine(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            return string.Join(' ', value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        }
+
         /// <summary>
         /// The small line in the corner: "FLAC · 24 Bit · 96 kHz". Only the parts the file actually said.
         /// </summary>
