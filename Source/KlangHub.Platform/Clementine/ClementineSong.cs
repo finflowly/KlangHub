@@ -3,15 +3,6 @@ using KlangHub.Core.NowPlaying;
 
 namespace KlangHub.Platform.Clementine
 {
-    /// <summary>
-    /// Turns what Clementine's network remote sends into what the stage needs.
-    /// <para>
-    /// This is the richest source KlangHub has for a Clementine listener: the album, the length, the file
-    /// on disc and the cover art as bytes, none of which a window title can carry. Measured on 2026-09-05
-    /// it is also the only way to get any of it - Clementine reports nothing whatsoever to Windows' own
-    /// now-playing session while it is playing.
-    /// </para>
-    /// </summary>
     public static class ClementineSong
     {
         public static NowPlayingTrack ToTrack(SongMetadata? song)
@@ -19,13 +10,24 @@ namespace KlangHub.Platform.Clementine
             if (song == null)
                 return new NowPlayingTrack();
 
+            var title = Blank(song.Title);
+            var artist = Blank(song.Artist) ?? Blank(song.Albumartist);
+
+            if (artist == null)
+            {
+                var split = IcyTitle.Split(title);
+                if (split.Certain)
+                {
+                    artist = split.Artist;
+                    title = split.Title;
+                }
+            }
+
             return new NowPlayingTrack
             {
-                Title = Blank(song.Title),
-                Artist = Blank(song.Artist) ?? Blank(song.Albumartist),
+                Title = title,
+                Artist = artist,
                 Album = Blank(song.Album),
-                // Zero is what an internet radio reports. Passing it on would draw a finished progress
-                // line under something that has no end.
                 Duration = song.Length > 0 ? TimeSpan.FromSeconds(song.Length) : null,
                 FilePath = LocalPath(song.Url),
                 Format = FormatName(song.Type),
@@ -33,37 +35,26 @@ namespace KlangHub.Platform.Clementine
             };
         }
 
-        /// <summary>
-        /// Clementine's own file-type numbers, named the way somebody would say them out loud. Kept as a
-        /// switch on the wire numbers rather than on a generated enum: the numbers are the protocol, and
-        /// a value we have never seen must fall through to "no claim" rather than to a wrong name.
-        /// </summary>
         private static string? FormatName(int type) => type switch
         {
-            1 => "WMA",         // ASF
+            1 => "WMA",
             2 => "FLAC",
             3 => "MP4",
             4 => "MPC",
-            5 => "MP3",         // MPEG
-            6 => "FLAC",        // OGGFLAC
+            5 => "MP3",
+            6 => "FLAC",
             7 => "SPEEX",
-            8 => "OGG",         // OGGVORBIS
+            8 => "OGG",
             9 => "AIFF",
             10 => "WAV",
-            11 => "TTA",        // TRUEAUDIO
-            12 => "CD",         // CDDA
+            11 => "TTA",
+            12 => "CD",
             13 => "OPUS",
             14 => "WAVPACK",
             17 => "APE",
-            // 0 = UNKNOWN, 99 = STREAM, and anything Clementine adds later: say nothing rather than guess.
             _ => null
         };
 
-        /// <summary>
-        /// "file:///D:/Musik/03%20Nowhere.flac" back into a path the tag reader and the cover hunt can use.
-        /// Anything that is not a local file - an internet radio, most obviously - yields nothing, because
-        /// handing a stream URL to a tag reader is nonsense rather than a near miss.
-        /// </summary>
         internal static string? LocalPath(string? url)
         {
             if (string.IsNullOrWhiteSpace(url))
@@ -75,10 +66,6 @@ namespace KlangHub.Platform.Clementine
                 if (!uri.IsFile)
                     return null;
 
-                // IsFile is true for a UNC path too, so "file://somewhere-else/share/x.flac" used to
-                // arrive here as a path on another machine. Whatever answers on the Clementine port then
-                // chooses which host this one opens an SMB connection to, and Windows offers the signed-in
-                // user's credentials to it on the way. Local files only.
                 if (uri.IsUnc)
                     return null;
 

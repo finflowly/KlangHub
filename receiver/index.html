@@ -388,8 +388,10 @@
     }
 
     function fromUs(data) {
+      if (!sessionToken) return true;
+
       var given = data && data.token;
-      if (!sessionToken || typeof given !== 'string' || given.length !== sessionToken.length) return false;
+      if (typeof given !== 'string' || given.length !== sessionToken.length) return false;
 
       var difference = 0;
       for (var i = 0; i < given.length; i++) difference |= given.charCodeAt(i) ^ sessionToken.charCodeAt(i);
@@ -592,9 +594,11 @@
       el.body.classList.toggle('has-quality', !!shown.quality);
       el.body.classList.remove('idle');
 
-      if (update.cover !== undefined) setCover(update.cover);
+      if (isNewTrack) setCover(update.cover || '');
+      else if (update.cover !== undefined) setCover(update.cover);
 
-      if (typeof update.duration === 'number') duration = update.duration;
+      if (isNewTrack) duration = typeof update.duration === 'number' ? update.duration : 0;
+      else if (typeof update.duration === 'number') duration = update.duration;
       if (typeof update.position === 'number') { position = update.position; positionAt = Date.now(); }
       el.body.classList.toggle('has-progress', duration > 0);
     }
@@ -604,6 +608,8 @@
 
     function change(update) {
       settle();
+
+      if (!shown.cover && !update.cover) { render(update, true); return; }
 
       pending = { update: update, due: nowMs() + CUT_MS, timer: 0 };
       el.body.classList.add('changing');
@@ -693,7 +699,7 @@
 
       playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, function (request) {
         var media = request && request.media;
-        if (media && media.metadata) loadedMedia = media;
+        if (media) loadedMedia = media;
         rememberToken((media && media.customData) || (request && request.customData));
         return request;
       });
@@ -755,27 +761,35 @@
         album: 'Mezzanine',
         quality: 'FLAC · 24 Bit · 96 kHz',
         zone: 'Wohnzimmer + Küche',
-        cover: demoCover(),
         duration: 330,
         position: 134
       }, true);
       positionAt = Date.now();
+      demoShowCover();
 
       if (demo === 'radio') {
-        shown = { title: '', artist: '', album: '', cover: '', quality: '', zone: '' };
-        duration = 0;
-        el.body.classList.remove('has-progress', 'has-quality');
         render({
           title: 'Broken Nights',
           artist: 'Patiotic',
-          zone: 'Wohnzimmer + Küche',
-          cover: demoCover()
+          zone: 'Wohnzimmer + Küche'
         }, true);
       }
 
       if (demo === 'paused') { playing = false; el.body.classList.add('paused'); }
       if (demo === 'idle') { playing = false; el.body.classList.add('idle'); setCover(''); }
       tick();
+    }
+
+    function demoShowCover() {
+      var url = demoCover();
+      shown.cover = url;
+      el.cover.src = url;
+      el.wash.style.backgroundImage = 'url("' + url + '")';
+      el.art.classList.remove('empty');
+      el.body.classList.add('has-cover');
+      var img = new Image();
+      img.onload = function () { applyPalette(paletteFrom(img)); };
+      img.src = url;
     }
 
     function demoCover() {

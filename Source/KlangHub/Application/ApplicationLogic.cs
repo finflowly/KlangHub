@@ -32,23 +32,17 @@ namespace KlangHub.Application
         private readonly IDiscoverDevices discoverDevices;
         private readonly IDeviceStatusTimer deviceStatusTimer;
         private readonly ICastProvider castProvider;
-        // 2.2b-H4b: the WinForms-free orchestration (streaming pipeline, listener lifecycle, discovery
-        // start, task runner, ICastHost). ApplicationLogic is now a thin tray shell that delegates here.
         private readonly Orchestration.Orchestrator orchestrator;
         private NotifyIcon notifyIcon = null!;
-        // 2.2b-H3a: ApplicationLogic owns the per-device tray menu items (moved off IDevice/Device so
-        // IDevice becomes WinForms-free). Keyed by device id; add/remove run on different threads.
         private readonly System.Collections.Concurrent.ConcurrentDictionary<string, ToolStripMenuItem> deviceMenuItems = new();
-        // 2.2b-H4b-3: neutral settings persistence/merge (owns the UserSettings); the shell keeps the UI mapping.
         private readonly Orchestration.SettingsService settingsService;
         private string Culture = null!;
         private readonly ILogger logger;
         private Size defaultSize = new Size(850, 550);
 
-        // What is actually playing, gathered from the file tags, Windows' now-playing session and a
-        // now-playing text file. The loopback stream itself carries none of that - it is an endless tone -
-        // so without this the television is told "KlangHub / Live from your PC" and nothing else.
         private readonly Platform.NowPlaying.NowPlayingService nowPlaying;
+        private readonly Platform.NowPlaying.RadioCoverService radioCovers;
+        private string wantedCover = string.Empty;
 
         public ApplicationLogic(IDevices devicesIn, IDiscoverDevices discoverDevicesIn
             , IConfiguration configurationIn
@@ -64,16 +58,12 @@ namespace KlangHub.Application
             castProvider = castProviderIn;
             settingsService = new Orchestration.SettingsService(loggerIn);
             nowPlaying = new Platform.NowPlaying.NowPlayingService(loggerIn.Log);
+            radioCovers = new Platform.NowPlaying.RadioCoverService(loggerIn.Log);
             orchestrator = new Orchestration.Orchestrator(devicesIn, streamingRequestListenerIn, castProviderIn, deviceStatusTimerIn, loggerIn);
-            // 2.2b-H4b-2: the orchestrator owns the device add/remove flow and raises neutral events; the
-            // tray shell reacts here (create/remove menu items + mainForm add/remove).
             orchestrator.DeviceAdded += OnDeviceAdded;
             orchestrator.DeviceRemoved += OnRemoveDevice;
         }
 
-        /// <summary>
-        /// Initialize the application.
-        /// </summary>
         public void Initialize()
         {
             AddNotifyIcon();
@@ -83,30 +73,13 @@ namespace KlangHub.Application
             StartNowPlaying();
         }
 
-        /// <summary>
-        /// Callback for the StreamingRequestListener, a device has made a new streaming connection.
-        /// </summary>
-        /// <param name="socketIn">the connected socket</param>
-        /// <param name="httpRequestIn">the HTTP headers, including the 'CAST-DEVICE-CAPABILITIES' header</param>
         public void OnStreamingRequestConnect(Socket socketIn, string httpRequestIn)
             => orchestrator.OnStreamingRequestConnect(socketIn, httpRequestIn);
 
-        /// <summary>
-        /// Callback for the loopback recorder, new audio data is captured.
-        /// </summary>
-        /// <param name="dataToSendIn">the audio data in wav format</param>
-        /// <param name="formatIn">the wav format that's used</param>
         public void OnRecordingDataAvailable(AudioFrame frame) => orchestrator.OnRecordingDataAvailable(frame);
 
-        /// <summary>
-        /// Clear the audio data in the mp3 encoder.
-        /// </summary>
         public void ClearMp3Buffer() => orchestrator.ClearMp3Buffer();
 
-        /// <summary>
-        /// Callback for Devices, a new device is added.
-        /// </summary>
-        /// <param name="deviceIn">the new device</param>
         private void OnDeviceAdded(IDevice deviceIn)
         {
             if (deviceIn == null || mainForm == null)
@@ -119,11 +92,6 @@ namespace KlangHub.Application
                     Text = deviceIn.GetFriendlyName()
                 };
 
-                // 2.2b-4.4a: drive the tray per-device Play/Stop through the neutral casting session
-                // (castProvider.CreateSession -> IPlaybackSession). The descriptor is captured now; the
-                // session is re-resolved on each click. Falls back to the direct device path only if no
-                // provider is present (does not happen in normal composition, but keeps the null-guard
-                // style used by ScanForDevices).
                 if (castProvider != null && deviceIn is IPlaybackSession playbackSession)
                 {
                     var descriptor = playbackSession.Device;
@@ -147,10 +115,6 @@ namespace KlangHub.Application
             mainForm.AddDevice(deviceIn);
         }
 
-        /// <summary>
-        /// 2.2b-4.7: a device was removed (disposed) - drop its tray menu item and its UI control.
-        /// Called from Devices cleanup on the DeviceStatusTimer thread; each UI touch is marshalled.
-        /// </summary>
         private void OnRemoveDevice(IDevice device)
         {
             if (device == null || !(device is IPlaybackSession session))
@@ -180,11 +144,6 @@ namespace KlangHub.Application
             item.Dispose();
         }
 
-        /// <summary>
-        /// 2.2b-4.6: the tray item's Checked follows playback via the neutral StateChanged (moved out of
-        /// DeviceControl). Marshalled through the ContextMenuStrip (a Control) since the event may arrive
-        /// off the UI thread. Not explicitly unsubscribed - the menu item lives ~process-long (bounded).
-        /// </summary>
         private void SubscribeMenuChecked(IDevice deviceIn, ToolStripMenuItem menuItem)
         {
             if (!(deviceIn is IPlaybackSession session))
@@ -201,56 +160,26 @@ namespace KlangHub.Application
             };
         }
 
-        /// <summary>
-        /// Set the dependencies.
-        /// </summary>
-        /// <param name="mainFormIn">the form</param>
         public void SetDependencies(IMainForm mainFormIn)
         {
             mainForm = mainFormIn;
         }
 
-        /// <summary>
-        /// The user changed the checkbox to automatically restart devices when closed.
-        /// </summary>
         public void OnSetAutoRestart(bool autoRestartIn) => orchestrator.SetAutoRestart(autoRestartIn);
 
-        /// <summary>
-        /// Automaticaly restart devices y/n.
-        /// </summary>
         public bool GetAutoRestart() => orchestrator.GetAutoRestart();
 
-        /// <summary>
-        /// The user changed the ip address in the user interface.
-        /// Restart streaming using the new ip address.
-        /// </summary>
-        /// <param name="ipAddressIn">the selected ip address</param>
         public void ChangeIPAddressUsed(IPAddress ipAddressIn) => orchestrator.ChangeIPAddressUsed(ipAddressIn);
 
-        /// <summary>
-        /// The user changed the stream format in the user interface.
-        /// Restart streaming in the new format.
-        /// </summary>
-        /// <param name="formatIn">the chosen format</param>
         public void SetStreamFormat(SupportedStreamFormat formatIn) => orchestrator.SetStreamFormat(formatIn);
 
-        /// <summary>
-        /// The user changed the language in the user interface.
-        /// </summary>
-        /// <param name="cultureIn">the chosen culture</param>
         public void SetCulture(string cultureIn)
         {
             Culture = cultureIn;
         }
 
-        /// <summary>
-        /// Search for new devices in the network.
-        /// </summary>
         public void ScanForDevices() => orchestrator.ScanForDevices();
 
-        /// <summary>
-        /// Load and apply the settings.
-        /// </summary>
         private void LoadSettings()
         {
             if (devices == null || mainForm == null)
@@ -269,10 +198,6 @@ namespace KlangHub.Application
                 mainForm.SetKeyboardHooks(settings.UseKeyboardShortCuts ?? false);
                 mainForm.SetIP4AddressUsed(settings.Ip4AddressUsed ?? string.Empty);
                 mainForm.SetStreamFormat(settings.StreamFormat ?? RecommendedDefaults.StreamFormat);
-                // A stored choice always wins. The installer's --lang= is a FIRST-RUN hint, and it used to
-                // win on every launch instead - so a user who installed in English, switched the app to
-                // German, then ran an upgrade was put back into English and had it written to disk on
-                // close. The setup language is only consulted when nothing has been chosen yet.
                 mainForm.SetCulture(settings.Culture ?? Classes.StartupOptions.Culture ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 mainForm.SetLogDeviceCommunication(settings.LogDeviceCommunication ?? false);
                 mainForm.SetLagValue(settings.LagControlValue ?? 1000);
@@ -294,8 +219,6 @@ namespace KlangHub.Application
                 mainForm.SetConvertMultiChannelToStereo(settings.ConvertMultiChannelToStereo ?? false);
                 mainForm.SetDarkMode(settings.DarkMode ?? true);
                 mainForm.SetStreamTitle(settings.StreamTitle ?? Properties.Strings.ChromeCast_StreamTitle);
-                // Both readers default to on: somebody who never opens the settings should get the fullest
-                // screen KlangHub can manage, not the emptiest.
                 mainForm.SetNowPlayingSettings(
                     settings.ReadFileTags ?? true,
                     settings.ReadWindowsNowPlaying ?? true,
@@ -304,15 +227,11 @@ namespace KlangHub.Application
             }
             catch (ConfigurationErrorsException ex)
             {
-                // Corrupted config file, remove the config file.
                 File.Delete(((ConfigurationErrorsException)ex.InnerException!).Filename);
                 Process.GetCurrentProcess().Kill();
             }
         }
 
-        /// <summary>
-        /// Save the settings.
-        /// </summary>
         public void SaveSettings()
         {
             if (devices == null || mainForm == null)
@@ -352,9 +271,6 @@ namespace KlangHub.Application
             settingsService.Save();
         }
 
-        /// <summary>
-        /// Reset to the deafult setting.
-        /// </summary>
         public void ResetSettings()
         {
             if (devices == null || mainForm == null)
@@ -367,15 +283,11 @@ namespace KlangHub.Application
             settings.StartLastUsedDevices = false;
             settings.ShowWindowOnStart = true;
             settings.AutoRestart = false;
-            // Out-of-box: WAV 16-bit - CD quality, uncompressed, and the format every Cast receiver handles
-            // without complaint. It is the safe floor, not the ceiling: 24-bit and FLAC sit one pick away for
-            // anyone who wants more, and the weakest speakers (which choked on 32-bit LPCM with ERROR 102)
-            // stay happy by default.
             settings.Ip4AddressUsed = string.Empty;
             settings.StreamFormat = RecommendedDefaults.StreamFormat;
             settings.Culture = MainForm.SupportedCultures.Contains(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
                 ? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
-                : "en";   // the app ships 24 EU languages; anything else reads English
+                : "en";
             settings.LogDeviceCommunication = false;
             settings.ShowLagControl = false;
             settings.LagControlValue = 1000;
@@ -384,8 +296,6 @@ namespace KlangHub.Application
             settings.Size = defaultSize;
             settings.Left = Screen.PrimaryScreen!.Bounds.Width / 2 - settings.Size.Value.Width / 2;
             settings.Top = Screen.PrimaryScreen.Bounds.Height / 2 - settings.Size.Value.Height / 2;
-            // 10 s of receiver-side cushion out of the box: enough to ride out Wi-Fi jitter and underruns
-            // (the "noise" seen on the Enchant over a weak link) without a latency anyone notices for music.
             settings.ExtraBufferInSeconds = RecommendedDefaults.ExtraBufferSeconds;
             settings.RecordingDeviceID = null!;
             settings.AutoMute = false;
@@ -396,7 +306,7 @@ namespace KlangHub.Application
             settings.ReadWindowsNowPlaying = true;
             settings.NowPlayingFilePath = string.Empty;
             settings.ConvertMultiChannelToStereo = false;
-            settings.DarkMode = true;   // premium "hi-fi console" dark theme is the out-of-box default
+            settings.DarkMode = true;
             devices.SetSettings(settings);
             mainForm.SetAutoStart(settings.AutoStartDevices.Value);
             mainForm.SetStartLastUsedDevices(settings.StartLastUsedDevices.Value);
@@ -414,10 +324,6 @@ namespace KlangHub.Application
             mainForm.SetExtraBufferInSeconds(settings.ExtraBufferInSeconds.Value);
             mainForm.SetRecordingDeviceID(settings.RecordingDeviceID);
             mainForm.SetAutoMute(settings.AutoMute.Value);
-            // Every other setting above is pushed back into the form; this one was cleared in the object
-            // and nowhere else, so "reset settings" left the old receiver id in the field AND in
-            // CastReceiver.AppId - and SaveSettings wrote it straight back on close. Somebody who pasted a
-            // broken id had no way out through the UI.
             mainForm.SetReceiverAppId(settings.ReceiverAppId);
             mainForm.SetNowPlayingSettings(
                 settings.ReadFileTags!.Value, settings.ReadWindowsNowPlaying!.Value, settings.NowPlayingFilePath);
@@ -438,15 +344,8 @@ namespace KlangHub.Application
             ScanForDevices();
         }
 
-        /// <summary>
-        /// Get the streaming url.
-        /// </summary>
-        /// <returns>the url that can be used to open a stream</returns>
         public string GetStreamingUrl() => orchestrator.GetStreamingUrl();
 
-        /// <summary>
-        /// Close the application.
-        /// </summary>
         public void CloseApplication()
         {
             SaveSettings();
@@ -455,14 +354,6 @@ namespace KlangHub.Application
 
         private bool trayHintShown;
 
-        /// <summary>
-        /// Says out loud what the close button just did.
-        ///
-        /// With "minimize to tray" on, the X hides the window and the app keeps running - which from the
-        /// outside is indistinguishable from an app that refuses to close. Reported from a real desktop, and
-        /// ended up killing KlangHub in the Task Manager. One balloon, once per run, turns a program that
-        /// looks stuck into one that told you where it went.
-        /// </summary>
         public void NotifyMinimizedToTray()
         {
             if (trayHintShown || notifyIcon == null)
@@ -485,17 +376,11 @@ namespace KlangHub.Application
 
         public void SetLagThreshold(int lagThresholdIn) => orchestrator.SetLagThreshold(lagThresholdIn);
 
-        /// <summary>
-        /// Dispose.
-        /// </summary>
         public void Dispose()
         {
             Dispose(true);
         }
 
-        /// <summary>
-        /// Dispose.
-        /// </summary>
         protected virtual void Dispose(bool disposing)
         {
             devices?.Dispose();
@@ -505,25 +390,18 @@ namespace KlangHub.Application
             notifyIcon?.Dispose();
             mainForm?.Dispose();
             nowPlaying?.Dispose();
+            radioCovers?.Dispose();
             orchestrator?.DisposeTaskList();
         }
 
-        /// <summary>
-        /// Was the device playing when the application was closed for the last time?
-        /// </summary>
-        /// <returns>true if the device was playing, or false</returns>
         public bool WasPlaying(DiscoveredDevice discoveredDevice) => settingsService.WasPlaying(discoveredDevice);
 
         public void SetStreamTitle(string title) => orchestrator.SetStreamTitle(title);
 
         public string GetStreamTitle() => orchestrator.GetStreamTitle();
 
-        /// <summary>Full media metadata for the LOAD: a premium receiver screen (title/subtitle/album + branded
-        /// full-bleed artwork served from our own HTTP server) plus the codec-aware MIME type.</summary>
         public CastMediaMetadata GetStreamMediaInfo()
         {
-            // What is really playing wins over the stream title. Anything the cascade does not know keeps
-            // the branded fallback, so a device that is told nothing still gets a finished-looking screen.
             var track = nowPlaying.Cascade.Current;
 
             var title = track.Title;
@@ -545,52 +423,58 @@ namespace KlangHub.Application
                 Title = title,
                 Subtitle = subtitle,
                 Album = album,
-                ImageUrl = orchestrator.GetArtworkUrl(),
+                ImageUrl = StageCoverUrl() ?? string.Empty,
                 ContentType = StreamCodec.ContentType(orchestrator.GetStreamFormat())
             };
         }
 
-        /// <summary>
-        /// Starts gathering what is playing.
-        /// <para>
-        /// Note what deliberately does NOT happen here: a track change does not reload the receivers. On a
-        /// loopback stream a fresh LOAD means tearing the connection down and refilling the buffer - one to
-        /// three seconds of silence, on every single track. That is the opposite of the soft change the
-        /// stage is supposed to make. Until the live transport over our own namespace can update the screen
-        /// without touching the audio, the metadata gathered here reaches a device when playback starts.
-        /// </para>
-        /// </summary>
         private void StartNowPlaying()
         {
-            nowPlaying.TrackChanged += OnNowPlayingTrackChanged;
-            nowPlaying.Changed += OnNowPlayingChanged;
+            nowPlaying.Updated += OnNowPlayingUpdated;
+            radioCovers.Found += OnRadioCoverFound;
             nowPlaying.Start(settingsService.GetNowPlayingOptions());
         }
 
-        private void OnNowPlayingTrackChanged(object? sender, Core.NowPlaying.NowPlayingTrack track)
+        private void OnNowPlayingUpdated(object? sender, Core.NowPlaying.NowPlayingUpdate update)
         {
-            logger.Log($"now-playing: {track.Artist ?? "(unknown artist)"} - {track.Title ?? "(unknown title)"}");
-            PushToStages(track, isNewTrack: true);
+            if (update.IsNewTrack)
+                logger.Log($"now-playing: {update.Track.Artist ?? "(unknown artist)"} - {update.Track.Title ?? "(unknown title)"}");
+
+            AskAboutCover(update.Track);
+            PushToStages(update.Track, update.IsNewTrack);
         }
 
-        /// <summary>
-        /// A correction rather than a new piece - the artist arriving a moment after the title. The stage
-        /// merges it in place and does not cut, which is what makes metadata trickling in from four
-        /// different sources look like one screen rather than a slideshow.
-        /// </summary>
-        private void OnNowPlayingChanged(object? sender, Core.NowPlaying.NowPlayingTrack track)
+        private void AskAboutCover(Core.NowPlaying.NowPlayingTrack track)
         {
-            PushToStages(track, isNewTrack: false);
+            var question = Core.NowPlaying.RadioCoverQuestion.For(track, nowPlaying.Cover != null);
+            radioCovers.Ask(question);
+            wantedCover = question.Worth ? question.Key : string.Empty;
         }
+
+        private void OnRadioCoverFound(object? sender, Platform.NowPlaying.RadioCover cover)
+        {
+            if (!string.Equals(cover.Key, wantedCover, StringComparison.Ordinal))
+                return;
+
+            PushToStages(nowPlaying.Cascade.Current, isNewTrack: false);
+        }
+
+        private string? StageCoverUrl()
+            => Core.NowPlaying.StageCover.Url(orchestrator.GetArtworkUrl(),
+                                              Platform.NowPlaying.CurrentCover.Fingerprint,
+                                              radioCovers.Known(wantedCover));
+
+        public Core.NowPlaying.StageUpdate? GetStageUpdate()
+            => Core.NowPlaying.StageUpdate.For(nowPlaying.Cascade.Current, zone: null,
+                                               coverUrl: StageCoverUrl(), isNewTrack: true);
 
         private void PushToStages(Core.NowPlaying.NowPlayingTrack track, bool isNewTrack)
         {
-            var update = Core.NowPlaying.StageUpdate.For(track, zone: null, coverUrl: orchestrator.GetArtworkUrl(), isNewTrack);
+            var update = Core.NowPlaying.StageUpdate.For(track, zone: null, coverUrl: StageCoverUrl(), isNewTrack);
             if (update != null)
                 devices.SendStageUpdate(update);
         }
 
-        /// <summary>Re-reads the metadata settings and starts the sources over with them.</summary>
         public void ApplyNowPlayingOptions()
         {
             nowPlaying.Start(settingsService.GetNowPlayingOptions());
@@ -598,9 +482,6 @@ namespace KlangHub.Application
 
         #region private helpers
 
-        /// <summary>
-        /// Add an icon to the systray, with a context menu for the devices.
-        /// </summary>
         private void AddNotifyIcon()
         {
             try
@@ -608,7 +489,6 @@ namespace KlangHub.Application
                 var contextMenuStrip = new ContextMenuStrip();
                 var menuItem = new ToolStripMenuItem
                 {
-                    //Index = 0, 
                     Text = Properties.Strings.TrayIcon_Close
                 };
                 menuItem.Click += new EventHandler(CloseApplication);
@@ -628,13 +508,6 @@ namespace KlangHub.Application
             }
         }
 
-        /// <summary>
-        /// Apply the settings in the configuration file.
-        /// </summary>
-        /// <param name="ipAddressesDevicesIn">
-        /// ip addresses & device names
-        /// format: 192.168.0.1,DeviceName1;192.168.0.2,DeviceName2
-        /// </param>
         private void ApplyConfiguration(string ipAddressesDevicesIn, string ignoreIpAddressesDevicesIn, bool showLagControl)
         {
             try
@@ -652,7 +525,7 @@ namespace KlangHub.Application
                             {
                                 IPAddress = arrDevice[0],
                                 Name = arrDevice[1],
-                                Port = 8009 // Port = 8009, adding device groups via the config is not possible.
+                                Port = 8009
                             });
                     }
                 }
@@ -663,23 +536,14 @@ namespace KlangHub.Application
             }
         }
 
-        /// <summary>
-        /// Callback for the systray icon to close the application.
-        /// </summary>
         private void CloseApplication(object? sender, EventArgs e)
         {
             CloseApplication();
         }
 
-        /// <summary>
-        /// Start an action in a new task.
-        /// </summary>
         public void StartTask(Action action, CancellationTokenSource? cancellationTokenSource = null)
             => orchestrator.StartTask(action, cancellationTokenSource);
 
-        /// <summary>
-        /// 
-        /// </summary>
         public void SetRecordingDevice(AudioCaptureDevice? recordingDevice)
         {
             if(recordingDevice == null)

@@ -161,6 +161,37 @@ Google when a television opens it. Neither is redistributed by this project.
   the receiver fetches them at run time.
 - **Source:** https://fonts.google.com/specimen/Fraunces · https://fonts.google.com/specimen/Inter+Tight
 
+### Cover Art Archive images (radio only)
+
+- **Loaded from:** `coverartarchive.org`, by the television, when a web radio track names an artist and
+  a title and no cover came from the tags, the folder, Clementine or SMTC.
+
+---
+
+## Queried by the application at run time
+
+### MusicBrainz web service → Cover Art Archive
+
+- **Queried from:** `musicbrainz.org/ws/2/recording` — artist and title of the track playing, nothing
+  else. No account, no key. The answer yields a release id, which becomes a
+  `coverartarchive.org/release/<id>/front-500` address that is handed to the television as a cover.
+- **Terms:** the MusicBrainz web service asks for an identifying User-Agent and at most about one
+  request per second. KlangHub sends `KlangHub/<version> ( https://github.com/finflowly/KlangHub )`,
+  makes at most one request at a time, waits between them, and steps back for five minutes when the
+  service answers 503 or 429. Every answer is remembered — misses included — so a station that repeats
+  a track is not a second question.
+- **Licence:** the MusicBrainz data used here (artist, title, release id) is in the **public domain**
+  (CC0). Cover Art Archive images are hosted by the Internet Archive on behalf of MusicBrainz; they are
+  fetched by the television and are **not** redistributed by this project, not cached as files, and not
+  bundled in any build.
+- **Why this catalogue and not a better-stocked one:** the iTunes Search API and Deezer have higher hit
+  rates for current radio material, and both are ruled out on purpose. Apple permits its promotional
+  artwork only in aid of the store, with an accompanying badge; Deezer's terms are written for personal
+  applications and forbid tying its content to another brand. Last.fm and Spotify need keys, and a key
+  cannot live in a public repository. MusicBrainz and the Cover Art Archive are the ones a licence
+  audit survives.
+- **Source:** https://musicbrainz.org/doc/MusicBrainz_API · https://coverartarchive.org
+
 ---
 
 ## Development only — not shipped

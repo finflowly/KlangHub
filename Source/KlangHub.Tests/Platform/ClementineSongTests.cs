@@ -4,15 +4,6 @@ using Xunit;
 
 namespace KlangHub.Tests.Platform
 {
-    /// <summary>
-    /// Turning what Clementine's network remote hands over into what the stage needs.
-    /// <para>
-    /// This source is the richest one there is for a Clementine listener - it carries the album, the
-    /// length, the file and the cover art as bytes, none of which a window title or a now-playing file can
-    /// provide. Measured on 2026-09-05, it is also the only way to get any of it: Clementine reports
-    /// nothing at all to Windows' own now-playing session.
-    /// </para>
-    /// </summary>
     public class ClementineSongTests
     {
         [Fact]
@@ -54,8 +45,6 @@ namespace KlangHub.Tests.Platform
         [Fact]
         public void A_length_of_zero_is_not_a_length()
         {
-            // An internet radio stream reports zero. Passing it on would draw a finished progress line
-            // under something that has no end.
             var song = new SongMetadata { Title = "Some Radio", Length = 0 };
 
             Assert.Null(ClementineSong.ToTrack(song).Duration);
@@ -77,8 +66,8 @@ namespace KlangHub.Tests.Platform
         }
 
         [Theory]
-        [InlineData(0)]    // UNKNOWN
-        [InlineData(99)]   // STREAM
+        [InlineData(0)]
+        [InlineData(99)]
         public void Says_nothing_about_a_format_it_cannot_name(int clementineType)
         {
             var song = new SongMetadata { Title = "Nowhere", Type = clementineType };
@@ -89,7 +78,6 @@ namespace KlangHub.Tests.Platform
         [Fact]
         public void Turns_a_file_url_back_into_a_path()
         {
-            // Clementine sends file:///D:/Musik/... - the tag reader and the cover hunt need a real path.
             var song = new SongMetadata { Title = "Nowhere", Url = "file:///D:/Musik/Aquanote/03%20Nowhere.flac" };
 
             Assert.Equal(@"D:\Musik\Aquanote\03 Nowhere.flac", ClementineSong.ToTrack(song).FilePath);
@@ -98,7 +86,6 @@ namespace KlangHub.Tests.Platform
         [Fact]
         public void A_stream_url_is_not_a_file_path()
         {
-            // An internet radio has a URL but no file. Handing that to the tag reader would be nonsense.
             var song = new SongMetadata { Title = "Some Radio", Url = "http://stream.example/live.mp3" };
 
             Assert.Null(ClementineSong.ToTrack(song).FilePath);
@@ -131,6 +118,39 @@ namespace KlangHub.Tests.Platform
         public void Nothing_at_all_says_nothing()
         {
             Assert.True(ClementineSong.ToTrack(null).IsEmpty);
+        }
+
+        [Fact]
+        public void A_stream_that_names_both_in_one_line_reaches_the_stage_taken_apart()
+        {
+            var song = new SongMetadata { Title = "Massive Attack - Teardrop", Type = 99 };
+
+            var track = ClementineSong.ToTrack(song);
+
+            Assert.Equal("Massive Attack", track.Artist);
+            Assert.Equal("Teardrop", track.Title);
+        }
+
+        [Fact]
+        public void A_stream_that_already_names_the_artist_is_left_as_it_is()
+        {
+            var song = new SongMetadata { Title = "Well - Known - Song", Artist = "Someone", Type = 99 };
+
+            var track = ClementineSong.ToTrack(song);
+
+            Assert.Equal("Someone", track.Artist);
+            Assert.Equal("Well - Known - Song", track.Title);
+        }
+
+        [Fact]
+        public void A_song_name_carrying_a_hyphen_keeps_it()
+        {
+            var song = new SongMetadata { Title = "Ballad Of A Well-Known Gun", Type = 99 };
+
+            var track = ClementineSong.ToTrack(song);
+
+            Assert.Null(track.Artist);
+            Assert.Equal("Ballad Of A Well-Known Gun", track.Title);
         }
     }
 }
