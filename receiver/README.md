@@ -191,6 +191,29 @@ weiß, welcher gemeint ist. Lieber eine ungetrennte Zeile als ein falsch halbier
 Getrennt wird im **Sender**, nicht auf der Bühne — die Online-Suche unten braucht dieselbe Trennung,
 und zwei Implementierungen derselben Regel gehen irgendwann auseinander.
 
+**Zwei Lesarten derselben Zeile sind kein zweites Stück.** Das war der zweite Grund, warum Webradio
+nie ein Cover bekam, und er hat nichts mit dem Fernseher zu tun. Zwei Quellen lesen dieselbe
+ICY-Zeile parallel: Clementines Fernbedienung (Rang 5) und der Fenstertitel (Rang 2, alle zwei
+Sekunden). Bei `Depeche Mode - Enjoy The Silence - Radio Edit` verweigert `IcyTitle.Split` die
+Trennung — zwei Separatoren —, der Fenstertitel-Pfad trennt am ersten und liefert Artist und Titel
+getrennt. Für `TrackChange` war das ein **Titelwiderspruch**, also ein neues Stück, also:
+`SetCover(null)`, ein neuer Cover-Schlüssel, und die gerade eingetroffene Antwort aus dem Katalog
+wurde als „nicht mehr gewollt" verworfen. Alle zwei Sekunden, solange das Stück lief.
+
+Zwei kleine Regeln stellen das ab, beide in `Source/KlangHub.Core/Core/NowPlaying/`:
+
+- `TrackChange` vergleicht zusätzlich die **wieder zusammengesetzte Zeile** (`Artist - Titel`). Sind
+  die beiden Lesarten dieselbe Zeile, ist es dasselbe Stück, egal wo der Trennstrich saß.
+- Ein Artist wird von einer **schwächeren** Quelle nur übernommen, wenn deren Titel zum bereits
+  bekannten passt (`NowPlayingCascade.AcceptArtist`). Sonst entstand ein Datensatz, den keine der
+  beiden Quellen je gemeldet hat — Artist von hier, Titel von dort —, und der schaukelte dann gegen
+  die nächste Meldung.
+
+Die Folge für Radio: eine Zeile mit zwei Separatoren führt zu **keiner** Katalogfrage, statt zu einer
+falschen. Das ist gewollt — `A - B - C` bleibt ganz, und lieber die Ringe als das falsche Album.
+
+`RadioTwoSourcesTests` hält beides fest, ohne Fernseher und ohne Clementine.
+
 ### Ein Cover aus dem Netz, für Radio, das keines mitschickt
 
 Ohne das bleibt Webradio dauerhaft bei den Ringen. Also fragt KlangHub — **auf dem Windows-Rechner,
@@ -220,14 +243,118 @@ Ein Treffer muss zum Stück passen — Artist *und* Titel normalisiert gleich, s
 Releases gewinnt ein offizielles Album vor einer Single vor allem anderen. **Im Zweifel kein Cover.**
 Lieber die Ringe als das falsche Album auf 65 Zoll.
 
+**Ein Release ist keine Zusage, dass es dort auch ein Bild gibt.** Das war der Grund, warum der
+Fernseher bei Webradio nichts zeigte, obwohl der Katalog die Stücke kennt. MusicBrainz nennt das
+Release; ob das Cover Art Archive dazu etwas hat, ist eine andere Frage — und die Antwort ist
+erschreckend oft *nein*. Gemessen am 2026-09-07 über fünf eingefrorene Antworten: bei **vier von
+fünf** Zeilen lieferte ausgerechnet das erstgewählte Release **404**, während dasselbe
+Antwortdokument Releases mit Bild enthielt. Eine einzige gewählte Adresse hieß also: meistens Ringe.
+
+Deshalb ist die Auswahl jetzt eine **Liste** statt einer Adresse: `MusicBrainzAnswer.ReleaseIds`
+ordnet alle passenden Aufnahmen nach offiziellem Album, offiziellem Rest, allem übrigen — und der
+Sender geht sie durch, bis eine davon wirklich ein Bild hat (`HEAD`, höchstens vier Versuche). Die
+Bühne bekommt nur eine Adresse, hinter der schon jemand nachgesehen hat.
+
+**Nur ein `404` ist ein Nein.** Das Archiv antwortet nicht immer gleich: dieselbe Adresse lieferte in
+drei Versuchen hintereinander `200`, `200`, `500`. Würde ein solcher Aussetzer als „kein Bild"
+zählen, käme er per Merkliste in die dauerhafte Akte, und das Stück bekäme **nie wieder** ein Cover.
+Ein Zeitüberlauf, ein `5xx`, ein abgerissener Socket heißen deshalb „unbekannt": die Adresse wird
+trotzdem geschickt, aber das Ergebnis wird **nicht** gemerkt, damit die nächste Runde neu fragen darf.
+
 Höchstens eine Anfrage gleichzeitig, gut eine Sekunde Abstand, identifizierender User-Agent, und bei
 `503`/`429` fünf Minuten Ruhe. Das ist es, worum MusicBrainz bittet, und es ist der Grund, warum kein
 Schlüssel nötig ist.
 
 Die gefundene Adresse geht als **Merge** an die Bühne, nicht als neuer Schnitt: das Cover blendet sich
 weich zum laufenden Titel ein. Ist das Stück inzwischen weiter, wird die Antwort verworfen — gemerkt
-wird sie trotzdem. Die Palette wird per `crossOrigin = anonymous` gelesen; schickt das Archiv keine
-CORS-Kopfzeile, bleibt die Standardfarbe und das Bild wird trotzdem gezeigt.
+wird sie trotzdem.
+
+**Das Bild und seine Farbe sind zwei Ladevorgänge.** Vorher war es einer: ein `Image` mit
+`crossOrigin = 'anonymous'`, das sowohl angezeigt als auch fürs Canvas ausgelesen wurde. Damit hing
+das *sichtbare Cover* an einer Berechtigung, die es zum Anzeigen gar nicht braucht — wäre irgendein
+Glied der Weiterleitungskette ohne CORS-Kopfzeile gewesen, hätte `onerror` das Bild abgeräumt und die
+Bühne stünde bei den Ringen. Jetzt lädt die Bühne die Adresse **zweimal**: einmal ohne `crossOrigin`
+— das ist das Bild, und es kommt an — und einmal mit, nur für die Farbpalette. Deren `onerror` tut
+absichtlich nichts; scheitert sie, bleibt die Standardfarbe und das Cover hängt trotzdem.
+
+Gemessen am 2026-09-07: die Kette `coverartarchive.org` → `archive.org` → `ia*.us.archive.org` trägt
+auf **jedem** der drei Schritte `Access-Control-Allow-Origin: *`, ohne `Vary`, mit und ohne
+`Origin`-Kopfzeile. Die Palette funktioniert dort also — sie *muss* nur nicht mehr, damit das Bild
+erscheint. Ein Detail aus derselben Messung: der letzte Schritt schickt zusätzlich
+`Access-Control-Allow-Credentials: true`. Aus `anonymous` je ein `use-credentials` zu machen, würde
+CORS deshalb sofort brechen — bei credentialed Anfragen ist `*` verboten.
+
+## Die Bühne ohne Wohnzimmer prüfen — `?demo=lab`
+
+Ein Fernseher ist eine Bestätigung, keine Entwicklungsumgebung. Jede Runde dort kostet zwanzig
+Minuten, unterbricht die Musik und beantwortet am Ende eine einzige Frage. Deshalb gibt es das Lab:
+dieselbe Seite, dieselben Listener, ein nachgebauter Cast-Rahmen.
+
+```powershell
+node tools\stage-lab.mjs "demo=lab"                     # wie der TCL sich verhält
+node tools\stage-lab.mjs "demo=lab&device=streamer"     # wie der Google TV Streamer sich verhält
+```
+
+Das Werkzeug startet einen kleinen HTTP-Server über `receiver/`, fährt einen Chrome ohne Fenster,
+liest im Viertelsekundentakt ab, **was auf der Bühne steht**, schießt zu jedem Schritt ein Bild und
+sagt am Ende, ob die Sequenz richtig war. Ein falscher Schritt heißt Exit-Code 1 — es ist ein
+Prüfstand, kein Protokoll. Bilder und Log landen im Temp-Ordner, nie im Repository.
+
+Die Sequenz ist die aus dem Wohnzimmer, in fünf Schritten à zwei Sekunden:
+
+| | Was geschickt wird | Was stimmen muss |
+|---|---|---|
+| 1 | `LOAD` einer Datei mit Cover | Titel, Artist, Album, Bild |
+| 2 | `LOAD` des Radios **ohne** Cover | Worte wechseln, **Ringe** — das Bild der Datei ist weg |
+| 3 | ICY-Titelwechsel (`newTrack:true`, kein `cover`-Feld) | Worte wechseln **ohne Schnitt** |
+| 4 | das nachgereichte Cover (`newTrack:false`) | Bild blendet ein, **ohne Schnitt** |
+| 5 | nächster ICY-Titel, wieder ohne `cover` | Ringe — **nicht** das Cover des Stücks davor |
+
+`device=streamer` dreht zwei Schrauben, die der Google TV Streamer anders stellt als der TCL:
+`LOAD_START` kommt **ohne** `event.media`, und die Bühnen-Nachrichten kommen als **JSON-String**
+statt als Objekt.
+
+**Was das Lab gefunden hat, bevor irgendjemand den Fernseher eingeschaltet hat:**
+
+- **Der Streamer blieb bei Stück 1 stehen.** Der Listener las `event.data` als Objekt. Kommt der
+  Namespace als String an — und auf diesem Gerät tut er das —, war `d.type` schlicht `undefined`,
+  und die Nachricht fiel ohne Fehlermeldung durch. `?demo=lab&device=streamer` zeigt das Bild exakt:
+  `lab: done after 0 stage messages`, Titel klebt am letzten `LOAD`. `readStage()` nimmt jetzt
+  beides; ein String, der kein JSON ist, wird verworfen statt geworfen.
+- **Der Radio-`LOAD` räumte das Datei-Cover nicht ab** — obwohl genau dafür eine Zeile da war und ein
+  Test sie festhielt. `render()` setzte beim neuen Stück zuerst `shown.cover = ''`, und `setCover('')`
+  steigt bei `url === shown.cover` sofort wieder aus. Der Aufruf war da, die Wirkung nicht: ein Test,
+  der Text prüft, sieht so etwas nie. `shown.cover` überlebt das Zurücksetzen jetzt so lange, bis
+  `setCover` den Unterschied gesehen hat.
+
+Die Bühne zählt außerdem mit, was ankommt: `stage: 3 track` in der Konsole. Auf dem Fernseher sieht
+das niemand — über `chrome://inspect` schon, und dann trennt eine Zeile die Frage „kommt nichts an"
+von „es kommt an und wird nicht gezeichnet".
+
+`?demo=` und `?demo=radio` gibt es weiter. Neu ist, dass die Query **gewinnt**: solange eine
+`demo=`-Angabe in der Adresse steht, wird der nachgebaute Rahmen benutzt, auch wenn das echte
+CAF-SDK geladen ist. Vorher entschied allein, ob `window.cast` existierte — und im Browser mit
+Internet existiert es. Die Demoflächen waren damit online gar nicht erreichbar.
+
+## Der Katalog ohne Wohnzimmer prüfen
+
+```powershell
+tools\radio-cover-lab.ps1            # eingefrorene Antworten, kein Netz
+tools\radio-cover-lab.ps1 -Live      # fragt MusicBrainz und das Archiv wirklich
+```
+
+Ohne `-Live` läuft die Kette von der ICY-Zeile bis zur Cover-Adresse gegen echte, aber eingefrorene
+MusicBrainz-Antworten unter `Source/KlangHub.Tests/Fixtures/musicbrainz/`. Dieselbe Kette wie in
+Produktion — `IcyTitle.Split` → `RadioCoverQuestion.For` → `MusicBrainzAnswer.ReleaseIds` →
+`RadioCoverService` —, nur die beiden Netzzugriffe sind ersetzt. Dazu liegt eine Tabelle, welche
+Release-Kennung am 2026-09-07 ein Bild hatte und welche nicht; sie ist der Grund, warum sich der
+404-Fall ohne Netz prüfen lässt.
+
+`-Live` schaltet zwei zusätzliche Prüfungen frei, die in der CI nichts zu suchen haben: ob jede Zeile
+heute noch bei einem Bild landet, und ob die eingefrorene Tabelle das Archiv noch beschreibt. Die
+zweite misst bei Abweichung ein zweites Mal — sonst meldet sie den Netzhusten von oben als Drift.
+Antwortet MusicBrainz dreimal nicht, wird übersprungen statt rot: das ist der Tag des Katalogs, nicht
+unser Code.
 
 ## Abnahme auf echter Hardware — erste Sitzung am 2026-09-06
 
